@@ -1,25 +1,28 @@
+using System;
 using System.Linq;
+using System.Linq.Expressions;
 using Microsoft.AspNet.OData;
 using Microsoft.AspNet.OData.Routing;
 
 namespace JannikB.AspNetCore.Utils.Module
 {
 
-    public abstract class BaseOdataController<T, K>
-        : ODataController where T : IEntity<K>
+    public abstract class BaseOdataController<T, K> : ODataController where K : IEquatable<K>
     {
         private readonly IQueryable<T> q;
+        private readonly Func<K, IQueryable<T>> querySingle;
 
-        public BaseOdataController(IQueryable<T> q)
+        public BaseOdataController(IQueryable<T> q, Func<K, IQueryable<T>> querySingle)
         {
             this.q = q;
+            this.querySingle = querySingle;
         }
 
         [ODataRoute("{key}")]
         [EnableQuery]
         public SingleResult<T> Get([FromODataUri] K key)
         {
-            return SingleResult.Create(q.Where(v => key.Equals(v.Id)));
+            return SingleResult.Create(querySingle(key));
         }
 
         [ODataRoute]
