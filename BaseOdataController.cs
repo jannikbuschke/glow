@@ -10,11 +10,18 @@ namespace JannikB.AspNetCore.Utils.Module
     public abstract class BaseOdataController<T, K> : ODataController where K : IEquatable<K>
     {
         private readonly IQueryable<T> q;
+        private readonly Func<string, IQueryable<T>> queryMany;
         private readonly Func<K, IQueryable<T>> querySingle;
 
         public BaseOdataController(IQueryable<T> q, Func<K, IQueryable<T>> querySingle)
         {
             this.q = q;
+            this.querySingle = querySingle;
+        }
+
+        public BaseOdataController(Func<string, IQueryable<T>> queryMany, Func<K, IQueryable<T>> querySingle)
+        {
+            this.queryMany = queryMany;
             this.querySingle = querySingle;
         }
 
@@ -27,9 +34,17 @@ namespace JannikB.AspNetCore.Utils.Module
 
         [ODataRoute]
         [EnableQuery]
-        public IQueryable<T> Get()
+        public IQueryable<T> Get(string search = "")
         {
-            return q;
+            if (q != null)
+            {
+                return q;
+
+            }
+            else
+            {
+                return queryMany(search);
+            }
         }
     }
 }
