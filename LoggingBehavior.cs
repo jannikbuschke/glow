@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 
 namespace JannikB.Glue.AspNetCore
 {
+
     public class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
     {
         private readonly ILogger<LoggingBehavior<TRequest, TResponse>> logger;
