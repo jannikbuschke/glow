@@ -8,7 +8,7 @@ using Microsoft.Extensions.Configuration;
 namespace JannikB.Glue.AspNetCore
 {
     [ApiVersion("1.0")]
-    [Route("api/Aad")]
+    [Route("api/[controller]")]
     public class AadController : ControllerBase
     {
         private readonly IConfiguration config;
