@@ -17,7 +17,7 @@ namespace JannikB.Glue.AspNetCore
         [HttpGet]
         public ActionResult<AuthenticationSettings> GetSettings()
         {
-            AuthenticationSettings settings = new AuthenticationSettings();
+            var settings = new AuthenticationSettings();
             configuration.Bind("Authentication", settings);
             return settings;
         }

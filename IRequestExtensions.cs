@@ -8,17 +8,17 @@ namespace JannikB.AspNetCore.Utils.Module
     {
         public static List<ValidationResult> Validate(this IRequest obj)
         {
-            ValidationContext context = new System.ComponentModel.DataAnnotations.ValidationContext(obj, serviceProvider: null, items: null);
-            List<ValidationResult> validationResults = new List<ValidationResult>();
-            bool isValid = Validator.TryValidateObject(obj, context, validationResults, true);
+            var context = new System.ComponentModel.DataAnnotations.ValidationContext(obj, serviceProvider: null, items: null);
+            var validationResults = new List<ValidationResult>();
+            var isValid = Validator.TryValidateObject(obj, context, validationResults, true);
             return validationResults;
         }
 
         public static List<ValidationResult> Validate<T>(this IRequest<T> obj)
         {
-            ValidationContext context = new System.ComponentModel.DataAnnotations.ValidationContext(obj, serviceProvider: null, items: null);
-            List<ValidationResult> validationResults = new List<ValidationResult>();
-            bool isValid = Validator.TryValidateObject(obj, context, validationResults, true);
+            var context = new System.ComponentModel.DataAnnotations.ValidationContext(obj, serviceProvider: null, items: null);
+            var validationResults = new List<ValidationResult>();
+            var isValid = Validator.TryValidateObject(obj, context, validationResults, true);
             return validationResults;
         }
     }

@@ -45,8 +45,8 @@ namespace JannikB.Glue
         public override void OnActionExecuting(ActionExecutingContext context)
         {
             StringValues header = context.HttpContext.Request.Headers[ParameterName];
-            string intent = header.FirstOrDefault();
-            if(intent == null)
+            var intent = header.FirstOrDefault();
+            if (intent == null)
             {
                 context.Result = new BadRequestObjectResult($"Missing header '{ParameterName}'");
                 return;
@@ -60,7 +60,7 @@ namespace JannikB.Glue
 
             switch (intent)
             {
-                case "validate": context.Result = new NoContentResult(); break;
+                case "validate": context.Result = new OkResult(); break;
                 case "execute": break;
                 default: context.Result = new BadRequestObjectResult($"Unknown _action parameter value: '{ParameterName}'"); break;
             }

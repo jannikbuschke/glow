@@ -20,7 +20,7 @@ namespace JannikB.Glue.AspNetCore
         [HttpGet("value")]
         public ActionResult<GlobalSettings> GetSettings()
         {
-            GlobalSettings settings = new GlobalSettings();
+            var settings = new GlobalSettings();
             configuration.Bind("Global", settings);
             return settings;
         }
@@ -28,7 +28,7 @@ namespace JannikB.Glue.AspNetCore
         [HttpGet("value-unauthenticated")]
         public ActionResult<GlobalSettings> GetSettingsUnauthenticated()
         {
-            GlobalSettings settings = new GlobalSettings();
+            var settings = new GlobalSettings();
             return settings;
         }
     }
