@@ -18,10 +18,36 @@ namespace JannikB.Glue.AspNetCore
     {
         public static void AddTestAuthentication(this IServiceCollection services)
         {
-            AddTestAuthentication(services, new List<Claim>());
+            AddTestAuthentication(services, "test", "test", new List<Claim>());
         }
 
-        public static void AddTestAuthentication(this IServiceCollection services, IEnumerable<Claim> additionalClaims)
+        public static void AddTestAuthentication(
+            this IServiceCollection services,
+            string userId,
+            string userName
+        )
+        {
+            AddTestAuthentication(services, userId, userName, new List<Claim>());
+        }
+
+        public static void AddTestAuthentication(
+          this IServiceCollection services,
+          string userId,
+          string userName,
+          IEnumerable<Claim> additionalClaims
+        )
+        {
+            IEnumerable<Claim> claims = additionalClaims.Concat(new[] {
+                new Claim(ClaimTypes.NameIdentifier, userId),
+                new Claim(ClaimTypes.Name, userName),
+            });
+            AddTestAuthentication(services, claims);
+        }
+
+        public static void AddTestAuthentication(
+        this IServiceCollection services,
+        IEnumerable<Claim> additionalClaims
+        )
         {
             services.AddSingleton(new AdditionalClaims
             {
@@ -33,13 +59,12 @@ namespace JannikB.Glue.AspNetCore
                 options.DefaultChallengeScheme = "TestAuthentication";
             })
             .AddScheme<AuthenticationSchemeOptions, TestAuthenticationHandler>("TestAuthentication", null);
-
         }
     }
 
     public class TestAuthenticationHandler : AuthenticationHandler<AuthenticationSchemeOptions>
     {
-        private readonly AdditionalClaims additionalClaims;
+        private readonly IEnumerable<Claim> claims;
 
         public TestAuthenticationHandler(
             IOptionsMonitor<AuthenticationSchemeOptions> options,
@@ -50,15 +75,12 @@ namespace JannikB.Glue.AspNetCore
         )
         : base(options, logger, encoder, clock)
         {
-            this.additionalClaims = additionalClaims;
+            claims = additionalClaims.Claims;
         }
 
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
         {
-            IEnumerable<Claim> claims = additionalClaims.Claims.Concat(new[] {
-                new Claim(ClaimTypes.NameIdentifier, "test"),
-                new Claim(ClaimTypes.Name, "test"),
-            });
+
             var identity = new ClaimsIdentity(claims, Scheme.Name);
             var principal = new ClaimsPrincipal(identity);
             var ticket = new AuthenticationTicket(principal, Scheme.Name);
