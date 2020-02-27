@@ -21,28 +21,31 @@ namespace JannikB.Glue.AspNetCore.Tests
     {
         public static void AddTestAuthentication(this IServiceCollection services)
         {
-            AddTestAuthentication(services, "test", "test", new List<Claim>());
+            AddTestAuthentication(services, "test", "test", "test@email.com", new List<Claim>());
         }
 
         public static void AddTestAuthentication(
             this IServiceCollection services,
             string userId,
-            string userName
+            string userName,
+            string email
         )
         {
-            AddTestAuthentication(services, userId, userName, new List<Claim>());
+            AddTestAuthentication(services, userId, userName, email, new List<Claim>());
         }
 
         public static void AddTestAuthentication(
           this IServiceCollection services,
           string userId,
           string userName,
+          string email,
           IEnumerable<Claim> additionalClaims
         )
         {
             IEnumerable<Claim> claims = additionalClaims.Concat(new[] {
                 new Claim(ClaimTypes.NameIdentifier, userId),
                 new Claim(ClaimTypes.Name, userName),
+                new Claim(ClaimTypes.Email, email),
             });
             AddTestAuthentication(services, claims);
         }
@@ -88,7 +91,12 @@ namespace JannikB.Glue.AspNetCore.Tests
         {
             StringValues userIds = httpContextAccessor.HttpContext.Request.Headers["x-userid"];
             var userId = userIds.FirstOrDefault();
-            IEnumerable<Claim> newClaims = claims.Select(v => userId != null && v.Type == ClaimTypes.NameIdentifier ? new Claim(ClaimTypes.NameIdentifier, userId) : v);
+            StringValues userNames = httpContextAccessor.HttpContext.Request.Headers["x-username"];
+            var userName = userIds.FirstOrDefault();
+            IEnumerable<Claim> newClaims = claims
+                .Select(v => userId != null && v.Type == ClaimTypes.NameIdentifier ? new Claim(ClaimTypes.NameIdentifier, userId) : v)
+                .Select(v => userName != null && v.Type == ClaimTypes.Name ? new Claim(ClaimTypes.Name, userName) : v);
+
 
             var identity = new ClaimsIdentity(newClaims, Scheme.Name);
             var principal = new ClaimsPrincipal(identity);

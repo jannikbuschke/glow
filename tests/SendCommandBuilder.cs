@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using System.Net.Http;
 using System.Threading.Tasks;
 using MediatR;
@@ -6,15 +5,6 @@ using Microsoft.AspNetCore.Mvc.Testing;
 
 namespace JannikB.Glue.AspNetCore.Tests
 {
-    public class UserDto
-    {
-        [Required]
-        public string UserId { get; set; }
-        [Required]
-        public string DisplayName { get; set; }
-        [Required, EmailAddress]
-        public string Email { get; set; }
-    }
 
     public static class HttpContentExtension
     {
@@ -38,7 +28,7 @@ namespace JannikB.Glue.AspNetCore.Tests
         private readonly WebApplicationFactory<Startup> factory;
         private readonly T request;
         private string url;
-        private string userId;
+        private UserDto user;
 
         public SendCommandBuilder(WebApplicationFactory<Startup> factory, T request)
         {
@@ -54,13 +44,13 @@ namespace JannikB.Glue.AspNetCore.Tests
 
         public SendCommandBuilder<T, R, Startup> As(string userId)
         {
-            this.userId = userId;
+            user = new UserDto { UserId = userId };
             return this;
         }
 
         public SendCommandBuilder<T, R, Startup> As(UserDto user)
         {
-            userId = user.UserId;
+            this.user = user;
             return this;
         }
 
@@ -75,9 +65,16 @@ namespace JannikB.Glue.AspNetCore.Tests
             using HttpClient client = factory.CreateClient();
 
             client.DefaultRequestHeaders.Add("x-submit-intent", "execute");
-            if (!string.IsNullOrWhiteSpace(userId))
+            if (user != null)
             {
-                client.DefaultRequestHeaders.Add("x-userid", userId);
+                if (user.UserId != null)
+                {
+                    client.DefaultRequestHeaders.Add("x-userid", user.UserId);
+                }
+                if (user.DisplayName != null)
+                {
+                    client.DefaultRequestHeaders.Add("x-username", user.DisplayName);
+                }
             }
             HttpResponseMessage response = await client.PostAsJsonAsync(url, request);
             return response;
