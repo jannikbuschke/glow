@@ -65,6 +65,56 @@ namespace JannikB.Glue.AspNetCore.Tests
             using HttpClient client = factory.CreateClient();
 
             client.DefaultRequestHeaders.Add("x-submit-intent", "execute");
+            if (!string.IsNullOrWhiteSpace(userId))
+            {
+                client.DefaultRequestHeaders.Add("x-userid", userId);
+            }
+            HttpResponseMessage response = await client.PostAsJsonAsync(url, request);
+            return response;
+        }
+    }
+    public class SendCommandBuilderV2<R, Startup> where Startup : class
+    {
+        private readonly WebApplicationFactory<Startup> factory;
+        private readonly IRequest<R> request;
+        private string url;
+        private string userId;
+
+        public SendCommandBuilderV2(WebApplicationFactory<Startup> factory, IRequest<R> request)
+        {
+            this.factory = factory;
+            this.request = request;
+        }
+
+        public SendCommandBuilderV2<R, Startup> To(string url)
+        {
+            this.url = url;
+            return this;
+        }
+
+        public SendCommandBuilderV2<R, Startup> As(string userId)
+        {
+            this.userId = userId;
+            return this;
+        }
+
+        public SendCommandBuilderV2<R, Startup> As(UserDto user)
+        {
+            userId = user.UserId;
+            return this;
+        }
+
+        public async Task<R> ExecuteAndRead()
+        {
+            HttpResponseMessage response = await Execute();
+            return await response.ReadAsAsync<R>();
+        }
+
+        public async Task<HttpResponseMessage> Execute()
+        {
+            using HttpClient client = factory.CreateClient();
+
+            client.DefaultRequestHeaders.Add("x-submit-intent", "execute");
             if (user != null)
             {
                 if (user.UserId != null)
