@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc.Testing;
 
 namespace JannikB.Glue.AspNetCore.Tests
 {
-
     public static class HttpContentExtension
     {
         public static async Task<T> ReadAsAsync<T>(this HttpResponseMessage response)
@@ -23,62 +22,12 @@ namespace JannikB.Glue.AspNetCore.Tests
         }
     }
 
-    public class SendCommandBuilder<T, R, Startup> where T : IRequest<R> where Startup : class
-    {
-        private readonly WebApplicationFactory<Startup> factory;
-        private readonly T request;
-        private string url;
-        private UserDto user;
-
-        public SendCommandBuilder(WebApplicationFactory<Startup> factory, T request)
-        {
-            this.factory = factory;
-            this.request = request;
-        }
-
-        public SendCommandBuilder<T, R, Startup> To(string url)
-        {
-            this.url = url;
-            return this;
-        }
-
-        public SendCommandBuilder<T, R, Startup> As(string userId)
-        {
-            user = new UserDto { UserId = userId };
-            return this;
-        }
-
-        public SendCommandBuilder<T, R, Startup> As(UserDto user)
-        {
-            this.user = user;
-            return this;
-        }
-
-        public async Task<R> ExecuteAndRead()
-        {
-            HttpResponseMessage response = await Execute();
-            return await response.ReadAsAsync<R>();
-        }
-
-        public async Task<HttpResponseMessage> Execute()
-        {
-            using HttpClient client = factory.CreateClient();
-
-            client.DefaultRequestHeaders.Add("x-submit-intent", "execute");
-            if (!string.IsNullOrWhiteSpace(userId))
-            {
-                client.DefaultRequestHeaders.Add("x-userid", userId);
-            }
-            HttpResponseMessage response = await client.PostAsJsonAsync(url, request);
-            return response;
-        }
-    }
     public class SendCommandBuilderV2<R, Startup> where Startup : class
     {
         private readonly WebApplicationFactory<Startup> factory;
         private readonly IRequest<R> request;
         private string url;
-        private string userId;
+        private UserDto user;
 
         public SendCommandBuilderV2(WebApplicationFactory<Startup> factory, IRequest<R> request)
         {
@@ -94,13 +43,13 @@ namespace JannikB.Glue.AspNetCore.Tests
 
         public SendCommandBuilderV2<R, Startup> As(string userId)
         {
-            this.userId = userId;
+            user = new UserDto { UserId = userId };
             return this;
         }
 
         public SendCommandBuilderV2<R, Startup> As(UserDto user)
         {
-            userId = user.UserId;
+            this.user = user;
             return this;
         }
 
