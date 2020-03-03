@@ -25,14 +25,14 @@ namespace JannikB.AspNetCore.Utils.Module
         }
 
         [ODataRoute("{key}")]
-        [EnableQuery]
+        [EnableQuery(MaxExpansionDepth = 5)]
         public SingleResult<T> Get([FromODataUri] K key)
         {
             return SingleResult.Create(querySingle(key));
         }
 
         [ODataRoute]
-        [EnableQuery]
+        [EnableQuery(MaxExpansionDepth = 3)]
         public IQueryable<T> Get(string search = "")
         {
             if (q != null)
