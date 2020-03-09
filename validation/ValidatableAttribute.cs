@@ -24,7 +24,7 @@ namespace JannikB.Glue
             {
                 case "validate":
                     {
-                        context.Result = new ObjectResult(new ValidationResult
+                        context.Result = new ObjectResult(new SerializableValidationResult
                         {
                             IsValid = context.ModelState.IsValid,
                             Errors = new SerializableError(context.ModelState)
