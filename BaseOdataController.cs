@@ -5,7 +5,6 @@ using Microsoft.AspNet.OData.Routing;
 
 namespace JannikB.AspNetCore.Utils.Module
 {
-
     public abstract class BaseOdataController<T, K> : ODataController where K : IEquatable<K>
     {
         private readonly IQueryable<T> q;
