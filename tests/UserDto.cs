@@ -1,11 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace JannikB.Glue.AspNetCore.Tests
 {
     public class UserDto
     {
-        [Required]
-        public string UserId { get; set; }
+        // TODO, implement "Dual Mode" for register / upser meeting item
+        public string Id { get; set; }
         [Required]
         public string DisplayName { get; set; }
         [Required, EmailAddress]

@@ -43,7 +43,7 @@ namespace JannikB.Glue.AspNetCore.Tests
 
         public SendCommandBuilderV2<R, Startup> As(string userId)
         {
-            user = new UserDto { UserId = userId };
+            user = new UserDto { Id = userId };
             return this;
         }
 
@@ -66,9 +66,9 @@ namespace JannikB.Glue.AspNetCore.Tests
             client.DefaultRequestHeaders.Add("x-submit-intent", "execute");
             if (user != null)
             {
-                if (user.UserId != null)
+                if (user.Id != null)
                 {
-                    client.DefaultRequestHeaders.Add("x-userid", user.UserId);
+                    client.DefaultRequestHeaders.Add("x-userid", user.Id);
                 }
                 if (user.DisplayName != null)
                 {

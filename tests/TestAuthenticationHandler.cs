@@ -3,6 +3,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using JannikB.Glue.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -94,9 +95,10 @@ namespace JannikB.Glue.AspNetCore.Tests
             StringValues userNames = httpContextAccessor.HttpContext.Request.Headers["x-username"];
             var userName = userIds.FirstOrDefault();
             IEnumerable<Claim> newClaims = claims
+                .Select(v => userId != null && v.Type == ClaimsPrincipalExtensions.ObjectId ? new Claim("oid", userId) : v)
+                .Select(v => userId != null && v.Type == "oid" ? new Claim("oid", userId) : v)
                 .Select(v => userId != null && v.Type == ClaimTypes.NameIdentifier ? new Claim(ClaimTypes.NameIdentifier, userId) : v)
                 .Select(v => userName != null && v.Type == ClaimTypes.Name ? new Claim(ClaimTypes.Name, userName) : v);
-
 
             var identity = new ClaimsIdentity(newClaims, Scheme.Name);
             var principal = new ClaimsPrincipal(identity);
