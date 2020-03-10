@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace JannikB.Glue.AspNetCore
 {
+    // TODO, create a generic statically typed version
     [ApiVersion("2.0")]
     [Route("api/[controller]")]
     public class GlobalSettingsController : ControllerBase
@@ -28,7 +29,10 @@ namespace JannikB.Glue.AspNetCore
         [HttpGet("value-unauthenticated")]
         public ActionResult<GlobalSettings> GetSettingsUnauthenticated()
         {
-            var settings = new GlobalSettings();
+            var settings = new GlobalSettings()
+            {
+                { "GloballyRequireAuthenticatedUser" , "true" }
+            };
             return settings;
         }
     }
