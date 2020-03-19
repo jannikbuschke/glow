@@ -6,9 +6,10 @@ namespace JannikB.Glue.AspNetCore.Tests
     {
         // TODO, implement "Dual Mode" for register / upser meeting item
         public string Id { get; set; }
-        [Required]
+        // TODO properly implement Validation
+        //[Required]
         public string DisplayName { get; set; }
-        [Required, EmailAddress]
+        //[Required, EmailAddress]
         public string Email { get; set; }
     }
 }
