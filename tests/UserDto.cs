@@ -5,12 +5,12 @@ namespace JannikB.Glue.AspNetCore.Tests
 
     public class UserDto: IUser
     {
-        // TODO, implement "Dual Mode" for register / upser meeting item
+        [RequiredIfNullOrEmpty("DisplayName", "Email")]
         public string Id { get; set; }
-        // TODO properly implement Validation
-        //[Required]
+        [RequiredIfNullOrEmpty("Id")]
         public string DisplayName { get; set; }
-        //[Required, EmailAddress]
+        [RequiredIfNullOrEmpty("Id")]
+        [EmailIfNullOrEmpty("Id")]
         public string Email { get; set; }
     }
 }
