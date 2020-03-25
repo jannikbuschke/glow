@@ -2,7 +2,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace JannikB.Glue.AspNetCore.Tests
 {
-    public class UserDto
+
+    public class UserDto: IUser
     {
         // TODO, implement "Dual Mode" for register / upser meeting item
         public string Id { get; set; }
