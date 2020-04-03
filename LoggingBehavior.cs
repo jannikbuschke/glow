@@ -17,10 +17,10 @@ namespace JannikB.Glue.AspNetCore
 
         public async Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken, RequestHandlerDelegate<TResponse> next)
         {
-            logger.LogInformation($"Handling {typeof(TRequest).Name}");
+            logger.LogInformation($"[Handling Request]: {typeof(TRequest).Name}");
             logger.LogTrace("Parameters {@values}", request);
             TResponse response = await next();
-            logger.LogInformation($"Handled {typeof(TRequest).Name}");
+            logger.LogInformation($"[Handled Request]: {typeof(TRequest).Name}");
             logger.LogTrace("Response payload {@values}", response);
             return response;
         }
