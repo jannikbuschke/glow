@@ -7,10 +7,19 @@ namespace JannikB.Glue.AspNetCore.Clock
         public interface IClock
         {
             DateTime UtcNow();
+            DateTime Now { get; }
         }
 
         public class Clock : IClock
         {
+            public DateTime Now
+            {
+                get
+                {
+                    return DateTime.UtcNow;
+                }
+            }
+
             public DateTime UtcNow()
             {
                 return DateTime.UtcNow;
@@ -21,19 +30,19 @@ namespace JannikB.Glue.AspNetCore.Clock
         {
             public FakeClock()
             {
-                dateTime = DateTime.UtcNow;
+                Now = DateTime.UtcNow;
             }
 
-            private DateTime dateTime;
+            public DateTime Now { get; private set; }
 
             public DateTime UtcNow()
             {
-                return dateTime;
+                return Now;
             }
 
             public void Set(DateTime dateTime)
             {
-                this.dateTime = dateTime;
+                Now = dateTime;
             }
 
             public DateTime Add(TimeSpan offset)
