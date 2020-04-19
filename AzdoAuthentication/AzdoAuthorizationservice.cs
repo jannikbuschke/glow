@@ -99,9 +99,9 @@ namespace JannikB.Glue.AspNetCore.AzdoAuthentication
                         { "assertion", code },
                         { "redirect_uri", config.RedirectUri }
                     };
-               
+
                     HttpClient httpClient = clientFactory.CreateClient();
-           
+
                     HttpResponseMessage responseMessage = await httpClient.PostAsync(
                         "https://app.vssps.visualstudio.com/oauth2/token" ?? config.TokenUrl,
                         new FormUrlEncodedContent(form)
