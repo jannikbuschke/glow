@@ -8,6 +8,7 @@ namespace JannikB.Glue.AspNetCore.AzdoAuthentication
     using System.Runtime.Serialization;
     using System.Threading.Tasks;
     using System.Web;
+    using Microsoft.AspNetCore.Authentication;
     using Microsoft.Extensions.DependencyInjection;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
@@ -15,7 +16,7 @@ namespace JannikB.Glue.AspNetCore.AzdoAuthentication
     namespace Glue.AzdoAuthentication
     {
         [DataContract]
-        public class TokenModel
+        public class AzdoToken
         {
             [DataMember(Name = "access_token")]
             public string AccessToken { get; set; }
@@ -43,22 +44,35 @@ namespace JannikB.Glue.AspNetCore.AzdoAuthentication
             public string ClientSecret { get; set; }
         }
 
+        public static class AzdoDefaults
+        {
+            public const string CookieAuthenticationScheme = "AzdoCookie";
+        }
+
         public static class StartupExtension
         {
-            public static IServiceCollection AddAzdoAuthentication(this IServiceCollection services, Action<AzdoConfig> configure)
+            public static AuthenticationBuilder AddAzdo(this AuthenticationBuilder builder, Action<AzdoConfig> configure)
             {
                 var config = new AzdoConfig();
                 configure(config);
-                services.AddSingleton(config);
-                services.AddSingleton<AzdoAuthorizationservice>();
-                //services.AddCookie();
-                return services;
+                builder.Services.AddSingleton(config);
+                builder.Services.AddSingleton<AzdoAuthorizationservice>();
+
+                builder.AddCookie(AzdoDefaults.CookieAuthenticationScheme);
+                return builder;
             }
+
+            //public static IServiceCollection AddAzdoAuthentication(this IServiceCollection services, Action<AzdoConfig> configure)
+            //{
+
+
+            //    return services;
+            //}
         }
 
         public class AzdoAuthorizationservice
         {
-            private static readonly Dictionary<Guid, TokenModel> authorizationRequests = new Dictionary<Guid, TokenModel>();
+            private static readonly Dictionary<Guid, AzdoToken> authorizationRequests = new Dictionary<Guid, AzdoToken>();
             private readonly AzdoConfig config;
             private readonly IHttpClientFactory clientFactory;
 
@@ -71,7 +85,7 @@ namespace JannikB.Glue.AspNetCore.AzdoAuthentication
             public string CreateAuthorizationUrl()
             {
                 var state = Guid.NewGuid();
-                authorizationRequests[state] = new TokenModel() { IsPending = true };
+                authorizationRequests[state] = new AzdoToken() { IsPending = true };
 
                 var uriBuilder = new UriBuilder(config.AuthUrl);
                 NameValueCollection queryParams = HttpUtility.ParseQueryString(uriBuilder.Query ?? string.Empty);
@@ -87,7 +101,7 @@ namespace JannikB.Glue.AspNetCore.AzdoAuthentication
                 return uriBuilder.ToString();
             }
 
-            public async Task<TokenModel> GetAccessToken(string code, Guid state)
+            public async Task<AzdoToken> GetAccessToken(string code, Guid state)
             {
                 if (ValidateCallbackValues(code, state.ToString(), out var error))
                 {
@@ -110,7 +124,7 @@ namespace JannikB.Glue.AspNetCore.AzdoAuthentication
                     {
                         var body = await responseMessage.Content.ReadAsStringAsync();
 
-                        TokenModel tokenModel = authorizationRequests[state];
+                        AzdoToken tokenModel = authorizationRequests[state];
                         JsonConvert.PopulateObject(body, tokenModel);
 
                         return tokenModel;
@@ -142,7 +156,7 @@ namespace JannikB.Glue.AspNetCore.AzdoAuthentication
                     }
                     else
                     {
-                        if (!authorizationRequests.TryGetValue(authorizationRequestKey, out TokenModel tokenModel))
+                        if (!authorizationRequests.TryGetValue(authorizationRequestKey, out AzdoToken tokenModel))
                         {
                             error = "Unknown authorization request key";
                         }
@@ -160,7 +174,7 @@ namespace JannikB.Glue.AspNetCore.AzdoAuthentication
                 return error == null;
             }
 
-            public async Task<TokenModel> RefreshToken(string refreshToken)
+            public async Task<AzdoToken> RefreshToken(string refreshToken)
             {
                 string error = null;
                 if (!string.IsNullOrEmpty(refreshToken))
@@ -184,7 +198,7 @@ namespace JannikB.Glue.AspNetCore.AzdoAuthentication
                     if (responseMessage.IsSuccessStatusCode)
                     {
                         var body = await responseMessage.Content.ReadAsStringAsync();
-                        return JObject.Parse(body).ToObject<TokenModel>();
+                        return JObject.Parse(body).ToObject<AzdoToken>();
                     }
                     else
                     {
