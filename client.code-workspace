@@ -1,0 +1,13 @@
+{
+  "folders": [
+    {
+      "name": "glow-react-sample",
+      "path": "sample\\web"
+    },
+    {
+      "name": "glow-react",
+      "path": "core\\web"
+    }
+  ],
+  "settings": {}
+}
