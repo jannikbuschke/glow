@@ -39,8 +39,8 @@
     "antd": "4.2.2",
     "formik": "2.1.4",
     "styled-components": "5.1.0",
-    "react-router-dom": "6.0.0-alpha.2",
-    "react-router": "6.0.0-alpha.2",
+    "react-router-dom": "6.0.0-alpha.4",
+    "react-router": "6.0.0-alpha.4",
     "typescript": "3.9.2",
     "@types/jest": "24.0.18",
     "@types/node": "14.0.1",
@@ -63,6 +63,7 @@
     "swr": "0.1.18",
     "immer": "2.1.5",
     "lodash": "4.17.15",
-    "@types/lodash": "4.14.141"
+    "@types/lodash": "4.14.141",
+    "file-saver": "2.0.2"
   }
 }

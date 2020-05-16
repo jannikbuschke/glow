@@ -1,3 +1,4 @@
+using Glue.Files;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Glow.Core
@@ -6,6 +7,7 @@ namespace Glow.Core
     {
         public static IServiceCollection AddGlow(this IServiceCollection services)
         {
+            services.AddSingleton<FileService>();
             return services;
         }
     }

@@ -1,10 +1,19 @@
+using System.Net;
+using AutoMapper;
+using AutoMapper.EquivalencyExpression;
+using Glow.Core;
+using MediatR;
+using Microsoft.AspNet.OData.Builder;
+using Microsoft.AspNet.OData.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Glow.Core;
+using Microsoft.VisualStudio.Services.Common;
 
 namespace Glow.Sample
 {
@@ -24,22 +33,65 @@ namespace Glow.Sample
                 options.EnableEndpointRouting = false;
             });
             services.AddGlow();
+            services.AddMediatR(typeof(Startup));
+            services.AddAutoMapper(cfg =>
+            {
+                cfg.AddCollectionMappers();
+            }, typeof(Startup));
+
+            services.AddDbContext<DataContext>(options =>
+            {
+                options.UseSqlServer("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=glow-sample;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
+                options.EnableSensitiveDataLogging(true);
+            });
+
+            services.AddVersionedApiExplorer(o => o.GroupNameFormat = "'v'VVV");
+
+            services.AddApiVersioning(options =>
+            {
+                options.AssumeDefaultVersionWhenUnspecified = true;
+                options.DefaultApiVersion = new ApiVersion(1, 0);
+                options.ReportApiVersions = true;
+            });
+            services.AddOData().EnableApiVersioning();
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(
+            IApplicationBuilder app,
+            IWebHostEnvironment env,
+            VersionedODataModelBuilder modelBuilder
+        )
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseMvc();
+            app.UseMvc(routes =>
+            {
+                routes.SetTimeZoneInfo(System.TimeZoneInfo.Utc);
+                routes.Select().Expand().Filter().OrderBy().MaxTop(100).Count();
+                routes.MapVersionedODataRoutes("odata", "odata", modelBuilder.GetEdmModels());
+                routes.EnableDependencyInjection();
+            });
 
             app.Map("/hello", app =>
             {
                 app.Run(async (context) =>
                 {
                     await context.Response.WriteAsync("hello world");
+                });
+            });
+
+            new string[] { "/odata", "/api" }.ForEach(v =>
+            {
+                app.Map(v, app =>
+                {
+                    app.Run(async ctx =>
+                    {
+                        ctx.Response.StatusCode = (int) HttpStatusCode.NotFound;
+                        await ctx.Response.WriteAsync("Not found");
+                    });
                 });
             });
 

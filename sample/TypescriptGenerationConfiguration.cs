@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Glow.Sample.Files;
 using Reinforced.Typings.Ast.TypeNames;
 using Reinforced.Typings.Fluent;
 
@@ -31,8 +32,11 @@ namespace Glow
                 options.UseModules(true);
             });
 
-            //builder.ExportAsInterface<Contacts.Contact>()
-            //    .WithDefaults();
+            builder.ExportAsInterface<Portfolio>()
+                .WithDefaults();
+
+            builder.ExportAsInterface<PortfolioFile>()
+                .WithDefaults();
         }
     }
 }
