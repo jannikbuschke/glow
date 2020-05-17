@@ -1,11 +1,5 @@
 import * as React from "react"
-
-export interface Profile {
-  displayname: string | null
-  identityName: string | null
-  isAuthenticated: boolean
-  scopes: string | null[]
-}
+import { Profile } from "../models"
 
 export function useProfile() {
   const [error, setError] = React.useState("")
@@ -13,7 +7,7 @@ export function useProfile() {
 
   React.useEffect(() => {
     ;(async () => {
-      const response = await fetch("/api/profile/me")
+      const response = await fetch("/glow/profile")
       if (!response.ok) {
         setError(response.statusText + " " + (await response.text()))
       } else {
