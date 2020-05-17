@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Security.Claims;
 
 namespace JannikB.Glue.AspNetCore.Authentication
@@ -6,6 +7,21 @@ namespace JannikB.Glue.AspNetCore.Authentication
     {
         public const string ObjectId = "http://schemas.microsoft.com/identity/claims/objectidentifier";
         public const string TenantId = "http://schemas.microsoft.com/identity/claims/tenantid";
+
+        public static string Email(this ClaimsPrincipal v)
+        {
+            return v?.Claims.FirstOrDefault(v => v.Type == ClaimTypes.Email || v.Type == "email")?.Value;
+        }
+
+        public static string Name(this ClaimsPrincipal v)
+        {
+            return v?.Claims.FirstOrDefault(v => v.Type == ClaimTypes.Name || v.Type == "name")?.Value;
+        }
+
+        public static string NameIdentifier(this ClaimsPrincipal v)
+        {
+            return v?.Claims.FirstOrDefault(v => v.Type == ClaimTypes.NameIdentifier)?.Value;
+        }
 
         public static string GetMsalAccountId(this ClaimsPrincipal claimsPrincipal)
         {
