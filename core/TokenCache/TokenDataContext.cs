@@ -50,7 +50,7 @@ namespace Glow.TokenCache
 
     public static class IServiceScopeMigrateExtensions
     {
-        public static void MigrateAzdoAuthenticationSqlServer(this IServiceProvider serviceProvider)
+        public static void GlowMigrateAzdoAuthenticationSqlServer(this IServiceProvider serviceProvider)
         {
             using IServiceScope scope = serviceProvider.CreateScope();
             SqlServerTokenDataContext db = scope.ServiceProvider.GetRequiredService<SqlServerTokenDataContext>();

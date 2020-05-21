@@ -1,4 +1,5 @@
 using System;
+using EfConfigurationProvider.Core;
 using Glow.TokenCache;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
@@ -34,6 +35,10 @@ namespace Glue.AzdoAuthentication
                 case DatabaseProvider.SqlServer:
                     services.AddDbContext<SqlServerTokenDataContext>(configureDb);
                     services.AddScoped<ITokenDataContext, SqlServerTokenDataContext>();
+
+                    services.AddDbContext<SqlServerConfigurationDataContext>(configureDb);
+                    services.AddScoped<IConfigurationDataContext, SqlServerConfigurationDataContext>();
+
                     break;
                 default:
                     throw new Exception("Unsupported Database Provider");
