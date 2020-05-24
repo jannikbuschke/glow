@@ -1,9 +1,5 @@
 {
-<<<<<<< HEAD
   "name": "glow-react-sample",
-=======
-  "name": "cra-antd-x",
->>>>>>> master
   "version": "0.3.0",
   "private": true,
   "dependencies": {
@@ -18,12 +14,8 @@
     "react-router-dom": "6.0.0-alpha.4",
     "react-router": "6.0.0-alpha.4",
     "react-scripts": "3.4.1",
-<<<<<<< HEAD
     "glow-react": "0.7.0",
     "react-query": "1.5.1"
-=======
-    "glow-react": "0.7.0"
->>>>>>> master
   },
   "scripts": {
     "start": "react-app-rewired start",
