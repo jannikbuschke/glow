@@ -57,14 +57,22 @@
     "use-lodash-debounce": "1.1.0",
     "awesome-typescript-loader": "5.2.1",
     "babel-loader": "8.0.6",
+<<<<<<< HEAD
+=======
+    "dayjs": "1.8.19",
+>>>>>>> master
     "eslint-config-prettier": "6.3.0",
     "eslint-plugin-prettier": "3.1.1",
     "semantic-release": "17.0.4",
     "swr": "0.1.18",
     "immer": "2.1.5",
     "lodash": "4.17.15",
+<<<<<<< HEAD
     "@types/lodash": "4.14.141",
     "file-saver": "2.0.2",
     "@types/file-saver": "2.0.1"
+=======
+    "@types/lodash": "4.14.141"
+>>>>>>> master
   }
 }

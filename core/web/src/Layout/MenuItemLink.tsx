@@ -9,8 +9,8 @@ export const MenuItemLink = ({
   ...rest
 }: React.PropsWithChildren<MenuItemProps & { to: string }>) => {
   return (
-    <Menu.Item {...rest}>
-      <Link to={to}>{children}</Link>
-    </Menu.Item>
+    <Link to={to}>
+      <Menu.Item {...rest}>{children}</Menu.Item>
+    </Link>
   )
 }

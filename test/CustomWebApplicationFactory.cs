@@ -22,32 +22,6 @@ namespace GlowTest
             {
                 builder.UseEnvironment(environment);
             }
-
-            //var cs = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=Glow-test;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
-            //var options = new DbContextOptionsBuilder { };
-            //options.UseSqlServer(cs, options =>
-            //{
-            //    options.MigrationsAssembly("Glow.Core.SqlServer");
-            //});
-
-            //using var dbContext = new DataContext(options.Options);
-            //dbContext.Database.EnsureDeleted();
-            //dbContext.Database.Migrate();
-
-            //dbContext.Configurations.Add(new Configuration
-            //{
-            //    Created = DateTime.UtcNow,
-            //    Values = new System.Collections.Generic.Dictionary<string, string>
-            //    {
-            //        { "key1", "value1" },
-            //        { "key2", "value2" },
-            //        { "key3", "value3" },
-            //        { "key4", "value4" },
-            //        { "key5", "value5" },
-            //        { "key6", "value6" },
-            //    }
-            //});
-            //dbContext.SaveChanges();
         }
     }
 }
