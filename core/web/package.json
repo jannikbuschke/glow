@@ -18,7 +18,9 @@
     "semantic-release": "semantic-release"
   },
   "dependencies": {
-    "@aspnet/signalr": "1.1.4"
+    "@aspnet/signalr": "1.1.4",
+    "lodash.debounce": "4.0.8",
+    "@types/lodash.debounce": "4.0.6"
   },
   "peerDependencies": {
     "react": ">= 16.8.0 < 17",
