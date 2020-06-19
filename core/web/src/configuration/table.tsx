@@ -84,7 +84,7 @@ export function DataTable() {
             title="All"
             subTitle={
               <Tooltip title="last edited">
-                {data && new Dayjs(data.created).toString()}
+                <div>{data && new Dayjs(data.created).toString()}</div>
               </Tooltip>
             }
             extra={[
