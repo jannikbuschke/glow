@@ -64,7 +64,6 @@ export function IfValidating({ children }: { children: React.ReactNode }) {
       {({ field, form }: FieldProps<any>) =>
         form.isValidating ? children : null
       }
-      />
     </Field>
   )
 }
