@@ -2,14 +2,11 @@ import * as React from "react"
 import { set } from "lodash"
 
 function camelize(str: string) {
-  return str
-    .split(".")
-    .map(_camelize)
-    .join(".")
+  return str.split(".").map(_camelize).join(".")
 }
 
 function _camelize(str: string) {
-  return str.replace(/(?:^\w|[A-Z]|\b\w|\s+)/g, function(match, index) {
+  return str.replace(/(?:^\w|[A-Z]|\b\w|\s+)/g, function (match, index) {
     if (+match === 0) return "" // or if (/\s+/.test(match)) for white spaces
     return index == 0 ? match.toLowerCase() : match.toUpperCase()
   })
@@ -57,6 +54,13 @@ export interface ModelStateDictionary {
   item: any
 }
 
+interface ProblemDetails {
+  detail: string
+  status: number
+  title: string
+  type: string
+}
+
 export function useSubmit<T = any>(
   url: string,
 ): [
@@ -69,9 +73,17 @@ export function useSubmit<T = any>(
     async (values: any): Promise<T | undefined> => {
       const response = await send(url, values, "execute")
       if (!response.ok) {
-        // what to do if bad request?
+        if (response.headers.has("content-type")) {
+          const contentType = response.headers.get("content-type")
+          if (contentType == "application/problem+json") {
+            setError("problem json")
+            const description = (await response.json()) as ProblemDetails
+            if (description.type == "bad_request") {
+              setError(description.detail)
+            }
+          }
+        }
         console.error(response)
-        setError(response.statusText)
         return
       } else {
         const data = (await response.json()) as T
