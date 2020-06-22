@@ -11,6 +11,7 @@ import {
 import { Button, Alert, PageHeader, message, Tooltip } from "antd"
 import { Dayjs } from "dayjs"
 import useSWR from "swr"
+import { ReloadOutlined, DeleteOutlined } from "@ant-design/icons"
 
 async function post<T>(url: string, payload: T) {
   return fetch(url, {
@@ -103,7 +104,7 @@ export function DataTable() {
               <Button
                 size="small"
                 key={2}
-                icon="reload"
+                icon={<ReloadOutlined />}
                 onClick={() => revalidate()}
               >
                 refresh
@@ -151,7 +152,7 @@ export function DataTable() {
                 render: (text, record, index) => (
                   <RemoveRowButton
                     style={{ border: "none", background: "transparent" }}
-                    icon="delete"
+                    icon={<DeleteOutlined />}
                     name="tableData"
                     index={index}
                   />
