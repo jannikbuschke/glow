@@ -1,4 +1,4 @@
-﻿namespace Glue.AzdoAuthentication
+namespace Glue.AzdoAuthentication
 {
     public class AzdoConfig
     {
@@ -9,5 +9,8 @@
         public string TokenUrl { get; set; } = "https://app.vssps.visualstudio.com/oauth2/token";
         //public string AppSecret { get; set; }
         public string ClientSecret { get; set; }
+
+        public string OrganizationBaseUrl { get; set; }
+        public string PAT { get; set; }
     }
 }
