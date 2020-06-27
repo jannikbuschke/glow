@@ -8,6 +8,7 @@ namespace Glow.Core
         public static IServiceCollection AddGlow(this IServiceCollection services)
         {
             services.AddSingleton<FileService>();
+            services.AddSingleton<MockExternalSystems>();
             return services;
         }
     }

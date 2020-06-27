@@ -14,12 +14,6 @@ namespace Glue.AzdoAuthentication
 
     public static class StartupExtension
     {
-        public static IServiceCollection AddGlowEnvironment(this IServiceCollection services)
-        {
-            services.AddSingleton<Glow.Core.Environment.GlowEnvironment>();
-            return services;
-        }
-
         public static AuthenticationBuilder AddAzdo(
             this AuthenticationBuilder builder,
             DatabaseProvider dbProvider,
