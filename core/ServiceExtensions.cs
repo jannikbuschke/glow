@@ -1,3 +1,4 @@
+using Glow.Clocks;
 using Glue.Files;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -9,6 +10,8 @@ namespace Glow.Core
         {
             services.AddSingleton<FileService>();
             services.AddSingleton<MockExternalSystems>();
+            services.AddSingleton<IClock, Clock>();
+
             return services;
         }
     }

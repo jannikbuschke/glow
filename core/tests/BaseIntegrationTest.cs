@@ -2,7 +2,7 @@ using System;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Bogus;
-using JannikB.Glue.AspNetCore.Clock.TimeR.Clock;
+using Glow.Clocks;
 using JannikB.Glue.AspNetCore.Tests;
 using MediatR;
 using Microsoft.AspNetCore.Mvc.Testing;
