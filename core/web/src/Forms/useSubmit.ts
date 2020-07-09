@@ -65,7 +65,7 @@ export function useSubmit<T = any>(
   url: string,
 ): [
   (values: any) => Promise<T | undefined>,
-  (values: any) => Promise<ValidationResult | undefined>,
+  (values: any) => Promise<SerializableError | undefined>,
   string,
 ] {
   const [error, setError] = React.useState("")
