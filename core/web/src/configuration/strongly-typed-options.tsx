@@ -21,10 +21,10 @@ function toType(type: string, name: string) {
 interface Props {
   title: string
   path: string
+  url: string
 }
 
-export function StronglyTypedOptions({ path, title }: Props) {
-  const url = `/${path}`
+export function StronglyTypedOptions({ path, title, url }: Props) {
   const { submit } = useActions(url)
   const { data, error, revalidate } = useSWR(url)
 

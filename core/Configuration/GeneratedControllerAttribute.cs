@@ -5,10 +5,13 @@ namespace EfConfigurationProvider.Core
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
     public class GeneratedControllerAttribute : Attribute
     {
-        public GeneratedControllerAttribute(string route)
+        public GeneratedControllerAttribute(string path)
         {
-            Route = route;
+            Route = $"api/configurations/{path}";
+            Path = path;
         }
+
+        public string Path { get; set; }
 
         public string Route { get; set; }
 

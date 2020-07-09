@@ -19,28 +19,22 @@ namespace EfConfigurationProvider
 
             Configuration current = await ctx.GlowConfigurations.OrderByDescending(v => v.Created).FirstOrDefaultAsync();
 
-            if (current == null)
-            {
-                throw new NotImplementedException();
-            }
-            else
-            {
-                Dictionary<string, string> values = current.Values;
-                var @new = new Dictionary<string, string>(values);
-                foreach (ConfigurationValue value in request.Values)
-                {
-                    @new[request.Path + ":" + value.Name] = value.Value;
-                }
 
-                ctx.GlowConfigurations.Add(new Configuration
-                {
-                    Values = @new,
-                    Created = DateTime.UtcNow,
-                });
-
-                await ctx.SaveChangesAsync();
-                ConfigurationProvider.Value.Reload();
+            Dictionary<string, string> values = current?.Values ?? new Dictionary<string, string>();
+            var @new = new Dictionary<string, string>(values);
+            foreach (ConfigurationValue value in request.Values)
+            {
+                @new[request.Path + ":" + value.Name] = value.Value;
             }
+
+            ctx.GlowConfigurations.Add(new Configuration
+            {
+                Values = @new,
+                Created = DateTime.UtcNow,
+            });
+
+            await ctx.SaveChangesAsync();
+            ConfigurationProvider.Value.Reload();
 
             return Unit.Value;
         }

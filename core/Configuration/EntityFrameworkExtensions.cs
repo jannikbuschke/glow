@@ -1,40 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace EfConfigurationProvider.Core
 {
-    public class Options
-    {
-        private readonly Dictionary<string, string> partialReadPolicies = new Dictionary<string, string>();
-        private readonly Dictionary<string, string> partialWritePolicies = new Dictionary<string, string>();
-
-        public string GlobalPolicy { get; set; }
-        public string ReadAllPolicy { get; set; }
-        public string WriteAllPolicy { get; set; }
-
-        public void SetPartialReadPolicy(string path, string policy)
-        {
-            partialReadPolicies[path] = policy;
-        }
-
-        public string GetPartialReadPolicy(string path)
-        {
-            return partialReadPolicies.GetValueOrDefault(path);
-        }
-
-        public void SetPartialWritePolicy(string path, string policy)
-        {
-            partialWritePolicies[path] = policy;
-        }
-
-        public string GetWriteReadPolicy(string path)
-        {
-            return partialWritePolicies.GetValueOrDefault(path);
-        }
-    }
 
     public static class EntityFrameworkExtensions
     {
@@ -47,19 +19,33 @@ namespace EfConfigurationProvider.Core
             return builder.Add(new ConfigurationSource(optionsAction));
         }
 
-        public static IServiceCollection AddEfConfiguration(this IServiceCollection services, Action<Options> configure)
+        public static IServiceCollection AddEfConfiguration(
+            this IServiceCollection services,
+            Action<Options> configure,
+            IEnumerable<Assembly> assemblies
+        )
         {
             var configuration = new Options();
             configure(configuration);
             services.AddSingleton(configuration);
             services.AddSingleton<AuthorizationService>();
             services.AddHttpContextAccessor();
+            services.AddSingleton((services) => new AssembliesCache(assemblies));
+            //services.AddMvcCore().AddApplicationPart(typeof(EntityFrameworkExtensions).Assembly);
+
+            services.AddMvcCore(options =>
+            {
+                options.Conventions.Add(new GenericControllerRouteConvention());
+            }).ConfigureApplicationPartManager(m =>
+                m.FeatureProviders.Add(new GenericTypeControllerFeatureProvider(assemblies)
+            ));
+
             return services;
         }
 
-        public static IServiceCollection AddEfConfiguration(this IServiceCollection services)
-        {
-            return AddEfConfiguration(services, options => { });
-        }
+        //public static IServiceCollection AddEfConfiguration(this IServiceCollection services)
+        //{
+        //    return AddEfConfiguration(services, options => { }, );
+        //}
     }
 }
