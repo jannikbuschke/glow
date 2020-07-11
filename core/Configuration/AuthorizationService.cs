@@ -2,15 +2,15 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 
-namespace EfConfigurationProvider.Core
+namespace Glow.Configurations
 {
     public class AuthorizationService
     {
-        private readonly Options options;
+        private readonly ConfigurationOptions options;
         private readonly IAuthorizationService authorizationService;
         private readonly IHttpContextAccessor httpContextAccessor;
 
-        public AuthorizationService(Options options, IAuthorizationService authorizationService, IHttpContextAccessor httpContextAccessor)
+        public AuthorizationService(ConfigurationOptions options, IAuthorizationService authorizationService, IHttpContextAccessor httpContextAccessor)
         {
             this.options = options;
             this.authorizationService = authorizationService;

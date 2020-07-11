@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
-namespace EfConfigurationProvider.Core
+namespace Glow.Configurations
 {
-    public class Options
+    public class ConfigurationOptions
     {
         private readonly Dictionary<string, string> partialReadPolicies = new Dictionary<string, string>();
         private readonly Dictionary<string, string> partialWritePolicies = new Dictionary<string, string>();
@@ -11,24 +11,24 @@ namespace EfConfigurationProvider.Core
         public string ReadAllPolicy { get; set; }
         public string WriteAllPolicy { get; set; }
 
-        public void SetPartialReadPolicy(string path, string policy)
+        public void SetPartialReadPolicy(string configurationId, string policy)
         {
-            partialReadPolicies[path] = policy;
+            partialReadPolicies[configurationId] = policy;
         }
 
-        public string GetPartialReadPolicy(string path)
+        public string GetPartialReadPolicy(string configurationId)
         {
-            return partialReadPolicies.GetValueOrDefault(path);
+            return partialReadPolicies.GetValueOrDefault(configurationId);
         }
 
-        public void SetPartialWritePolicy(string path, string policy)
+        public void SetPartialWritePolicy(string configurationId, string policy)
         {
-            partialWritePolicies[path] = policy;
+            partialWritePolicies[configurationId] = policy;
         }
 
-        public string GetWriteReadPolicy(string path)
+        public string GetWriteReadPolicy(string configurationId)
         {
-            return partialWritePolicies.GetValueOrDefault(path);
+            return partialWritePolicies.GetValueOrDefault(configurationId);
         }
     }
 }

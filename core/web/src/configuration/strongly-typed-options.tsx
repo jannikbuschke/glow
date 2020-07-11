@@ -1,9 +1,10 @@
 import * as React from "react"
-import useSWR from "swr"
 import { Formik } from "formik"
-import { message, Alert, PageHeader, Divider } from "antd"
+import { message, PageHeader, Button, Card } from "antd"
 import { Input, Switch, InputNumber, SubmitButton, Form } from "formik-antd"
 import { useActions, badRequestResponseToFormikErrors } from "./validation"
+import { useData } from "../query/use-data"
+import { ErrorBanner } from "../errors/error-banner"
 
 function toType(type: string, name: string) {
   switch (type) {
@@ -20,24 +21,29 @@ function toType(type: string, name: string) {
 
 interface Props {
   title: string
-  path: string
   url: string
+  configurationId: string
+  allowEdit?: boolean
 }
 
-export function StronglyTypedOptions({ path, title, url }: Props) {
+export function StronglyTypedOptions({
+  title,
+  url,
+  configurationId,
+  allowEdit = true,
+}: Props) {
   const { submit } = useActions(url)
-  const { data, error, revalidate } = useSWR(url)
-
+  const { data, error, refetch } = useData<any>(url, {})
   return (
-    <div style={{ maxWidth: 1200, background: "#fff" }}>
-      {error && <Alert type="error" message={error.toString()} />}
+    <Card>
+      <ErrorBanner error={error} />
       <Formik
         initialValues={data}
         enableReinitialize={true}
         onSubmit={async (values, actions) => {
           console.log("submit")
           actions.setSubmitting(true)
-          const r = await submit({ path, value: values })
+          const r = await submit({ configurationId, value: values })
           actions.setSubmitting(false)
           if (r.ok) {
             message.success("success")
@@ -57,22 +63,21 @@ export function StronglyTypedOptions({ path, title, url }: Props) {
           <PageHeader
             title={title}
             extra={[
-              <SubmitButton size="small">save</SubmitButton>,
-              // TODO somehow formik does not show the new values on revalidating
-              // <Button
-              //   size="small"
-              //   key={2}
-              //   icon="reload"
-              //   onClick={() => revalidate()}>
-              //   refresh
-              // </Button>,
+              allowEdit && <SubmitButton key="submit">Save</SubmitButton>,
+              <Button
+                key="refresh"
+                onClick={() => {
+                  refetch()
+                }}
+              >
+                Refresh
+              </Button>,
             ]}
           >
-            <Divider />
             <div
               style={{
                 display: "grid",
-                gridTemplateColumns: "160px auto",
+                gridTemplateColumns: "140px auto",
               }}
             >
               {data &&
@@ -94,6 +99,6 @@ export function StronglyTypedOptions({ path, title, url }: Props) {
           </PageHeader>
         </Form>
       </Formik>
-    </div>
+    </Card>
   )
 }

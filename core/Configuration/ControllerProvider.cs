@@ -5,14 +5,13 @@ using System.Reflection;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Controllers;
 
-namespace EfConfigurationProvider.Core
+namespace Glow.Configurations
 {
-
-    public class GenericTypeControllerFeatureProvider : IApplicationFeatureProvider<ControllerFeature>
+    public class ControllerProvider : IApplicationFeatureProvider<ControllerFeature>
     {
         private readonly IEnumerable<Assembly> assemblies;
 
-        public GenericTypeControllerFeatureProvider(IEnumerable<Assembly> assemblies)
+        public ControllerProvider(IEnumerable<Assembly> assemblies)
         {
             this.assemblies = assemblies;
         }
@@ -21,12 +20,12 @@ namespace EfConfigurationProvider.Core
         {
             IEnumerable<Type> candidates = assemblies
                 .SelectMany(v => v.GetExportedTypes()
-                .Where(x => x.GetCustomAttributes(typeof(GeneratedControllerAttribute), true).Any()));
+                .Where(x => x.GetCustomAttributes(typeof(ConfigurationAttribute), true).Any()));
 
             foreach (Type candidate in candidates)
             {
                 feature.Controllers.Add(
-                    typeof(PartialUpdateController<>).MakeGenericType(candidate).GetTypeInfo()
+                    typeof(UpdateController<>).MakeGenericType(candidate).GetTypeInfo()
                 );
             }
         }

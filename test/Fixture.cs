@@ -1,4 +1,5 @@
 using Glow.Sample;
+using Glow.Sample.Users;
 using JannikB.Glue.AspNetCore.Tests;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
@@ -7,7 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using Xunit;
 
-namespace GlowTest
+namespace Glow.Test
 {
     [CollectionDefinition("integration-tests")]
     public class CollectionFixture : ICollectionFixture<IntegrationTestFixture>
@@ -34,10 +35,12 @@ namespace GlowTest
             Factory = factory.WithWebHostBuilder(builder =>
                 builder.ConfigureTestServices(services =>
                 {
-                    services.AddTestAuthentication("testuser", "testuser", "test@email.com");
+                    UserDto testUser = TestUsers.TestUser();
+                    services.AddTestAuthentication(testUser.Id, testUser.DisplayName, testUser.Email);
                 })
             );
             DataContext ctx = Factory.Services.GetRequiredService<DataContext>();
+            ctx.Database.EnsureDeleted();
             ctx.Database.Migrate();
         }
     }

@@ -2,7 +2,7 @@ using System;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 
-namespace GlowTest
+namespace Glow.Test
 {
     public class CustomWebApplicationFactory<Startup>
       : WebApplicationFactory<Startup> where Startup : class

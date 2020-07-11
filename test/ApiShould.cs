@@ -1,6 +1,5 @@
 using System.Net.Http;
 using Glow.Sample;
-using GlowTest;
 using Xunit;
 
 namespace Glow.Test

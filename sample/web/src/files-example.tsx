@@ -40,7 +40,7 @@ interface Portfolio {
 
 function Detail() {
   const { portfolioId } = useParams()
-  const { data, error, status } = useData<Portfolio>(
+  const { data } = useData<Portfolio>(
     `/odata/portfolios/${portfolioId}?$expand=files`,
     {
       id: "",
@@ -96,12 +96,9 @@ function MasterDetail() {
 
 function List() {
   const url = "/odata/portfolios?$expand=files"
-  const { data, error, status, refetch } = useData<{ value: Portfolio[] }>(
-    url,
-    {
-      value: [],
-    },
-  )
+  const { data, refetch } = useData<{ value: Portfolio[] }>(url, {
+    value: [],
+  })
   const navigate = useNavigate()
   return (
     <div>

@@ -5,26 +5,20 @@ using System.Threading.Tasks;
 using Glow.Core.EfCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 
-namespace EfConfigurationProvider.Core
+namespace Glow.Configurations
 {
-    public class Configuration
-    {
-        public int Id { get; set; }
-        public Dictionary<string, string> Values { get; set; }
-        public DateTime Created { get; set; }
-        public string User { get; set; }
-    }
-
     public class ConfigurationDataContext : DbContext
     {
         public ConfigurationDataContext(DbContextOptions options) : base(options)
         {
         }
 
-        public DbSet<Configuration> GlowConfigurations { get; set; }
+        //public DbSet<Configuration> GlowConfigurations { get; set; }
+        public DbSet<ConfigurationVersion> GlowConfigurations { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -34,16 +28,21 @@ namespace EfConfigurationProvider.Core
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            modelBuilder.Entity<Configuration>().Property(v => v.Values)
+
+            EntityTypeBuilder<ConfigurationVersion> partialConfigurationVersion = modelBuilder.Entity<ConfigurationVersion>();
+            partialConfigurationVersion.Property(v => v.Values)
                 .HasConversion(
                     v => JsonConvert.SerializeObject(v),
                     v => JsonConvert.DeserializeObject<Dictionary<string, string>>(v));
+            partialConfigurationVersion.HasKey(v => new { v.Id, v.Version });
+            partialConfigurationVersion.Property(v => v.Id).ValueGeneratedNever();
+            partialConfigurationVersion.Property(v => v.Version).ValueGeneratedNever();
         }
     }
 
     public interface IConfigurationDataContext
     {
-        DbSet<Configuration> GlowConfigurations { get; set; }
+        //DbSet<Configuration> GlowConfigurations { get; set; }
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
         Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default);
     }

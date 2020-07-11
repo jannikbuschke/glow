@@ -1,9 +1,9 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace EfConfigurationProvider.Core
+namespace Glow.Configurations
 {
     public class AssembliesCache : IEnumerable<Assembly>
     {

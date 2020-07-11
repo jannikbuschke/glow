@@ -1,11 +1,13 @@
 using System;
+using System.IO;
+using Glow.Configurations;
 using Glow.GlowStartup;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using Serilog.Core;
-using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Hosting;
 
 namespace Glow.Sample
 {
@@ -40,7 +42,27 @@ namespace Glow.Sample
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args)
         {
-            return GlowStartup.Program.CreateDefaultWebHostBuilder<Startup>(args);
+            return
+                new WebHostBuilder()
+                .UseKestrel()
+                .UseContentRoot(Directory.GetCurrentDirectory())
+                .UseIISIntegration()
+                .UseStartup<Startup>()
+                .ConfigureAppConfiguration((ctx, config) =>
+                {
+                    IConfigurationRoot cfg = config.Build();
+                    config.SetBasePath(Directory.GetCurrentDirectory())
+                    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+
+                    var cs = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=glow-dev;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False" ?? cfg.GetValue<string>("ConnectionString");
+                    if (cs != null)
+                    {
+                        config.AddEFConfiguration(options => options.UseSqlServer(cs, configure =>
+                        {
+                            configure.MigrationsAssembly(typeof(StartupExtensions).Assembly.FullName);
+                        }));
+                    }
+                });
         }
 
         private static string EnvironmentName

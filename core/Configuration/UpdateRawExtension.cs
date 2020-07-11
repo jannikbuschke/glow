@@ -1,19 +1,18 @@
 using System.Collections.Generic;
 using System.Linq;
-using EfConfigurationProvider.Core;
 using Newtonsoft.Json;
 
-namespace EfConfigurationProvider
+namespace Glow.Configurations
 {
-    public static class PartialUpdateRawExtension
+    public static class UpdateRawExtension
     {
-        public static PartialUpdate ToPartialUpdate<T>(this PartialUpdateRaw<T> value)
+        public static Update ToPartialUpdate<T>(this UpdateRaw<T> value)
         {
             var json = JsonConvert.SerializeObject(value.Value);
             Dictionary<string, string> values = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
-            return new PartialUpdate
+            return new Update
             {
-                Path = value.Path,
+                ConfigurationId = value.ConfigurationId,
                 Values = values.Select(v => new ConfigurationValue { Name = v.Key, Value = v.Value }).ToArray()
             };
         }

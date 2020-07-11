@@ -1,9 +1,9 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace Glow.Core.Configuration.Migrations.SqlServer
+namespace Glow.Core.Configuration.SqlServer
 {
-    public partial class AddConfigurations : Migration
+    public partial class AddGlowConfigurations : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -11,15 +11,16 @@ namespace Glow.Core.Configuration.Migrations.SqlServer
                 name: "GlowConfigurations",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<string>(nullable: false),
+                    Version = table.Column<int>(nullable: false),
                     Values = table.Column<string>(nullable: true),
                     Created = table.Column<DateTime>(nullable: false),
-                    User = table.Column<string>(nullable: true)
+                    User = table.Column<string>(nullable: true),
+                    Message = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_GlowConfigurations", x => x.Id);
+                    table.PrimaryKey("PK_GlowConfigurations", x => new { x.Id, x.Version });
                 });
         }
 

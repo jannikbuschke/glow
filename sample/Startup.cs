@@ -1,7 +1,11 @@
 using System.Net;
 using AutoMapper;
 using AutoMapper.EquivalencyExpression;
+using Glow.Configurations;
 using Glow.Core;
+using Glow.Sample.Configurations;
+using Glow.Sample.Users;
+using JannikB.Glue.AspNetCore.Tests;
 using MediatR;
 using Microsoft.AspNet.OData.Builder;
 using Microsoft.AspNet.OData.Extensions;
@@ -14,13 +18,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.VisualStudio.Services.Common;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Glow.Core;
+using RT;
 
 namespace Glow.Sample
 {
@@ -39,12 +37,30 @@ namespace Glow.Sample
             {
                 options.EnableEndpointRouting = false;
             });
-            services.AddGlow();
-            services.AddMediatR(typeof(Startup));
-            services.AddAutoMapper(cfg =>
+            services.AddAuthorization(options =>
             {
-                cfg.AddCollectionMappers();
-            }, typeof(Startup));
+                options.AddPolicy("test-policy", v =>
+                {
+                    v.RequireAuthenticatedUser();
+                });
+            });
+            services.AddGlow();
+
+            UserDto testUser = TestUsers.TestUser();
+            services.AddTestAuthentication(testUser.Id, testUser.DisplayName, testUser.Email);
+
+            services.Configure<SampleConfiguration>(configuration.GetSection("sample-configuration"));
+
+            services.AddEfConfiguration(options =>
+            {
+                options.SetPartialReadPolicy("sample-configuration", "test-policy");
+                options.SetPartialWritePolicy("sample-configuration", "test-policy");
+            }, new[] { typeof(Startup).Assembly });
+
+            services.AddTransient<IStartupFilter, CreateTypescriptDefinitions>();
+
+            services.AddMediatR(typeof(Startup), typeof(Clocks.Clock));
+            services.AddAutoMapper(cfg => { cfg.AddCollectionMappers(); }, typeof(Startup));
 
             services.AddDbContext<DataContext>(options =>
             {
@@ -61,6 +77,7 @@ namespace Glow.Sample
                 options.ReportApiVersions = true;
             });
             services.AddOData().EnableApiVersioning();
+            services.AddOptions();
         }
 
         public void Configure(
@@ -73,6 +90,9 @@ namespace Glow.Sample
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.UseMvc(routes =>
             {

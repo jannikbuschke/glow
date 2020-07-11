@@ -12,7 +12,7 @@ using Glue.Files;
 using JannikB.Glue.AspNetCore.Tests;
 using Xunit;
 
-namespace GlowTest
+namespace Glow.Test
 {
     [Collection("integration-tests")]
     public class FilesShould : BaseIntegrationTest<Startup>

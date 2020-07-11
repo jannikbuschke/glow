@@ -2,7 +2,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
-namespace EfConfigurationProvider.Core
+namespace Glow.Configurations
 {
     public class ConfigurationSource : IConfigurationSource
     {
@@ -15,7 +15,7 @@ namespace EfConfigurationProvider.Core
 
         public IConfigurationProvider Build(IConfigurationBuilder builder)
         {
-            return new ConfigurationProvider(optionsAction);
+            return new EfConfigurationProvider(optionsAction);
         }
     }
 }
