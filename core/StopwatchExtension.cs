@@ -15,7 +15,7 @@ namespace Glow.Core
                 ts.Hours, ts.Minutes, ts.Seconds,
                 ts.Milliseconds / 10);
 
-            logger.LogWarning($"{elapsedTime}: {message}");
+            logger.LogDebug("{elapsedTime}: {message}", elapsedTime, message);
         }
     }
 }

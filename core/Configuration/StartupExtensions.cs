@@ -47,9 +47,5 @@ namespace Glow.Configurations
             return services;
         }
 
-        //public static IServiceCollection AddEfConfiguration(this IServiceCollection services)
-        //{
-        //    return AddEfConfiguration(services, options => { }, );
-        //}
     }
 }
