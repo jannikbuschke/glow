@@ -18,7 +18,7 @@ namespace Glow.Configurations
         private readonly IMediator mediator;
         private readonly IConfiguration configuration;
         private readonly Configurations partialConfigurations;
-        private readonly AuthorizationService authorization;
+        private readonly ConfigurationAuthorizationService authorization;
         private readonly IWebHostEnvironment environment;
         private readonly IConfigurationRoot efConfiguration;
 
@@ -26,7 +26,7 @@ namespace Glow.Configurations
             IMediator mediator,
             IConfiguration configuration,
             Configurations partialConfigurations,
-            AuthorizationService authorization,
+            ConfigurationAuthorizationService authorization,
             IWebHostEnvironment environment
         )
         {

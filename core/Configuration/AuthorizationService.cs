@@ -4,13 +4,13 @@ using Microsoft.AspNetCore.Http;
 
 namespace Glow.Configurations
 {
-    public class AuthorizationService
+    public class ConfigurationAuthorizationService
     {
         private readonly ConfigurationOptions options;
         private readonly IAuthorizationService authorizationService;
         private readonly IHttpContextAccessor httpContextAccessor;
 
-        public AuthorizationService(ConfigurationOptions options, IAuthorizationService authorizationService, IHttpContextAccessor httpContextAccessor)
+        public ConfigurationAuthorizationService(ConfigurationOptions options, IAuthorizationService authorizationService, IHttpContextAccessor httpContextAccessor)
         {
             this.options = options;
             this.authorizationService = authorizationService;
