@@ -76,11 +76,10 @@ export function useSubmit<T = any>(
         if (response.headers.has("content-type")) {
           const contentType = response.headers.get("content-type")
           if (contentType == "application/problem+json") {
-            setError("problem json")
             const description = (await response.json()) as ProblemDetails
-            if (description.type == "bad_request") {
-              setError(description.detail)
-            }
+            setError(
+              `${description.title}: ${description.detail} (${description.status})`,
+            )
           }
         }
         console.error(response)
