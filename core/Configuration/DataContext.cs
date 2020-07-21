@@ -33,7 +33,7 @@ namespace Glow.Configurations
             partialConfigurationVersion.Property(v => v.Values)
                 .HasConversion(
                     v => JsonConvert.SerializeObject(v),
-                    v => JsonConvert.DeserializeObject<Dictionary<string, string>>(v));
+                    v => JsonConvert.DeserializeObject<Dictionary<string, object>>(v));
             partialConfigurationVersion.HasKey(v => new { v.Id, v.Version });
             partialConfigurationVersion.Property(v => v.Id).ValueGeneratedNever();
             partialConfigurationVersion.Property(v => v.Version).ValueGeneratedNever();

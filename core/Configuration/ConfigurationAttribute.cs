@@ -5,10 +5,6 @@ namespace Glow.Configurations
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
     public class ConfigurationAttribute : Attribute, IConfigurationMeta
     {
-        public ConfigurationAttribute(string id)
-        {
-            Id = id;
-        }
         public string Id { get; set; }
         public string Policy { get; set; }
         public string SectionId { get; set; }

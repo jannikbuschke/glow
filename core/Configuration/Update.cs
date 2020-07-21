@@ -8,22 +8,22 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Glow.Configurations
 {
-    public class Update : IRequest
+    public class ConfigurationUpdate : IRequest
     {
         public string ConfigurationId { get; set; }
-        public ConfigurationValue[] Values { get; set; }
+        public Dictionary<string, object> Values { get; set; }
     }
 
-    public class UpdateHandler : IRequestHandler<Update>
+    public class ConfigurationUpdateHandler : IRequestHandler<ConfigurationUpdate>
     {
         private readonly Configurations partialConfigurations;
 
-        public UpdateHandler(Configurations partialConfigurations)
+        public ConfigurationUpdateHandler(Configurations partialConfigurations)
         {
             this.partialConfigurations = partialConfigurations;
         }
 
-        public async Task<Unit> Handle(Update request, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(ConfigurationUpdate request, CancellationToken cancellationToken)
         {
             Meta partialConfiguration = partialConfigurations.Get().Single(v => v.Id == request.ConfigurationId);
 
@@ -33,17 +33,18 @@ namespace Glow.Configurations
 
             ConfigurationVersion current = await ctx
                 .GlowConfigurations
+                .Where(v => v.Id == request.ConfigurationId)
                 .OrderByDescending(v => v.Version)
                 .FirstOrDefaultAsync() ?? new ConfigurationVersion
                 {
                     Version = 0,
-                    Values = new Dictionary<string, string>()
+                    Values = new Dictionary<string, object>()
                 };
 
-            var values = new Dictionary<string, string>(current.Values);
-            foreach (ConfigurationValue value in request.Values)
+            var values = new Dictionary<string, object>(current.Values);
+            foreach (KeyValuePair<string, object> value in request.Values)
             {
-                values[partialConfiguration.SectionId + ":" + value.Name] = value.Value;
+                values[partialConfiguration.SectionId + ":" + value.Key] = value.Value;
             }
 
             ctx.GlowConfigurations.Add(new ConfigurationVersion

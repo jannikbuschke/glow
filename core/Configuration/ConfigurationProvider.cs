@@ -5,6 +5,7 @@ using System.Threading;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Primitives;
+using Newtonsoft.Json.Linq;
 
 namespace Glow.Configurations
 {
@@ -44,9 +45,52 @@ namespace Glow.Configurations
                     .SelectMany(v => v.First().Values)
                     .ToDictionary(v => v.Key, v => v.Value);
                 var cfg = new Dictionary<string, string>();
-                foreach (KeyValuePair<string, string> item in configurations)
+                foreach (KeyValuePair<string, object> item in configurations)
                 {
-                    cfg[item.Key] = item.Value;
+                    if (typeof(IEnumerable<object>).IsAssignableFrom(item.Value.GetType()))
+                    {
+                        var values = (item.Value as IEnumerable<object>).ToList();
+                        for (var i = 0; i < values.Count(); i++)
+                        {
+                            if (values[i].GetType() == typeof(string))
+                            {
+                                cfg[item.Key + ":" + i] = values[i].ToString();
+                            }
+                            else if (values[i].GetType() == typeof(JValue))
+                            {
+                                var val = values[i] as JValue;
+                                if (val.Type == JTokenType.String)
+                                {
+                                    cfg[item.Key + ":" + i] = val.ToString();
+                                }
+                                else
+                                {
+                                    throw new NotSupportedException();
+                                }
+                            }
+                            else
+                            {
+                                Type type = values[i].GetType();
+                                if (type == typeof(JObject))
+                                {
+                                    var val = values[i] as JObject;
+                                    IEnumerable<JProperty> properties = val.Properties();
+                                    foreach (JProperty v in properties)
+                                    {
+                                        cfg[item.Key + ":" + i + ":" + v.Name] = v.Value.ToString();
+                                    }
+                                }
+                                else
+                                {
+                                    throw new NotSupportedException();
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        cfg[item.Key] = item.Value.ToString();
+                    }
                 }
                 return cfg;
             }

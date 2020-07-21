@@ -85,7 +85,7 @@ namespace Glow.Configurations
             {
                 return BadRequest(ModelState);
             }
-            await mediator.Send(value.ToPartialUpdate());
+            await mediator.Send(value.ToConfigurationUpdate());
             return Ok();
         }
     }
