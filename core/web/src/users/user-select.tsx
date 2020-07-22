@@ -1,10 +1,11 @@
 import * as React from "react"
 import { Select, notification, Avatar } from "antd"
 import { schema, normalize } from "normalizr"
-import { Field, FieldProps } from "formik"
+import { Field, FieldProps, useField, useFormikContext } from "formik"
 import debounce from "lodash.debounce"
 import { SelectProps } from "antd/lib/select"
 import styled from "styled-components"
+import { fetchJson } from "../http/fetch"
 
 export interface User {
   id: string | null
@@ -32,6 +33,19 @@ export function UserSelect<T = any>({
   setByReference?: boolean
   fetcher: (search: string) => Promise<User[]>
 } & SelectProps<T>) {
+  const [field, ,] = useField(name)
+  const form = useFormikContext()
+
+  React.useEffect(() => {
+    if (field.value) {
+      fetchJson<User>(`/api/user/${field.value}`).then((v) => {
+        if (v !== null) {
+          setDataSource((current) => [...current, v])
+        }
+      })
+    }
+  }, [field.value])
+
   const [dataSource, setDataSource] = React.useState<User[]>([])
   const [users, setUsers] = React.useState<{ [key: string]: User }>({})
 
@@ -58,69 +72,65 @@ export function UserSelect<T = any>({
   }, [])
 
   return (
-    <Field name={name}>
-      {({ field, form }: FieldProps<any>) => (
-        <Select<any>
-          disabled={disabled}
-          dropdownMatchSelectWidth={false}
-          value={
-            field.value
-              ? setByReference
-                ? field.value
-                : field.value.id !== null
-                ? field.value.id
-                : undefined
-              : undefined
+    <Select<any>
+      disabled={disabled}
+      dropdownMatchSelectWidth={false}
+      value={
+        field.value
+          ? setByReference
+            ? field.value
+            : field.value.id !== null
+            ? field.value.id
+            : undefined
+          : undefined
+      }
+      onChange={(value, option) => {
+        if (value === undefined) {
+          form.setFieldValue(name, null, true)
+        }
+      }}
+      onBlur={() => {
+        form.setFieldTouched(name)
+      }}
+      showSearch={true}
+      onSelect={(v, optio): void => {
+        const id = v.valueOf() as string
+        if (!user) {
+          notification.error({
+            message: "There is an issue. Pls refresh and try again.",
+          })
+        } else {
+          const user = users[id]
+          if (setByReference) {
+            form.setFieldValue(name, user.id)
+          } else {
+            form.setFieldValue(name + ".id", user.id, true)
+            form.setFieldValue(name + ".displayName", user.displayName)
+            form.setFieldValue(name + ".email", user.email)
           }
-          onChange={(value, option) => {
-            if (value === undefined) {
-              form.setFieldValue(name, null, true)
-            }
-          }}
-          onBlur={() => {
-            form.setFieldTouched(name)
-          }}
-          showSearch={true}
-          onSelect={(v, optio): void => {
-            const id = v.valueOf() as string
-            if (!user) {
-              notification.error({
-                message: "There is an issue. Pls refresh and try again.",
-              })
-            } else {
-              const user = users[id]
-              if (setByReference) {
-                form.setFieldValue(name, user.id)
-              } else {
-                form.setFieldValue(name + ".id", user.id, true)
-                form.setFieldValue(name + ".displayName", user.displayName)
-                form.setFieldValue(name + ".email", user.email)
-              }
-            }
-          }}
-          onSearch={async (search: any) => {
-            debouncedSearch(search)
-          }}
-          filterOption={false}
-          {...restProps}
-        >
-          {dataSource.map((v) => (
-            <Select.Option key={v.id!} value={v.id!}>
-              <Container>
-                <Avatar
-                  src={"/api/tops/user-avatar/" + v.id + "?api-version=2.0"}
-                  size="small"
-                />
-                <Details>
-                  <b>{v.displayName}</b>
-                  <Email>{v.email}</Email>
-                </Details>
-              </Container>
-            </Select.Option>
-          ))}
-        </Select>
-      )}
-    </Field>
+        }
+      }}
+      onSearch={async (search: any) => {
+        debouncedSearch(search)
+      }}
+      filterOption={false}
+      {...restProps}
+    >
+      {dataSource.map((v) => (
+        <Select.Option key={v.id!} value={v.id!}>
+          <Container>
+            <Avatar
+              src={"/api/tops/user-avatar/" + v.id + "?api-version=2.0"}
+              size="small"
+            />
+            <Details>
+              <b>{v.displayName}</b>
+              <Email>{v.email}</Email>
+            </Details>
+          </Container>
+        </Select.Option>
+      ))}
+    </Select>
   )
 }
 
