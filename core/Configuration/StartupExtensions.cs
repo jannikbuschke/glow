@@ -30,7 +30,9 @@ namespace Glow.Configurations
             services.AddScoped<ConfigurationAuthorizationService>();
             services.AddHttpContextAccessor();
 
-            services.AddSingleton((services) => new AssembliesCache(assemblies ?? new[] { Assembly.GetCallingAssembly() }));
+            var a = assemblies ?? new[] { Assembly.GetCallingAssembly() };
+
+            services.AddSingleton((services) => new AssembliesCache(a));
             //services.AddMvcCore().AddApplicationPart(typeof(EntityFrameworkExtensions).Assembly);
 
             services.AddSingleton<Configurations>();
@@ -41,7 +43,7 @@ namespace Glow.Configurations
             })
             .ConfigureApplicationPartManager(m =>
             {
-                m.FeatureProviders.Add(new ControllerProvider(assemblies));
+                m.FeatureProviders.Add(new ControllerProvider(a));
             });
 
             return services;

@@ -13,7 +13,7 @@ namespace Glow.Configurations
 
         public ControllerProvider(IEnumerable<Assembly> assemblies)
         {
-            this.assemblies = assemblies;
+            this.assemblies = assemblies ?? throw new NullReferenceException();
         }
 
         public void PopulateFeature(IEnumerable<ApplicationPart> parts, ControllerFeature feature)
