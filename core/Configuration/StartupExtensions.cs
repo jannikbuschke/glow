@@ -30,7 +30,7 @@ namespace Glow.Configurations
             services.AddScoped<ConfigurationAuthorizationService>();
             services.AddHttpContextAccessor();
 
-            var a = assemblies ?? new[] { Assembly.GetCallingAssembly() };
+            IEnumerable<Assembly> a = assemblies ?? new[] { Assembly.GetCallingAssembly() };
 
             services.AddSingleton((services) => new AssembliesCache(a));
             //services.AddMvcCore().AddApplicationPart(typeof(EntityFrameworkExtensions).Assembly);
