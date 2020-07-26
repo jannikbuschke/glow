@@ -61,7 +61,12 @@ export function UserSelect<T = any>({
           })),
         )
         const result = normalize<User>(data, [user])
-        setUsers(result.entities.users)
+        if(result.entities.users){
+          setUsers(result.entities.users)
+        }
+        else{
+          console.error("could not normalize user data")
+        }
       })()
     }, 150),
     [],
