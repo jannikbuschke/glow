@@ -1,6 +1,6 @@
 import * as React from "react"
 import { Formik } from "formik"
-import { message, PageHeader, Button, Card } from "antd"
+import { message, PageHeader, Button, Card, Tooltip } from "antd"
 import {
   Input,
   Switch,
@@ -119,7 +119,7 @@ export function StronglyTypedOptions({
           }
         }}
       >
-        <Form>
+        <Form labelAlign="left" labelCol={{ xs: 4 }}>
           <PageHeader
             title={title}
             extra={[
@@ -134,30 +134,22 @@ export function StronglyTypedOptions({
               </Button>,
             ]}
           >
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "140px auto",
-              }}
-            >
+            <br />
+            <br />
+            <div>
               {data &&
                 Object.keys(data).map((v) => (
-                  <>
-                    <label
-                      style={{
-                        marginTop: 10,
-                        marginRight: 10,
-                        textAlign: "right",
-                      }}
-                    >
-                      {v}
-                    </label>
-                    <Form.Item name={v}>
-                      {overrideEditors && Boolean(overrideEditors[v])
-                        ? overrideEditors[v]
-                        : toType(typeof data[v], v, Array.isArray(data[v]))}
-                    </Form.Item>
-                  </>
+                  <Form.Item
+                    name={v}
+                    htmlFor={name}
+                    label={<b>{prettify(v)}</b>}
+                    colon={false}
+                    style={{ marginBottom: 5 }}
+                  >
+                    {overrideEditors && Boolean(overrideEditors[v])
+                      ? overrideEditors[v]
+                      : toType(typeof data[v], v, Array.isArray(data[v]))}
+                  </Form.Item>
                 ))}
             </div>
           </PageHeader>
@@ -165,4 +157,13 @@ export function StronglyTypedOptions({
       </Formik>
     </Card>
   )
+}
+
+function prettify(val: string) {
+  return capitalize(val.replace(/([a-z])([A-Z])/g, "$1 $2"))
+}
+
+function capitalize(s: string) {
+  if (typeof s !== "string") return ""
+  return s.charAt(0).toUpperCase() + s.slice(1)
 }
