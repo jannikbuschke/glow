@@ -63,6 +63,11 @@ namespace Glow.Configurations
                                 {
                                     cfg[item.Key + ":" + i] = val.ToString();
                                 }
+                                else if (val.Type == JTokenType.Boolean)
+                                {
+                                    var b = val.ToString();
+                                    cfg[item.Key + ":" + i] = b;
+                                }
                                 else
                                 {
                                     throw new NotSupportedException();
