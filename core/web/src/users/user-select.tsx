@@ -38,7 +38,8 @@ export function UserSelect<T = any>({
 
   React.useEffect(() => {
     if (field.value) {
-      fetchJson<User>(`/api/user/${field.value}`).then((v) => {
+      const userId = setByReference ? field.value : field.value.id
+      fetchJson<User>(`/api/user/${userId}`).then((v) => {
         if (v !== null) {
           setDataSource((current) => [...current, v])
         }
