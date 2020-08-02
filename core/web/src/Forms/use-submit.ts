@@ -55,7 +55,7 @@ export function useSubmit<T = any>(
   const [error, setError] = React.useState("")
   return [
     async (values: any): Promise<Result<T>> => {
-      const response = await send(url, values, "execute")
+      const response = await submitJson(url, values)
       if (!response.ok) {
         if (response.headers.has("content-type")) {
           const contentType = response.headers.get("content-type")
@@ -119,10 +119,15 @@ const toFormikErrors = (error: SerializableError) => {
   return errors
 }
 
+export function submitJson(url: string, values: any) {
+  return send(url, values, "execute")
+}
+
 function send(url: string, values: any, intent: "execute" | "validate") {
   return fetch(url, {
     method: "POST",
     body: JSON.stringify(values),
+    credentials: "same-origin",
     headers: {
       "x-submit-intent": intent,
       "content-type": "application/json",
