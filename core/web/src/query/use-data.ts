@@ -7,7 +7,17 @@ export function useData<T>(url: string, placeholder: T) {
     retry: 1,
   })
   if (!Boolean(data)) {
-    return { data: placeholder, ...rest }
+    return {
+      data: placeholder,
+      loading: rest.status === "loading",
+      reload: rest.refetch,
+      ...rest,
+    }
   }
-  return { data: data!, ...rest }
+  return {
+    data: data!,
+    loading: rest.status === "loading",
+    reload: rest.refetch,
+    ...rest,
+  }
 }
