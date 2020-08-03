@@ -22,7 +22,7 @@ function render(
   return msg ? (
     <Alert
       type={type}
-      message={msg.toString()}
+      message={React.isValidElement(msg) ? msg : msg.toString()}
       showIcon={false}
       style={{
         borderRight: "none",
