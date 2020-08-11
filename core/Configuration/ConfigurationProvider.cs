@@ -47,6 +47,10 @@ namespace Glow.Configurations
                 var cfg = new Dictionary<string, string>();
                 foreach (KeyValuePair<string, object> item in configurations)
                 {
+                    if (item.Value == null)
+                    {
+                        continue;
+                    }
                     if (typeof(IEnumerable<object>).IsAssignableFrom(item.Value.GetType()))
                     {
                         var values = (item.Value as IEnumerable<object>).ToList();
