@@ -1,5 +1,5 @@
 using System.Linq;
-using JannikB.Glue.AspNetCore.Authentication;
+using Glow.Authentication.Aad;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
