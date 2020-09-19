@@ -10,7 +10,7 @@ function camelize(str: string) {
 }
 
 function _camelize(str: string) {
-  return str.replace(/(?:^\w|[A-Z]|\b\w|\s+)/g, function(match, index) {
+  return str.replace(/(?:^\w|[A-Z]|\b\w|\s+)/g, function (match, index) {
     if (+match === 0) return "" // or if (/\s+/.test(match)) for white spaces
     return index == 0 ? match.toLowerCase() : match.toUpperCase()
   })
@@ -29,17 +29,14 @@ export function useActions(url: string, additionalInfo?: any) {
   const [error, setError] = React.useState("")
 
   function send(values: any, intent: "execute" | "validate") {
-    return fetch(
-      url,
-      {
-        method: "POST",
-        body: JSON.stringify(values),
-        headers: {
-          "x-action-intent": intent,
-          "content-type": "application/json",
-        },
+    return fetch(url, {
+      method: "POST",
+      body: JSON.stringify(values),
+      headers: {
+        "x-action-intent": intent,
+        "content-type": "application/json",
       },
-    )
+    })
   }
 
   return {

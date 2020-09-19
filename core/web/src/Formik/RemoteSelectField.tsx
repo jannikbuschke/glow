@@ -13,20 +13,19 @@ type Props = {
 export const RemoteSelectField = (props: Props) => {
   const { name, url } = props
   const [search, setSearch] = React.useState("")
-  const [data,setData]=React.useState<any>(null)
-  const [error,setError]=React.useState("")
+  const [data, setData] = React.useState<any>(null)
+  const [error, setError] = React.useState("")
 
-  React.useEffect(()=>{
-    (async()=>{
+  React.useEffect(() => {
+    ;(async () => {
       const response = await fetch(`${url}&search=${search}`, {})
-      if(response.ok){
+      if (response.ok) {
         setData(await response.json())
-      }else{
+      } else {
         setError(response.statusText)
       }
     })()
-  },[url,search])
-
+  }, [url, search])
 
   const debouncedSearch = debounce(setSearch, 500)
 
@@ -35,7 +34,7 @@ export const RemoteSelectField = (props: Props) => {
   }
 
   return (
-    <Spin spinning={data===null||data===undefined} delay={250}>
+    <Spin spinning={data === null || data === undefined} delay={250}>
       <Field name={name}>
         {(fieldProps: FieldProps<any>) => (
           <Select

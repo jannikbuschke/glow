@@ -1,6 +1,6 @@
 using System;
 
-namespace EfConfigurationProvider.Core
+namespace Glow.Configurations
 {
     public class ConfigurationValue : IEquatable<ConfigurationValue>
     {

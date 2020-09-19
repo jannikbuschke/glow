@@ -1,6 +1,10 @@
-export async function fetchJson<T>(key: string) {
-  const response = await fetch(key)
+export async function fetchJson<T>(key: RequestInfo, init?: RequestInit) {
+  const response = await fetch(key, init)
+
   if (response.ok) {
+    if (response.status === 204) {
+      return (null as any) as T
+    }
     const data = (await response.json()) as T
     return data
   } else {

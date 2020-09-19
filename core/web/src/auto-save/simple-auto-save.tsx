@@ -21,13 +21,13 @@ export function SimpleAutoSave({
     }
     const id = getId ? getId(values) : (values as any).id
     if (!id) {
-      console.warn("no identifier found")
+      console.warn("no identifier found", { values })
       return
     }
     if (firstUpdate.current) {
       firstUpdate.current = false
       return
-    } else {
+    } else if (ctx.dirty) {
       ctx.submitForm()
     }
   }, [values])

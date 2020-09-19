@@ -11,4 +11,12 @@ namespace JannikB.Glue.AspNetCore
     {
         public ForbiddenException(string msg) : base(msg) { }
     }
+
+    public class MissingConsentException : Exception
+    {
+        public MissingConsentException(string msg) : base(msg)
+        { }
+
+        public string Scope { get; set; }
+    }
 }

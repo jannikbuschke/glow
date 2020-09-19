@@ -75,12 +75,12 @@ namespace JannikB.Glue.AspNetCore.Tests
             return this;
         }
 
-        public Task<R> Read<R>()
+        public new Task<R> Read<R>()
         {
             return base.Read<R>();
         }
 
-        public Task<HttpResponseMessage> ExecuteRaw()
+        public new Task<HttpResponseMessage> ExecuteRaw()
         {
             return base.ExecuteRaw();
         }
@@ -106,12 +106,12 @@ namespace JannikB.Glue.AspNetCore.Tests
             return this;
         }
 
-        public Task<R> Read<R>()
+        public new Task<R> Read<R>()
         {
             return base.Read<R>();
         }
 
-        public Task<HttpResponseMessage> ExecuteRaw()
+        public new Task<HttpResponseMessage> ExecuteRaw()
         {
             return base.ExecuteRaw();
         }

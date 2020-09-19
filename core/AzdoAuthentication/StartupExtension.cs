@@ -1,5 +1,5 @@
 using System;
-using EfConfigurationProvider.Core;
+using Glow.Configurations;
 using Glow.TokenCache;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;

@@ -22,32 +22,32 @@ namespace JannikB.Glue.AspNetCore.Tests
         }
     }
 
-    public class SendCommandBuilderV2<R, Startup> where Startup : class
+    public class SendBuilder<R, Startup> where Startup : class
     {
         private readonly WebApplicationFactory<Startup> factory;
-        private readonly IRequest<R> request;
+        private readonly object request;
         private string url;
         private UserDto user;
 
-        public SendCommandBuilderV2(WebApplicationFactory<Startup> factory, IRequest<R> request)
+        public SendBuilder(WebApplicationFactory<Startup> factory, object request)
         {
             this.factory = factory;
             this.request = request;
         }
 
-        public SendCommandBuilderV2<R, Startup> To(string url)
+        public SendBuilder<R, Startup> To(string url)
         {
             this.url = url;
             return this;
         }
 
-        public SendCommandBuilderV2<R, Startup> As(string userId)
+        public SendBuilder<R, Startup> As(string userId)
         {
             user = new UserDto { Id = userId };
             return this;
         }
 
-        public SendCommandBuilderV2<R, Startup> As(UserDto user)
+        public SendBuilder<R, Startup> As(UserDto user)
         {
             this.user = user;
             return this;
@@ -78,5 +78,11 @@ namespace JannikB.Glue.AspNetCore.Tests
             HttpResponseMessage response = await client.PostAsJsonAsync(url, request);
             return response;
         }
+    }
+
+    public class SendCommandBuilderV2<R, Startup> : SendBuilder<R, Startup> where Startup : class
+    {
+        public SendCommandBuilderV2(WebApplicationFactory<Startup> factory, IRequest<R> request)
+            : base(factory, request) { }
     }
 }

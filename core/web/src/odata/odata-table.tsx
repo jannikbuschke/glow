@@ -6,6 +6,7 @@ import useSWR from "swr"
 import { fetchJson } from "../http/fetch"
 import { ErrorBanner } from "../errors/error-banner"
 import { OdataPage } from "./types"
+import { useQuery } from "react-query"
 
 export function useOdataTable() {
   const odata = useOdata({})
@@ -29,10 +30,22 @@ export function useOdataTable() {
 }
 
 export function OdataTable<T extends object = any>(
-  props: TableProps<T> & { url: string; paginate: boolean; expand?: string },
+  props: TableProps<T> & {
+    url: string
+    paginate: boolean
+    expand?: string
+    nonOdataPayload?: boolean
+  },
 ) {
   const { query, pagination } = useOdataTable()
-  const { data, error } = useSWR<OdataPage<T>>(props.url + query, fetchJson)
+  const url = props.url + query
+  const { data, error } = useQuery<OdataPage<T>, string>(url, fetchJson)
+  const { nonOdataPayload } = props
+  const dataSource = data
+    ? nonOdataPayload
+      ? ((data as any) as T[])
+      : data.value
+    : []
   return (
     <>
       <ErrorBanner error={error} />
@@ -48,7 +61,7 @@ export function OdataTable<T extends object = any>(
               }
             : undefined
         }
-        dataSource={data ? data.value : []}
+        dataSource={dataSource}
       />
     </>
   )

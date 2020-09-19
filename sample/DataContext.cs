@@ -1,0 +1,13 @@
+using Glow.Sample.Files;
+using Microsoft.EntityFrameworkCore;
+
+namespace Glow.Sample
+{
+    public class DataContext : DbContext
+    {
+        public DataContext(DbContextOptions<DataContext> options) : base(options) { }
+
+        public DbSet<PortfolioFile> PortfolioFiles { get; set; }
+        public DbSet<Portfolio> Portfolios { get; set; }
+    }
+}

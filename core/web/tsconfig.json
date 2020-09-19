@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
     "outDir": "./es",
     "module": "esnext",
     "target": "es6",
@@ -19,7 +18,8 @@
     "suppressImplicitAnyIndexErrors": true,
     "noUnusedLocals": false,
     "declaration": true,
-    "declarationMap": true
+    "declarationMap": true,
+    "allowSyntheticDefaultImports": true
   },
   "exclude": [
     "lib",
