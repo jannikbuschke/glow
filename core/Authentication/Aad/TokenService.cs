@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -12,10 +13,26 @@ namespace Glow.Authentication.Aad
         private static readonly string[] scopes = { "openid" };
         private readonly UserTokenCacheProviderFactory userTokenCacheProviderFactory;
 
-        public TokenService(IOptions<AzureAdOptions> options, UserTokenCacheProviderFactory userTokenCacheProviderFactory)
+        public TokenService(
+            IOptions<AzureAdOptions> options,
+            UserTokenCacheProviderFactory userTokenCacheProviderFactory
+        )
         {
             azureAdOptions = options.Value;
             this.userTokenCacheProviderFactory = userTokenCacheProviderFactory;
+        }
+
+        public async Task<AuthenticationResult> AcquireOnBehalfOf(string accessToken)
+        {
+            var userAssertion = new UserAssertion(accessToken, "urn:ietf:params:oauth:grant-type:jwt-bearer");
+
+            IConfidentialClientApplication confidentialClientApp = BuildApp();
+
+            AuthenticationResult result = await confidentialClientApp.AcquireTokenOnBehalfOf(
+                    new string[] { "user.read" },
+                    userAssertion)
+                .ExecuteAsync();
+            return result;
         }
 
         public async Task<AuthenticationResult> GetAccessTokenByAuthorizationCodeAsync(ClaimsPrincipal principal, string code)
@@ -52,7 +69,15 @@ namespace Glow.Authentication.Aad
             userTokenCacheProviderFactory.Create(principal).Clear();
         }
 
-        private IConfidentialClientApplication BuildApp(ClaimsPrincipal principal)
+        public async Task AddToCache(ClaimsPrincipal principal)
+        {
+            IConfidentialClientApplication app = BuildApp(principal);
+
+            //AuthenticationResult result = await app.AcquireTokenByAuthorizationCode(scopes, code).ExecuteAsync().ConfigureAwait(false);
+            //IAccount account = await app.GetAccountAsync(principal.GetMsalAccountId());
+        }
+
+        private IConfidentialClientApplication BuildApp(ClaimsPrincipal principal = null)
         {
             IConfidentialClientApplication app = ConfidentialClientApplicationBuilder.Create(azureAdOptions.ClientId)
                 .WithClientSecret(azureAdOptions.ClientSecret)
@@ -60,7 +85,10 @@ namespace Glow.Authentication.Aad
                 .WithRedirectUri(azureAdOptions.BaseUrl + azureAdOptions.CallbackPath)
                 .Build();
 
-            userTokenCacheProviderFactory.Create(principal).Initialize(app.UserTokenCache);
+            if (principal != null)
+            {
+                userTokenCacheProviderFactory.Create(principal).Initialize(app.UserTokenCache);
+            }
 
             return app;
         }

@@ -2,6 +2,7 @@ import { Field, FormikProps } from "formik"
 import * as React from "react"
 import { ButtonProps } from "antd/lib/button"
 import { Button, message } from "antd"
+import { useFetch } from "../http/fetch-context"
 
 type Props = {
   payload: any
@@ -20,6 +21,7 @@ export const ActionButton = ({
   ...props
 }: ButtonProps & Props) => {
   const [loading, setLoading] = React.useState(false)
+  const fetch = useFetch()
   return (
     <Field>
       {({ form }: { field: any; form: FormikProps<any> }) => (
