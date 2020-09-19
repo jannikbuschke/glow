@@ -20,7 +20,12 @@ namespace Glow.Authentication.Aad
             builder.Services.AddSingleton<IConfigureOptions<OpenIdConnectOptions>, ConfigureAzureOptions>();
             builder.Services.AddSingleton<IConfigureOptions<CookieAuthenticationOptions>, ConfigureCookieOptions>();
             builder.AddOpenIdConnect();
-            builder.AddCookie();
+            builder.AddCookie(options =>
+            {
+                options.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.None;
+                options.Cookie.SecurePolicy = Microsoft.AspNetCore.Http.CookieSecurePolicy.Always;
+                options.Cookie.IsEssential = true;
+            });
             return builder;
         }
     }

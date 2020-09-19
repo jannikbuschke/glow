@@ -42,6 +42,10 @@ namespace Glow.Authentication.Aad
                 options.Prompt = "select_account";
 
                 options.Scope.Add("openid");
+                options.Scope.Add("email");
+                options.Scope.Add("profile");
+                options.Scope.Add("user.read");
+                options.Scope.Add("offline_access");
                 if (azureOptions.DefaultScopes != null && azureOptions.DefaultScopes.Length > 0)
                 {
 
