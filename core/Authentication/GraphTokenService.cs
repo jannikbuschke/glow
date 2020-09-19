@@ -23,6 +23,7 @@ namespace Glow.Core.Authentication
             IOptions<AzureAdOptions> options,
             ILogger<GraphTokenService> logger
         )
+
         {
             this.accessor = accessor;
             this.tokenService = tokenService;

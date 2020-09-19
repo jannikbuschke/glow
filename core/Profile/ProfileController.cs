@@ -23,7 +23,6 @@ namespace Glow.Core.Profiles
 
         public string ObjectId { get; set; }
         public string UserId { get; set; }
-
         public IEnumerable<string> Scopes { get; set; }
         public IEnumerable<KeyValuePair<string, string>> Claims { get; set; }
     }
@@ -63,7 +62,7 @@ namespace Glow.Core.Profiles
             var isAuthenticated = User?.Identity.IsAuthenticated ?? false;
             IEnumerable<KeyValuePair<string, string>> claims = env.IsDevelopment() ? User.Claims.Select(v => new KeyValuePair<string, string>(v.Type, v.Value)) : null;
 
-            var scopes = mockExternalSystems ? new List<string>() : (await graphTokenService.TokenForCurrentUser(new[] { "profile" })).Scopes;
+            IEnumerable<string> scopes = mockExternalSystems ? new List<string>() : (await graphTokenService.TokenForCurrentUser(new[] { "profile" })).Scopes;
 
             return new Profile
             {
