@@ -77,4 +77,5 @@ steps:
     command: push
     nuGetFeedType: external
     publishFeedCredentials: nuget.org
-  condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/heads/release'))
+    packagesToPush: '$(Build.ArtifactStagingDirectory)/*.nupkg'
+  condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/heads/master'))
