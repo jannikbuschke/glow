@@ -66,7 +66,7 @@ steps:
   displayName: 'dotnet nuget push'
   inputs:
     command: 'custom'
-    arguments: 'nuget push -ApiKey $(nuget_key)'
+    custom: 'nuget push -ApiKey $(nuget_key)'
     packagesToPush: '$(Build.ArtifactStagingDirectory)/*.nupkg'
     nuGetFeedType: 'external'
     publishFeedCredentials: 'nuget.org'
