@@ -3,9 +3,10 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <LangVersion>8.0</LangVersion>
+    <PackageId>Glow.Core</PackageId>
     <AssemblyName>Glow.Core</AssemblyName>
     <RootNamespace>Glow.Core</RootNamespace>
-    <Version>0.7.0</Version>
+    <Version>0.8.0</Version>
     <Authors>Jannik Buschke</Authors>
     <SpaRoot>web\</SpaRoot>
     <DefaultItemExcludes>$(DefaultItemExcludes);$(SpaRoot)node_modules\**</DefaultItemExcludes>
