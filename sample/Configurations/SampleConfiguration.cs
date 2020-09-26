@@ -3,7 +3,7 @@ using Glow.Configurations;
 
 namespace Glow.Sample.Configurations
 {
-    [Configuration("sample-configuration",
+    [Configuration(
         Title = "Sample Configuration",
         Id = "sample-configuration",
         SectionId = "sample-configuration",

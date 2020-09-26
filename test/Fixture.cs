@@ -35,8 +35,8 @@ namespace Glow.Test
             Factory = factory.WithWebHostBuilder(builder =>
                 builder.ConfigureTestServices(services =>
                 {
-                    UserDto testUser = TestUsers.TestUser();
-                    services.AddTestAuthentication(testUser.Id, testUser.DisplayName, testUser.Email);
+                    //UserDto testUser = TestUsers.TestUser();
+                    //services.AddTestAuthentication(testUser.Id, testUser.DisplayName, testUser.Email);
                 })
             );
             DataContext ctx = Factory.Services.GetRequiredService<DataContext>();
