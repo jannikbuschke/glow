@@ -62,11 +62,19 @@ steps:
     includesource: true
     versioningScheme: 'off'
 
-- task: DotNetCoreCLI@2
-  displayName: 'dotnet nuget push'
+# - task: DotNetCoreCLI@2
+#   displayName: 'dotnet nuget push'
+#   inputs:
+#     command: 'custom'
+#     custom: 'nuget push --api-key $(nuget_key)'
+#     packagesToPush: '$(Build.ArtifactStagingDirectory)/*.nupkg'
+#     nuGetFeedType: 'external'
+#     publishFeedCredentials: 'nuget.org'
+
+- task: NuGetCommand@2
+  displayName: 'NuGet push'
   inputs:
-    command: 'custom'
-    custom: 'nuget push --api-key $(nuget_key)'
-    packagesToPush: '$(Build.ArtifactStagingDirectory)/*.nupkg'
-    nuGetFeedType: 'external'
-    publishFeedCredentials: 'nuget.org'
+    command: push
+    nuGetFeedType: external
+    publishFeedCredentials: nuget.org
+  condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/heads/release'))
