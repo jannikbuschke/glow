@@ -38,7 +38,7 @@
     "react": "16.13.1",
     "react-dom": "16.13.1",
     "formik-antd": "2.0.1",
-    "antd": "4.2.2",
+    "antd": "4.6.6",
     "formik": "2.1.4",
     "styled-components": "5.1.0",
     "react-router-dom": "6.0.0-alpha.4",
