@@ -6,11 +6,14 @@ trigger:
 pool:
   vmImage: 'ubuntu-latest'
 
+variables:
+  workingDir: 'core/web'
 steps:
 - task: Npm@1
   displayName: 'npm install'
   inputs:
     verbose: false
+    workingDir: $(workingDir)
 
 - task: Npm@1
   displayName: 'npm run test'
@@ -19,6 +22,7 @@ steps:
     command: custom
     verbose: false
     customCommand: 'run test'
+    workingDir: $(workingDir)
 
 - task: Npm@1
   displayName: 'npm run build'
@@ -26,6 +30,7 @@ steps:
     command: custom
     verbose: false
     customCommand: 'run build'
+    workingDir: $(workingDir)
 
 - task: Npm@1
   displayName: 'npm publish beta (conditionally)'
@@ -35,6 +40,7 @@ steps:
     customCommand: 'publish --tag beta'
     publishEndpoint: npm
     customEndpoint: npm
+    workingDir: $(workingDir)
   continueOnError: true
   condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/heads/beta'))
 
@@ -45,4 +51,5 @@ steps:
     verbose: false
     publishEndpoint: npm
     customEndpoint: npm
+    workingDir: $(workingDir)
   condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/heads/release'))
