@@ -11,6 +11,7 @@
   "scripts": {
     "tsc": "tsc",
     "watch": "tsc --watch",
+    "build": "tsc && tsc -p tsconfig.es.json",
     "cleanbuild": "rm -r node_modules && npm install && tsc",
     "prettier": "prettier --write src/**/*.* package.json",
     "storybook": "start-storybook -p 6006",
