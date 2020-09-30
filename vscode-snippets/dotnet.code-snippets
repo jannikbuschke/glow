@@ -1,9 +1,9 @@
 {
-	// Place your global snippets here. Each snippet is defined under a snippet name and has a scope, prefix, body and 
-	// description. Add comma separated ids of the languages where the snippet is applicable in the scope field. If scope 
-	// is left empty or omitted, the snippet gets applied to all languages. The prefix is what is 
-	// used to trigger the snippet and the body will be expanded and inserted. Possible variables are: 
-	// $1, $2 for tab stops, $0 for the final cursor position, and ${1:label}, ${2:another} for placeholders. 
+	// Place your global snippets here. Each snippet is defined under a snippet name and has a scope, prefix, body and
+	// description. Add comma separated ids of the languages where the snippet is applicable in the scope field. If scope
+	// is left empty or omitted, the snippet gets applied to all languages. The prefix is what is
+	// used to trigger the snippet and the body will be expanded and inserted. Possible variables are:
+	// $1, $2 for tab stops, $0 for the final cursor position, and ${1:label}, ${2:another} for placeholders.
 	// Placeholders with the same ids are connected.
 	// Example:
 	"feat": {
@@ -20,6 +20,7 @@
 		  "using Microsoft.AspNet.OData.Routing;",
 		  "using Microsoft.AspNetCore.Mvc;",
 		  "using Microsoft.EntityFrameworkCore;",
+		  "using JannikB.Glue;",
 		  "",
 		  "namespace App.$1",
 		  "{",
@@ -60,14 +61,18 @@
 		  "",
 		  "        public async Task<$1> Handle(Create$1 request, CancellationToken cancellationToken)",
 		  "        {",
+		  "            var entity = mapper.Map(request, new $1());",
+		  "            ctx.$1.Add(entity);",
 		  "            await ctx.SaveChangesAsync();",
-		  "            return result;",
+		  "            return entity;",
 		  "        }",
 		  "",
 		  "        public async Task<$1> Handle(Update$1 request, CancellationToken cancellationToken)",
 		  "        {",
+		  "            var entity = await ctx.$1.FindAsync(request.Id);",
+		  "            mapper.Map(request, entity);",
 		  "            await ctx.SaveChangesAsync();",
-		  "            return result;",
+		  "            return entity;",
 		  "        }",
 		  "    }",
 		  "",
@@ -117,7 +122,7 @@
 		  "",
 		  "namespace App.Data {",
 		  "    public partial class DataContext {",
-		  "        public Dbset<$1> $1 { get; set; }",
+		  "        public DbSet<$1> $1 { get; set; }",
 		  "    }",
 		  "}",
 		  ""

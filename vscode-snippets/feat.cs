@@ -9,14 +9,19 @@ using MediatR;
 using Microsoft.AspNet.OData.Routing;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using JannikB.Glue;
+using App.Data;
+using Glow.Core.FakeData;
+using App.$1s;
 
-namespace App.$1
+namespace App.$1s
 {
     public class $1Profile : Profile
     {
         public $1Profile()
         {
             CreateMap<Update$1, $1>().EqualityComparison((v1, v2) => v1.Id == v2.Id);
+            CreateMap<Create$1, $1>().EqualityComparison((v1, v2) => v1.Id == v2.Id);
         }
     }
 
@@ -49,14 +54,18 @@ namespace App.$1
 
         public async Task<$1> Handle(Create$1 request, CancellationToken cancellationToken)
         {
+            $1 entity = mapper.Map(request, new $1());
+            ctx.$1.Add(entity);
             await ctx.SaveChangesAsync();
-            return result;
+            return entity;
         }
 
         public async Task<$1> Handle(Update$1 request, CancellationToken cancellationToken)
         {
+            $1 entity = await ctx.$1.FindAsync(request.Id);
+            mapper.Map(request, entity);
             await ctx.SaveChangesAsync();
-            return result;
+            return entity;
         }
     }
 
@@ -76,7 +85,6 @@ namespace App.$1
     [ApiController]
     public class $1Controller : ControllerBase
     {
-        private static readonly $1SampleData samples = new $1SampleData();
         private readonly DataContext ctx;
         private readonly IMediator mediator;
 
@@ -101,11 +109,16 @@ namespace App.$1
             var result = await mediator.Send(request);
             return result;
         }
+
+        [HttpGet("list")]
+        public IQueryable<$1> List() {
+            return ctx.$1;
+        }
     }
 }
 
 namespace App.Data {
     public partial class DataContext {
-        public Dbset<$1> $1 { get; set; }
+        public DbSet<$1> $1 { get; set; }
     }
 }
