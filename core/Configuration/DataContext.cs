@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 
 namespace Glow.Configurations
@@ -34,9 +35,11 @@ namespace Glow.Configurations
                 .HasConversion(
                     v => JsonConvert.SerializeObject(v),
                     v => JsonConvert.DeserializeObject<Dictionary<string, object>>(v));
-            partialConfigurationVersion.HasKey(v => new { v.Id, v.Version });
+            partialConfigurationVersion.HasKey(v => new { v.Id, v.Version, v.Name });
             partialConfigurationVersion.Property(v => v.Id).ValueGeneratedNever();
             partialConfigurationVersion.Property(v => v.Version).ValueGeneratedNever();
+
+            partialConfigurationVersion.Property(v => v.Name).HasDefaultValue(Options.DefaultName).IsRequired(true);
         }
     }
 

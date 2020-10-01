@@ -41,7 +41,7 @@ namespace Glow.Configurations
                     .ToList();
 
                 var configurations = data
-                    .GroupBy(v => v.Id)
+                    .GroupBy(v => v.Id + ":" + v.Name)
                     .SelectMany(v => v.First().Values)
                     .ToDictionary(v => v.Key, v => v.Value);
                 var cfg = new Dictionary<string, string>();

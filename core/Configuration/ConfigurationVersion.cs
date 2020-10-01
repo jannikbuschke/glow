@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Microsoft.Extensions.Options;
 
 namespace Glow.Configurations
 {
@@ -7,6 +8,7 @@ namespace Glow.Configurations
     {
         public string Id { get; set; }
         public int Version { get; set; }
+        public string Name { get; set; }
         public Dictionary<string, object> Values { get; set; }
         public DateTime Created { get; set; }
         public string User { get; set; }

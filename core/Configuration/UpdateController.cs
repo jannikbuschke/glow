@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using Serilog;
 
 namespace Glow.Configurations
 {
@@ -60,6 +61,25 @@ namespace Glow.Configurations
             Meta configurationMeta = partialConfigurations.Get().Single(v => v.Id == configurationId);
             T options = Activator.CreateInstance<T>();
             efConfiguration.GetSection(configurationMeta.SectionId).Bind(options);
+            return options;
+        }
+
+        [HttpGet("{name}")]
+        public async Task<ActionResult<T>> Get(string name)
+        {
+            Log.Logger.Information("name " + name);
+            var isAllowed = await authorization.ReadPartialAllowed(Request.Path.Value);
+            if (!isAllowed)
+            {
+                return Unauthorized();
+            }
+            var path = Request.Path.Value.Replace("/" + name, "");
+            var position = path.LastIndexOf("/") + 1;
+            var configurationId = path[position..];
+
+            Meta configurationMeta = partialConfigurations.Get().Single(v => v.Id == configurationId);
+            T options = Activator.CreateInstance<T>();
+            efConfiguration.GetSection(configurationMeta.SectionId + ":" + name).Bind(options);
             return options;
         }
 

@@ -82,18 +82,34 @@ interface Props {
   url: string
   configurationId: string
   allowEdit?: boolean
+  name?: string
+}
+
+type WithChildren = Props & { type: "children"; children: React.ReactNode }
+type WithEditors = Props & {
+  type?: "editors"
   overrideEditors?: { [key: string]: React.ReactNode }
 }
+type P = WithChildren | WithEditors
 
 export function StronglyTypedOptions({
   title,
   url,
   configurationId,
   allowEdit = true,
-  overrideEditors,
-}: Props) {
+  name = "",
+  ...rest
+}: P) {
   const { submit } = useActions(url)
-  const { data, error, refetch } = useData<any>(url, {})
+  const { data, error, refetch } = useData<any>(
+    name ? url + "/" + name : url,
+    {},
+  )
+  const overrideEditors =
+    rest.type === "editors" || rest.type === undefined
+      ? rest.overrideEditors
+      : undefined
+  const children = rest.type === "children" ? rest.children : undefined
   return (
     <Card>
       <ErrorBanner error={error} />
@@ -101,12 +117,11 @@ export function StronglyTypedOptions({
         initialValues={data}
         enableReinitialize={true}
         onSubmit={async (values, actions) => {
-          console.log("submit")
           actions.setSubmitting(true)
-          const r = await submit({ configurationId, value: values })
+          const r = await submit({ configurationId, value: values, name })
           actions.setSubmitting(false)
           if (r.ok) {
-            message.success("success")
+            refetch()
           } else {
             if (r.status === 400) {
               const errors = await r.json()
@@ -119,41 +134,49 @@ export function StronglyTypedOptions({
           }
         }}
       >
-        <Form labelAlign="left" labelCol={{ xs: 4 }}>
-          <PageHeader
-            title={title}
-            extra={[
-              allowEdit && <SubmitButton key="submit">Save</SubmitButton>,
-              <Button
-                key="refresh"
-                onClick={() => {
-                  refetch()
-                }}
-              >
-                Refresh
-              </Button>,
-            ]}
-          >
-            <br />
-            <br />
-            <div>
-              {data &&
-                Object.keys(data).map((v) => (
-                  <Form.Item
-                    name={v}
-                    htmlFor={name}
-                    label={<b>{prettify(v)}</b>}
-                    colon={false}
-                    style={{ marginBottom: 5 }}
-                  >
-                    {overrideEditors && Boolean(overrideEditors[v])
-                      ? overrideEditors[v]
-                      : toType(typeof data[v], v, Array.isArray(data[v]))}
-                  </Form.Item>
-                ))}
-            </div>
-          </PageHeader>
-        </Form>
+        {(f) => (
+          <Form labelAlign="left" labelCol={{ xs: 4 }}>
+            <PageHeader
+              title={title}
+              extra={[
+                allowEdit && (
+                  <SubmitButton disabled={!f.dirty} key="submit">
+                    Save
+                  </SubmitButton>
+                ),
+                <Button
+                  key="refresh"
+                  onClick={() => {
+                    refetch()
+                  }}
+                >
+                  Refresh
+                </Button>,
+              ]}
+            >
+              <br />
+              <br />
+              <div>
+                {children
+                  ? children
+                  : data &&
+                    Object.keys(data).map((v) => (
+                      <Form.Item
+                        name={v}
+                        htmlFor={name}
+                        label={<b>{prettify(v)}</b>}
+                        colon={false}
+                        style={{ marginBottom: 5 }}
+                      >
+                        {overrideEditors && Boolean(overrideEditors[v])
+                          ? overrideEditors[v]
+                          : toType(typeof data[v], v, Array.isArray(data[v]))}
+                      </Form.Item>
+                    ))}
+              </div>
+            </PageHeader>
+          </Form>
+        )}
       </Formik>
     </Card>
   )

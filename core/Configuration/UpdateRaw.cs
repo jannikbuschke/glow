@@ -1,11 +1,13 @@
 using System.Collections.Generic;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 
 namespace Glow.Configurations
 {
-    public class UpdateRaw<T>
+    public class UpdateRaw<T> : MediatR.IRequest
     {
         public string ConfigurationId { get; set; }
+        public string Name { get; set; } = Options.DefaultName;
         public T Value { get; set; }
 
         public Dictionary<string, object> ConfigurationValues
@@ -23,7 +25,8 @@ namespace Glow.Configurations
             return new ConfigurationUpdate
             {
                 ConfigurationId = ConfigurationId,
-                Values = ConfigurationValues
+                Values = ConfigurationValues,
+                Name = Name
             };
         }
     }

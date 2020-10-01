@@ -4,14 +4,16 @@ using Glow.Configurations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Glow.Core.Configuration.SqlServer
 {
     [DbContext(typeof(SqlServerConfigurationDataContext))]
-    partial class SqlServerConfigurationDataContextModelSnapshot : ModelSnapshot
+    [Migration("20201001153426_Add.Glow.Configuration.Name")]
+    partial class AddGlowConfigurationName
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

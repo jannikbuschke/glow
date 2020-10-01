@@ -5,12 +5,14 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace Glow.Configurations
 {
     public class ConfigurationUpdate : IRequest
     {
         public string ConfigurationId { get; set; }
+        public string Name { get; set; } = Options.DefaultName;
         public Dictionary<string, object> Values { get; set; }
     }
 
@@ -33,7 +35,7 @@ namespace Glow.Configurations
 
             ConfigurationVersion current = await ctx
                 .GlowConfigurations
-                .Where(v => v.Id == request.ConfigurationId)
+                .Where(v => v.Id == request.ConfigurationId && v.Name == request.Name)
                 .OrderByDescending(v => v.Version)
                 .FirstOrDefaultAsync() ?? new ConfigurationVersion
                 {
@@ -44,12 +46,14 @@ namespace Glow.Configurations
             var values = new Dictionary<string, object>(current.Values);
             foreach (KeyValuePair<string, object> value in request.Values)
             {
-                values[partialConfiguration.SectionId + ":" + value.Key] = value.Value;
+                var key = $"{partialConfiguration.SectionId}{(request.Name == Options.DefaultName ? "" : $":{request.Name}")}:{value.Key}";
+                values[key] = value.Value;
             }
 
             ctx.GlowConfigurations.Add(new ConfigurationVersion
             {
                 Id = request.ConfigurationId,
+                Name = request.Name,
                 Version = current.Version + 1,
                 Values = values,
                 Created = DateTime.UtcNow,
