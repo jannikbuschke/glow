@@ -14,5 +14,11 @@ namespace Glow.Sample.Configurations
         [MinLength(2)]
         public string Prop1 { get; set; }
         public int Prop2 { get; set; }
+        public Nested Nested { get; set; }
+    }
+
+    public class Nested
+    {
+        public string Value { get; set; }
     }
 }

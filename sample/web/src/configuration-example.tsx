@@ -7,6 +7,7 @@ import { HighlightableRow } from "glow-react/es/antd/highlightable-row"
 import { IConfigurationMeta } from "./models"
 import styled from "styled-components"
 import { StronglyTypedOptions } from "glow-react/es/configuration/strongly-typed-options"
+import { Input } from "formik-antd"
 
 export function ConfigurationsExample() {
   return (
@@ -29,6 +30,13 @@ function Detail() {
           url={url}
           title="Sample (recommended)"
           configurationId={configurationId}
+          overrideEditors={{
+            nested: (
+              <div>
+                <Input name="nested.value" placeholder="Nested value" />
+              </div>
+            ),
+          }}
         />
       </div>
       <div style={{ padding: 5 }}>
