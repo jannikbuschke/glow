@@ -11,6 +11,7 @@ namespace Glow.TypeScript
         public string ControllerName { get; set; }
         public string RelativePath { get; set; }
         public string HttpMethod { get; set; }
+        public string GroupName { get; set; }
         public IEnumerable<ParameterDescription> ParameterDescriptions { get; set; }
     }
 }

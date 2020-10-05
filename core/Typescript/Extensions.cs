@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.Services.Common;
 
@@ -27,6 +28,8 @@ namespace Glow.TypeScript
             Assembly[] assembliesToScan
         )
         {
+            services.AddTransient<IStartupFilter, GenerateApiClientsAtStartup>();
+
             IEnumerable<Type> profileTypes = assembliesToScan.SelectMany(v => v.GetTypes())
                 .Where(v => v.IsSubclassOf(typeof(TypeScriptProfile)));
             //var schemas = new WorkflowSchemas();

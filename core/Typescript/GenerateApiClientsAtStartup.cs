@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Serilog;
 
 namespace Glow.TypeScript
 {
@@ -38,20 +39,22 @@ namespace Glow.TypeScript
                 return next;
             }
 
-            var items = descriptionGroupCollectionProvider.ApiDescriptionGroups.Items.First().Items.Take(2);
+            IEnumerable<ApiDescription> items = descriptionGroupCollectionProvider.ApiDescriptionGroups.Items.First().Items.Take(2);
 
             var descriptions = descriptionGroupCollectionProvider.ApiDescriptionGroups.Items.Select(v => new
             {
                 v.GroupName,
-                Items = v.Items.Select(v => {
+                Items = v.Items.Select(v =>
+                {
                     var name = v.ActionDescriptor.RouteValues["action"];
                     var controller = v.ActionDescriptor.RouteValues["controller"];
-                    var id = $"{controller}_{name}";
+                    var id = $"{controller}_{name}_{v.GroupName}";
                     return new RequestDescription
                     {
                         Id = id,
                         ActionName = name,
                         ControllerName = controller,
+                        GroupName = v.GroupName,
                         RelativePath = v.RelativePath,
                         HttpMethod = v.HttpMethod,
                         ParameterDescriptions = v.ParameterDescriptions.Select(v => new ParameterDescription
@@ -65,14 +68,17 @@ namespace Glow.TypeScript
                         //    v.ActionDescriptor.DisplayName,
                         //    v.ActionDescriptor.RouteValues,
                         //}
-                    }; }).ToList()
+                    };
+                }).ToList()
             });
             var customTypes = new HashSet<Type>();
             var builder = new StringBuilder();
+
             foreach (var v in descriptions)
             {
-                foreach (RequestDescription a in v.Items.DistinctBy(v => v.Id))
+                foreach (RequestDescription a in v.Items.DistinctBy(v => v.Id).OrderBy(v => v.Id).ToList())
                 {
+                    Log.Logger.Information(a.Id);
                     foreach (ParameterDescription item in a.ParameterDescriptions.Where(v => v.Name != "api-version"))
                     {
                         if (!item.Type.FullName.StartsWith("System"))
@@ -86,11 +92,11 @@ namespace Glow.TypeScript
                     if (a.HttpMethod?.ToLower() == "post")
                     {
                         builder.Append(
-$@"  export async function {a.ControllerName}{a.ActionName}({string.Join(",", a.ParameterDescriptions.Where(v => v.Name != "api-version").Select(v => $"{v.Name}: {ToTsType(v.Type)}"))}) {{
+$@"  export async function {a.ActionName}_{a.GroupName}({string.Join(",", a.ParameterDescriptions.Where(v => v.Name != "api-version").Select(v => $"{v.Name}: {ToTsType(v.Type)}"))}) {{
     const response = await fetch(`/{a.RelativePath}?api-version=1.0`, {{
       method: ""POST"",
       headers: {{ ""content-type"": ""application/json"" }},
-      body: JSON.stringify(request),
+      body: JSON.stringify({a.ParameterDescriptions.First().Name}),
     }})
     const data = await response.json()
     return data
@@ -100,7 +106,7 @@ $@"  export async function {a.ControllerName}{a.ActionName}({string.Join(",", a.
                     else
                     {
                         builder.Append(
-$@"  export async function {a.ControllerName}{a.ActionName}({string.Join(",", a.ParameterDescriptions.Where(v => v.Name != "api-version").Select(v => $"{v.Name}: {ToTsType(v.Type)}"))}) {{
+$@"  export async function {a.ActionName}_{a.GroupName}({string.Join(",", a.ParameterDescriptions.Where(v => v.Name != "api-version").Select(v => $"{v.Name}: {ToTsType(v.Type)}"))}) {{
     const response = await fetch(`/{a.RelativePath.Replace("{", "${")}?api-version=1.0`)
     const data = await response.json()
     return data
@@ -117,14 +123,7 @@ $@"  export async function {a.ControllerName}{a.ActionName}({string.Join(",", a.
             builder.Insert(0, "/* eslint-disable prettier/prettier */");
             System.IO.File.WriteAllText("web/src/api.ts", builder.ToString());
 
-            //Reinforced.Typings.TsExporter rt = ReinforcedTypings.Initialize(config =>
-            //{
-            //    JannikB.Invoices.TypescriptGenerationConfiguration.Configure(config, customTypes);
-            //});
-            //rt.Export(); // <-- this will create the ts files
-
             return next;
-            //return builder => { next(builder); };
         }
 
         private string ToTsType(Type t)
