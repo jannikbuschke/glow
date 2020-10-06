@@ -31,7 +31,14 @@ namespace JannikB.Glue
                         });
                     }
                     break;
-                case "execute": break;
+                case "execute":
+                    {
+                        if (!context.ModelState.IsValid)
+                        {
+                            context.Result = new BadRequestObjectResult(context.ModelState);
+                        }
+                        break;
+                    }
                 default: context.Result = new BadRequestObjectResult($"Unknown _action parameter value: '{ParameterName}'"); break;
             }
 
