@@ -43,18 +43,11 @@ namespace Glow.Configurations
                     Values = new Dictionary<string, object>()
                 };
 
-            var values = new Dictionary<string, object>(current.Values);
+            var nextValues = new Dictionary<string, object>();
             foreach (KeyValuePair<string, object> value in request.Values)
             {
                 var key = $"{partialConfiguration.SectionId}{(request.Name == Options.DefaultName ? "" : $":{request.Name}")}:{value.Key}";
-                values[key] = value.Value;
-            }
-            foreach (var key in current.Values.Keys)
-            {
-                if (!request.Values.ContainsKey(key))
-                {
-                    values.Remove(key);
-                }
+                nextValues[key] = value.Value;
             }
 
             ctx.GlowConfigurations.Add(new ConfigurationVersion
@@ -62,7 +55,7 @@ namespace Glow.Configurations
                 Id = request.ConfigurationId,
                 Name = request.Name,
                 Version = current.Version + 1,
-                Values = values,
+                Values = nextValues,
                 Created = DateTime.UtcNow,
                 Message = "",
                 User = null
