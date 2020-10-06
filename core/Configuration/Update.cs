@@ -49,6 +49,13 @@ namespace Glow.Configurations
                 var key = $"{partialConfiguration.SectionId}{(request.Name == Options.DefaultName ? "" : $":{request.Name}")}:{value.Key}";
                 values[key] = value.Value;
             }
+            foreach (var key in current.Values.Keys)
+            {
+                if (!request.Values.ContainsKey(key))
+                {
+                    values.Remove(key);
+                }
+            }
 
             ctx.GlowConfigurations.Add(new ConfigurationVersion
             {
