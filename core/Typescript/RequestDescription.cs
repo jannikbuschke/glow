@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Microsoft.Extensions.Hosting;
 
 namespace Glow.TypeScript
 {
