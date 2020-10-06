@@ -26,9 +26,13 @@ namespace Glow.Configurations
             }
         }
 
-        private void AddAllValues(JToken token, Dictionary<string,object> result)
+        private void AddAllValues(JToken token, Dictionary<string, object> result)
         {
-            var path = token.Path.Replace(".", ":");
+            var path = token.Path
+                .Replace("[", ":")
+                .Replace("].", ":")
+                .Replace(".", ":");
+
             switch (token.Type)
             {
                 case JTokenType.String:
@@ -50,10 +54,24 @@ namespace Glow.Configurations
                 case JTokenType.Object:
                     {
                         var o = token as JObject;
-                        foreach (var item in o.Children())
+                        foreach (JToken item in o.Children())
                         {
                             AddAllValues(item, result);
                         }
+                        break;
+                    }
+                case JTokenType.Array:
+                    {
+                        var array = token as JArray;
+                        foreach (JToken item in array.Children())
+                        {
+                            AddAllValues(item, result);
+                        }
+                        break;
+                    }
+                case JTokenType.Null:
+                    {
+                        //no-op
                         break;
                     }
                 default:
