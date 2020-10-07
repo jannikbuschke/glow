@@ -67,7 +67,6 @@ namespace Glow.Configurations
         [HttpGet("{name}")]
         public async Task<ActionResult<T>> Get(string name)
         {
-            Log.Logger.Information("name " + name);
             var isAllowed = await authorization.ReadPartialAllowed(Request.Path.Value);
             if (!isAllowed)
             {
