@@ -147,6 +147,7 @@ export function StronglyTypedOptions({
                 <Button
                   key="refresh"
                   onClick={() => {
+                    f.resetForm()
                     refetch()
                   }}
                 >
