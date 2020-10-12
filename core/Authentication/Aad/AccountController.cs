@@ -3,15 +3,17 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http;
 using System.Security.Claims;
-using MediatR;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.Identity.Client;
 using Microsoft.VisualStudio.Services.Common;
 using Newtonsoft.Json;
+using Serilog;
 
 namespace Glow.Authentication.Aad
 {
@@ -67,62 +69,22 @@ namespace Glow.Authentication.Aad
             return RedirectToAction("/");
         }
 
-        [HttpGet("teams-signin/{idToken}")]
+        private const string ClientId = "d0b12d68-8c72-486c-88cd-99d7ac7de745";
+        private const string ClientSecret = "Mr9AcL3cn.G8~XfZS-OUo-wW9V0N2hJ61_";
+
         [HttpPost("teams-signin/{idToken}")]
         public async System.Threading.Tasks.Task<IActionResult> SigninWithIdtoken(string idToken)
         {
-            HttpClient client = clientFactory.CreateClient();
+            //// validate idToken
 
+            Log.Logger.Information("token: " + idToken);
 
-
-            HttpResponseMessage result1 = await client.PostAsync("https://login.microsoftonline.com/common/oauth2/v2.0/token",
-                new FormUrlEncodedContent
-                (
-                    //new List<KeyValuePair<string, string>>
-                    //{
-                    //    { "grant_type", "urn:ietf:params:oauth:grant-type:jwt-bearer"},
-                    //    { "client_id", "26d5c3cb-545e-4047-a51b-7ffa0340ad12"},
-                    //    { "client_secret", "9ZqiP1coKnQj~5wGnWfDMulvINBG_52.~7"},
-                    //    { "scope", "user.read"},
-                    //    { "requested_token_use", "on_behalf_of"},
-                    //    { "assertion", request.IdToken}
-                    //},
-                    // gertruddemo/ms-teams-test-2
-                    new List<KeyValuePair<string, string>>
-                    {
-                        { "grant_type", "urn:ietf:params:oauth:grant-type:jwt-bearer"},
-                        { "client_id", "d0b12d68-8c72-486c-88cd-99d7ac7de745"},
-                        { "client_secret", "Mr9AcL3cn.G8~XfZS-OUo-wW9V0N2hJ61_"},
-                        { "scope", "user.read"},
-                        { "requested_token_use", "on_behalf_of"},
-                        { "assertion", idToken}
-                    }
-                    // gertrud phat demo
-                    //new List<KeyValuePair<string, string>>
-                    //{
-                    //    { "grant_type", "urn:ietf:params:oauth:grant-type:jwt-bearer"},
-                    //    { "client_id", "6e069957-7b5b-4be5-a00c-8915678b3c83"},
-                    //    { "client_secret", "bLl1n8ber_0zuB~s1~.pHbc03djF.r_RmE"},
-                    //    { "scope", "user.read"},
-                    //    { "requested_token_use", "on_behalf_of"},
-                    //    { "assertion", request.IdToken}
-                    //}
-            ));
-
-            var content = await result1.Content.ReadAsStringAsync();
-            RawToken data = JsonConvert.DeserializeObject<RawToken>(content);
-            //logger.LogInformation("Response {status}, content: {content} ", result1.StatusCode, content);
-
-            var stream = data.AccessToken;
-            var handler = new JwtSecurityTokenHandler();
-            Microsoft.IdentityModel.Tokens.SecurityToken jsonToken = handler.ReadToken(stream);
-            var tokenS = handler.ReadToken(stream) as JwtSecurityToken;
+            JwtSecurityToken tokenS = ParseAccessToken(idToken);// await MsalOnBehalf(idToken);
+            //JwtSecurityToken tokenS = await LowlevelOnBehalf(idToken);
 
             var identity = new ClaimsIdentity(tokenS.Claims, CookieAuthenticationDefaults.AuthenticationScheme)
-            {
-                
-            };
-            identity.AddClaim(new Claim("preferred_username", "jannik.buschke@gertrud.digital"));
+            { };
+            //identity.AddClaim(new Claim("preferred_username", "jannik.buschke@gertrud.digital"));
             var principal = new ClaimsPrincipal(identity);
 
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, new AuthenticationProperties
@@ -131,28 +93,62 @@ namespace Glow.Authentication.Aad
                 IsPersistent = true,
             });
 
-
-            //var r = await tokenService.GetAccessTokenByIdToken(principal, idToken);
-
-            //tokenService.AddAccountToCacheFromJwt(new string[] { "user.read" }, idToken, principal, null);
-            //await tokenService.AddToCache(principal);
-
-            //var principal = handler.ValidateToken(stream, new Microsoft.IdentityModel.Tokens.TokenValidationParameters {
-
-            //}, out Microsoft.IdentityModel.Tokens.SecurityToken foo);
-
-
-            //var p = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim("oid", "1"), new Claim("tid", "1") }));
-
-            //Microsoft.Identity.Client.AuthenticationResult result = await svc.GetAccessTokenByIdToken(p, request.IdToken);
-            return Ok(Unit.Value);
+            return Ok(tokenS.Claims);
         }
 
-        //[HttpGet]
-        //public IActionResult SignedOut()
-        //{
-        //    return RedirectToAction(nameof(HomeController.Index), "Home");
-        //}
+        private async Task<JwtSecurityToken> MsalOnBehalf(string token)
+        {
+            var app = ConfidentialClientApplicationBuilder.Create(clientId: ClientId)
+                .WithClientSecret(ClientSecret)
+                .Build();
+
+            var result = await app.AcquireTokenOnBehalfOf(
+                new[] { "user.read" },
+                new UserAssertion(jwtBearerToken: token)
+            ).ExecuteAsync();
+
+            var tokenS = ParseAccessToken(result.AccessToken);
+
+            return tokenS;
+        }
+
+        private async Task<JwtSecurityToken> LowlevelOnBehalf(string idToken)
+        {
+            HttpClient client = clientFactory.CreateClient();
+
+            HttpResponseMessage result = await client.PostAsync("https://login.microsoftonline.com/common/oauth2/v2.0/token",
+                new FormUrlEncodedContent
+                (
+                    // gertruddemo/ms-teams-test-2
+                    new List<KeyValuePair<string, string>>
+                    {
+                        { "grant_type", "urn:ietf:params:oauth:grant-type:jwt-bearer"},
+                        { "client_id",  ClientId },
+                        { "client_secret", ClientSecret },
+                        { "scope", "user.read"},
+                        { "requested_token_use", "on_behalf_of"},
+                        { "assertion", idToken}
+                    }
+            ));
+
+            var content = await result.Content.ReadAsStringAsync();
+            Log.Logger.Information("on behalf result: " + content);
+
+            RawToken data = JsonConvert.DeserializeObject<RawToken>(content);
+            //logger.LogInformation("Response {status}, content: {content} ", result1.StatusCode, content);
+
+            var tokenS = ParseAccessToken(data.AccessToken);
+
+            return tokenS;
+        }
+
+        private JwtSecurityToken ParseAccessToken(string token)
+        {
+            var handler = new JwtSecurityTokenHandler();
+            Microsoft.IdentityModel.Tokens.SecurityToken jsonToken = handler.ReadToken(token);
+            var tokenS = handler.ReadToken(token) as JwtSecurityToken;
+            return tokenS;
+        }
     }
 
     public class RawToken
