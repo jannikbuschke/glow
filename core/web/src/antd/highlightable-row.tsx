@@ -11,15 +11,8 @@ const Tr = styled.tr<{ highlight: boolean }>`
   ${(props) => `background: ${props.highlight ? "#efefef" : undefined}`}
 `
 
-export function HighlightableRow(props: any & { path: string }) {
-  return (
-    // <Popover trigger={"contextMenu"} content={<div>hello world</div>}>
-    <Tr
-      {...props}
-      highlight={window.location.pathname.startsWith(
-        `${props.path}${props["data-row-key"]}`,
-      )}
-    />
-    // </Popover>
-  )
+export function HighlightableRow({ path, ...props }: { path: string }) {
+  const rowKey = props["data-row-key"]
+  const highlight = window.location.pathname.startsWith(`${path}${rowKey}`)
+  return <Tr {...props} highlight={highlight} />
 }

@@ -8,7 +8,22 @@ export async function fetchJson<T>(key: RequestInfo, init?: RequestInit) {
     const data = (await response.json()) as T
     return data
   } else {
-    throw new Error(response.statusText + " (" + (await response.text()) + ")")
+    const contentType = response.headers.get("content-type")
+    if (contentType === "application/problem+json") {
+      const data = (await response.json()) as {
+        detail: string
+        title: string
+        type: string
+        status: number
+      }
+      throw new Error(
+        data.detail || data.title || data.type || "" + data.status,
+      )
+    } else {
+      throw new Error(
+        response.statusText + " (" + (await response.text()) + ")",
+      )
+    }
   }
 }
 
