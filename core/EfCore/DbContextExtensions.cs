@@ -35,4 +35,9 @@ namespace Glow.Core.EfCore
             }
         }
     }
+
+    public enum DatabaseProvider
+    {
+        SqlServer = 1
+    }
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using Glow.Core.EfCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,7 +22,8 @@ namespace Glow.Configurations
         public static IServiceCollection AddEfConfiguration(
             this IServiceCollection services,
             Action<ConfigurationOptions> configure = null,
-            IEnumerable<Assembly> assemblies = null
+            IEnumerable<Assembly> assemblies = null,
+            DatabaseProvider dbProvider = DatabaseProvider.SqlServer
         )
         {
             var configuration = new ConfigurationOptions();
@@ -45,6 +47,16 @@ namespace Glow.Configurations
             {
                 m.FeatureProviders.Add(new ControllerProvider(a));
             });
+
+            switch (dbProvider)
+            {
+                case DatabaseProvider.SqlServer:
+                    services.AddDbContext<SqlServerConfigurationDataContext>(StartupExtensions.optionsAction);
+                    services.AddScoped<IConfigurationDataContext, SqlServerConfigurationDataContext>();
+                    break;
+                default:
+                    throw new Exception("Unsupported Database Provider");
+            }
 
             return services;
         }

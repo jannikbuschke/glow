@@ -1,5 +1,6 @@
 using System;
 using Glow.Configurations;
+using Glow.Core.EfCore;
 using Glow.TokenCache;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
@@ -7,11 +8,6 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Glue.AzdoAuthentication
 {
-    public enum DatabaseProvider
-    {
-        SqlServer = 1
-    }
-
     public static class StartupExtension
     {
         public static AuthenticationBuilder AddAzdo(

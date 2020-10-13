@@ -112,7 +112,8 @@ namespace Glow.Configurations
 
         public virtual void Set(string key, string value)
         {
-            Data[key] = value;
+            //Data[key] = value;
+            throw new NotImplementedException();
         }
 
         public virtual void Load()
