@@ -8,18 +8,14 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
-using Serilog;
 
 namespace Glow.Configurations
 {
-    //[Route("api/__configurations")]
-    //[Authorize]
     public class UpdateController<T> : ControllerBase where T : class, new()
     {
         private readonly IMediator mediator;
         private readonly IConfiguration configuration;
         private readonly Configurations partialConfigurations;
-        private readonly ConfigurationAuthorizationService authorization;
         private readonly IWebHostEnvironment environment;
         private readonly IConfigurationRoot efConfiguration;
 
@@ -27,14 +23,13 @@ namespace Glow.Configurations
             IMediator mediator,
             IConfiguration configuration,
             Configurations partialConfigurations,
-            ConfigurationAuthorizationService authorization,
             IWebHostEnvironment environment
         )
         {
             this.mediator = mediator;
             this.configuration = configuration;
             this.partialConfigurations = partialConfigurations;
-            this.authorization = authorization;
+
             this.environment = environment;
 
             // TODO remove duplication
@@ -47,13 +42,8 @@ namespace Glow.Configurations
         }
 
         [HttpGet]
-        public async Task<ActionResult<T>> Get()
+        public ActionResult<T> Get()
         {
-            var isAllowed = await authorization.ReadPartialAllowed(Request.Path.Value);
-            if (!isAllowed)
-            {
-                return Unauthorized();
-            }
             var path = Request.Path.Value;
             var position = path.LastIndexOf("/") + 1;
             var configurationId = path[position..];
@@ -65,13 +55,8 @@ namespace Glow.Configurations
         }
 
         [HttpGet("{name}")]
-        public async Task<ActionResult<T>> Get(string name)
+        public ActionResult<T> Get(string name)
         {
-            var isAllowed = await authorization.ReadPartialAllowed(Request.Path.Value);
-            if (!isAllowed)
-            {
-                return Unauthorized();
-            }
             var path = Request.Path.Value.Replace("/" + name, "");
             var position = path.LastIndexOf("/") + 1;
             var configurationId = path[position..];
@@ -95,11 +80,6 @@ namespace Glow.Configurations
         [HttpPost]
         public async Task<ActionResult> Post([FromBody] UpdateRaw<T> value)
         {
-            var isAllowed = await authorization.UpdatePartialAllowed(Request.Path.Value);
-            if (!isAllowed)
-            {
-                return Unauthorized();
-            }
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);

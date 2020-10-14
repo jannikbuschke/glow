@@ -41,6 +41,9 @@ export function AllConfigurationsDetailView() {
           <Descriptions.Item label="created" span={3}>
             {dayjs(data.created).format("LLL")}
           </Descriptions.Item>
+          <Descriptions.Item label="version" span={3}>
+            {data.version}
+          </Descriptions.Item>
         </Descriptions>
         <Divider type="horizontal" />
         <Pre>{JSON.stringify(data ? data.values : undefined, null, 4)}</Pre>

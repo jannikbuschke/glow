@@ -29,7 +29,6 @@ namespace Glow.Configurations
             var configuration = new ConfigurationOptions();
             configure?.Invoke(configuration);
             services.AddSingleton(configuration);
-            services.AddScoped<ConfigurationAuthorizationService>();
             services.AddHttpContextAccessor();
 
             IEnumerable<Assembly> a = assemblies ?? new[] { Assembly.GetCallingAssembly() };
