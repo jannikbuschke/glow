@@ -45,7 +45,7 @@ namespace Glow.Configurations
 
     public interface IConfigurationDataContext
     {
-        DbSet<ConfigurationVersion> GlowConfigurations { get;  }
+        DbSet<ConfigurationVersion> GlowConfigurations { get; }
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
         Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default);
     }

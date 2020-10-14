@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace Glow.Configurations
 {
     public class ConfigurationOptions
