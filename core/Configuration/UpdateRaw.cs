@@ -74,6 +74,11 @@ namespace Glow.Configurations
                         //no-op
                         break;
                     }
+                case JTokenType.Boolean:
+                    {
+                        result[path] = token.Value<bool>();
+                        break;
+                    }
                 default:
                     {
                         throw new System.Exception($"Not Supported JTokenType '{token.Type}'");
