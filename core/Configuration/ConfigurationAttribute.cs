@@ -7,6 +7,7 @@ namespace Glow.Configurations
     {
         public string Id { get; set; }
         public string Policy { get; set; }
+        public string ReadPolicy { get; set; }
         public string SectionId { get; set; }
         private string path;
         public string Path
