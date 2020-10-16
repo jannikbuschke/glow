@@ -8,7 +8,7 @@ import { useNavigate } from "react-router"
 import styled from "styled-components"
 import { HighlightableRow } from "../antd/highlightable-row"
 import { constants } from "./constants"
-import "../utils"
+// import "../utils"
 import dayjs from "dayjs"
 
 var localizedFormat = require("dayjs/plugin/localizedFormat")
