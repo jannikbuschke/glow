@@ -3,7 +3,6 @@ import { useData } from "../query/use-data"
 import { ErrorBanner } from "../index"
 import { Tabs, Table } from "antd"
 // import { Table } from "../antd/styled-components"
-import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router"
 import styled from "styled-components"
 import { HighlightableRow } from "../antd/highlightable-row"
@@ -36,7 +35,6 @@ export function AllConfigurationsListView() {
 
 function List({ url, showVersion }: { url: string; showVersion: boolean }) {
   const { data, loading, error } = useData<AllConfigurationsListDto[]>(url, [])
-  const { t } = useTranslation()
   const navigate = useNavigate()
   return (
     <>
@@ -78,7 +76,7 @@ function List({ url, showVersion }: { url: string; showVersion: boolean }) {
         }}
         columns={[
           {
-            title: t("created"),
+            title: "Created",
             key: "created",
             width: 210,
             render: (record: AllConfigurationsListDto) => (
@@ -86,7 +84,7 @@ function List({ url, showVersion }: { url: string; showVersion: boolean }) {
             ),
           },
           {
-            title: t("id"),
+            title: "Id",
             key: "id",
             width: "1fr",
             render: (record: AllConfigurationsListDto) => (
@@ -94,7 +92,7 @@ function List({ url, showVersion }: { url: string; showVersion: boolean }) {
             ),
           },
           {
-            title: t("name"),
+            title: "Name",
             key: "name",
             width: "1fr",
             render: (record: AllConfigurationsListDto) => (
@@ -104,7 +102,7 @@ function List({ url, showVersion }: { url: string; showVersion: boolean }) {
           ...(showVersion
             ? [
                 {
-                  title: t("version"),
+                  title: "Version",
                   key: "version",
                   width: 150,
                   render: (record: AllConfigurationsListDto) => (
