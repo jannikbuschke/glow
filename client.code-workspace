@@ -1,8 +1,12 @@
 {
   "folders": [
     {
-      "name": "glow-react-sample",
+      "name": "sample-client",
       "path": "sample\\web"
+    },
+    {
+      "name": "sample-server",
+      "path": "sample"
     },
     {
       "name": "glow-react",

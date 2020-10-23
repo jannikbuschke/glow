@@ -53,8 +53,8 @@ namespace Glow.Sample
 
             services.AddEfConfiguration(options =>
             {
-                options.SetPartialReadPolicy("sample-configuration", "test-policy");
-                options.SetPartialWritePolicy("sample-configuration", "test-policy");
+                //options.SetPartialReadPolicy("sample-configuration", "test-policy");
+                //options.SetPartialWritePolicy("sample-configuration", "test-policy");
             }, new[] { typeof(Startup).Assembly });
 
             services.AddTransient<IStartupFilter, CreateTypescriptDefinitions>();

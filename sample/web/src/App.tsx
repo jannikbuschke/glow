@@ -5,6 +5,7 @@ import { FilesExample } from "./files-example"
 import { BrowserRouter as Router, Link } from "react-router-dom"
 import { ConfigurationsExample } from "./configuration-example"
 import styled from "styled-components"
+import { NavigationExample } from "./navigation"
 
 function App() {
   return (
@@ -13,10 +14,12 @@ function App() {
         <Space>
           <Link to="/portfolios/">Portfolios</Link>
           <Link to="/configurations/">Configurations</Link>
+          <Link to="/navigation/">Navigation</Link>
         </Space>
         <Content>
           <FilesExample />
           <ConfigurationsExample />
+          <NavigationExample />
         </Content>
         {/* <Tabs style={{ margin: 100 }}>
           <Tabs.TabPane tab="Portfolios">
