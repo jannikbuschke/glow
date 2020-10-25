@@ -5,7 +5,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using AutoMapper.EquivalencyExpression;
+using Glow.Configurations;
 using Glow.Core.FakeData;
+using Glow.TypeScript;
 using Glue.Files;
 using JannikB.AspNetCore.Utils.Module;
 using JannikB.Glue;
@@ -16,6 +18,18 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Glow.Sample.Files
 {
+    public class TsProfile : TypeScriptProfile
+    {
+        public TsProfile()
+        {
+            Add<Portfolio>();
+            Add<PortfolioFile>();
+            // TODO: move
+            Add<IConfigurationMeta>();
+            Add<Glow.Core.Profiles.Profile>();
+        }
+    }
+
     public class FilesProfile : Profile
     {
         public FilesProfile()
@@ -164,7 +178,7 @@ namespace Glow.Sample.Files
 
         [HttpPost("stage-files")]
         [RequestSizeLimit(52428800)]
-        public async Task<ActionResult<IEnumerable<PortfolioFile>>> Stage()
+        public async Task<ActionResult<IEnumerable<PortfolioFile>>> StageFiles(Unit request)
         {
             IList<PortfolioFile> result = await fileService.WriteFormfilesToPath<PortfolioFile>(Request.Form.Files, "runtime-files");
             ctx.PortfolioFiles.AddRange(result);

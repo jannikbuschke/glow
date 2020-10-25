@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Glow.Core.Linq;
+using Glow.Core.Typescript;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
@@ -31,6 +32,8 @@ namespace Glow.TypeScript
             this.environment = environment;
             this.logger = logger;
         }
+
+        public static HashSet<Type> CustomTypes = new HashSet<Type>();
 
         public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
         {
@@ -71,82 +74,66 @@ namespace Glow.TypeScript
                     };
                 }).ToList()
             });
-            var customTypes = new HashSet<Type>();
             var builder = new StringBuilder();
 
             foreach (var v in descriptions)
             {
                 foreach (RequestDescription a in v.Items.DistinctBy(v => v.Id).OrderBy(v => v.Id).ToList())
                 {
-                    Log.Logger.Information(a.Id);
-                    foreach (ParameterDescription item in a.ParameterDescriptions.Where(v => v.Name != "api-version"))
+                    try
                     {
-                        if (!item.Type.FullName.StartsWith("System"))
+                        Log.Logger.Information(a.Id);
+                        foreach (ParameterDescription item in a.ParameterDescriptions.Where(v => v.Name != "api-version"))
                         {
-                            logger.LogInformation("type {type} ", item.Type.FullName);
-                            customTypes.Add(item.Type);
+                            if (!item.Type.FullName.StartsWith("System"))
+                            {
+                                Log.Logger.Information("type {type} ", item.Type.FullName);
+                                CustomTypes.Add(item.Type);
+                                Extensions2.AddType(item.Type);
+                            }
                         }
-                    }
 
-                    builder.AppendLine($"export module {a.ControllerName} {{");
-                    if (a.HttpMethod?.ToLower() == "post")
-                    {
-                        builder.Append(
-$@"  export async function {a.ActionName}_{a.GroupName}({string.Join(",", a.ParameterDescriptions.Where(v => v.Name != "api-version").Select(v => $"{v.Name}: {ToTsType(v.Type)}"))}) {{
+                        builder.AppendLine($"export module {a.ControllerName} {{");
+                        if (a.HttpMethod?.ToLower() == "post")
+                        {
+                            builder.Append(
+    $@"  export async function {a.ActionName}_{a.GroupName}({string.Join(",", a.ParameterDescriptions.Where(v => v.Name != "api-version").Select(v => $"{v.Name}: {v.Type.ToTsType()}"))}) {{
     const response = await fetch(`/{a.RelativePath}?api-version=1.0`, {{
       method: ""POST"",
       headers: {{ ""content-type"": ""application/json"" }},
-      body: JSON.stringify({a.ParameterDescriptions.First().Name}),
+      body: JSON.stringify({a.ParameterDescriptions.Where(v => v.Name != "api-version").First().Name}),
     }})
     const data = await response.json()
     return data
   }}
 ");
-                    }
-                    else
-                    {
-                        builder.Append(
-$@"  export async function {a.ActionName}_{a.GroupName}({string.Join(",", a.ParameterDescriptions.Where(v => v.Name != "api-version").Select(v => $"{v.Name}: {ToTsType(v.Type)}"))}) {{
+                        }
+                        else
+                        {
+                            builder.Append(
+    $@"  export async function {a.ActionName}_{a.GroupName}({string.Join(",", a.ParameterDescriptions.Where(v => v.Name != "api-version").Select(v => $"{v.Name}: {v.Type.ToTsType()}"))}) {{
     const response = await fetch(`/{a.RelativePath.Replace("{", "${")}?api-version=1.0`)
     const data = await response.json()
     return data
   }}
 ");
+                        }
+                        builder.AppendLine($"}}");
                     }
-                    builder.AppendLine($"}}");
+                    catch (Exception e)
+                    {
+                        Log.Logger.Warning($"Could not generate client '{a.Id}' ({e.Message})");
+                    }
                 }
             }
 
             builder.Insert(0, "\r\n");
-            builder.Insert(0, @$"import {{ {string.Join(", ", customTypes.Select(v => ToTsType(v)))} }} from ""./models""");
+            builder.Insert(0, @$"import {{ {string.Join(", ", CustomTypes.Select(v => v.ToTsType()))} }} from ""./ts-models""");
             builder.Insert(0, "\r\n");
             builder.Insert(0, "/* eslint-disable prettier/prettier */");
-            System.IO.File.WriteAllText("web/src/api.ts", builder.ToString());
+            System.IO.File.WriteAllText("web/src/ts-api.ts", builder.ToString());
 
             return next;
-        }
-
-        private string ToTsType(Type t)
-        {
-            var types = new Dictionary<Type, string>
-            {
-                { typeof(string), "string" },
-                { typeof(int), "number" },
-                { typeof(int?), "number | null" },
-                { typeof(DateTime), "string" },
-                { typeof(DateTime?), "string | null" },
-                { typeof(Guid), "string" },
-                { typeof(Guid?), "string | null" },
-                { typeof(bool), "boolean" },
-                { typeof(bool?), "boolean | null" },
-            };
-
-            if (types.TryGetValue(t, out var result))
-            {
-                return result;
-            }
-
-            return t.Name;
         }
     }
 }

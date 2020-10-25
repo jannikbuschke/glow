@@ -5,10 +5,9 @@ using Glow.Configurations;
 using Glow.Core;
 using Glow.Sample.Configurations;
 using Glow.Sample.Users;
+using Glow.TypeScript;
 using JannikB.Glue.AspNetCore.Tests;
 using MediatR;
-using Microsoft.AspNet.OData.Builder;
-using Microsoft.AspNet.OData.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -18,17 +17,18 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.VisualStudio.Services.Common;
-using RT;
 
 namespace Glow.Sample
 {
     public class Startup
     {
         private readonly IConfiguration configuration;
+        private readonly IWebHostEnvironment env;
 
-        public Startup(IConfiguration config)
+        public Startup(IConfiguration config, IWebHostEnvironment env)
         {
             configuration = config;
+            this.env = env;
         }
 
         public void ConfigureServices(IServiceCollection services)
@@ -57,7 +57,7 @@ namespace Glow.Sample
                 //options.SetPartialWritePolicy("sample-configuration", "test-policy");
             }, new[] { typeof(Startup).Assembly });
 
-            services.AddTransient<IStartupFilter, CreateTypescriptDefinitions>();
+
 
             services.AddMediatR(typeof(Startup), typeof(Clocks.Clock));
             services.AddAutoMapper(cfg => { cfg.AddCollectionMappers(); }, typeof(Startup));
@@ -76,14 +76,17 @@ namespace Glow.Sample
                 options.DefaultApiVersion = new ApiVersion(1, 0);
                 options.ReportApiVersions = true;
             });
-            services.AddOData().EnableApiVersioning();
+
             services.AddOptions();
+
+            // Reinforced typings:
+            //services.AddTransient<IStartupFilter, CreateTypescriptDefinitions>();
+            services.AddTypescriptGeneration(new[] { GetType().Assembly });
         }
 
         public void Configure(
             IApplicationBuilder app,
-            IWebHostEnvironment env,
-            VersionedODataModelBuilder modelBuilder
+            IWebHostEnvironment env
         )
         {
             if (env.IsDevelopment())
@@ -94,13 +97,7 @@ namespace Glow.Sample
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.UseMvc(routes =>
-            {
-                routes.SetTimeZoneInfo(System.TimeZoneInfo.Utc);
-                routes.Select().Expand().Filter().OrderBy().MaxTop(100).Count();
-                routes.MapVersionedODataRoutes("odata", "odata", modelBuilder.GetEdmModels());
-                routes.EnableDependencyInjection();
-            });
+            app.UseMvc();
 
             app.Map("/hello", app =>
             {
@@ -110,7 +107,7 @@ namespace Glow.Sample
                 });
             });
 
-            new string[] { "/odata", "/api" }.ForEach(v =>
+            new string[] { "/api" }.ForEach(v =>
             {
                 app.Map(v, app =>
                 {

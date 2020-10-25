@@ -3,7 +3,7 @@
 
 export interface Portfolio {
   id: string
-  displayName: string
+  displayName: string | null
   files: PortfolioFile[]
 }
 
@@ -15,8 +15,8 @@ export const defaultPortfolio: Portfolio = {
 
 export interface PortfolioFile {
   id: string
-  name: string
-  path: string
+  name: string | null
+  path: string | null
 }
 
 export const defaultPortfolioFile: PortfolioFile = {
@@ -26,10 +26,10 @@ export const defaultPortfolioFile: PortfolioFile = {
 }
 
 export interface IConfigurationMeta {
-  route: string
-  title: string
-  id: string
-  sectionId: string
+  route: string | null
+  title: string | null
+  id: string | null
+  sectionId: string | null
 }
 
 export const defaultIConfigurationMeta: IConfigurationMeta = {
@@ -40,10 +40,10 @@ export const defaultIConfigurationMeta: IConfigurationMeta = {
 }
 
 export interface Profile {
-  displayName: string
-  id: string
-  email: string
-  identityName: string
+  displayName: string | null
+  id: string | null
+  email: string | null
+  identityName: string | null
   isAuthenticated: boolean
 }
 
@@ -56,7 +56,7 @@ export const defaultProfile: Profile = {
 }
 
 export interface CreatePortfolio {
-  displayName: string
+  displayName: string | null
   files: any[]
 }
 
@@ -80,7 +80,7 @@ export const defaultUnit: Unit = {
 }
 
 export interface UpdatePortfolio {
-  displayName: string
+  displayName: string | null
   id: string
   files: any[]
 }

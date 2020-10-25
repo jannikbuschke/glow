@@ -1,6 +1,4 @@
 using Glow.Sample;
-using Glow.Sample.Users;
-using JannikB.Glue.AspNetCore.Tests;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
