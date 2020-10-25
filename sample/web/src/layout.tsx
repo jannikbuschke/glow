@@ -1,6 +1,5 @@
 import * as React from "react"
 import styled from "styled-components"
-import ButtonGroup from "antd/lib/button/button-group"
 
 export function ActionBar({
   children,
@@ -10,9 +9,12 @@ export function ActionBar({
   return <Bar>{children}</Bar>
 }
 
-const Bar = styled(ButtonGroup)`
+const Bar = styled.div`
   margin-top: 5px;
   margin-bottom: 5px;
   display: flex;
   flex-direction: row-reverse;
+  & * {
+    margin-left: 5px;
+  }
 `

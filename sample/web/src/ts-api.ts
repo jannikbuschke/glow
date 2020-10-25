@@ -51,6 +51,20 @@ export module Portfolios {
   }
 }
 export module Portfolios {
+  export async function GetList_v1() {
+    const response = await fetch(`/api/portfolios/list?api-version=1.0`)
+    const data = await response.json()
+    return data
+  }
+}
+export module Portfolios {
+  export async function GetSingle_v1(id: string) {
+    const response = await fetch(`/api/portfolios/single/${id}?api-version=1.0`)
+    const data = await response.json()
+    return data
+  }
+}
+export module Portfolios {
   export async function StageFiles_v1(request: Unit) {
     const response = await fetch(`/api/portfolios/stage-files?api-version=1.0`, {
       method: "POST",

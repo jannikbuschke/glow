@@ -41,7 +41,8 @@ const Container = styled.div`
 const Content = styled.div`
   display: flex;
   flex: 1;
-  justify-content: center;
+  padding: 20px;
+  // justify-content: center;
 `
 
 export default App

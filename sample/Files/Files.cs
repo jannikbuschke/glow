@@ -152,6 +152,18 @@ namespace Glow.Sample.Files
             this.mediator = mediator;
         }
 
+        [HttpGet("list")]
+        public IQueryable<Portfolio> GetList()
+        {
+            return ctx.Portfolios;
+        }
+
+        [HttpGet("single/{id}")]
+        public Task<Portfolio> GetSingle(Guid id)
+        {
+            return ctx.Portfolios.Include(v=>v.Files).SingleAsync(v => v.Id == id);
+        }
+
         [Validatable]
         [HttpPost("create")]
         public async Task<ActionResult<Portfolio>> Create(CreatePortfolio request)

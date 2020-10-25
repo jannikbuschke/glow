@@ -1,6 +1,6 @@
 import * as React from "react"
 import { Formik } from "formik"
-import { useSubmit, HtmlText } from "glow-react"
+import { useSubmit, HtmlText, ErrorBanner } from "glow-react"
 import { StageFiles, Files } from "glow-react/es/files/upload-files"
 import { Form, Input, SubmitButton } from "formik-antd"
 import { notification, Button, Card, Col, Table } from "antd"
@@ -40,19 +40,16 @@ interface Portfolio {
 
 function Detail() {
   const { portfolioId } = useParams()
-  const { data } = useData<Portfolio>(
-    `/odata/portfolios/${portfolioId}?$expand=files`,
-    {
-      id: "",
-      displayName: "",
-      files: [],
-    },
-  )
+  const { data } = useData<Portfolio>(`/api/portfolios/single/${portfolioId}`, {
+    id: "",
+    displayName: "",
+    files: [],
+  })
   const navigate = useNavigate()
   const [update] = useSubmit("/api/portfolios/update")
   return (
     <div style={{ maxWidth: 500 }}>
-      <div>/detail</div>
+      <div>detail</div>
       <ActionBar>
         <ActionButton
           path="/api/portfolios/delete"
@@ -86,7 +83,12 @@ function Detail() {
 function MasterDetail() {
   return (
     <div
-      style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gridGap: 10 }}
+      style={{
+        display: "grid",
+        gridTemplateColumns: "1fr 1fr",
+        gridGap: 30,
+        padding: 20,
+      }}
     >
       <List />
       <Outlet />
@@ -95,22 +97,21 @@ function MasterDetail() {
 }
 
 function List() {
-  const url = "/odata/portfolios?$expand=files"
-  const { data, refetch } = useData<{ value: Portfolio[] }>(url, {
-    value: [],
-  })
+  const url = "/api/portfolios/list"
+  const { data, refetch, error } = useData<Portfolio[]>(url, [])
   const navigate = useNavigate()
   return (
     <div>
-      <div>/list</div>
+      <div>list</div>
       <ActionBar>
         <Button onClick={() => refetch()}>Refresh</Button>
         <Button>
           <Link to="create">Create</Link>
         </Button>
       </ActionBar>
+      <ErrorBanner error={error} />
       <Table
-        dataSource={data.value}
+        dataSource={data}
         loading={!Boolean(data)}
         showHeader={false}
         size="small"
@@ -142,7 +143,7 @@ function Create() {
   const [create] = useSubmit("/api/portfolios/create")
   return (
     <div style={{ maxWidth: 500 }}>
-      <div>/create</div>
+      <div>create</div>
       <Formik
         initialValues={{ id: null, displayName: "", files: [] }}
         onSubmit={async (values) => {

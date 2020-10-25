@@ -64,6 +64,7 @@ const MasterDetailContainer = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-gap: 30;
+  padding: 20;
 `
 
 function List() {
