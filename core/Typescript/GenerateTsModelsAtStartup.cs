@@ -109,8 +109,6 @@ namespace Glow.Core.Typescript
             builder.AppendLine("}");
             builder.AppendLine("");
         }
-
-
     }
 
     public static class Extensions2
