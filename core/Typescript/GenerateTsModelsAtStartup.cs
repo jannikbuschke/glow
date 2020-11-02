@@ -132,6 +132,22 @@ namespace Glow.Core.Typescript
                 { typeof(object), "any" }
             };
 
+        private static readonly Dictionary<Type, string> defaults = new Dictionary<Type, string>
+            {
+                { typeof(string), @"""""" },
+                { typeof(int), "0" },
+                { typeof(int?), "null" },
+                { typeof(DateTime), @"""1/1/0001 12:00:00 AM""" },
+                { typeof(DateTime?), "null" },
+                { typeof(Guid), @"""00000000-0000-0000-0000-000000000000""" },
+                { typeof(Guid?), "null" },
+                { typeof(bool), "false" },
+                { typeof(bool?), "null" },
+                { typeof(Dictionary<string, string>), "{}" },
+                { typeof(Dictionary<string, int>), "{}" },
+                { typeof(Dictionary<string, object>), "{}" },
+            };
+
         public static void AddAllTypes(IEnumerable<Type> types)
         {
             types.ForEach(v => AddType(v));
@@ -156,29 +172,19 @@ namespace Glow.Core.Typescript
                 return $"{(t.GetGenericArguments().FirstOrDefault() ?? typeof(object)).ToTsType()}[]";
             }
 
+            if (types.ContainsKey(t))
+            {
+                return "default" + t.ToTsType();
+            }
+
             return "any";
         }
+
         public static string DefaultValue(this Type t)
         {
-            var types = new Dictionary<Type, string>
-            {
-                { typeof(string), @"""""" },
-                { typeof(int), "0" },
-                { typeof(int?), "null" },
-                { typeof(DateTime), @"""1/1/0001 12:00:00 AM""" },
-                { typeof(DateTime?), "null" },
-                { typeof(Guid), @"""00000000-0000-0000-0000-000000000000""" },
-                { typeof(Guid?), "null" },
-                { typeof(bool), "false" },
-                { typeof(bool?), "null" },
-                { typeof(Dictionary<string, string>), "{}" },
-                { typeof(Dictionary<string, int>), "{}" },
-                { typeof(Dictionary<string, object>), "{}" },
-            };
-
             //var types = typeDictionary;
 
-            if (types.TryGetValue(t, out var result))
+            if (defaults.TryGetValue(t, out var result))
             {
                 return result;
             }
@@ -186,6 +192,11 @@ namespace Glow.Core.Typescript
             if (t.IsEnumerable())
             {
                 return "[]";
+            }
+
+            if (typeDictionary.ContainsKey(t))
+            {
+                return "default" + t.ToTsType();
             }
 
             return "null as any";// $"default{t.Name}";
