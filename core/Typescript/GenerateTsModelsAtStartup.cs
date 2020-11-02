@@ -187,7 +187,7 @@ namespace Glow.Core.Typescript
                 return "[]";
             }
 
-            if (typeDictionary.ContainsKey(t))
+            if (typeDictionary.ContainsKey(t) && t.ToTsType()!="any")
             {
                 return "default" + t.ToTsType();
             }
