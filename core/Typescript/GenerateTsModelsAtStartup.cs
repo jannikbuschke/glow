@@ -71,7 +71,7 @@ namespace Glow.Core.Typescript
             {
                 Render(type, builder, entities, allEntityNames);
             }
-            builder.AppendLine("export module Entities {");
+            builder.AppendLine("export declare module Entities {");
 
             builder.AppendLine(entities.ToString());
 
