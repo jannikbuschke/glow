@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace Glow.TypeScript
@@ -10,7 +10,6 @@ namespace Glow.TypeScript
         {
             Types.Add(typeof(T));
         }
-
     }
 }
 
