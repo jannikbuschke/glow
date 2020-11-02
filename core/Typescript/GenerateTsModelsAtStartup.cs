@@ -170,11 +170,6 @@ namespace Glow.Core.Typescript
                 return $"{(t.GetGenericArguments().FirstOrDefault() ?? typeof(object)).ToTsType()}[]";
             }
 
-            if (types.ContainsKey(t))
-            {
-                return "default" + t.ToTsType();
-            }
-
             return "any";
         }
 
