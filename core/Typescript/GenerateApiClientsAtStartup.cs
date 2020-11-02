@@ -130,7 +130,7 @@ namespace Glow.TypeScript
             builder.Insert(0, "\r\n");
             builder.Insert(0, @$"import {{ {string.Join(", ", CustomTypes.Select(v => v.ToTsType()))} }} from ""./ts-models""");
             builder.Insert(0, "\r\n");
-            builder.Insert(0, "/* eslint-disable prettier/prettier */");
+            //builder.Insert(0, "/* eslint-disable prettier/prettier */");
             System.IO.File.WriteAllText("web/src/ts-api.ts", builder.ToString());
 
             return next;

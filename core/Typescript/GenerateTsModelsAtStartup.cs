@@ -78,7 +78,7 @@ namespace Glow.Core.Typescript
             builder.AppendLine($"  export type All = {string.Join(" | ", allEntityNames)}");
             builder.AppendLine("}");
             builder.Insert(0, "\r\n");
-            builder.Insert(0, "/* eslint-disable prettier/prettier */");
+            //builder.Insert(0, "/* eslint-disable prettier/prettier */");
             System.IO.File.WriteAllText("web/src/ts-models.ts", builder.ToString());
 
             return next;
