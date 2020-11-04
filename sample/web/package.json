@@ -15,10 +15,11 @@
     "react-router": "6.0.0-alpha.4",
     "react-scripts": "3.4.1",
     "glow-react": "0.10.0",
-    "react-query": "1.5.1"
+    "react-query": "1.5.1",
+    "@ant-design/icons": "4.2.2"
   },
   "scripts": {
-    "start": "react-app-rewired start",
+    "start": "set PORT=3001 && react-app-rewired start",
     "build": "react-app-rewired build",
     "build:old": "react-scripts build",
     "test": "react-app-rewired test --env=jsdom",

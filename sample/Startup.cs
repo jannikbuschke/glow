@@ -125,7 +125,7 @@ namespace Glow.Sample
 
                 if (env.IsDevelopment())
                 {
-                    spa.UseProxyToSpaDevelopmentServer("http://localhost:3000");
+                    spa.UseProxyToSpaDevelopmentServer("http://localhost:3001");
                 }
             });
         }

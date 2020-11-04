@@ -5,6 +5,7 @@ using Glow.GlowStartup;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using Serilog.Core;
@@ -25,6 +26,10 @@ namespace Glow.Sample
                 IWebHost host = CreateWebHostBuilder(args).Build();
 
                 host.MigrateDatabase<DataContext>();
+
+                DataContext ctx = host.Services.GetRequiredService<DataContext>();
+                ctx.Portfolios.Add(new Files.Portfolio { DisplayName = "JBU" });
+                ctx.SaveChanges();
 
                 host.Run();
                 return 0;

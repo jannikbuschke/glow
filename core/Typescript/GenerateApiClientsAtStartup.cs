@@ -42,7 +42,7 @@ namespace Glow.TypeScript
                 return next;
             }
 
-            IEnumerable<ApiDescription> items = descriptionGroupCollectionProvider.ApiDescriptionGroups.Items.First().Items.Take(2);
+            //IEnumerable<ApiDescription> items = descriptionGroupCollectionProvider.ApiDescriptionGroups.Items.First().Items.Take(2);
 
             var descriptions = descriptionGroupCollectionProvider.ApiDescriptionGroups.Items.Select(v => new
             {

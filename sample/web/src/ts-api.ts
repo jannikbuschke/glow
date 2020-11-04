@@ -86,6 +86,13 @@ export module Portfolios {
     return data
   }
 }
+export module SampleListView {
+  export async function Get_v1(skip: number | null,take: number | null) {
+    const response = await fetch(`/api/list-view/data?api-version=1.0`)
+    const data = await response.json()
+    return data
+  }
+}
 export module Schema {
   export async function Get_v1() {
     const response = await fetch(`/api/configuration-schemas?api-version=1.0`)

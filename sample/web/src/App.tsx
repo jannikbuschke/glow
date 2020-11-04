@@ -1,32 +1,62 @@
 import React from "react"
-import { Space } from "antd"
+import { Layout } from "antd"
 import "antd/dist/antd.css"
 import { FilesExample } from "./files-example"
-import { BrowserRouter as Router, Link } from "react-router-dom"
+import { BrowserRouter as Router } from "react-router-dom"
 import { ConfigurationsExample } from "./configuration-example"
 import styled from "styled-components"
 import { NavigationExample } from "./navigation"
+import { LeftNavigation } from "glow-react"
+import {
+  BorderOutlined,
+  ClusterOutlined,
+  ProjectFilled,
+  SettingOutlined,
+  UnorderedListOutlined,
+} from "@ant-design/icons"
+import { DetailviewExample } from "./detail-view"
+import { ListViewExample } from "./list-view"
 
 function App() {
   return (
     <Router>
       <Container>
-        <Space>
-          <Link to="/portfolios/">Portfolios</Link>
-          <Link to="/configurations/">Configurations</Link>
-          <Link to="/navigation/">Navigation</Link>
-        </Space>
+        <LeftNavigation
+          items={[
+            {
+              key: "portfolios",
+              icon: <ProjectFilled />,
+              content: "Portfolios",
+            },
+            {
+              key: "configurations",
+              icon: <SettingOutlined />,
+              content: "Configurations",
+            },
+            {
+              key: "navigation",
+              icon: <ClusterOutlined />,
+              content: "Navigation",
+            },
+            {
+              key: "detail-view",
+              icon: <BorderOutlined />,
+              content: "Detailview",
+            },
+            {
+              key: "list-view",
+              icon: <UnorderedListOutlined />,
+              content: "Listview",
+            },
+          ]}
+        />
         <Content>
           <FilesExample />
           <ConfigurationsExample />
           <NavigationExample />
+          <DetailviewExample />
+          <ListViewExample />
         </Content>
-        {/* <Tabs style={{ margin: 100 }}>
-          <Tabs.TabPane tab="Portfolios">
-          </Tabs.TabPane>
-          <Tabs.TabPane tab="Configurations">
-          </Tabs.TabPane>
-        </Tabs> */}
       </Container>
     </Router>
   )
@@ -34,7 +64,7 @@ function App() {
 
 const Container = styled.div`
   display: flex;
-  flex-direction: column;
+  // flex-direction: column;
   height: 100vh;
 `
 
