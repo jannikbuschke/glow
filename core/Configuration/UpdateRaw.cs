@@ -45,6 +45,11 @@ namespace Glow.Configurations
                         result[path] = token.Value<long>();
                         break;
                     }
+                case JTokenType.Float:
+                    {
+                        result[path] = token.Value<double>();
+                        break;
+                    }
                 case JTokenType.Property:
                     {
                         var property = token as JProperty;
