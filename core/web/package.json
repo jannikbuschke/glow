@@ -71,6 +71,7 @@
     "file-saver": "2.0.2",
     "@types/file-saver": "2.0.1",
     "react-query": "1.5.1",
-    "normalizr": "3.6.0"
+    "normalizr": "3.6.0",
+    "mitt": "1.2.0"
   }
 }
