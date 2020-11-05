@@ -98,7 +98,7 @@ export module Portfolios {
   }
 }
 export module SampleListView {
-  export async function Get_v1(skip: number | null,take: number | null) {
+  export async function Query_v1() {
     const response = await fetch(`/api/list-view/data?api-version=1.0`)
     const data = await response.json()
     return data

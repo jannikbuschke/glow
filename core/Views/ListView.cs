@@ -1,8 +1,6 @@
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
+using Glow.Core.Queries;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace Glow.Core.Views
 {
@@ -11,10 +9,11 @@ namespace Glow.Core.Views
     {
         protected abstract IQueryable<T> Get();
 
+        [PaginateFilter]
         [HttpGet]
-        public List<T> Get(int? skip = 0, int? take = 10)
+        public IQueryable<T> Query()
         {
-            return Get().Skip(skip.Value).Take(take.Value).ToList();
+            return Get();
         }
     }
 }

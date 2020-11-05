@@ -19,7 +19,7 @@ export function List<RecordType extends { id: string } = any>({
   const skip = 0
   const navigate = useNavigate()
   const { data, loading } = useData<RecordType[]>(
-    `${baseUrl}?take=${take}&$skip=${skip}`,
+    `${baseUrl}?$take=${take}&$skip=${skip}`,
     [],
   )
 
