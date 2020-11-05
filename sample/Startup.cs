@@ -57,7 +57,12 @@ namespace Glow.Sample
                 //options.SetPartialWritePolicy("sample-configuration", "test-policy");
             }, new[] { typeof(Startup).Assembly });
 
-
+            services.Configure<ApiBehaviorOptions>(options =>
+            {
+                //options.SuppressConsumesConstraintForFormFileParameters = true;
+                //options.SuppressInferBindingSourcesForParameters = true;
+                options.SuppressModelStateInvalidFilter = true;
+            });
 
             services.AddMediatR(typeof(Startup), typeof(Clocks.Clock));
             services.AddAutoMapper(cfg => { cfg.AddCollectionMappers(); }, typeof(Startup));
@@ -81,7 +86,7 @@ namespace Glow.Sample
 
             // Reinforced typings:
             //services.AddTransient<IStartupFilter, CreateTypescriptDefinitions>();
-            services.AddTypescriptGeneration(new[] { GetType().Assembly },false);
+            services.AddTypescriptGeneration(new[] { GetType().Assembly }, true);
         }
 
         public void Configure(

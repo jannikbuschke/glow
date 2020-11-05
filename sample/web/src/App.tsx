@@ -10,12 +10,16 @@ import { LeftNavigation } from "glow-react"
 import {
   BorderOutlined,
   ClusterOutlined,
+  FileOutlined,
+  FolderOpenOutlined,
+  FormOutlined,
   ProjectFilled,
   SettingOutlined,
   UnorderedListOutlined,
 } from "@ant-design/icons"
 import { DetailviewExample } from "./detail-view"
 import { ListViewExample } from "./list-view"
+import { FormExample } from "./form"
 
 function App() {
   return (
@@ -25,8 +29,8 @@ function App() {
           items={[
             {
               key: "portfolios",
-              icon: <ProjectFilled />,
-              content: "Portfolios",
+              icon: <FolderOpenOutlined />,
+              content: "Files",
             },
             {
               key: "configurations",
@@ -48,6 +52,11 @@ function App() {
               icon: <UnorderedListOutlined />,
               content: "Listview",
             },
+            {
+              key: "forms",
+              icon: <FormOutlined />,
+              content: "Form",
+            },
           ]}
         />
         <Content>
@@ -56,6 +65,7 @@ function App() {
           <NavigationExample />
           <DetailviewExample />
           <ListViewExample />
+          <FormExample />
         </Content>
       </Container>
     </Router>

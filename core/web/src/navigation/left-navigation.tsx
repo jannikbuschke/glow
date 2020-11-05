@@ -10,34 +10,36 @@ interface LeftNavigationProps {
 const { Sider } = Layout
 
 export function LeftNavigation({ items }: LeftNavigationProps) {
-  const [collapsed, setCollapsed] = React.useState(false)
   return (
     <Routes>
-      <Route
-        path=":view/*"
-        element={
-          <Sider
-            collapsible={true}
-            collapsed={collapsed}
-            onCollapse={(v) => setCollapsed(v)}
-          >
-            <RoutedMenu
-              title="test"
-              baseUrl={"/"}
-              parameter={"view"}
-              theme="dark"
-              mode="inline"
-              // style={{ width: 200 }}
-            >
-              {items.map((v) => (
-                <Menu.Item key={v.key} icon={v.icon}>
-                  {v.content}
-                </Menu.Item>
-              ))}
-            </RoutedMenu>
-          </Sider>
-        }
-      />
+      <Route path={"/"} element={<_LeftNavigation items={items} />} />
+      <Route path={":view/*"} element={<_LeftNavigation items={items} />} />
     </Routes>
+  )
+}
+
+export function _LeftNavigation({ items }: LeftNavigationProps) {
+  const [collapsed, setCollapsed] = React.useState(false)
+  return (
+    <Sider
+      collapsible={true}
+      collapsed={collapsed}
+      onCollapse={(v) => setCollapsed(v)}
+    >
+      <RoutedMenu
+        title="test"
+        baseUrl={"/"}
+        parameter={"view"}
+        theme="dark"
+        mode="inline"
+        // style={{ width: 200 }}
+      >
+        {items.map((v) => (
+          <Menu.Item key={v.key} icon={v.icon}>
+            {v.content}
+          </Menu.Item>
+        ))}
+      </RoutedMenu>
+    </Sider>
   )
 }

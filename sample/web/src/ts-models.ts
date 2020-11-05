@@ -55,11 +55,62 @@ export const defaultProfile: Profile = {
   isAuthenticated: false,
 }
 
+export interface CreateUser {
+  displayName: string | null
+  email: string | null
+}
+
+export const defaultCreateUser: CreateUser = {
+  displayName: "",
+  email: "",
+}
+
+export interface CreatePortfolio {
+  displayName: string | null
+  files: any[]
+}
+
+export const defaultCreatePortfolio: CreatePortfolio = {
+  displayName: "",
+  files: [],
+}
+
+export interface DeletePortfolio {
+  id: string
+}
+
+export const defaultDeletePortfolio: DeletePortfolio = {
+  id: "00000000-0000-0000-0000-000000000000",
+}
+
+export interface Unit {
+}
+
+export const defaultUnit: Unit = {
+}
+
+export interface UpdatePortfolio {
+  displayName: string | null
+  id: string
+  files: any[]
+}
+
+export const defaultUpdatePortfolio: UpdatePortfolio = {
+  displayName: "",
+  id: "00000000-0000-0000-0000-000000000000",
+  files: [],
+}
+
 export declare module Entities {
   export type Portfolio = "Glow.Sample.Files.Portfolio"
   export type PortfolioFile = "Glow.Sample.Files.PortfolioFile"
   export type IConfigurationMeta = "Glow.Configurations.IConfigurationMeta"
   export type Profile = "Glow.Core.Profiles.Profile"
+  export type CreateUser = "Glow.Sample.Forms.CreateUser"
+  export type CreatePortfolio = "Glow.Sample.Files.CreatePortfolio"
+  export type DeletePortfolio = "Glow.Sample.Files.DeletePortfolio"
+  export type Unit = "MediatR.Unit"
+  export type UpdatePortfolio = "Glow.Sample.Files.UpdatePortfolio"
 
-  export type All = Portfolio | PortfolioFile | IConfigurationMeta | Profile
+  export type All = Portfolio | PortfolioFile | IConfigurationMeta | Profile | CreateUser | CreatePortfolio | DeletePortfolio | Unit | UpdatePortfolio
 }
