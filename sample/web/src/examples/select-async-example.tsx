@@ -4,7 +4,7 @@ import { Route, Routes } from "react-router"
 import { SelectAsync as RemoteSelect } from "glow-react"
 import { Form, FormikDebug } from "formik-antd"
 import { Formik } from "formik"
-import { User } from "./ts-models"
+import { User } from "../ts-models"
 import styled from "styled-components"
 import { LabeledValue } from "antd/lib/select"
 

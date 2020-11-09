@@ -2,7 +2,6 @@ import {
   Button,
   Descriptions,
   Divider,
-  Menu,
   PageHeader,
   Row,
   Statistic,
@@ -10,8 +9,8 @@ import {
   Tag,
 } from "antd"
 import * as React from "react"
-import { Route, Routes, useNavigate, useParams, useMatch } from "react-router"
-import { RoutedTabs, RoutedMenu, RenderObject } from "glow-react"
+import { Route, Routes, useNavigate } from "react-router"
+import { RoutedTabs } from "glow-react"
 
 export function DetailviewExample() {
   return (
@@ -60,7 +59,7 @@ function Sample() {
         <Descriptions size="small" column={3}>
           <Descriptions.Item label="Created">Lili Qu</Descriptions.Item>
           <Descriptions.Item label="Association">
-            <a>421421</a>
+            <div>421421</div>
           </Descriptions.Item>
           <Descriptions.Item label="Creation Time">
             2017-01-10

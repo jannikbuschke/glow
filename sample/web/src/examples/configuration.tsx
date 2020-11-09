@@ -4,10 +4,10 @@ import { Table } from "antd"
 import { Routes, Route, useParams, Outlet, useNavigate } from "react-router-dom"
 import { useData } from "glow-react/es/query/use-data"
 import { HighlightableRow } from "glow-react/es/antd/highlightable-row"
-import { IConfigurationMeta } from "./models"
 import styled from "styled-components"
 import { StronglyTypedOptions } from "glow-react/es/configuration/strongly-typed-options"
 import { Input } from "formik-antd"
+import { IConfigurationMeta } from "../ts-models"
 
 export function ConfigurationsExample() {
   return (

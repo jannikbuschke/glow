@@ -5,7 +5,7 @@ import styled from "styled-components"
 import { Formik } from "formik"
 import { Form, FormikDebug, Input, SubmitButton } from "formik-antd"
 import { useSubmit } from "glow-react/es/Forms/use-submit"
-import { defaultCreateUser } from "./ts-models"
+import { defaultCreateUser } from "../ts-models"
 import { notification } from "antd"
 
 export function FormExample() {

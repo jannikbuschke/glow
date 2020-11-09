@@ -1,6 +1,6 @@
 import { Menu, Tabs } from "antd"
 import * as React from "react"
-import { Route, Routes, useNavigate, useParams, useMatch } from "react-router"
+import { Route, Routes, useMatch } from "react-router"
 import { RoutedTabs, RoutedMenu, RenderObject } from "glow-react"
 
 export function NavigationExample() {

@@ -1,27 +1,25 @@
 import React from "react"
 import "antd/dist/antd.css"
-import { FilesExample } from "./files-example"
+import { FilesExample } from "./examples/files"
 import { BrowserRouter as Router } from "react-router-dom"
-import { ConfigurationsExample } from "./configuration-example"
+import { ConfigurationsExample } from "./examples/configuration"
 import styled from "styled-components"
-import { NavigationExample } from "./navigation"
+import { NavigationExample } from "./examples/navigation"
 import { LeftNavigation } from "glow-react"
 import {
   BorderOutlined,
   ClusterOutlined,
-  FileOutlined,
   FolderOpenOutlined,
   FormOutlined,
-  ProjectFilled,
   SettingOutlined,
   UnorderedListOutlined,
   EditOutlined,
 } from "@ant-design/icons"
-import { DetailviewExample } from "./detail-view"
-import { ListViewExample } from "./list-view"
-import { FormExample } from "./form"
-import { MasterDetailViewExample } from "./master-detail-view-example"
-import { SelectAsyncExample } from "./select-async-example"
+import { MasterDetailViewExample } from "./examples/master-detail-view-example"
+import { SelectAsyncExample } from "./examples/select-async-example"
+import { DetailviewExample } from "./examples/detail-view"
+import { ListViewExample } from "./examples/list-view"
+import { FormExample } from "./examples/form"
 
 function App() {
   return (
