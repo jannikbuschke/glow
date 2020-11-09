@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -40,9 +41,9 @@ namespace Glow.Core.Typescript
                 return next;
             }
 
-            IEnumerable<Type> profileTypes = assembliesToScan.Value.SelectMany(v => v.GetTypes())
-           .Where(v => v.IsSubclassOf(typeof(TypeScriptProfile)));
-            //var schemas = new WorkflowSchemas();
+            IEnumerable<Type> profileTypes = assembliesToScan.Value
+                .SelectMany(v => v.GetTypes())
+                .Where(v => v.IsSubclassOf(typeof(TypeScriptProfile)));
 
             var entities = new StringBuilder();
             var allEntityNames = new List<string>();
@@ -61,7 +62,6 @@ namespace Glow.Core.Typescript
             {
                 var profile = Activator.CreateInstance(profileType) as TypeScriptProfile;
 
-
                 foreach (Type type in profile.Types)
                 {
                     Render(type, builder, entities, allEntityNames);
@@ -79,7 +79,7 @@ namespace Glow.Core.Typescript
             builder.AppendLine("}");
             builder.Insert(0, "\r\n");
             //builder.Insert(0, "/* eslint-disable prettier/prettier */");
-            System.IO.File.WriteAllText("web/src/ts-models.ts", builder.ToString());
+            File.WriteAllText("web/src/ts-models.ts", builder.ToString());
 
             return next;
         }
@@ -156,9 +156,28 @@ namespace Glow.Core.Typescript
             typeDictionary.Add(type, type.Name);
         }
 
+        private static bool IsNullable(Type type)
+        {
+            return Nullable.GetUnderlyingType(type) != null;
+        }
+
         public static string ToTsType(this Type t)
         {
             Dictionary<Type, string> types = typeDictionary;
+
+            if (IsNullable(t))
+            {
+                Type underlyingType = Nullable.GetUnderlyingType(t);
+                if (underlyingType.IsEnum)
+                {
+                    return RenderEnumValues(underlyingType) + " | null";
+                }
+            }
+
+            if (t.IsEnum)
+            {
+                return RenderEnumValues(t);
+            }
 
             if (types.TryGetValue(t, out var result))
             {
@@ -177,6 +196,7 @@ namespace Glow.Core.Typescript
         {
             //var types = typeDictionary;
 
+
             if (defaults.TryGetValue(t, out var result))
             {
                 return result;
@@ -187,12 +207,42 @@ namespace Glow.Core.Typescript
                 return "[]";
             }
 
-            if (typeDictionary.ContainsKey(t) && t.ToTsType()!="any")
+            if (typeDictionary.ContainsKey(t) && t.ToTsType() != "any")
             {
                 return "default" + t.ToTsType();
             }
 
+            if (t.IsEnum)
+            {
+                return $@"""{GetEnumValues(t).FirstOrDefault()}""";
+            }
+
+            if (IsNullable(t))
+            {
+                return "null";
+            }
+
             return "null as any";// $"default{t.Name}";
+        }
+
+        private static IEnumerable<string> GetEnumValues(Type t)
+        {
+            Array values = Enum.GetValues(t);
+            foreach (var val in values)
+            {
+                yield return Enum.GetName(t, val);
+            }
+        }
+
+        private static string RenderEnumValues(Type t)
+        {
+            Array values = Enum.GetValues(t);
+            var r = new List<string>();
+            foreach (var val in GetEnumValues(t))
+            {
+                r.Add($@"""{val}""");
+            }
+            return string.Join(" | ", r);
         }
     }
 }

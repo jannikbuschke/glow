@@ -55,6 +55,22 @@ export const defaultProfile: Profile = {
   isAuthenticated: false,
 }
 
+export interface SampleConfiguration {
+  prop1: string | null
+  prop2: number
+  nested: any
+  enum: "EnumVal1" | "EnumVal2"
+  nullableEnum: "EnumVal1" | "EnumVal2" | null
+}
+
+export const defaultSampleConfiguration: SampleConfiguration = {
+  prop1: "",
+  prop2: 0,
+  nested: null as any,
+  enum: "EnumVal1",
+  nullableEnum: null,
+}
+
 export interface CreateUser {
   displayName: string | null
   email: string | null
@@ -106,11 +122,12 @@ export declare module Entities {
   export type PortfolioFile = "Glow.Sample.Files.PortfolioFile"
   export type IConfigurationMeta = "Glow.Configurations.IConfigurationMeta"
   export type Profile = "Glow.Core.Profiles.Profile"
+  export type SampleConfiguration = "Glow.Sample.Configurations.SampleConfiguration"
   export type CreateUser = "Glow.Sample.Forms.CreateUser"
   export type CreatePortfolio = "Glow.Sample.Files.CreatePortfolio"
   export type DeletePortfolio = "Glow.Sample.Files.DeletePortfolio"
   export type Unit = "MediatR.Unit"
   export type UpdatePortfolio = "Glow.Sample.Files.UpdatePortfolio"
 
-  export type All = Portfolio | PortfolioFile | IConfigurationMeta | Profile | CreateUser | CreatePortfolio | DeletePortfolio | Unit | UpdatePortfolio
+  export type All = Portfolio | PortfolioFile | IConfigurationMeta | Profile | SampleConfiguration | CreateUser | CreatePortfolio | DeletePortfolio | Unit | UpdatePortfolio
 }
