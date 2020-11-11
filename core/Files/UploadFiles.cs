@@ -26,7 +26,8 @@ namespace Glow.Core.Files
                 ms.Position = 0;
                 formContent.Add(new StreamContent(ms), Guid.NewGuid().ToString(), v.Name);
             }
-            HttpResponseMessage response = await client.PostAsync(actionUrl.ToString(), formContent);
+
+            HttpResponseMessage response = await client.PostAsync(actionUrl, formContent);
             foreach (KeyValuePair<T, MemoryStream> item in streams)
             {
                 item.Value.Dispose();

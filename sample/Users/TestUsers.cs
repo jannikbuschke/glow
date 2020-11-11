@@ -10,7 +10,22 @@ namespace Glow.Sample.Users
             {
                 Id = "1",
                 DisplayName = "Stanley Kubrick",
-                Email = "sku@q-and-a.com"
+                Email = "sku@qna.com"
+            };
+        }
+
+        //public static UserDto NotAuthorizedUser()
+        //{
+
+        //}
+
+        public static UserDto NonPrivilegedUser()
+        {
+            return new UserDto
+            {
+                Id = "2",
+                DisplayName = "Christopher Nolan",
+                Email = "cno@qna.com"
             };
         }
     }

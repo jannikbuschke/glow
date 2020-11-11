@@ -42,8 +42,8 @@ namespace Glow.Core.Tests
 
         public void Dispose()
         {
-            client.Dispose();
-            Factory.Dispose();
+            //client.Dispose();
+            //Factory.Dispose();
         }
 
         protected T GetRequiredService<T>()

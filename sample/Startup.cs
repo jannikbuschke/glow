@@ -1,8 +1,11 @@
 using System.Net;
+using System.Security.Claims;
 using AutoMapper;
 using AutoMapper.EquivalencyExpression;
 using Glow.Configurations;
 using Glow.Core;
+using Glow.Core.Actions;
+using Glow.Core.Typescript;
 using Glow.Sample.Configurations;
 using Glow.Sample.Users;
 using Glow.TypeScript;
@@ -37,16 +40,22 @@ namespace Glow.Sample
             {
                 options.EnableEndpointRouting = false;
             });
+            UserDto testUser = TestUsers.TestUser();
+
             services.AddAuthorization(options =>
             {
-                options.AddPolicy("test-policy", v =>
+                options.AddPolicy(Policies.Authorized, v =>
                 {
                     v.RequireAuthenticatedUser();
+                });
+                options.AddPolicy(Policies.Privileged, v =>
+                {
+                    v.RequireAuthenticatedUser();
+                    v.RequireClaim(ClaimTypes.NameIdentifier, testUser.Id);
                 });
             });
             services.AddGlow();
 
-            UserDto testUser = TestUsers.TestUser();
             services.AddTestAuthentication(testUser.Id, testUser.DisplayName, testUser.Email);
 
             services.Configure<SampleConfiguration>(configuration.GetSection("sample-configuration"));

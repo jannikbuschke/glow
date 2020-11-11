@@ -12,6 +12,7 @@ const { Sider } = Layout
 export function LeftNavigation({ items }: LeftNavigationProps) {
   return (
     <Routes>
+      <Route path={""} element={<_LeftNavigation items={items} />} />
       <Route path={"/"} element={<_LeftNavigation items={items} />} />
       <Route path={":view/*"} element={<_LeftNavigation items={items} />} />
     </Routes>

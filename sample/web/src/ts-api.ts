@@ -1,5 +1,16 @@
 
-import { CreateUser, CreatePortfolio, DeletePortfolio, Unit, UpdatePortfolio } from "./ts-models"
+import { SampleAction, CreateUser, CreatePortfolio, DeletePortfolio, Foo, UpdatePortfolio } from "./ts-models"
+export module ActionController2 {
+  export async function Execute_v1(request: SampleAction) {
+    const response = await fetch(`/api/actions/__generic?api-version=1.0`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(request),
+    })
+    const data = await response.json()
+    return data
+  }
+}
 export module Configuration {
   export async function LatestList_v1() {
     const response = await fetch(`/api/glow-configuration/list?api-version=1.0`)
@@ -76,7 +87,7 @@ export module Portfolios {
   }
 }
 export module Portfolios {
-  export async function StageFiles_v1(request: Unit) {
+  export async function StageFiles_v1(request: Foo) {
     const response = await fetch(`/api/portfolios/stage-files?api-version=1.0`, {
       method: "POST",
       headers: { "content-type": "application/json" },

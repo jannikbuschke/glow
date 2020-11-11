@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using Glow.Core.Actions;
 using Glow.Core.EfCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -41,10 +42,12 @@ namespace Glow.Configurations
             services.AddMvcCore(options =>
             {
                 options.Conventions.Add(new ConfigurationControllerRouteConvention());
+                options.Conventions.Add(new ActionsControllerRouteConvention());
             })
             .ConfigureApplicationPartManager(m =>
             {
-                m.FeatureProviders.Add(new ControllerProvider(a));
+                m.FeatureProviders.Add(new ConfigurationsControllerProvider(a));
+                m.FeatureProviders.Add(new ActionsControllerProvider(a));
             });
 
             switch (dbProvider)
@@ -59,6 +62,5 @@ namespace Glow.Configurations
 
             return services;
         }
-
     }
 }

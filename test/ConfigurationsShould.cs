@@ -38,7 +38,7 @@ namespace Glow.Test
 
             var prop1 = Faker.Lorem.Word();
             var prop2 = Faker.Random.Number(1, 1000);
-            MediatR.Unit _ = await Send(new UpdateRaw<SampleConfiguration>
+            _ = await Send(new UpdateRaw<SampleConfiguration>
             {
                 ConfigurationId = "sample-configuration",
                 Value = new SampleConfiguration
@@ -58,14 +58,6 @@ namespace Glow.Test
 
             cfg.Prop1.Should().Be(prop1);
             cfg.Prop2.Should().Be(prop2);
-
-            SampleConfiguration cfg2 = await Get()
-                .From("/api/configurations/sample-configuration/from-options")
-                .As(user)
-                .Read<SampleConfiguration>();
-
-            cfg2.Prop1.Should().Be(prop1);
-            cfg2.Prop2.Should().Be(prop2);
         }
     }
 }

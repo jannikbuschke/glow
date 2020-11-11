@@ -71,6 +71,14 @@ export const defaultSampleConfiguration: SampleConfiguration = {
   nullableEnum: null,
 }
 
+export interface SampleAction {
+  foo: string | null
+}
+
+export const defaultSampleAction: SampleAction = {
+  foo: "",
+}
+
 export interface CreateUser {
   displayName: string | null
   email: string | null
@@ -99,10 +107,10 @@ export const defaultDeletePortfolio: DeletePortfolio = {
   id: "00000000-0000-0000-0000-000000000000",
 }
 
-export interface Unit {
+export interface Foo {
 }
 
-export const defaultUnit: Unit = {
+export const defaultFoo: Foo = {
 }
 
 export interface UpdatePortfolio {
@@ -123,11 +131,12 @@ export declare module Entities {
   export type IConfigurationMeta = "Glow.Configurations.IConfigurationMeta"
   export type Profile = "Glow.Core.Profiles.Profile"
   export type SampleConfiguration = "Glow.Sample.Configurations.SampleConfiguration"
+  export type SampleAction = "Glow.Sample.Actions.SampleAction"
   export type CreateUser = "Glow.Sample.Forms.CreateUser"
   export type CreatePortfolio = "Glow.Sample.Files.CreatePortfolio"
   export type DeletePortfolio = "Glow.Sample.Files.DeletePortfolio"
-  export type Unit = "MediatR.Unit"
+  export type Foo = "Glow.Sample.Files.Foo"
   export type UpdatePortfolio = "Glow.Sample.Files.UpdatePortfolio"
 
-  export type All = Portfolio | PortfolioFile | IConfigurationMeta | Profile | SampleConfiguration | CreateUser | CreatePortfolio | DeletePortfolio | Unit | UpdatePortfolio
+  export type All = Portfolio | PortfolioFile | IConfigurationMeta | Profile | SampleConfiguration | SampleAction | CreateUser | CreatePortfolio | DeletePortfolio | Foo | UpdatePortfolio
 }

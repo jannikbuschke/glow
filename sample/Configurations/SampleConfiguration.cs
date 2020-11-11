@@ -16,7 +16,7 @@ namespace Glow.Sample.Configurations
         Title = "Sample Configuration",
         Id = "sample-configuration",
         SectionId = "sample-configuration",
-        Policy = "test-policy"
+        Policy = Policies.Privileged
     )]
     public class SampleConfiguration
     {

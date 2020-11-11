@@ -161,7 +161,7 @@ namespace Glow.Sample.Files
         [HttpGet("single/{id}")]
         public Task<Portfolio> GetSingle(Guid id)
         {
-            return ctx.Portfolios.Include(v=>v.Files).SingleAsync(v => v.Id == id);
+            return ctx.Portfolios.Include(v => v.Files).SingleAsync(v => v.Id == id);
         }
 
         [Validatable]
@@ -190,7 +190,7 @@ namespace Glow.Sample.Files
 
         [HttpPost("stage-files")]
         [RequestSizeLimit(52428800)]
-        public async Task<ActionResult<IEnumerable<PortfolioFile>>> StageFiles(Unit request)
+        public async Task<ActionResult<IEnumerable<PortfolioFile>>> StageFiles([FromForm] Foo request)
         {
             IList<PortfolioFile> result = await fileService.WriteFormfilesToPath<PortfolioFile>(Request.Form.Files, "runtime-files");
             ctx.PortfolioFiles.AddRange(result);
@@ -204,6 +204,8 @@ namespace Glow.Sample.Files
             return examples.Data;
         }
     }
+
+    public class Foo { }
 
     [ODataRoutePrefix("Portfolios")]
     public class PortfoliosOdataController : BaseOdataController<Portfolio, Guid>

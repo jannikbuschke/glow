@@ -2,9 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using Glow.Core.Linq;
 using Glow.Core.Typescript;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.Extensions.Hosting;
@@ -13,7 +14,7 @@ using Serilog;
 
 namespace Glow.TypeScript
 {
-    public class GenerateApiClientsAtStartup : IStartupFilter
+    public class GenerateApiClientsAtStartup : IHostedService
     {
         private readonly IApiDescriptionGroupCollectionProvider descriptionGroupCollectionProvider;
         private readonly IApiDescriptionProvider descriptionProvider;
@@ -35,14 +36,14 @@ namespace Glow.TypeScript
 
         public static HashSet<Type> CustomTypes = new HashSet<Type>();
 
-        public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
+        public Task StartAsync(CancellationToken cancellationToken)
         {
             if (!environment.IsDevelopment())
             {
-                return next;
+                Console.WriteLine("Skip TS client generation");
+                return Task.CompletedTask;
             }
-
-            //IEnumerable<ApiDescription> items = descriptionGroupCollectionProvider.ApiDescriptionGroups.Items.First().Items.Take(2);
+            Console.WriteLine("Generate TS client");
 
             var descriptions = descriptionGroupCollectionProvider.ApiDescriptionGroups.Items.Select(v => new
             {
@@ -93,7 +94,7 @@ namespace Glow.TypeScript
                             }
                         }
 
-                        builder.AppendLine($"export module {a.ControllerName} {{");
+                        builder.AppendLine($"export module {a.ControllerName.Replace("`", "")} {{");
                         if (a.HttpMethod?.ToLower() == "post")
                         {
                             builder.Append(
@@ -133,7 +134,14 @@ namespace Glow.TypeScript
             //builder.Insert(0, "/* eslint-disable prettier/prettier */");
             System.IO.File.WriteAllText("web/src/ts-api.ts", builder.ToString());
 
-            return next;
+            return Task.CompletedTask;
+        }
+
+        public Task StopAsync(CancellationToken cancellationToken)
+        {
+            //throw new NotImplementedException();
+            return Task.CompletedTask;
+
         }
     }
 }

@@ -42,14 +42,14 @@ namespace Glow.Test
             scope.Dispose();
         }
 
-        protected T GetRequiredService<T>()
-        {
-            return scope.ServiceProvider.GetRequiredService<T>();
-        }
+        //protected T GetRequiredService<T>()
+        //{
+        //    return scope.ServiceProvider.GetRequiredService<T>();
+        //}
 
-        protected Task<TResponse> Send<TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            return GetRequiredService<IMediator>().Send(request);
-        }
+        //protected Task<TResponse> Send<TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken = default(CancellationToken))
+        //{
+        //    return GetRequiredService<IMediator>().Send(request);
+        //}
     }
 }

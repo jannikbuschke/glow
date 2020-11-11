@@ -34,12 +34,15 @@ namespace Glow.TypeScript
         )
         {
             services.AddSingleton(new AssembliesToScan() { Value = assembliesToScan });
-            services.AddTransient<IStartupFilter, GenerateTsModelsAtStartup>();
-            if (generateApi)
-            {
-                services.AddTransient<IStartupFilter, GenerateApiClientsAtStartup>();
-            }
+
+            services.AddHostedService<GenerateApiClientsAtStartup>();
+            services.AddHostedService<GenerateTsModelsAtStartup>();
+
+            //services.AddTransient<IStartupFilter, GenerateTsModelsAtStartup>();
+            //if (generateApi)
+            //{
+            //    services.AddTransient<IStartupFilter, GenerateApiClientsAtStartup>();
+            //}
         }
     }
 }
-

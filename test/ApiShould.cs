@@ -4,9 +4,10 @@ using Xunit;
 
 namespace Glow.Test
 {
+    [Collection("integration-tests")]
     public class ApiShould : BaseIntegrationTestClass
     {
-        public ApiShould(CustomWebApplicationFactory<Startup> factory) : base(factory) { }
+        public ApiShould(IntegrationTestFixture fixture) : base(fixture.Factory) { }
 
         [Fact]
         public async void Not_Throw()

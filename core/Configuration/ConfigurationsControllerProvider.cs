@@ -7,17 +7,18 @@ using Microsoft.AspNetCore.Mvc.Controllers;
 
 namespace Glow.Configurations
 {
-    public class ControllerProvider : IApplicationFeatureProvider<ControllerFeature>
+    public class ConfigurationsControllerProvider : IApplicationFeatureProvider<ControllerFeature>
     {
         private readonly IEnumerable<Assembly> assemblies;
 
-        public ControllerProvider(IEnumerable<Assembly> assemblies)
+        public ConfigurationsControllerProvider(IEnumerable<Assembly> assemblies)
         {
             this.assemblies = assemblies ?? throw new NullReferenceException();
         }
 
         public void PopulateFeature(IEnumerable<ApplicationPart> parts, ControllerFeature feature)
         {
+            Serilog.Log.Logger.Information("Populate " + nameof(ConfigurationsControllerProvider));
             IEnumerable<Type> candidates = assemblies
                 .SelectMany(v => v.GetExportedTypes()
                 .Where(x => x.GetCustomAttributes(typeof(ConfigurationAttribute), true).Any()));

@@ -4,43 +4,50 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using Glow.TypeScript;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.Services.Common;
 
 namespace Glow.Core.Typescript
 {
 
-    public class GenerateTsModelsAtStartup : IStartupFilter
+    public class GenerateTsModelsAtStartup : IHostedService
     {
         private readonly IApiDescriptionGroupCollectionProvider descriptionGroupCollectionProvider;
         private readonly IApiDescriptionProvider descriptionProvider;
         private readonly IWebHostEnvironment environment;
         private readonly AssembliesToScan assembliesToScan;
+        private readonly ILogger<GenerateTsModelsAtStartup> logger;
 
         public GenerateTsModelsAtStartup(
             IApiDescriptionGroupCollectionProvider descriptionGroupCollectionProvider,
             IApiDescriptionProvider descriptionProvider,
             IWebHostEnvironment environment,
-            AssembliesToScan assembliesToScan
+            AssembliesToScan assembliesToScan,
+            ILogger<GenerateTsModelsAtStartup> logger
         )
         {
             this.descriptionGroupCollectionProvider = descriptionGroupCollectionProvider;
             this.descriptionProvider = descriptionProvider;
             this.environment = environment;
             this.assembliesToScan = assembliesToScan;
+            this.logger = logger;
         }
 
-        public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
+        public Task StartAsync(CancellationToken cancellationToken)
         {
             if (!environment.IsDevelopment())
             {
-                return next;
+                Console.WriteLine("Skip TS model generation");
+                return Task.CompletedTask;
             }
-
+            Console.WriteLine("Generate TS models");
             IEnumerable<Type> profileTypes = assembliesToScan.Value
                 .SelectMany(v => v.GetTypes())
                 .Where(v => v.IsSubclassOf(typeof(TypeScriptProfile)));
@@ -81,7 +88,8 @@ namespace Glow.Core.Typescript
             //builder.Insert(0, "/* eslint-disable prettier/prettier */");
             File.WriteAllText("web/src/ts-models.ts", builder.ToString());
 
-            return next;
+            return Task.CompletedTask;
+
         }
 
         private static void Render(Type type, StringBuilder builder, StringBuilder entities, List<string> allEntities)
@@ -108,6 +116,11 @@ namespace Glow.Core.Typescript
             });
             builder.AppendLine("}");
             builder.AppendLine("");
+        }
+
+        public Task StopAsync(CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
         }
     }
 
