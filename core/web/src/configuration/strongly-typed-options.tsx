@@ -16,14 +16,19 @@ import { useData } from "../query/use-data"
 import { ErrorBanner } from "../errors/error-banner"
 import styled from "styled-components"
 
-function toType(type: string, name: string, isArray: boolean) {
+function toType(
+  type: string,
+  name: string,
+  isArray: boolean,
+  disabled?: boolean,
+) {
   switch (type) {
     case "string":
-      return <Input fast={true} name={name} />
+      return <Input fast={true} name={name} disabled={disabled} />
     case "number":
-      return <InputNumber fast={true} name={name} />
+      return <InputNumber fast={true} name={name} disabled={disabled} />
     case "boolean":
-      return <Switch fast={true} name={name} />
+      return <Switch fast={true} name={name} disabled={disabled} />
     case "object": {
       if (isArray) {
         return (
@@ -44,6 +49,7 @@ function toType(type: string, name: string, isArray: boolean) {
                       <Input
                         fast={true}
                         name={`${name}[${i}]`}
+                        disabled={disabled}
                         // style={{ flex: 1 }}
                       />
                       <RemoveRowButton name={`${name}`} index={i}>
@@ -83,6 +89,7 @@ interface Props {
   configurationId: string
   allowEdit?: boolean
   name?: string
+  disabled?: boolean
 }
 
 type WithChildren = Props & { type: "children"; children: React.ReactNode }
@@ -98,6 +105,7 @@ export function StronglyTypedOptions({
   configurationId,
   allowEdit = true,
   name = "",
+  disabled,
   ...rest
 }: P) {
   const { submit } = useActions(url)
@@ -171,7 +179,12 @@ export function StronglyTypedOptions({
                       >
                         {overrideEditors && Boolean(overrideEditors[v])
                           ? overrideEditors[v]
-                          : toType(typeof data[v], v, Array.isArray(data[v]))}
+                          : toType(
+                              typeof data[v],
+                              v,
+                              Array.isArray(data[v]),
+                              disabled,
+                            )}
                       </Form.Item>
                     ))}
               </div>
