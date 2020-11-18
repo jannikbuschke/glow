@@ -14,9 +14,9 @@ namespace JannikB.Glue.AspNetCore
 
     public class MissingConsentException : Exception
     {
-        public MissingConsentException(string msg) : base(msg)
-        { }
+        public MissingConsentException(string msg, string scope) : base(msg)
+        { Scope = scope; }
 
-        public string Scope { get; set; }
+        public string Scope { get; }
     }
 }
