@@ -20,6 +20,7 @@ import {
 import { DetailviewExample } from "./detail-view"
 import { ListViewExample } from "./list-view"
 import { FormExample } from "./form"
+import { MasterDetailViewExample } from "./master-detail-view-example"
 
 function App() {
   return (
@@ -57,6 +58,11 @@ function App() {
               icon: <FormOutlined />,
               content: "Form",
             },
+            {
+              key: "master-detail",
+              icon: <FormOutlined />,
+              content: "Masterdetail",
+            },
           ]}
         />
         <Content>
@@ -66,6 +72,7 @@ function App() {
           <DetailviewExample />
           <ListViewExample />
           <FormExample />
+          <MasterDetailViewExample />
         </Content>
       </Container>
     </Router>

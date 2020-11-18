@@ -1,17 +1,7 @@
-import {
-  Button,
-  Descriptions,
-  Divider,
-  Menu,
-  PageHeader,
-  Row,
-  Statistic,
-  Tabs,
-  Tag,
-} from "antd"
+import { Button, PageHeader, Tabs, Tag } from "antd"
 import * as React from "react"
-import { Route, Routes, useNavigate, useParams, useMatch } from "react-router"
-import { RoutedTabs, RoutedMenu, RenderObject, List } from "glow-react"
+import { Route, Routes } from "react-router"
+import { RoutedTabs, List } from "glow-react"
 
 export function ListViewExample() {
   return (
@@ -22,7 +12,6 @@ export function ListViewExample() {
 }
 
 function Sample() {
-  const navigate = useNavigate()
   return (
     <div style={{ flex: 1 }}>
       <PageHeader
