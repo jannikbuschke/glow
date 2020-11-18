@@ -54,9 +54,9 @@ namespace Glow.Core.Actions
                     }
                     else
                     {
-                        var arg = interfaces.FirstOrDefault().GenericTypeArguments?.FirstOrDefault();
+                        Type arg = interfaces.FirstOrDefault().GenericTypeArguments?.FirstOrDefault();
                         feature.Controllers.Add(
-                            typeof(ActionController<,>).MakeGenericType(candidate,arg).GetTypeInfo()
+                            typeof(ActionController<,>).MakeGenericType(candidate, arg).GetTypeInfo()
                         );
                     }
 
