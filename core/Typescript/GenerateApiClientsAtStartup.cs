@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -10,6 +11,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Serilog;
 
 namespace Glow.TypeScript
@@ -20,18 +22,21 @@ namespace Glow.TypeScript
         private readonly IApiDescriptionProvider descriptionProvider;
         private readonly IWebHostEnvironment environment;
         private readonly ILogger<GenerateApiClientsAtStartup> logger;
+        private readonly Options options;
 
         public GenerateApiClientsAtStartup(
             IApiDescriptionGroupCollectionProvider descriptionGroupCollectionProvider,
             IApiDescriptionProvider descriptionProvider,
             IWebHostEnvironment environment,
-            ILogger<GenerateApiClientsAtStartup> logger
+            ILogger<GenerateApiClientsAtStartup> logger,
+            Options options
         )
         {
             this.descriptionGroupCollectionProvider = descriptionGroupCollectionProvider;
             this.descriptionProvider = descriptionProvider;
             this.environment = environment;
             this.logger = logger;
+            this.options = options;
         }
 
         public static HashSet<Type> CustomTypes = new HashSet<Type>();
@@ -132,7 +137,11 @@ namespace Glow.TypeScript
             builder.Insert(0, @$"import {{ {string.Join(", ", CustomTypes.Select(v => v.ToTsType()))} }} from ""./ts-models""");
             builder.Insert(0, "\r\n");
             //builder.Insert(0, "/* eslint-disable prettier/prettier */");
-            System.IO.File.WriteAllText("web/src/ts-api.ts", builder.ToString());
+
+            if (options.GenerateApi)
+            {
+                File.WriteAllText($"{options.GetPath()}ts-api.ts", builder.ToString());
+            }
 
             return Task.CompletedTask;
         }

@@ -23,13 +23,15 @@ namespace Glow.Core.Typescript
         private readonly IWebHostEnvironment environment;
         private readonly AssembliesToScan assembliesToScan;
         private readonly ILogger<GenerateTsModelsAtStartup> logger;
+        private readonly Options options;
 
         public GenerateTsModelsAtStartup(
             IApiDescriptionGroupCollectionProvider descriptionGroupCollectionProvider,
             IApiDescriptionProvider descriptionProvider,
             IWebHostEnvironment environment,
             AssembliesToScan assembliesToScan,
-            ILogger<GenerateTsModelsAtStartup> logger
+            ILogger<GenerateTsModelsAtStartup> logger,
+            Options options
         )
         {
             this.descriptionGroupCollectionProvider = descriptionGroupCollectionProvider;
@@ -37,6 +39,7 @@ namespace Glow.Core.Typescript
             this.environment = environment;
             this.assembliesToScan = assembliesToScan;
             this.logger = logger;
+            this.options = options;
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
@@ -84,8 +87,9 @@ namespace Glow.Core.Typescript
             builder.AppendLine($"  export type All = {string.Join(" | ", allEntityNames)}");
             builder.AppendLine("}");
             builder.Insert(0, "\r\n");
+
             //builder.Insert(0, "/* eslint-disable prettier/prettier */");
-            File.WriteAllText("web/src/ts-models.ts", builder.ToString());
+            File.WriteAllText($"{options.GetPath()}ts-models.ts", builder.ToString());
 
             return Task.CompletedTask;
 

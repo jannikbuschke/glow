@@ -12,6 +12,18 @@ namespace Glow.TypeScript
         public Assembly[] Value { get; set; }
     }
 
+    public class Options
+    {
+        public string Path { get; set; }
+        public bool GenerateApi { get; set; }
+
+        public string GetPath()
+        {
+            return Path ?? "web/src/";
+        }
+    }
+
+
     public static class Extensions
     {
         public static string CamelCase(this string value)
@@ -29,19 +41,16 @@ namespace Glow.TypeScript
         public static void AddTypescriptGeneration(
             this IServiceCollection services,
             Assembly[] assembliesToScan,
-            bool generateApi = true
+            Action<Options> configureOptions = null
         )
         {
-            services.AddSingleton(new AssembliesToScan() { Value = assembliesToScan });
+                var options = new Options();
+            configureOptions?.Invoke(options);
+            services.AddSingleton(options);
 
+            services.AddSingleton(new AssembliesToScan() { Value = assembliesToScan });
             services.AddHostedService<GenerateApiClientsAtStartup>();
             services.AddHostedService<GenerateTsModelsAtStartup>();
-
-            //services.AddTransient<IStartupFilter, GenerateTsModelsAtStartup>();
-            //if (generateApi)
-            //{
-            //    services.AddTransient<IStartupFilter, GenerateApiClientsAtStartup>();
-            //}
         }
     }
 }
