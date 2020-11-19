@@ -4,7 +4,7 @@ import { schema, normalize } from "normalizr"
 import { useField } from "formik"
 import debounce from "lodash.debounce"
 import styled from "styled-components"
-import { SelectValue } from "antd/lib/select"
+import { SelectProps, SelectValue } from "antd/lib/select"
 
 const entitySchema = new schema.Entity(
   "values",
@@ -27,7 +27,7 @@ export function RemoteSelect<T extends SelectValue>({
   fetcher: (search: string) => Promise<any>
   setByReference: boolean
   renderItem: (item: any, i: number) => JSX.Element
-}) {
+} & SelectProps<T>) {
   // var { disabled, name, fetcher, setByReference, renderItem } = _a, restProps = __rest(_a, ["disabled", "name", "fetcher", "setByReference", "renderItem"]);
   const [dataSource, setDataSource] = React.useState<any[]>([])
   const [users, setUsers] = React.useState<any>({})
