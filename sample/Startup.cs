@@ -95,7 +95,11 @@ namespace Glow.Sample
 
             // Reinforced typings:
             //services.AddTransient<IStartupFilter, CreateTypescriptDefinitions>();
-            services.AddTypescriptGeneration(new[] { GetType().Assembly }, true);
+            services.AddTypescriptGeneration(new[] { GetType().Assembly }, options=>
+            {
+                options.GenerateApi = false;
+                //options.Path =
+            });
         }
 
         public void Configure(
