@@ -1,5 +1,4 @@
 import React from "react"
-import { Layout } from "antd"
 import "antd/dist/antd.css"
 import { FilesExample } from "./files-example"
 import { BrowserRouter as Router } from "react-router-dom"
@@ -16,11 +15,13 @@ import {
   ProjectFilled,
   SettingOutlined,
   UnorderedListOutlined,
+  EditOutlined,
 } from "@ant-design/icons"
 import { DetailviewExample } from "./detail-view"
 import { ListViewExample } from "./list-view"
 import { FormExample } from "./form"
 import { MasterDetailViewExample } from "./master-detail-view-example"
+import { SelectAsyncExample } from "./select-async-example"
 
 function App() {
   return (
@@ -63,6 +64,11 @@ function App() {
               icon: <FormOutlined />,
               content: "Masterdetail",
             },
+            {
+              key: "select-async",
+              icon: <EditOutlined />,
+              content: "Select Async",
+            },
           ]}
         />
         <Content>
@@ -73,6 +79,7 @@ function App() {
           <ListViewExample />
           <FormExample />
           <MasterDetailViewExample />
+          <SelectAsyncExample />
         </Content>
       </Container>
     </Router>

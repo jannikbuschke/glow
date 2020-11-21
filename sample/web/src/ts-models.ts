@@ -125,6 +125,18 @@ export const defaultUpdatePortfolio: UpdatePortfolio = {
   files: [],
 }
 
+export interface User {
+  id: string | null
+  displayName: string | null
+  email: string | null
+}
+
+export const defaultUser: User = {
+  id: "",
+  displayName: "",
+  email: "",
+}
+
 export declare module Entities {
   export type Portfolio = "Glow.Sample.Files.Portfolio"
   export type PortfolioFile = "Glow.Sample.Files.PortfolioFile"
@@ -137,6 +149,7 @@ export declare module Entities {
   export type DeletePortfolio = "Glow.Sample.Files.DeletePortfolio"
   export type Foo = "Glow.Sample.Files.Foo"
   export type UpdatePortfolio = "Glow.Sample.Files.UpdatePortfolio"
+  export type User = "Glow.Sample.Users.User"
 
-  export type All = Portfolio | PortfolioFile | IConfigurationMeta | Profile | SampleConfiguration | SampleAction | CreateUser | CreatePortfolio | DeletePortfolio | Foo | UpdatePortfolio
+  export type All = Portfolio | PortfolioFile | IConfigurationMeta | Profile | SampleConfiguration | SampleAction | CreateUser | CreatePortfolio | DeletePortfolio | Foo | UpdatePortfolio | User
 }

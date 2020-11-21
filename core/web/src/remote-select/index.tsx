@@ -97,15 +97,3 @@ export function RemoteSelect<T extends SelectValue>({
     </Select>
   )
 }
-const Email = styled.span`
-  margin-left: 4px;
-`
-const Details = styled.span`
-  margin-left: 8px;
-`
-const Container = styled.span`
-  display: flex;
-  flex-direction: row;
-  align-content: center;
-  align-items: center;
-`
