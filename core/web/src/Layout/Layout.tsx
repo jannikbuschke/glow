@@ -70,6 +70,6 @@ export const ApplicationLayout = ({
   </Layout>
 )
 
-export const Root = styled(Layout)`
+export const Root = styled.div`
   height: 100vh;
 `
