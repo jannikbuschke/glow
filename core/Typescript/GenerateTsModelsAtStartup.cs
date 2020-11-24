@@ -182,7 +182,7 @@ namespace Glow.Core.Typescript
 
         public static void AddType(Type type)
         {
-            typeDictionary.Add(type, type.Name);
+            typeDictionary.TryAdd(type, type.Name);
         }
 
         private static bool IsNullable(Type type)
