@@ -18,6 +18,12 @@ namespace Glow.Core.Queries
                 return;
             }
 
+            if (query["$count"].FirstOrDefault() == "true")
+            {
+                objectResult.Value = new { count = queryable.Count() };
+                return;
+            }
+
             var skipParam = query["$skip"].FirstOrDefault();
             if (!string.IsNullOrWhiteSpace(skipParam) && int.TryParse(skipParam, out var skip))
             {

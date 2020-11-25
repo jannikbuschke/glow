@@ -21,7 +21,7 @@ namespace Glow.Sample.Views
             .RuleFor(v => v.DisplayName, f => f.Person.UserName)
             .Generate(1000);
 
-        protected override IQueryable<ListViewItem> Get()
+        protected override IQueryable<ListViewItem> Get(string search)
         {
             return data.AsQueryable();
         }
