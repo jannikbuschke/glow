@@ -25,9 +25,9 @@ namespace Glow.Core.Queries
             }
 
             var takeParam = query["$take"].FirstOrDefault();
-            if (!string.IsNullOrWhiteSpace(takeParam) && int.TryParse(skipParam, out var take))
+            if (!string.IsNullOrWhiteSpace(takeParam) && int.TryParse(takeParam, out var take))
             {
-                queryable = queryable?.Skip(take);
+                queryable = queryable?.Take(take);
             }
 
             objectResult.Value = queryable;
