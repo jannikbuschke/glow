@@ -7,13 +7,13 @@ namespace Glow.Core.Views
     [ApiController]
     public abstract class ListView<T> : ControllerBase
     {
-        protected abstract IQueryable<T> Get();
+        protected abstract IQueryable<T> Get(string search);
 
         [PaginateFilter]
         [HttpGet]
-        public IQueryable<T> Query()
+        public IQueryable<T> Query(string search)
         {
-            return Get();
+            return Get(search);
         }
     }
 }
