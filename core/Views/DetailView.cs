@@ -11,9 +11,14 @@ namespace Glow.Core.Views
 
         [PaginateFilter]
         [HttpGet("{id}")]
-        public Task<T> GetSingle(Key id)
+        public async Task<ActionResult<T>> GetSingle(Key id)
         {
-            return Get(id);
+            var result = await Get(id);
+            if (result == null)
+            {
+                return NotFound();
+            }
+            return result;
         }
     }
 }
