@@ -1,6 +1,6 @@
-export async function fetchJson<T>(key: RequestInfo, init?: RequestInit) {
-  const response = await fetch(key, init)
+import { useFetch } from "./fetch-context"
 
+async function handleResponse<T>(response: Response) {
   if (response.ok) {
     if (response.status === 204) {
       return (null as any) as T
@@ -25,6 +25,24 @@ export async function fetchJson<T>(key: RequestInfo, init?: RequestInit) {
       )
     }
   }
+}
+
+export function useFetchJson<T>(): (
+  key: RequestInfo,
+  init?: RequestInit,
+) => Promise<T> {
+  const fetch = useFetch()
+  return async (key: RequestInfo, init?: RequestInit) => {
+    const response = await fetch(key, init)
+    const result = handleResponse<T>(response)
+    return result
+  }
+}
+
+export async function fetchJson<T>(key: RequestInfo, init?: RequestInit) {
+  const response = await fetch(key, init)
+  const result = handleResponse<T>(response)
+  return result
 }
 
 export async function postJson<Response>(

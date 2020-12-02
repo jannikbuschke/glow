@@ -1,8 +1,15 @@
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Glow.Authentication.Aad;
+using Glow.Core.Authentication;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Identity.Client;
 
 namespace Glow.Core.Profiles
 {
@@ -13,6 +20,11 @@ namespace Glow.Core.Profiles
         public string Email { get; set; }
         public string IdentityName { get; set; }
         public bool IsAuthenticated { get; set; }
+
+        public string ObjectId { get; set; }
+        public string UserId { get; set; }
+
+        public IEnumerable<KeyValuePair<string, string>> Claims { get; set; }
     }
 
     public class HasConsented
@@ -24,10 +36,21 @@ namespace Glow.Core.Profiles
     public class ProfileController : ControllerBase
     {
         private readonly ILogger<ProfileController> logger;
+        private readonly IWebHostEnvironment env;
+        private readonly IConfiguration configuration;
+        private readonly IGraphTokenService graphTokenService;
 
-        public ProfileController(ILogger<ProfileController> logger)
+        public ProfileController(
+            ILogger<ProfileController> logger,
+            IWebHostEnvironment env,
+            IConfiguration configuration,
+            IGraphTokenService graphTokenService
+        )
         {
             this.logger = logger;
+            this.env = env;
+            this.configuration = configuration;
+            this.graphTokenService = graphTokenService;
         }
 
         [HttpGet]
@@ -36,6 +59,7 @@ namespace Glow.Core.Profiles
         public ActionResult<Profile> Get()
         {
             var isAuthenticated = User?.Identity.IsAuthenticated ?? false;
+            IEnumerable<KeyValuePair<string, string>> claims = env.IsDevelopment() ? User.Claims.Select(v => new KeyValuePair<string, string>(v.Type, v.Value)) : null;
 
             return new Profile
             {
@@ -43,7 +67,11 @@ namespace Glow.Core.Profiles
                 Email = User.Email(),
                 Id = User.NameIdentifier(),
                 IdentityName = User?.Identity.Name,
-                IsAuthenticated = isAuthenticated
+                IsAuthenticated = isAuthenticated,
+
+                ObjectId = User.GetObjectId(),
+                UserId = User.GetObjectId(),
+                Claims = claims
             };
         }
 
@@ -55,6 +83,37 @@ namespace Glow.Core.Profiles
             logger.LogInformation("Claims {@claims}", claims);
 
             return claims;
+        }
+
+        [Authorize]
+        [AllowAnonymous]
+        [HttpGet("has-consent")]
+        public async Task<HasConsented> HasConsent(string scope)
+        {
+            if (!User.Identity.IsAuthenticated) { return new HasConsented { Value = false }; }
+
+            if (configuration.MockExternalSystems())
+            {
+                return new HasConsented { Value = true };
+            }
+
+            try
+            {
+                AuthenticationResult result = await graphTokenService.TokenForCurrentUser(new string[] { scope });
+                return new HasConsented { Value = result.Scopes.Contains(scope.ToLower()) };
+            }
+            catch (System.ArgumentNullException)
+            {
+                return new HasConsented { Value = false };
+            }
+            catch (MsalUiRequiredException e)
+            {
+                if (e.ErrorCode == "invalid_grant")
+                {
+                    return new HasConsented { Value = false };
+                }
+                throw e;
+            }
         }
     }
 }

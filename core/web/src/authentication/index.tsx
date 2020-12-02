@@ -1,8 +1,9 @@
 import * as React from "react"
 import { notification } from "antd"
+import { useFetch } from "../http/fetch-context"
 
-interface Profile {
-  displayname: string | null
+export interface Profile {
+  displayName: string | null
   identityName: string | null
   email: string | null
   objectId: string | null
@@ -41,10 +42,10 @@ export function useAuthentication() {
 
 export function AuthenticationProvider(props: React.PropsWithChildren<{}>) {
   const [status, setStatus] = React.useState<Status>(Status.checking)
-
+  const fetch = useFetch()
   const [profile, setProfile] = React.useState<Profile>({
     claims: [],
-    displayname: null,
+    displayName: null,
     email: null,
     userId: null,
     identityName: null,
@@ -55,7 +56,7 @@ export function AuthenticationProvider(props: React.PropsWithChildren<{}>) {
 
   React.useEffect(() => {
     setStatus(Status.checking)
-    fetch("/api/Profile/me", {
+    fetch("/glow/profile", {
       credentials: "same-origin",
     })
       .then((v) => v.json())

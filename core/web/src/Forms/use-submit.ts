@@ -1,5 +1,6 @@
 import * as React from "react"
 import { set } from "lodash"
+import { useFetch } from "../http/fetch-context"
 
 export type Result<T> = Success<T> | Error
 
@@ -53,9 +54,11 @@ export function useSubmit<T = any>(
   string,
 ] {
   const [error, setError] = React.useState("")
+  const fetch = useFetch()
+
   return [
     async (values: any): Promise<Result<T>> => {
-      const response = await submitJson(url, values)
+      const response = await fetch(url, execute(values))
       if (!response.ok) {
         if (response.headers.has("content-type")) {
           const contentType = response.headers.get("content-type")
@@ -84,7 +87,7 @@ export function useSubmit<T = any>(
       }
     },
     async (values: any): Promise<any | undefined> => {
-      const response = await send(url, values, "validate")
+      const response = await fetch(url, validate(values))
       if (response.ok) {
         const data = (await response.json()) as ValidationResult
         const errors = toFormikErrors(data.errors)
@@ -119,18 +122,26 @@ const toFormikErrors = (error: SerializableError) => {
   return errors
 }
 
-export function submitJson(url: string, values: any) {
-  return send(url, values, "execute")
-}
-
-function send(url: string, values: any, intent: "execute" | "validate") {
-  return fetch(url, {
+function execute(values: any): RequestInit {
+  return {
     method: "POST",
     body: JSON.stringify(values),
     credentials: "same-origin",
     headers: {
-      "x-submit-intent": intent,
+      "x-submit-intent": "execute",
       "content-type": "application/json",
     },
-  })
+  }
+}
+
+function validate(values: any): RequestInit {
+  return {
+    method: "POST",
+    body: JSON.stringify(values),
+    credentials: "same-origin",
+    headers: {
+      "x-submit-intent": "validate",
+      "content-type": "application/json",
+    },
+  }
 }

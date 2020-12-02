@@ -4,6 +4,7 @@ import { FormikFieldProps } from "formik-antd/lib/FieldProps"
 import { Select, Alert, Spin } from "antd"
 import { debounce } from "lodash"
 import { SelectProps } from "antd/lib/select"
+import { useFetch } from "../http/fetch-context"
 
 export const RemoteSelect = ({
   name,
@@ -26,7 +27,6 @@ export const RemoteSelect = ({
 
   const [raw, setData] = React.useState<any>(null)
   const [error, setError] = React.useState("")
-
   React.useEffect(() => {
     ;(async () => {
       try {

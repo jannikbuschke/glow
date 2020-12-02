@@ -1,11 +1,12 @@
 import { QueryOptions, useQuery } from "react-query"
-import { fetchJson } from "../http/fetch"
+import { useFetchJson } from "../http/fetch"
 
 export function useData<T>(
   url: string,
   placeholder: T,
   config?: QueryOptions<T>,
 ) {
+  const fetchJson = useFetchJson<T>()
   const { data, ...rest } = useQuery<T, any>(url, () => fetchJson(url), {
     retry: 1,
     refetchOnWindowFocus: false,

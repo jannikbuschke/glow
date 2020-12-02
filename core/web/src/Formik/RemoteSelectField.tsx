@@ -3,6 +3,7 @@ import * as React from "react"
 import { Field, FieldProps } from "formik"
 import { debounce } from "lodash"
 import { SelectProps } from "antd/lib/select"
+import { useFetch } from "../http/fetch-context"
 
 type Props = {
   name: string
@@ -15,7 +16,7 @@ export const RemoteSelectField = (props: Props) => {
   const [search, setSearch] = React.useState("")
   const [data, setData] = React.useState<any>(null)
   const [error, setError] = React.useState("")
-
+  const fetch = useFetch()
   React.useEffect(() => {
     ;(async () => {
       const response = await fetch(`${url}&search=${search}`, {})

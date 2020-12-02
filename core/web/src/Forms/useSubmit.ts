@@ -1,5 +1,6 @@
 import * as React from "react"
 import { set } from "lodash"
+import { useFetch } from "../http/fetch-context"
 
 function camelize(str: string) {
   return str.split(".").map(_camelize).join(".")
@@ -19,17 +20,6 @@ const toFormikErrors = (error: SerializableError) => {
     set(errors, path, error[key])
   })
   return errors
-}
-
-function send(url: string, values: any, intent: "execute" | "validate") {
-  return fetch(url, {
-    method: "POST",
-    body: JSON.stringify(values),
-    headers: {
-      "x-submit-intent": intent,
-      "content-type": "application/json",
-    },
-  })
 }
 
 export interface ValidationResult {
@@ -69,9 +59,17 @@ export function useSubmit<T = any>(
   string,
 ] {
   const [error, setError] = React.useState("")
+  const fetch = useFetch()
   return [
     async (values: any): Promise<T | undefined> => {
-      const response = await send(url, values, "execute")
+      const response = await fetch(url, {
+        method: "POST",
+        body: JSON.stringify(values),
+        headers: {
+          "x-submit-intent": "execute",
+          "content-type": "application/json",
+        },
+      })
       if (!response.ok) {
         if (response.headers.has("content-type")) {
           const contentType = response.headers.get("content-type")
@@ -90,7 +88,14 @@ export function useSubmit<T = any>(
       }
     },
     async (values: any): Promise<any | undefined> => {
-      const response = await send(url, values, "validate")
+      const response = await fetch(url, {
+        method: "POST",
+        body: JSON.stringify(values),
+        headers: {
+          "x-submit-intent": "validate",
+          "content-type": "application/json",
+        },
+      })
       if (response.ok) {
         const data = (await response.json()) as ValidationResult
         const errors = toFormikErrors(data.errors)
