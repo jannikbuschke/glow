@@ -11,28 +11,15 @@ namespace Glow.Authentication.Aad
     {
         private readonly AzureAdOptions azureAdOptions;
         private static readonly string[] scopes = { "openid" };
-        private readonly UserTokenCacheProviderFactory userTokenCacheProviderFactory;
+        private readonly ITokenCacheProvider tokenCacheProvider;
 
         public TokenService(
             IOptions<AzureAdOptions> options,
-            UserTokenCacheProviderFactory userTokenCacheProviderFactory
+            ITokenCacheProvider tokenCacheProvider
         )
         {
             azureAdOptions = options.Value;
-            this.userTokenCacheProviderFactory = userTokenCacheProviderFactory;
-        }
-
-        public async Task<AuthenticationResult> AcquireOnBehalfOf(string accessToken)
-        {
-            var userAssertion = new UserAssertion(accessToken, "urn:ietf:params:oauth:grant-type:jwt-bearer");
-
-            IConfidentialClientApplication confidentialClientApp = BuildApp();
-
-            AuthenticationResult result = await confidentialClientApp.AcquireTokenOnBehalfOf(
-                    new string[] { "user.read" },
-                    userAssertion)
-                .ExecuteAsync();
-            return result;
+            this.tokenCacheProvider = tokenCacheProvider;
         }
 
         public async Task<AuthenticationResult> GetAccessTokenByAuthorizationCodeAsync(ClaimsPrincipal principal, string code)
@@ -66,15 +53,7 @@ namespace Glow.Authentication.Aad
 
         public void RemoveAccount(ClaimsPrincipal principal)
         {
-            userTokenCacheProviderFactory.Create(principal).Clear();
-        }
-
-        public async Task AddToCache(ClaimsPrincipal principal)
-        {
-            IConfidentialClientApplication app = BuildApp(principal);
-
-            //AuthenticationResult result = await app.AcquireTokenByAuthorizationCode(scopes, code).ExecuteAsync().ConfigureAwait(false);
-            //IAccount account = await app.GetAccountAsync(principal.GetMsalAccountId());
+            tokenCacheProvider.Clear(principal);
         }
 
         private IConfidentialClientApplication BuildApp(ClaimsPrincipal principal = null)
@@ -85,10 +64,7 @@ namespace Glow.Authentication.Aad
                 .WithRedirectUri(azureAdOptions.BaseUrl + azureAdOptions.CallbackPath)
                 .Build();
 
-            if (principal != null)
-            {
-                userTokenCacheProviderFactory.Create(principal).Initialize(app.UserTokenCache);
-            }
+            tokenCacheProvider.Initialize(principal, app.UserTokenCache);
 
             return app;
         }

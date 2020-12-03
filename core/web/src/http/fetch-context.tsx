@@ -31,10 +31,12 @@ const teamsInitialized = new Promise<string>((resolve, reject) => {
   })
   setTimeout(() => {
     if (!initialized) {
-      console.log("no teams context found (timeout)")
       reject("timeout")
     }
   }, 1500)
+})
+teamsInitialized.catch((e) => {
+  console.log(`Teams could not be initialized (${e.toString()})`)
 })
 
 export function TeamsFetchContextProvider({
