@@ -116,4 +116,24 @@ namespace Glow.Core.Profiles
             }
         }
     }
+
+    [Route("graph/profile")]
+    [Authorize]
+    public class GraphProfileController
+    {
+        private readonly IGraphTokenService graphTokenService;
+
+        public GraphProfileController(IGraphTokenService graphTokenService)
+        {
+            this.graphTokenService = graphTokenService;
+        }
+
+        [HttpGet]
+        public async Task<Microsoft.Graph.User> Me()
+        {
+            Microsoft.Graph.GraphServiceClient client = await graphTokenService.GetClientForUser(new string[] { "profile" });
+            Microsoft.Graph.User me = await client.Me.Request().GetAsync();
+            return me;
+        }
+    }
 }

@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Microsoft.Graph;
 using Microsoft.Identity.Client;
 
 namespace Glow.Core.Authentication
@@ -8,5 +9,6 @@ namespace Glow.Core.Authentication
         Task<AuthenticationResult> TokenForCurrentUser(string[] scope);
         Task<string> AccessTokenForCurrentUser(string[] scope);
         Task<string> AccessTokenForApp();
+        Task<GraphServiceClient> GetClientForUser(string[] scopes, bool useBetaEndpoint = false);
     }
 }

@@ -1,10 +1,12 @@
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Glow.Authentication.Aad;
 using JannikB.Glue.AspNetCore;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
+using Microsoft.Graph;
 using Microsoft.Identity.Client;
 
 namespace Glow.Core.Authentication
@@ -66,8 +68,23 @@ namespace Glow.Core.Authentication
                     throw e;
                 }
             }
+
         }
 
+        public async Task<GraphServiceClient> GetClientForUser(string[] scopes, bool useBetaEndpoint = false)
+        {
+            var token = await AccessTokenForCurrentUser(scopes);
+            var client = new GraphServiceClient(
+                useBetaEndpoint? "https://graph.microsoft.com/beta/": "https://graph.microsoft.com/v1.0/",
+                new DelegateAuthenticationProvider(
+                    (requestMessage) =>
+                    {
+                        requestMessage.Headers.Authorization = new AuthenticationHeaderValue("bearer", token);
+                        return Task.FromResult(requestMessage);
+                    }
+                ));
+            return client;
+        }
 
         public async Task<string> AccessTokenForCurrentUser(string[] scopes)
         {

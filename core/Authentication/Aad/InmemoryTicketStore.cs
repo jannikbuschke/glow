@@ -6,12 +6,12 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace Glow.Authentication.Aad
 {
-    public class TicketStoreService : ITicketStore
+    public class InmemoryTicketStore : ITicketStore
     {
         private readonly IMemoryCache cache;
-        private const string _keyPrefix = "authticket";
+        private const string KeyPrefix = "authticket";
 
-        public TicketStoreService(IMemoryCache memoryCache)
+        public InmemoryTicketStore(IMemoryCache memoryCache)
         {
             cache = memoryCache;
         }
@@ -47,11 +47,9 @@ namespace Glow.Authentication.Aad
         public async Task<string> StoreAsync(AuthenticationTicket ticket)
         {
             var id = Guid.NewGuid();
-            var key = _keyPrefix + id;
+            var key = KeyPrefix + id;
             await ((ITicketStore) this).RenewAsync(key, ticket);
             return key;
         }
-
-
     }
 }

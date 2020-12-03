@@ -1,3 +1,4 @@
+using System;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Extensions.Options;
 
@@ -7,11 +8,11 @@ namespace Glow.Authentication.Aad
     {
         public class ConfigureCookieOptions : IConfigureNamedOptions<CookieAuthenticationOptions>
         {
-            private readonly TicketStoreService ticketStore;
+            private readonly ITicketStore ticketStore;
 
-            public ConfigureCookieOptions(TicketStoreService service)
+            public ConfigureCookieOptions(ITicketStore ticketStore)
             {
-                ticketStore = service;
+                this.ticketStore = ticketStore;
             }
 
             public void Configure(string name, CookieAuthenticationOptions options)

@@ -5,26 +5,27 @@ using Microsoft.Identity.Client;
 
 namespace Glow.Authentication.Aad
 {
-    public class UserTokenCacheProvider
+
+    public class TokenCacheProvider: ITokenCacheProvider
     {
         // the in memory cache
         private readonly IMemoryCache cache;
-        private readonly ClaimsPrincipal principal;
+        private ClaimsPrincipal principal;
 
-        public UserTokenCacheProvider(IMemoryCache cache, ClaimsPrincipal principal)
+        public TokenCacheProvider(IMemoryCache cache)
         {
             this.cache = cache;
-            this.principal = principal;
         }
 
-        public void Initialize(ITokenCache tokenCache)
+        public void Initialize(ClaimsPrincipal principal, ITokenCache tokenCache)
         {
+            this.principal = principal;
             tokenCache.SetBeforeAccess(BeforeAccessNotification);
             tokenCache.SetAfterAccess(AfterAccessNotification);
             tokenCache.SetBeforeWrite(BeforeWriteNotification);
         }
 
-        public void Clear()
+        public void Clear(ClaimsPrincipal principal)
         {
             cache.Remove(principal.GetMsalAccountId());
         }
