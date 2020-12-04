@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Security.Claims;
 using Glow.Core.EfMsalTokenStore;
 using Microsoft.Extensions.DependencyInjection;
@@ -51,11 +50,11 @@ namespace Glow.Authentication.Aad
 
         private void Persist(string key, ITokenCacheSerializer tokenCache)
         {
-            using var scope = serviceProvider.CreateScope();
-            var ctx = scope.ServiceProvider.GetRequiredService<IMsalTokenDbContext>();
+            using IServiceScope scope = serviceProvider.CreateScope();
+            IMsalTokenDbContext ctx = scope.ServiceProvider.GetRequiredService<IMsalTokenDbContext>();
 
             var value = tokenCache.SerializeMsalV3();
-            var token = ctx.MsalTokens.Find(key);
+            MsalToken token = ctx.MsalTokens.Find(key);
             if (token != null)
             {
                 token.Value = value;
@@ -65,32 +64,18 @@ namespace Glow.Authentication.Aad
                 ctx.MsalTokens.Add(new MsalToken { Id = key, Value = value });
             }
             ctx.SaveChanges();
-
-            //data.TryAdd(key, tokenCache.SerializeMsalV3());
-            //File.WriteAllBytes("./cache/" + key, tokenCache.SerializeMsalV3());
         }
 
         private void Load(string key, ITokenCacheSerializer tokenCache)
         {
-            using var scope = serviceProvider.CreateScope();
-            var ctx = scope.ServiceProvider.GetRequiredService<IMsalTokenDbContext>();
+            using IServiceScope scope = serviceProvider.CreateScope();
+            IMsalTokenDbContext ctx = scope.ServiceProvider.GetRequiredService<IMsalTokenDbContext>();
 
-            var token = ctx.MsalTokens.Find(key);
+            MsalToken token = ctx.MsalTokens.Find(key);
             if (token != null)
             {
                 tokenCache.DeserializeMsalV3(token.Value);
             }
-
-            //var path = "./cache/" + key;
-            //if (File.Exists(path))
-            //{
-            //    var bytes = File.ReadAllBytes(path);
-            //    tokenCache.DeserializeMsalV3(bytes);
-            //}
-            //if (data.TryGetValue(key, out var value))
-            //{
-            //    tokenCache.DeserializeMsalV3(value);
-            //}
         }
     }
 }
