@@ -24,6 +24,7 @@ namespace Glow.Core.Profiles
         public string ObjectId { get; set; }
         public string UserId { get; set; }
 
+        public IEnumerable<string> Scopes { get; set; }
         public IEnumerable<KeyValuePair<string, string>> Claims { get; set; }
     }
 
@@ -56,10 +57,13 @@ namespace Glow.Core.Profiles
         [HttpGet]
         [Authorize]
         [AllowAnonymous]
-        public ActionResult<Profile> Get()
+        public async Task<ActionResult<Profile>> Get()
         {
+            var mockExternalSystems = env.IsDevelopment() && configuration.MockExternalSystems();
             var isAuthenticated = User?.Identity.IsAuthenticated ?? false;
             IEnumerable<KeyValuePair<string, string>> claims = env.IsDevelopment() ? User.Claims.Select(v => new KeyValuePair<string, string>(v.Type, v.Value)) : null;
+
+            var scopes = mockExternalSystems ? new List<string>() : (await graphTokenService.TokenForCurrentUser(new[] { "profile" })).Scopes;
 
             return new Profile
             {
@@ -69,10 +73,18 @@ namespace Glow.Core.Profiles
                 IdentityName = User?.Identity.Name,
                 IsAuthenticated = isAuthenticated,
 
+                Scopes = scopes,
                 ObjectId = User.GetObjectId(),
                 UserId = User.GetObjectId(),
                 Claims = claims
             };
+        }
+
+        [HttpGet("scopes")]
+        public async Task<IEnumerable<string>> GetScopes()
+        {
+            AuthenticationResult token = await graphTokenService.TokenForCurrentUser(new[] { "profile" });
+            return token.Scopes;
         }
 
         [HttpGet("claims")]

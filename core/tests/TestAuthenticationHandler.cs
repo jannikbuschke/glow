@@ -62,11 +62,16 @@ namespace JannikB.Glue.AspNetCore.Tests
             });
             services.AddAuthentication(options =>
             {
-                options.DefaultAuthenticateScheme = "TestAuthentication";
-                options.DefaultChallengeScheme = "TestAuthentication";
+                options.DefaultAuthenticateScheme = FakeAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = FakeAuthenticationDefaults.AuthenticationScheme;
             })
             .AddScheme<AuthenticationSchemeOptions, TestAuthenticationHandler>("TestAuthentication", null);
         }
+    }
+
+    public static class FakeAuthenticationDefaults
+    {
+        public const string AuthenticationScheme = "TestAuthentication";
     }
 
     public class TestAuthenticationHandler : AuthenticationHandler<AuthenticationSchemeOptions>

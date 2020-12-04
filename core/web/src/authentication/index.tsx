@@ -59,7 +59,13 @@ export function AuthenticationProvider(props: React.PropsWithChildren<{}>) {
     fetch("/glow/profile", {
       credentials: "same-origin",
     })
-      .then((v) => v.json())
+      .then((v) => {
+        if (v.ok) {
+          return v.json()
+        } else {
+          throw new Error("" + v.statusText + v.status)
+        }
+      })
       .then((data: Profile) => {
         setStatus(data.isAuthenticated ? Status.loggedIn : Status.loggedOut)
         setProfile(data)
