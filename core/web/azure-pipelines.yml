@@ -18,8 +18,8 @@ steps:
 - task: CmdLine@2
   inputs:
     script: |
-      cd /home/vsts/.npm/
-      ls
+      'cd /home/vsts/.npm/'
+      'ls'
 
   - task: Npm@1
     displayName: "npm run test"
