@@ -74,6 +74,7 @@ export function AuthenticationProvider(props: React.PropsWithChildren<{}>) {
         notification.error({
           message: "Could not check for profile information: " + e.toString(),
         })
+        setStatus(Status.loggedOut)
       })
   }, [])
   const value = React.useMemo(
