@@ -41,7 +41,12 @@ teamsInitialized.catch((e) => {
 
 export function TeamsFetchContextProvider({
   children,
-}: React.PropsWithChildren<{}>): JSX.Element | null {
+  onError,
+  onSuccess,
+}: React.PropsWithChildren<{
+  onSuccess?: () => void
+  onError?: (e: any) => void
+}>): JSX.Element | null {
   const [loading, setLoading] = React.useState(true)
   const [token, setToken] = React.useState<string | null>(null)
   const f = React.useCallback(
@@ -63,12 +68,11 @@ export function TeamsFetchContextProvider({
       .then((v) => {
         console.log("teams initialized", v)
         setToken(v)
-        notification.success({
-          message: "Logged in",
-        })
+        onSuccess && onSuccess()
       })
       .catch((e) => {
         console.error("Could not initialize teams", e)
+        onError && onError(e)
       })
       .finally(() => setLoading(false))
   }, [])
