@@ -58,6 +58,13 @@ namespace Glow.Core.Profiles
         [AllowAnonymous]
         public async Task<ActionResult<Profile>> Get()
         {
+            if (User == null || !User.Identity.IsAuthenticated)
+            {
+                return new Profile
+                {
+                    IsAuthenticated = false
+                };
+            }
             var mockExternalSystems = env.IsDevelopment() && configuration.MockExternalSystems();
             var isAuthenticated = User?.Identity.IsAuthenticated ?? false;
             IEnumerable<KeyValuePair<string, string>> claims = env.IsDevelopment() ? User.Claims.Select(v => new KeyValuePair<string, string>(v.Type, v.Value)) : null;
