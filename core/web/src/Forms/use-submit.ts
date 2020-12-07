@@ -46,19 +46,23 @@ interface ProblemDetails {
   extensions: any
 }
 
-export function useSubmit<T = any>(
-  url: string,
-): [
+type UseSubmit<T> = [
   (values: any) => Promise<Result<T>>,
   (values: any) => Promise<SerializableError | undefined>,
-  string,
-] {
-  const [error, setError] = React.useState("")
+  { error: string | null; submitting: boolean },
+]
+
+export function useSubmit<T = any>(url: string): UseSubmit<T> {
+  const [error, setError] = React.useState<null | string>(null)
   const fetch = useFetch()
+  const [submitting, setSubmitting] = React.useState(false)
+  // todo: add isSubmitting
 
   return [
     async (values: any): Promise<Result<T>> => {
+      setSubmitting(true)
       const response = await fetch(url, execute(values))
+      setSubmitting(false)
       if (!response.ok) {
         if (response.headers.has("content-type")) {
           const contentType = response.headers.get("content-type")
@@ -98,7 +102,7 @@ export function useSubmit<T = any>(
         return
       }
     },
-    error,
+    { error, submitting },
   ]
 }
 
