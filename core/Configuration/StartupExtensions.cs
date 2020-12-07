@@ -48,7 +48,8 @@ namespace Glow.Configurations
             {
                 m.FeatureProviders.Add(new ConfigurationsControllerProvider(a));
                 m.FeatureProviders.Add(new ActionsControllerProvider(a));
-            });
+            })
+            .AddApplicationPart(typeof(ActionsControllerProvider).Assembly);
 
             switch (dbProvider)
             {
