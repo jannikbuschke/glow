@@ -19,22 +19,22 @@ steps:
       dd /home/vsts/.npm/
       ls
 
-  # - task: Npm@1
-  #   displayName: "npm run test"
-  #   continueOnError: true
-  #   inputs:
-  #     command: custom
-  #     verbose: false
-  #     customCommand: "run test"
-  #     workingDir: $(workingDir)
+  - task: Npm@1
+    displayName: "npm run test"
+    continueOnError: true
+    inputs:
+      command: custom
+      verbose: false
+      customCommand: "run test"
+      workingDir: $(workingDir)
 
-  # - task: Npm@1
-  #   displayName: "npm run build"
-  #   inputs:
-  #     command: custom
-  #     verbose: false
-  #     customCommand: "run build"
-  #     workingDir: $(workingDir)
+  - task: Npm@1
+    displayName: "npm run build"
+    inputs:
+      command: custom
+      verbose: false
+      customCommand: "run build"
+      workingDir: $(workingDir)
 
   - task: Npm@1
     displayName: "npm publish beta (refs/heads/beta)"
