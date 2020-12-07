@@ -7,23 +7,6 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Glow.GlowStartup
 {
-    public static class HostExtensions
-    {
-        public static void MigrateDatabase<DataContext>(this IWebHost host, string migration = "") where DataContext : DbContext
-        {
-            using IServiceScope scope = host.Services.CreateScope();
-            DataContext db = scope.ServiceProvider.GetRequiredService<DataContext>();
-            if (string.IsNullOrEmpty(migration))
-            {
-                db.Database.Migrate();
-            }
-            else
-            {
-                IMigrator migrator = db.GetInfrastructure().GetService<IMigrator>();
-                migrator.Migrate(migration);
-            }
-        }
-    }
     public class Program
     {
         public static IWebHostBuilder CreateDefaultWebHostBuilder<Startup>(string[] args) where Startup : class
