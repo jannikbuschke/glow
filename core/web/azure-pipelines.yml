@@ -15,9 +15,9 @@ steps:
       verbose: false
       workingDir: $(workingDir)
 
-- script: |
-    'cd /home/vsts/.npm/'
-    'ls'
+  - script: |
+      dd /home/vsts/.npm/
+      ls
 
   - task: Npm@1
     displayName: "npm run test"
