@@ -61,12 +61,23 @@ export function AuthenticationProvider(props: React.PropsWithChildren<{}>) {
     })
       .then((v) => {
         if (v.ok) {
-          return v.json()
+          return v.json() as Promise<Profile>
+        } else if (v.status === 403) {
+          return {
+            claims: [],
+            displayName: null,
+            email: null,
+            identityName: null,
+            isAuthenticated: false,
+            objectId: null,
+            scopes: [],
+            userId: null,
+          } as Profile
         } else {
           throw new Error("" + v.statusText + v.status)
         }
       })
-      .then((data: Profile) => {
+      .then((data) => {
         setStatus(data.isAuthenticated ? Status.loggedIn : Status.loggedOut)
         setProfile(data)
       })
