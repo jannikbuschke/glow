@@ -13,7 +13,7 @@ namespace Glow.Core.Views
         [HttpGet("{id}")]
         public async Task<ActionResult<T>> GetSingle(Key id)
         {
-            var result = await Get(id);
+            T result = await Get(id);
             if (result == null)
             {
                 return NotFound();

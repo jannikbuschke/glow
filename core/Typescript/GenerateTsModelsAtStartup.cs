@@ -69,7 +69,7 @@ namespace Glow.Core.Typescript
                 });
 
             // search for all attributes
-            var additionalTypes = assembliesToScan.Value
+            IEnumerable<Type> additionalTypes = assembliesToScan.Value
                 .SelectMany(v => v.GetExportedTypes()
                 .Where(x => x.GetCustomAttributes(typeof(GenerateTsInterface), true).Any()));
 
