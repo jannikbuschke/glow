@@ -1,0 +1,35 @@
+resources:
+  pipelines:
+  - pipeline: 'build'  # Name of the pipeline resource
+    source: teams-hub # Name of the triggering pipeline
+    #project: General
+    # trigger: 
+    #   branches:
+    #   - releases/*
+    #   - master
+
+pool:
+  vmImage: 'windows-latest'
+
+steps:
+- download: build
+
+- task: AzureResourceGroupDeployment@2
+  displayName: 'ARM Deployment'
+  inputs:
+    azureSubscription: $(subscription)
+    resourceGroupName: $(resource_group)
+    location: 'West Europe'
+    csmFile: '$(Pipeline.Workspace)/build/deploy/arm-template.json'
+    overrideParameters: '-sqlAdministratorLogin applogin -sqlAdministratorLoginPassword $(sql_login) -suffix $(release_id) -tenantId $(tenant_id) -appName $(app_name)'
+
+- task: AzureRmWebAppDeployment@4
+  displayName: 'App Service Deployment'
+  inputs:
+    azureSubscription: $(subscription)
+    appType: 'webApp'
+    Package: '$(Pipeline.Workspace)/build/app/*.zip'
+    WebAppName: '$(app_name)-app-$(release_id)'
+    AppSettings: '-OpenIdConnect:TenantId $(tenant_id) -OpenIdConnect:ClientId $(client_id) -OpenIdConnect:Instance https://login.microsoftonline.com/ -OpenIdConnect:BaseUrl https://$(app_name)-app-$(release_id).azurewebsites.net -OpenIdConnect:CallbackPath /signin-oidc'
+    enableCustomDeployment: true
+    ExcludeFilesFromAppDataFlag: false
