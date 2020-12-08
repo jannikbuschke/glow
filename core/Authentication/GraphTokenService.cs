@@ -85,7 +85,7 @@ namespace Glow.Core.Authentication
         {
             var token = await AccessTokenForCurrentUser(scopes);
             var client = new GraphServiceClient(
-                useBetaEndpoint? "https://graph.microsoft.com/beta/": "https://graph.microsoft.com/v1.0/",
+                useBetaEndpoint ? "https://graph.microsoft.com/beta/" : "https://graph.microsoft.com/v1.0/",
                 new DelegateAuthenticationProvider(
                     (requestMessage) =>
                     {

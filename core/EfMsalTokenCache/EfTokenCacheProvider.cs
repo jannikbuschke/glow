@@ -7,7 +7,7 @@ using Microsoft.Identity.Client;
 
 namespace Glow.Authentication.Aad
 {
-    public class EfTokenCacheProvider: ITokenCacheProvider
+    public class EfTokenCacheProvider : ITokenCacheProvider
     {
         private static readonly Dictionary<string, byte[]> data = new Dictionary<string, byte[]>();
         private readonly IServiceProvider serviceProvider;

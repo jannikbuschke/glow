@@ -11,7 +11,7 @@ namespace Glow.Core.EfTicketStore
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     }
 
-    public abstract class TicketStoreDbContext: DbContext, ITicketStoreDbContext
+    public abstract class TicketStoreDbContext : DbContext, ITicketStoreDbContext
     {
         public TicketStoreDbContext(DbContextOptions options) : base(options)
         {

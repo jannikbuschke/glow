@@ -44,7 +44,7 @@ namespace Glow.TypeScript
             Action<Options> configureOptions = null
         )
         {
-                var options = new Options();
+            var options = new Options();
             configureOptions?.Invoke(options);
             services.AddSingleton(options);
 

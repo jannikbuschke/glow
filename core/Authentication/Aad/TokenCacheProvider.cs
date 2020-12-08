@@ -6,7 +6,7 @@ using Microsoft.Identity.Client;
 namespace Glow.Authentication.Aad
 {
 
-    public class TokenCacheProvider: ITokenCacheProvider
+    public class TokenCacheProvider : ITokenCacheProvider
     {
         // the in memory cache
         private readonly IMemoryCache cache;

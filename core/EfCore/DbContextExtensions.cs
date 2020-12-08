@@ -9,7 +9,7 @@ namespace Glow.Core.EfCore
 {
     public static class HostExtensions
     {
-        public static void MigrateDatabase<T>(this IWebHost host, string migration = "") where T: DbContext
+        public static void MigrateDatabase<T>(this IWebHost host, string migration = "") where T : DbContext
         {
             using IServiceScope scope = host.Services.CreateScope();
             T db = scope.ServiceProvider.GetRequiredService<T>();
