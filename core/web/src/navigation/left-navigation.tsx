@@ -2,6 +2,7 @@ import * as React from "react"
 import { RoutedMenu } from "./menu"
 import { Layout, Menu } from "antd"
 import { Route, Routes } from "react-router-dom"
+import { Link } from "react-router-dom"
 
 interface LeftNavigationProps {
   items: { key: string; content: React.ReactNode; icon: React.ReactNode }[]
@@ -37,7 +38,7 @@ export function _LeftNavigation({ items }: LeftNavigationProps) {
       >
         {items.map((v) => (
           <Menu.Item key={v.key} icon={v.icon}>
-            {v.content}
+            <Link to={`/${v.key}`}>{v.content}</Link>
           </Menu.Item>
         ))}
       </RoutedMenu>

@@ -42,18 +42,20 @@ export function RoutedMenu({
 >) {
   const params = useParams()
   const view = params[parameter]
-  const navigate = useNavigate()
 
   return (
-    <Menu
-      {...rest}
-      onClick={(e) => {
-        navigate(baseUrl + "/" + e.key)
-      }}
-      selectedKeys={[view]}
-      activeKey={view}
-    >
-      {children}
-    </Menu>
+    <div>
+      view: {view}
+      <Menu
+        {...rest}
+        // onClick={(e) => {
+        //   navigate(baseUrl + "/" + e.key)
+        // }}
+        selectedKeys={[view]}
+        activeKey={view}
+      >
+        {children}
+      </Menu>
+    </div>
   )
 }
