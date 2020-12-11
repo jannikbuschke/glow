@@ -75,24 +75,30 @@ namespace Glow.Core.Typescript
 
             Extensions2.AddAllTypes(additionalTypes);
 
-            foreach (Type profileType in profileTypes)
+            foreach (var type in Extensions2.AllTypes())
             {
-                // duplication?
-                var profile = Activator.CreateInstance(profileType) as TypeScriptProfile;
+                Render(type, builder, entities, allEntityNames);
+            }
 
-                foreach (Type type in profile.Types)
-                {
-                    Render(type, builder, entities, allEntityNames);
-                }
-            }
-            foreach (Type type in GenerateApiClientsAtStartup.CustomTypes)
-            {
-                Render(type, builder, entities, allEntityNames);
-            }
-            foreach (Type type in additionalTypes)
-            {
-                Render(type, builder, entities, allEntityNames);
-            }
+            //foreach (Type profileType in profileTypes)
+            //{
+            //    // duplication?
+            //    var profile = Activator.CreateInstance(profileType) as TypeScriptProfile;
+
+            //    foreach (Type type in profile.Types)
+            //    {
+            //        Render(type, builder, entities, allEntityNames);
+            //    }
+            //}
+            //foreach (Type type in GenerateApiClientsAtStartup.CustomTypes)
+            //{
+            //    Render(type, builder, entities, allEntityNames);
+            //}
+            //foreach (Type type in additionalTypes)
+            //{
+            //    Render(type, builder, entities, allEntityNames);
+            //}
+
             builder.AppendLine("export declare module Entities {");
 
             builder.AppendLine(entities.ToString());
@@ -102,7 +108,9 @@ namespace Glow.Core.Typescript
             builder.Insert(0, "\r\n");
 
             //builder.Insert(0, "/* eslint-disable prettier/prettier */");
-            File.WriteAllText($"{options.GetPath()}ts-models.ts", builder.ToString());
+            var path = $"{options.GetPath()}ts-models.ts";
+            var text = builder.ToString();
+            File.WriteAllText(path, text);
 
             return Task.CompletedTask;
 
@@ -110,13 +118,23 @@ namespace Glow.Core.Typescript
 
         private static void Render(Type type, StringBuilder builder, StringBuilder entities, List<string> allEntities)
         {
-            allEntities.Add(type.Name);
+            var name = type.GenericTypeArguments.Length == 0
+                ? type.Name.Replace(".", "")
+                : type.GenericTypeArguments.Length == 1
+                    ? type.Name
+                        .Replace("`1", type.GenericTypeArguments[0].FullName)
+                        .Replace(".", "")
+                    : type.Name
+                        .Replace("`2", type.GenericTypeArguments[0].FullName + type.GenericTypeArguments[1].FullName)
+                        .Replace(".", "");
+            var fullName = type.FullName.Replace(".", "");
+            allEntities.Add(name);
 
-            Console.WriteLine("export " + type.Name);
+            Console.WriteLine("export " + name);
 
-            entities.AppendLine(@$"  export type {type.Name} = ""{type.FullName}""");
+            entities.AppendLine(@$"  export type {name} = ""{fullName}""");
 
-            builder.AppendLine($"export interface {type.Name} {{");
+            builder.AppendLine($"export interface {name} {{");
             type.GetProperties(BindingFlags.Public | BindingFlags.Instance).ForEach(v =>
             {
                 builder.AppendLine($"  {v.Name.CamelCase()}: {v.PropertyType.ToTsType()}");
@@ -124,7 +142,7 @@ namespace Glow.Core.Typescript
             builder.AppendLine("}");
             builder.AppendLine("");
 
-            builder.AppendLine($"export const default{type.Name}: {type.Name} = {{");
+            builder.AppendLine($"export const default{name}: {name} = {{");
             type.GetProperties(BindingFlags.Public | BindingFlags.Instance).ForEach(v =>
             {
                 var value = v.PropertyType.DefaultValue();// v.PropertyType.IsValueType ? Activator.CreateInstance(v.PropertyType) : "null";
@@ -158,6 +176,11 @@ namespace Glow.Core.Typescript
                 { typeof(Dictionary<string, object>), "{ [key: string]: any }" },
                 { typeof(object), "any" }
             };
+
+        public static IEnumerable<Type> AllTypes()
+        {
+            return typeDictionary.Keys;
+        }
 
         private static readonly Dictionary<Type, string> defaults = new Dictionary<Type, string>
             {
