@@ -2,10 +2,12 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Glow.Core.Actions;
+using Glow.TypeScript;
 using MediatR;
 
 namespace Glow.Sample.Actions
 {
+    [GenerateTsInterface]
     [Action(Policy = Policies.Privileged, Route = "api/actions/sample")]
     public class SampleAction : IRequest
     {

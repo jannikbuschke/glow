@@ -24,6 +24,8 @@ namespace Glow.Sample.Files
         {
             Add<Portfolio>();
             Add<PortfolioFile>();
+            Add<CreatePortfolio>();
+            Add<DeletePortfolio>();
             // TODO: move
             Add<IConfigurationMeta>();
             Add<Glow.Core.Profiles.Profile>();

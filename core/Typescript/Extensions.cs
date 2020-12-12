@@ -49,8 +49,8 @@ namespace Glow.TypeScript
             services.AddSingleton(options);
 
             services.AddSingleton(new AssembliesToScan() { Value = assembliesToScan });
-            services.AddHostedService<GenerateApiClientsAtStartup>();
-            services.AddHostedService<GenerateTsModelsAtStartup>();
+            //services.AddHostedService<GenerateApiClientsAtStartup>();
+            services.AddHostedService<GenerateTsModelsAtStartupV2>();
         }
     }
 }

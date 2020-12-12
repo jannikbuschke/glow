@@ -1,12 +1,14 @@
 using System.ComponentModel.DataAnnotations;
 using System.Threading;
 using System.Threading.Tasks;
+using Glow.TypeScript;
 using JannikB.Glue;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Glow.Sample.Forms
 {
+    [GenerateTsInterface]
     public class CreateUser : IRequest<Unit>
     {
         [Required, MinLength(3)]
