@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Glow.Authentication.Aad;
+using Glow.Core.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -18,13 +19,17 @@ namespace Glow.MsGraph
     public class GraphProxyController : ControllerBase
     {
         private readonly IHttpClientFactory factory;
-        private readonly TokenService tokenService;
+        private readonly IGraphTokenService graphTokenService;
         private readonly ILogger<GraphProxyController> logger;
 
-        public GraphProxyController(IHttpClientFactory factory, TokenService tokenService, ILogger<GraphProxyController> logger)
+        public GraphProxyController(
+            IHttpClientFactory factory,
+            IGraphTokenService graphTokenService,
+            ILogger<GraphProxyController> logger
+        )
         {
             this.factory = factory;
-            this.tokenService = tokenService;
+            this.graphTokenService = graphTokenService;
             this.logger = logger;
         }
 
@@ -35,8 +40,8 @@ namespace Glow.MsGraph
             {
                 HttpClient client = factory.CreateClient();
                 client.BaseAddress = new Uri("https://graph.microsoft.com");
-                AuthenticationResult token = await tokenService.GetAccessTokenAsync(User);
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.AccessToken);
+                var accessToken = await graphTokenService.AccessTokenForCurrentUser(new string[] { "openid" });
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
                 var uri = "https://graph.microsoft.com/" + path;
                 logger.LogInformation("GET {uri}", uri);
                 HttpResponseMessage response = await client.GetAsync(uri);
