@@ -53,7 +53,7 @@ namespace Glue.AzdoAuthentication
         {
             var connection = new VssConnection(
                 new Uri(config.OrganizationBaseUrl),
-                new VssBasicCredential("pat", config.PAT));
+                new VssBasicCredential("pat", config.Pat));
 
             return Task.FromResult(connection.GetClient<T>());
         }

@@ -10,7 +10,7 @@ namespace Glue.AzdoAuthentication
         //public string AppSecret { get; set; }
         public string ClientSecret { get; set; }
 
-        public string OrganizationBaseUrl { get; set; }
-        public string PAT { get; set; }
+        public string OrganizationBaseUrl { get; set; } = "https://dev.azure.com/jannikb";
+        public string Pat { get; set; }
     }
 }

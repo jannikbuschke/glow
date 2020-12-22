@@ -1,7 +1,6 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Glow.Core.EfCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -45,16 +44,6 @@ namespace Glow.TokenCache
             options.UseSqlServer("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=azdo-token-cache-dev;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
 
             return new SqlServerTokenDataContext(options.Options);
-        }
-    }
-
-    public static class IServiceScopeMigrateExtensions
-    {
-        public static void GlowMigrateAzdoAuthenticationSqlServer(this IServiceProvider serviceProvider)
-        {
-            using IServiceScope scope = serviceProvider.CreateScope();
-            SqlServerTokenDataContext db = scope.ServiceProvider.GetRequiredService<SqlServerTokenDataContext>();
-            db.Migrate();
         }
     }
 }

@@ -56,7 +56,7 @@ namespace Glow.Core.Profiles
         [HttpGet]
         [Authorize]
         [AllowAnonymous]
-        public async Task<ActionResult<Profile>> Get()
+        public async Task<ActionResult<Profile>> Get(bool expandScopes = true)
         {
             if (User == null || !User.Identity.IsAuthenticated)
             {
@@ -69,7 +69,9 @@ namespace Glow.Core.Profiles
             var isAuthenticated = User?.Identity.IsAuthenticated ?? false;
             IEnumerable<KeyValuePair<string, string>> claims = env.IsDevelopment() ? User.Claims.Select(v => new KeyValuePair<string, string>(v.Type, v.Value)) : null;
 
-            IEnumerable<string> scopes = mockExternalSystems ? new List<string>() : (await graphTokenService.TokenForCurrentUser(new[] { "profile" })).Scopes;
+            IEnumerable<string> scopes = mockExternalSystems || !expandScopes
+                ? new List<string>()
+                : (await graphTokenService.TokenForCurrentUser(new[] { "profile" })).Scopes;
 
             return new Profile
             {

@@ -12,9 +12,10 @@ namespace Glue.AzdoAuthentication
     {
         public static AuthenticationBuilder AddAzdo(
             this AuthenticationBuilder builder,
-            DatabaseProvider dbProvider,
             Action<AzdoConfig> configure,
-            Action<DbContextOptionsBuilder> configureDb)
+            DatabaseProvider dbProvider,
+            string connectionString
+        )
         {
             IServiceCollection services = builder.Services;
 
@@ -29,11 +30,17 @@ namespace Glue.AzdoAuthentication
             switch (dbProvider)
             {
                 case DatabaseProvider.SqlServer:
-                    services.AddDbContext<SqlServerTokenDataContext>(configureDb);
+                    services.AddDbContext<SqlServerTokenDataContext>(options=>
+                    {
+                        options.UseSqlServer(connectionString, options =>
+                        {
+                            options.MigrationsAssembly(typeof(TokenDataContext).Assembly.FullName);
+                        });
+                    });
                     services.AddScoped<ITokenDataContext, SqlServerTokenDataContext>();
 
-                    services.AddDbContext<SqlServerConfigurationDataContext>(configureDb);
-                    services.AddScoped<IConfigurationDataContext, SqlServerConfigurationDataContext>();
+                    //services.AddDbContext<SqlServerConfigurationDataContext>(configureDb);
+                    //services.AddScoped<IConfigurationDataContext, SqlServerConfigurationDataContext>();
 
                     break;
                 default:

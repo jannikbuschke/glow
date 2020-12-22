@@ -2,13 +2,13 @@ import * as React from "react"
 import { useFetch } from "../http/fetch-context"
 import { Profile } from "../models"
 
-export function useProfile() {
+export function useProfile(expandScopes: boolean = true) {
   const [error, setError] = React.useState("")
   const [profile, setProfile] = React.useState<Profile | null>(null)
   const fetch = useFetch()
   React.useEffect(() => {
     ;(async () => {
-      const response = await fetch("/glow/profile")
+      const response = await fetch(`/glow/profile?expandScopes=${expandScopes}`)
       if (!response.ok) {
         setError(response.statusText + " " + (await response.text()))
       } else {

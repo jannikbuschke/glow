@@ -1,10 +1,11 @@
-﻿using System;
+using System;
 using Glow.Authentication.Aad;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Glow.Core.EfMsalTokenStore
 {
+
     public static class ServiceCollectionExtensions
     {
         public static void AddEfMsalTokenCache(this IServiceCollection services, Action<DbContextOptionsBuilder> options)
