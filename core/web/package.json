@@ -60,7 +60,7 @@
     "awesome-typescript-loader": "5.2.1",
     "babel-loader": "8.0.6",
     "dayjs": "1.8.27",
-    "semantic-release": "17.0.4",
+    "semantic-release": "17.2.3",
     "swr": "0.1.18",
     "immer": "2.1.5",
     "lodash": "4.17.15",
