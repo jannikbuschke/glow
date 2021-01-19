@@ -1,3 +1,4 @@
+using System;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Glow.Users;
@@ -46,20 +47,64 @@ namespace Glow.Tests
         {
             using HttpClient client = factory.CreateClient();
 
-            client.DefaultRequestHeaders.Add("x-submit-intent", "execute");
+            client.SetIntent(SubmitIntent.Execute);
             if (user != null)
             {
                 if (user.Id != null)
                 {
-                    client.DefaultRequestHeaders.Add("x-userid", user.Id);
+                    client.SetUserId(user.Id);
                 }
                 if (user.DisplayName != null)
                 {
-                    client.DefaultRequestHeaders.Add("x-username", user.DisplayName);
+                    client.SetUsername(user.DisplayName);
                 }
             }
             HttpResponseMessage response = await client.PostAsJsonAsync(url, request);
             return response;
+        }
+    }
+
+    public enum SubmitIntent
+    {
+        Execute = 1,
+        Validate = 2
+    }
+
+    public static class ClientExtensions
+    {
+        public static void SetIntent(this HttpClient client, SubmitIntent intent)
+        {
+            if (intent == SubmitIntent.Execute)
+            {
+                client.DefaultRequestHeaders.Add("x-submit-intent", "execute");
+            }
+            else if (intent == SubmitIntent.Validate)
+            {
+                client.DefaultRequestHeaders.Add("x-submit-intent", "validate");
+            }
+        }
+
+        public static void SetUser(this HttpClient client, UserDto user)
+        {
+            if (user.Id == null)
+            {
+                throw new ArgumentException("User.Id is null");
+            }
+            client.SetUserId(user.Id);
+            if (user.DisplayName != null)
+            {
+                client.SetUsername(user.DisplayName);
+            }
+        }
+
+        public static void SetUsername(this HttpClient client, string userName)
+        {
+            client.DefaultRequestHeaders.Add("x-username", userName);
+        }
+
+        public static void SetUserId(this HttpClient client, string userId)
+        {
+            client.DefaultRequestHeaders.Add("x-userid", userId);
         }
     }
 }
