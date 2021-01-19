@@ -5,6 +5,7 @@ using Bogus;
 using Glow.Clocks;
 using Glow.Glue.AspNetCore.Tests;
 using Glow.Tests;
+using Glow.Users;
 using MediatR;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
@@ -58,10 +59,26 @@ namespace Glow.Core.Tests
             return m.Send(request);
         }
 
-        protected SendCommandBuilderV2<TResponse, Startup> Send<TResponse>(IRequest<TResponse> request)
+        protected SendBuilder<TResponse, Startup> Send<TResponse>(IRequest<TResponse> request)
         {
-            return new SendCommandBuilderV2<TResponse, Startup>(Factory, request);
+            return new(Factory, request);
         }
+
+        public async Task<byte[]> Download(string url, UserDto asUser, IRequest<byte[]> request)
+        {
+            var client = Factory.CreateClient();
+            client.SetUser(asUser);
+            client.SetIntent(SubmitIntent.Execute);
+            var result = await client.PostAsJsonAsync(url, request);
+            if (!result.IsSuccessStatusCode)
+            {
+                var error = await result.Content.ReadAsStringAsync();
+            }
+            result.EnsureSuccessStatusCode();
+            var data = await result.Content.ReadAsByteArrayAsync();
+            return data;
+        }
+
 
         protected QueryBuilder<Startup> Query(string url)
         {
