@@ -7,7 +7,17 @@ export function ProfileName() {
   const { profile, error } = useProfile()
   const value =
     profile ||
-    ({ displayName: "", identityName: "", isAuthenticated: false } as Profile)
+    ({
+      displayName: "",
+      identityName: "",
+      isAuthenticated: false,
+      userId: "",
+      claims: [],
+      displayname: "",
+      email: "",
+      objectId: "",
+      scopes: [],
+    } as Profile)
   return (
     <div>
       <ErrorBanner error={error} />

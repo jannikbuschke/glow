@@ -75,7 +75,7 @@ namespace Glow.Core.Authentication
                         logger.LogError("Missing consent {@scopes}", scopes);
                         throw new MissingConsentException(message, scopes[0]);
                     }
-                    throw e;
+                    throw;
                 }
             }
 

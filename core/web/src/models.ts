@@ -4,8 +4,11 @@
 
 export interface Profile {
   displayName: string | null
-  id: string | null
-  email: string | null
   identityName: string | null
+  email: string | null
+  objectId: string | null
+  userId: string | null
   isAuthenticated: boolean
+  scopes: string[]
+  claims: any[]
 }
