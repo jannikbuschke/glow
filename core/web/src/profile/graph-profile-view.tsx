@@ -1,6 +1,7 @@
 import { Button } from "antd"
 import * as React from "react"
 import { useData } from "../query/use-data"
+import { CurrentUserAvatar } from "./avatar"
 
 export function GraphProfileView() {
   const { data, refetch } = useData<{ displayName: string; id: string }>(
@@ -10,6 +11,7 @@ export function GraphProfileView() {
 
   return (
     <div>
+      <CurrentUserAvatar />
       <Button onClick={() => refetch()}>reload</Button>
       <pre>{JSON.stringify(data, null, 4)}</pre>
     </div>
