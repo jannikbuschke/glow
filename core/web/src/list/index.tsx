@@ -1,6 +1,6 @@
 import { Input, Table } from "antd"
 import { InputProps } from "antd/lib/input"
-import { ColumnsType, ColumnType, TableProps } from "antd/lib/table"
+import { ColumnType, TablePaginationConfig, TableProps } from "antd/lib/table"
 import * as React from "react"
 import { useNavigate } from "react-router"
 import { HighlightableRow } from "../antd/highlightable-row"
@@ -15,6 +15,7 @@ interface ListProps<T> {
     render: (item: T) => React.ReactNode
     sortable?: boolean
   })[]
+  paginate?: boolean
 }
 
 export function ListSearch(props: Omit<InputProps, "value" | "onChange">) {
@@ -39,6 +40,7 @@ export function ListError() {
 export function List<RecordType extends { id: string } = any>({
   path,
   columns,
+  paginate = true,
   ...props
 }: Omit<
   TableProps<RecordType>,
@@ -69,6 +71,23 @@ export function List<RecordType extends { id: string } = any>({
 
   const pageSize = take
   const currentPage = skip / pageSize + 1
+
+  const pagination: false | TablePaginationConfig | undefined = paginate
+    ? {
+        current: currentPage,
+        pageSize: pageSize,
+        onChange: (page, size) => {
+          if (size) {
+            setTake(size)
+          }
+          setSkip((page - 1) * pageSize)
+        },
+        onShowSizeChange: (page, size) => {
+          setSkip(size)
+        },
+        total: data.count || 10,
+      }
+    : false
 
   return (
     <Table<RecordType>
@@ -103,20 +122,7 @@ export function List<RecordType extends { id: string } = any>({
           }
         }
       }}
-      pagination={{
-        current: currentPage,
-        pageSize: pageSize,
-        onChange: (page, size) => {
-          if (size) {
-            setTake(size)
-          }
-          setSkip((page - 1) * pageSize)
-        },
-        onShowSizeChange: (page, size) => {
-          setSkip(size)
-        },
-        total: data.count || 10,
-      }}
+      pagination={pagination}
       columns={columns?.map(({ title, key, sortable, render, ...rest }) => ({
         ...rest,
         title,
