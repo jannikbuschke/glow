@@ -9,7 +9,9 @@ namespace Glow.Core.FakeData
         public List<T> Data { get; private set; }
         public FakeBase(Func<Faker<T>, List<T>> func)
         {
-            Data = func(new Faker<T>());
+            var faker = new Faker<T>();
+            faker.UseSeed(10);
+            Data = func(faker);
         }
     }
 }
