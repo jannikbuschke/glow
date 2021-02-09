@@ -18,12 +18,15 @@ export function SelectEntity<T>({
   map,
   ...restProps
 }: SelectEntityProps<T>) {
-  const [{ result, setSearch }, {}] = useGlowQuery<T>(url, {
-    count: 0,
-    value: [],
-  })
+  const [{ result, setSearch, setWhere, sendQuery }, {}] = useGlowQuery<T>(
+    url,
+    {
+      count: 0,
+      value: [],
+    },
+  )
 
-  const options = result.value.map(map)
+  const options = React.useMemo(() => result.value.map(map), [result])
 
   const debouncedSearch = React.useCallback(
     debounce((v: any) => {
@@ -33,20 +36,39 @@ export function SelectEntity<T>({
     }, 150),
     [],
   )
-
-  React.useEffect(() => {
-    debouncedSearch("")
-    // TODO
-    // on firstRender without full value
-    // get single element
-    // where is endpoint of single element?
-  }, [])
+  const [fieldValue, setFieldValue] = React.useState<LabeledValue | null>(null)
   const [field, , form] = useField<any>(name)
   const value = field.value
+  React.useEffect(() => {
+    debouncedSearch("")
+    if (value) {
+      sendQuery(
+        {
+          where: { operation: "Equals", property: "Id", value },
+          search: null,
+          count: null,
+          orderBy: null as any,
+          skip: null,
+          take: null,
+        },
+        url,
+      )
+        .then((v) => {
+          if (v.value.length === 1) {
+            // setAdditionalOptions(v.value.map(map)[0])
+            setFieldValue(v.value.map(map)[0])
+          }
+        })
+        .catch((v) => {
+          console.error(v)
+        })
+    }
+  }, [value])
   return (
     <Select<LabeledValue>
       dropdownMatchSelectWidth={false}
-      value={field.value}
+      labelInValue={true}
+      value={fieldValue || value || undefined}
       onChange={(value) => {
         if (value === undefined) {
           form.setValue(null)
@@ -58,6 +80,7 @@ export function SelectEntity<T>({
       style={{ width: "100%", ...restProps?.style }}
       showSearch={true}
       onDeselect={(v) => {
+        // todo: fix
         if (restProps.mode === "multiple") {
           form.setValue((value as any[]).filter((item) => item != v))
         }
@@ -67,9 +90,9 @@ export function SelectEntity<T>({
           return
         }
         if (restProps.mode === "multiple") {
-          form.setValue([...(value || []), v])
+          form.setValue([...(value || []), v.key])
         } else {
-          form.setValue(v)
+          form.setValue(v.key)
         }
       }}
       onSearch={(search: string) => {
