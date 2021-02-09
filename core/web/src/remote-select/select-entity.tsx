@@ -27,6 +27,14 @@ export function SelectEntity<T>({
   )
 
   const options = React.useMemo(() => result.value.map(map), [result])
+  const [fieldValue, setFieldValue] = React.useState<LabeledValue | null>(null)
+
+  React.useMemo(() => {
+    if (fieldValue && !options.some((v) => v.key == fieldValue.key)) {
+      return [...options, fieldValue]
+    }
+    return options
+  }, [options, fieldValue])
 
   const debouncedSearch = React.useCallback(
     debounce((v: any) => {
@@ -36,7 +44,7 @@ export function SelectEntity<T>({
     }, 150),
     [],
   )
-  const [fieldValue, setFieldValue] = React.useState<LabeledValue | null>(null)
+
   const [field, , form] = useField<any>(name)
   const value = field.value
   React.useEffect(() => {
@@ -55,7 +63,6 @@ export function SelectEntity<T>({
       )
         .then((v) => {
           if (v.value.length === 1) {
-            // setAdditionalOptions(v.value.map(map)[0])
             setFieldValue(v.value.map(map)[0])
           }
         })
@@ -67,8 +74,7 @@ export function SelectEntity<T>({
   return (
     <Select<LabeledValue>
       dropdownMatchSelectWidth={false}
-      labelInValue={true}
-      value={fieldValue || value || undefined}
+      value={field.value}
       onChange={(value) => {
         if (value === undefined) {
           form.setValue(null)
@@ -80,7 +86,6 @@ export function SelectEntity<T>({
       style={{ width: "100%", ...restProps?.style }}
       showSearch={true}
       onDeselect={(v) => {
-        // todo: fix
         if (restProps.mode === "multiple") {
           form.setValue((value as any[]).filter((item) => item != v))
         }
@@ -90,9 +95,9 @@ export function SelectEntity<T>({
           return
         }
         if (restProps.mode === "multiple") {
-          form.setValue([...(value || []), v.key])
+          form.setValue([...(value || []), v])
         } else {
-          form.setValue(v.key)
+          form.setValue(v)
         }
       }}
       onSearch={(search: string) => {
