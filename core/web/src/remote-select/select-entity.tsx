@@ -26,15 +26,15 @@ export function SelectEntity<T>({
     },
   )
 
-  const options = React.useMemo(() => result.value.map(map), [result])
+  const searchOptions = React.useMemo(() => result.value.map(map), [result])
   const [fieldValue, setFieldValue] = React.useState<LabeledValue | null>(null)
 
-  React.useMemo(() => {
-    if (fieldValue && !options.some((v) => v.key == fieldValue.key)) {
-      return [...options, fieldValue]
+  const options = React.useMemo(() => {
+    if (fieldValue && !searchOptions.some((v) => v.key == fieldValue.key)) {
+      return [...searchOptions, fieldValue]
     }
-    return options
-  }, [options, fieldValue])
+    return searchOptions
+  }, [searchOptions, fieldValue])
 
   const debouncedSearch = React.useCallback(
     debounce((v: any) => {
