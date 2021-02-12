@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Glow.Core.Actions;
 using Glow.Glue.AspNetCore;
@@ -61,15 +62,24 @@ namespace Glow.Core.EfCore
 
         public static async Task ResetDatabase(this DbContext v, ResetDatabase request)
         {
-            if (!request.IKnowWhatIAmDoing)
+            try
             {
-                throw new BadRequestException("");
+                if (!request.IKnowWhatIAmDoing)
+                {
+                    throw new BadRequestException("");
+                }
+                if (request.DeleteDatabase)
+                {
+                    await v.Database.EnsureDeletedAsync();
+                }
+                await v.Database.EnsureCreatedAsync();
             }
-            if (request.DeleteDatabase)
+            catch (Exception e)
             {
-                await v.Database.EnsureDeletedAsync();
+
+                throw e;
             }
-            await v.Database.EnsureCreatedAsync();
+
         }
     }
 
