@@ -59,6 +59,11 @@ namespace Glow.Tests
                     client.SetUsername(user.DisplayName);
                 }
             }
+
+            if (string.IsNullOrEmpty(url))
+            {
+                throw new NullReferenceException(nameof(url));
+            }
             HttpResponseMessage response = await client.PostAsJsonAsync(url, request);
             return response;
         }

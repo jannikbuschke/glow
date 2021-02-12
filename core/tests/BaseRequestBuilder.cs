@@ -1,6 +1,9 @@
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Glow.Core.Queries;
+using Glow.Tests;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Testing;
 
 namespace Glow.Glue.AspNetCore.Tests
@@ -16,9 +19,45 @@ namespace Glow.Glue.AspNetCore.Tests
             this.factory = factory;
         }
 
+        protected async Task<QueryResult<R>> PostQueryAndRead<R>(Query query)
+        {
+            using HttpClient client = factory.CreateClient();
+
+            client.SetIntent(SubmitIntent.Execute);
+
+            client.DefaultRequestHeaders.Add("x-submit-intent", "execute");
+            if (!string.IsNullOrWhiteSpace(UserId))
+            {
+                client.SetUserId(UserId);
+            }
+
+            var response = await client.PostAsJsonAsync(Url, query);
+            var result = await HandleResponse<QueryResult<R>>(response);
+            return result;
+        }
+
         protected async Task<R> Read<R>()
         {
             HttpResponseMessage response = await ExecuteRaw();
+            return await HandleResponse<R>(response);
+        }
+
+        protected async Task<HttpResponseMessage> ExecuteRaw()
+        {
+            using HttpClient client = factory.CreateClient();
+
+            client.DefaultRequestHeaders.Add("x-submit-intent", "execute");
+            if (!string.IsNullOrWhiteSpace(UserId))
+            {
+                client.DefaultRequestHeaders.Add("x-userid", UserId);
+            }
+
+            HttpResponseMessage response = await client.GetAsync(Url);
+            return response;
+        }
+
+        private async Task<R> HandleResponse<R>(HttpResponseMessage response)
+        {
             if (response.IsSuccessStatusCode)
             {
                 R responsePayload = await response.Content.ReadAsAsync<R>();
@@ -35,20 +74,5 @@ namespace Glow.Glue.AspNetCore.Tests
                 throw new Exception("Http call was unsuccessfull: " + response.StatusCode + " " + response.ReasonPhrase + " " + content);
             }
         }
-
-        protected async Task<HttpResponseMessage> ExecuteRaw()
-        {
-            using HttpClient client = factory.CreateClient();
-
-            client.DefaultRequestHeaders.Add("x-submit-intent", "execute");
-            if (!string.IsNullOrWhiteSpace(UserId))
-            {
-                client.DefaultRequestHeaders.Add("x-userid", UserId);
-            }
-
-            HttpResponseMessage response = await client.GetAsync(Url);
-            return response;
-        }
     }
-
 }

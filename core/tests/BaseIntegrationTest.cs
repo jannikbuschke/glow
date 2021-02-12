@@ -3,6 +3,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Bogus;
 using Glow.Clocks;
+using Glow.Core.Queries;
 using Glow.Glue.AspNetCore.Tests;
 using Glow.Tests;
 using Glow.Users;
@@ -12,11 +13,6 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Glow.Core.Tests
 {
-    public interface IFixture<Startup> : IDisposable where Startup : class
-    {
-        WebApplicationFactory<Startup> Factory { get; }
-    }
-
     public abstract class BaseIntegrationTest<Startup> : IDisposable where Startup : class
     {
         protected readonly HttpClient client;
@@ -44,8 +40,8 @@ namespace Glow.Core.Tests
 
         public void Dispose()
         {
-            //client.Dispose();
-            //Factory.Dispose();
+            // client.Dispose();
+            // Factory.Dispose();
         }
 
         protected T GetRequiredService<T>()
@@ -59,7 +55,7 @@ namespace Glow.Core.Tests
             return m.Send(request);
         }
 
-        protected SendBuilder<TResponse, Startup> Send<TResponse>(IRequest<TResponse> request)
+        public SendBuilder<TResponse, Startup> Send<TResponse>(IRequest<TResponse> request)
         {
             return new(Factory, request);
         }
@@ -79,10 +75,14 @@ namespace Glow.Core.Tests
             return data;
         }
 
-
         protected QueryBuilder<Startup> Query(string url)
         {
             return new QueryBuilder<Startup>(Factory, url);
+        }
+
+        protected QueryBuilder<Startup> QueryList(string url, Query query = null)
+        {
+            return new QueryBuilder<Startup>(Factory, url, query ?? new Query());
         }
 
         protected GetBuilder<Startup> Get()
