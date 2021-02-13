@@ -36,7 +36,8 @@ namespace Glow.Sample.Files
         {
             CreateMap<PutPortfolioFile, PortfolioFile>().EqualityComparison((v1, v2) => v1.Id == v2.Id);
             CreateMap<CreatePortfolio, Portfolio>();
-            CreateMap<UpdatePortfolio, Portfolio>();
+            CreateMap<UpdatePortfolio, Portfolio>()
+                .ForMember(v => v.RowVersion, o => o.Ignore());
         }
     }
 
@@ -56,6 +57,7 @@ namespace Glow.Sample.Files
     {
         public string DisplayName { get; set; }
         public Guid Id { get; set; }
+        public byte[] RowVersion { get; set; }
         public IEnumerable<PutPortfolioFile> Files { get; set; }
     }
 
@@ -69,6 +71,7 @@ namespace Glow.Sample.Files
         public Guid Id { get; set; }
         public string DisplayName { get; set; }
         public ICollection<PortfolioFile> Files { get; set; }
+        public byte[] RowVersion { get; set; }
     }
 
     public class PortfolioFile : IFile
@@ -121,7 +124,8 @@ namespace Glow.Sample.Files
         public async Task<Portfolio> Handle(UpdatePortfolio request, CancellationToken cancellationToken)
         {
             Portfolio result = await ctx.Portfolios.Include(v => v.Files).SingleAsync(v => v.Id == request.Id);
-            mapper.Map(request, result);
+            result.DisplayName = Guid.NewGuid().ToString();
+            ctx.Entry(result).Property(v => v.RowVersion).OriginalValue = request.RowVersion;
             await ctx.SaveChangesAsync();
             return result;
         }
@@ -205,15 +209,5 @@ namespace Glow.Sample.Files
         }
     }
 
-    public class Foo { }
-
-    //[ODataRoutePrefix("Portfolios")]
-    //public class PortfoliosOdataController : BaseOdataController<Portfolio, Guid>
-    //{
-    //    public PortfoliosOdataController(DataContext ctx)
-    //        : base(ctx.Portfolios, key => ctx.Portfolios.Where(v => v.Id == key))
-    //    {
-
-    //    }
-    //}
+    public class Foo{}
 }

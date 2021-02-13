@@ -1,3 +1,4 @@
+using System.Net;
 using System.Reflection;
 using System.Security.Claims;
 using AutoMapper;
@@ -12,6 +13,7 @@ using Glow.Users;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -99,15 +101,21 @@ namespace Glow.Sample
 
             services.AddOptions();
 
+            services.AddTypescriptGeneration(new TsGenerationOptions
+            {
+                Path = "./models/",
+                Assemblies = new [] { GetType().Assembly },
+                GenerateApi = false
+            });
             //services.AddTypescriptGeneration(new[] { GetType().Assembly }, options =>
             //{
             //    //options.Path =
             //});
 
-            services.AddTypescriptGeneration(new[] { Assembly.GetAssembly(typeof(GlowCoreModule)) }, options =>
-            {
-                options.Path = "../core/web/src/";
-            });
+            //services.AddTypescriptGeneration(new[] { Assembly.GetAssembly(typeof(GlowCoreModule)) }, options =>
+            //{
+            //    options.Path = "../core/web/src/";
+            //});
         }
 
         public void Configure(
@@ -115,6 +123,15 @@ namespace Glow.Sample
             IWebHostEnvironment env
         )
         {
+            app.Map("/hello", app =>
+            {
+                app.Run(async ctx =>
+                {
+                    ctx.Response.StatusCode = (int) HttpStatusCode.OK;
+                    await ctx.Response.WriteAsync("hello world");
+                });
+            });
+
             app.UseGlow(env, configuration, options =>
              {
                  options.SpaDevServerUri = "http://localhost:3001";

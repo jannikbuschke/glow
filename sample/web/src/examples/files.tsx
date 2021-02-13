@@ -36,6 +36,7 @@ interface Portfolio {
   id: string
   displayName: string
   files: File[]
+  rowVersion: string
 }
 
 function Detail() {
@@ -44,6 +45,7 @@ function Detail() {
     id: "",
     displayName: "",
     files: [],
+    rowVersion: "",
   })
   const navigate = useNavigate()
   const [update] = useSubmit("/api/portfolios/update")
@@ -65,6 +67,7 @@ function Detail() {
           id: portfolioId,
           displayName: data.displayName,
           files: data.files,
+          rowVersion: data.rowVersion,
         }}
         enableReinitialize={true}
         onSubmit={async (values) => {

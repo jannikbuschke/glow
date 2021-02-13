@@ -9,5 +9,13 @@ namespace Glow.Sample
 
         public DbSet<PortfolioFile> PortfolioFiles { get; set; }
         public DbSet<Portfolio> Portfolios { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<Portfolio>()
+                .Property(v => v.RowVersion)
+                .IsRowVersion();
+        }
     }
 }

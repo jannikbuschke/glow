@@ -55,15 +55,6 @@ namespace Glow.Core
                 });
             });
 
-            app.Map("/odata", app =>
-            {
-                app.Run(async ctx =>
-                {
-                    ctx.Response.StatusCode = (int) HttpStatusCode.NotFound;
-                    await ctx.Response.WriteAsync("Not found");
-                });
-            });
-
             app.UseSpa(spa =>
             {
                 spa.Options.SourcePath = "web";

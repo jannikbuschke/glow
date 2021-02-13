@@ -12,8 +12,8 @@ namespace Glow.Test
         public async void Not_Throw()
         {
             HttpResponseMessage response = await client.GetAsync("/hello");
-            response.EnsureSuccessStatusCode();
             var content = await response.Content.ReadAsStringAsync();
+            response.EnsureSuccessStatusCode();
             Assert.Equal("hello world", content);
         }
     }

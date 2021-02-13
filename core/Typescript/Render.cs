@@ -46,19 +46,6 @@ namespace Glow.Core.Typescript
         {
             var builder = new StringBuilder();
 
-            var t12332 = module.Types
-               .Where(v => v.IsT0)
-               .Select(v => v.AsT0)
-               .Where(v => v.Properties != null)
-               .SelectMany(v => v.Properties)
-               .Where(v => v.PropertyName == "registrations")
-               .ToList();
-
-            if (t12332.Count != 0)
-            {
-
-            }
-
             IEnumerable<IGrouping<string, Dependency>> dependencies = module.Types
                 .Where(v => v.IsT0)
                 .Select(v => v.AsT0)
