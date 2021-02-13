@@ -27,6 +27,8 @@ namespace Glow.Core.Typescript
 
         public List<Property> Properties { get; set; }
         public PropertyInfo[] PropertyInfos { get; set; }
+
+        public bool HasCyclicDependency { get; set; }
     }
 
     public class Property
@@ -35,5 +37,6 @@ namespace Glow.Core.Typescript
         public string TypeName { get; set; }
         public string DefaultValue { get; set; }
         public OneOf<TsType, TsEnum> TsType { get; set; }
+        public bool IsCyclic { get; set; }
     }
 }

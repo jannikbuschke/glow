@@ -34,12 +34,13 @@ namespace Glow.Core.Typescript
             }
         }
 
-        internal record Dependency
+        public record Dependency
         {
-            internal string Id { get; init; }
-            internal string Name { get; init; }
-            internal string Namespace { get; init; }
-            internal bool IsPrimitive { get; init; }
+            public string Id { get; init; }
+            public string Name { get; init; }
+            public string Namespace { get; init; }
+            public bool IsPrimitive { get; init; }
+            public TsType TsType { get; set; }
         }
 
         private static void RenderModule(Module module, string path)
@@ -52,7 +53,7 @@ namespace Glow.Core.Typescript
                 .Where(v => v.Properties != null)
                 .SelectMany(v => v.Properties)
                 .Select(v => v.TsType.Match(
-                    v => new Dependency { Id =  v.Id, Namespace = v.Namespace, Name = v.Name, IsPrimitive = v.IsPrimitive },
+                    v => new Dependency { Id =  v.Id, Namespace = v.Namespace, Name = v.Name, IsPrimitive = v.IsPrimitive, TsType = v},
                     v => new Dependency { Id = v.Id, Namespace = v.Namespace, Name = v.Name, IsPrimitive = false }))
                 .Where(v => !v.IsPrimitive)
                 .Where(v => v.Namespace != module.Namespace && v.Name != "any")
@@ -62,11 +63,17 @@ namespace Glow.Core.Typescript
             foreach (IGrouping<string, Dependency> group in dependencies)
             {
                 builder.AppendLine($"import {{ {string.Join(", ", group.Select(v => v.Name.Replace("[]","")))} }} from \"./{group.Key}\"");
-                builder.AppendLine($"import {{ {string.Join(", ", group.Select(v => "default" + v.Name.Replace("[]","")))} }} from \"./{group.Key}\"");
+
+                // todo change import source file
+                builder.AppendLine($"import {{ {string.Join(", ", group.Where(v => v == null || !v.TsType.HasCyclicDependency).Select(v => "default" + v.Name.Replace("[]","")))} }} from \"./{group.Key}\"");
             }
 
             builder.AppendLine("");
             builder.AppendLine("");
+
+            // TODO
+            // move module building and sorting
+            // to typebuilder
 
             IEnumerable<TsEnum> enumerables = module.Types.Where(v => v.IsT1).Select(v => v.AsT1);
             foreach (TsEnum v in enumerables)
@@ -126,16 +133,47 @@ namespace Glow.Core.Typescript
             if (type.DefaultValue != null)
             {
                 builder.AppendLine($"export const default{name}: {name} = {{");
-                foreach (Property property in type.Properties)
-                {
-                    builder.AppendLine($"  {property.PropertyName}: {property.DefaultValue ?? "null"},");
-                }
+                RenderProperties(type.Properties, builder, 0, 3);
                 builder.AppendLine("}");
             }
 
             //builder.AppendLine("}");
 
             builder.AppendLine("");
+        }
+
+        private static void RenderProperties(List<Property> properties, StringBuilder builder, int depth, int maxDepth)
+        {
+            foreach (Property property in properties)
+            {
+                if (property.TsType.IsT0 && property.TsType.AsT0.HasCyclicDependency)
+                {
+                    if (depth >= maxDepth)
+                    {
+                        builder.AppendLine($"  {property.PropertyName}: null as any,");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"  {property.PropertyName}: {{");
+                        for (int i = 0; i < depth; i++)
+                        {
+                            builder.Append(" ");
+                        }
+                        RenderProperties(property.TsType.AsT0.Properties, builder, depth+1, maxDepth);
+
+                        for (int i = 0; i < depth; i++)
+                        {
+                            builder.Append(" ");
+                        }
+                        builder.AppendLine("}");
+                    }
+                }
+                else
+                {
+
+                    builder.AppendLine($"  {property.PropertyName}: {property.DefaultValue ?? "null"},");
+                }
+            }
         }
 
         public static IList<T> TopologicalSort<T>(
@@ -171,6 +209,7 @@ namespace Glow.Core.Typescript
             {
                 if (inProcess)
                 {
+                    item.HasCyclicDependency = true;
                     throw new ArgumentException($"Cyclic dependency found. ({item.Name})");
                 }
             }

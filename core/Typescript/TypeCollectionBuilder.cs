@@ -39,10 +39,13 @@ namespace Glow.Core.Typescript
             }
         }
 
+        private List<TsType> visited = new List<TsType>();
+
         public TypeCollection Generate(Action<OneOf<TsType, TsEnum>> update)
         {
             foreach (Type type in types)
             {
+                visited.Clear();
                 OneOf<TsType, TsEnum> result = CreateOrGet(type);
             }
             var collection =  new TypeCollection {
@@ -64,10 +67,6 @@ namespace Glow.Core.Typescript
 
         private OneOf<TsType, TsEnum> CreateOrGet(Type type, bool skipDependencies = false)
         {
-            if(type.FullName.Contains("Gertrud.Meetings.Agenda.AgendaItemType"))
-            {
-
-            }
             if (type.IsEnum)
             {
                 TsEnum e = AsEnum(type);
@@ -99,6 +98,7 @@ namespace Glow.Core.Typescript
                 {
                     // to early?
                     // does not generate dependency
+                    // problem if typeargument primitive
                     return AsEnumerable(type);
                 }
 
@@ -114,7 +114,6 @@ namespace Glow.Core.Typescript
                             tsType.Id = id;
                             tsTypes.Add(id, tsType);
                             PopuplateProperties(tsType);
-
                         }, v1=>
                         {
                             tsEnums.TryAdd(v1.Id, v1);
@@ -272,16 +271,14 @@ namespace Glow.Core.Typescript
                 {
                     // problem, current type does not yet exist on dependency
                     OneOf<TsType, TsEnum> tsType = CreateOrGet(v.PropertyType, skipDependencies: true);
+
                     var defaultValue = tsType.Match(v1 => v1.DefaultValue, v2 =>
                     {
                         return "default" + v2.Name;
-                        //return v2.Namespace + ".default" + v2.Name;
-                        //return $@"""{v2.DefaultValue}""";
                     });
                     var typeName = tsType.Match(v1 => {
                         if (v1.Name == "any") { return "any"; }
                         return v1.IsPrimitive ? v1.Name : v1.Name;
-                        //return v1.IsPrimitive ? v1.Name : v1.Namespace + "." + v1.Name;
                     }, v2 => v2.Name);
                     return new Property
                     {
@@ -289,6 +286,7 @@ namespace Glow.Core.Typescript
                         DefaultValue = defaultValue,
                         TsType = tsType,
                         TypeName = typeName,
+                        IsCyclic = tsType.IsT0 && visited.Contains(tsType.AsT0),// true, // if already visited
                     };
                 }).ToList();
         }
@@ -308,7 +306,7 @@ namespace Glow.Core.Typescript
             if (genericArgument.IsEnum)
             {
                 TsEnum t = CreateOrGet(genericArgument).AsT1;
-              
+
                 return t;
             }
             else
