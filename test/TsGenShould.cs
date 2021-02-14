@@ -8,11 +8,49 @@ using Xunit;
 
 namespace Glow.Test
 {
-    public class TsGen
+    public class TsGenShould
     {
+        [Fact]
+        public void MarkNonCyclicDependencies()
+        {
+            var builder = new TypeCollectionBuilder();
+            builder.Add<D>();
+            var collection = builder.Generate(null);
+            Render.ToDisk(collection,  $"./models/{nameof(MarkNonCyclicDependencies)}/");
+            foreach (var value in collection.Types.Values)
+            {
+                value.HasCyclicDependency.Should().BeFalse();
+            }
+        }
 
         [Fact]
-        public void Foo()
+        public void HandleCyclicDependencies()
+        {
+            var builder = new TypeCollectionBuilder();
+            builder.Add<Parent>();
+            TypeCollection collection = builder.Generate(null);
+            Render.ToDisk(collection,  $"./models/{nameof(HandleCyclicDependencies)}/");
+            foreach (TsType value in collection.Types.Values)
+            {
+                value.HasCyclicDependency.Should().BeTrue();
+            }
+        }
+
+        [Fact]
+        public void HandleCyclicDependenciesWithDepthGreater1()
+        {
+            var builder = new TypeCollectionBuilder();
+            builder.Add<A>();
+            TypeCollection collection = builder.Generate(null);
+            Render.ToDisk(collection, $"./models/{nameof(HandleCyclicDependenciesWithDepthGreater1)}/");
+            foreach (TsType value in collection.Types.Values)
+            {
+                value.HasCyclicDependency.Should().BeTrue();
+            }
+        }
+
+        [Fact]
+        public void NotCrash()
         {
             var builder = new TypeCollectionBuilder();
 
@@ -29,9 +67,11 @@ namespace Glow.Test
             builder.Add<KeyValuePair<string, string>>();
             builder.Add<KeyValuePair<string, Foo>>();
 
+            builder.Add<ReferenceToOtherModule>();
+
             var result = builder.Generate(null);
 
-            Render.ToDisk(result, "./models/");
+            Render.ToDisk(result, $"./models/{nameof(NotCrash)}/");
         }
 
         // var typeWithConcreteArgument = typeof(List<string>);
@@ -56,7 +96,7 @@ namespace One
     {
         public decimal Value { get; set; }
         public double Value2 { get; set; }
-        public IEnumerable<double> Value3 { get; set; }
+        // public IEnumerable<double> Value3 { get; set; }
         public Dictionary<string, decimal> MyProperty { get; set; }
         public Dictionary<string, string> MyProperty2 { get; set; }
         public Dictionary<string, Foo> MyProperty3 { get; set; }
@@ -80,10 +120,34 @@ namespace One
     {
         public Child Child { get; set; }
     }
-
     public class Child
     {
         public Parent Parent { get; set; }
+    }
+    public class A
+    {
+        public string DisplayName { get; set; }
+        public DateTime Date { get; set; }
+        public B B { get; set; }
+    }
+    public class B
+    {
+        public Guid Id { get; set; }
+        public C C { get; set; }
+    }
+    public class C
+    {
+        public A A { get; set; }
+    }
+
+    public class D
+    {
+        public F F { get; set; }
+    }
+
+    public class F
+    {
+
     }
 }
 
