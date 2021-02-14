@@ -13,6 +13,8 @@ steps:
 - checkout: self
   submodules: true
 
+- script: 'ls $(Build.ArtifactStagingDirectory)/*.nupkg'
+
 - task: NuGetToolInstaller@1
   inputs:
     versionSpec: '5.x'
@@ -71,7 +73,7 @@ steps:
 #     nuGetFeedType: 'external'
 #     publishFeedCredentials: 'nuget.org'
 
-- script: 'ls */**.nupkg'
+- script: 'ls $(Build.ArtifactStagingDirectory)/*.nupkg'
 
 # - task: NuGetCommand@2
 #   displayName: 'NuGet push'
