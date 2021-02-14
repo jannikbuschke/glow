@@ -1,10 +1,14 @@
+using System;
 using System.Reflection;
+using AutoMapper;
+using AutoMapper.EquivalencyExpression;
 using Glow.Authentication.Aad;
 using Glow.Clocks;
 using Glow.Core.Authentication;
 using Glow.Core.EfMsalTokenStore;
 using Glow.Core.EfTicketStore;
 using Glow.Files;
+using MediatR;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -27,21 +31,30 @@ namespace Glow.Core
         /// <returns></returns>
         public static IServiceCollection AddGlowApplicationServices(
             this IServiceCollection services,
+            Action<MvcOptions> options = null,
+            Action<IMvcBuilder> configureAdditionalMvcOptions = null,
             params Assembly[] assembliesToScan
         )
         {
-            services.AddMvc(options =>
-            {
-                options.EnableEndpointRouting = true;
-            })
-            .SetCompatibilityVersion(CompatibilityVersion.Version_3_0)
-            .AddNewtonsoftJson(options =>
-            {
-                options.SerializerSettings.Formatting = Formatting.Indented;
-                options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
-                options.SerializerSettings.Converters.Add(new StringEnumConverter());
-                options.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
-            });
+            var mvcBuilder = services.AddControllers(o =>
+                {
+                    o.EnableEndpointRouting = true;
+                    if (options != null) { options(o); }
+                })
+                .SetCompatibilityVersion(CompatibilityVersion.Version_3_0)
+                .AddNewtonsoftJson(options =>
+                {
+                    options.SerializerSettings.Formatting = Formatting.Indented;
+                    options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+                    options.SerializerSettings.Converters.Add(new StringEnumConverter());
+                    options.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
+                })
+                .ConfigureApiBehaviorOptions(v =>
+                {
+                    v.SuppressModelStateInvalidFilter = true;
+                });
+
+            configureAdditionalMvcOptions?.Invoke(mvcBuilder);
 
             services.AddGlow();
 
@@ -53,6 +66,9 @@ namespace Glow.Core
             services.AddSignalR();
             services.AddHttpClient();
             services.AddHttpContextAccessor();
+
+            services.AddMediatR(assembliesToScan);
+            services.AddAutoMapper(cfg => { cfg.AddCollectionMappers(); }, assembliesToScan);
 
             return services;
         }

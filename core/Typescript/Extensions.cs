@@ -21,7 +21,6 @@ namespace Glow.TypeScript
         }
     }
 
-
     public static class Extensions
     {
         public static string CamelCase(this string value)

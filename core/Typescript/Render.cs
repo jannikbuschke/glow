@@ -146,30 +146,31 @@ namespace Glow.Core.Typescript
         {
             foreach (Property property in properties)
             {
+
                 if (property.TsType.IsT0 && property.TsType.AsT0.HasCyclicDependency)
                 {
                     if (depth >= maxDepth)
                     {
+                        builder.Append("".PadRight(depth));
+
                         builder.AppendLine($"  {property.PropertyName}: null as any,");
                     }
                     else
                     {
+                        builder.Append("".PadRight(depth));
+
                         builder.AppendLine($"  {property.PropertyName}: {{");
-                        for (int i = 0; i < depth; i++)
-                        {
-                            builder.Append(" ");
-                        }
+
                         RenderProperties(property.TsType.AsT0.Properties, builder, depth+1, maxDepth);
 
-                        for (int i = 0; i < depth; i++)
-                        {
-                            builder.Append(" ");
-                        }
+                        builder.Append("".PadRight(depth));
+
                         builder.AppendLine("}");
                     }
                 }
                 else
                 {
+                    builder.Append("".PadRight(depth));
 
                     builder.AppendLine($"  {property.PropertyName}: {property.DefaultValue ?? "null"},");
                 }

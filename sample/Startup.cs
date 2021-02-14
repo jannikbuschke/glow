@@ -36,18 +36,11 @@ namespace Glow.Sample
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc(options =>
-            {
-                options.EnableEndpointRouting = true;
-            })
-            .SetCompatibilityVersion(CompatibilityVersion.Version_3_0)
-            .AddNewtonsoftJson(options =>
-            {
-                options.SerializerSettings.Formatting = Formatting.Indented;
-                options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
-                options.SerializerSettings.Converters.Add(new StringEnumConverter());
-                options.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
+            services.AddGlowApplicationServices(assembliesToScan: new[] {
+                typeof(Startup).Assembly,
+                typeof(Clocks.Clock).Assembly
             });
+
             UserDto testUser = TestUsers.TestUser();
 
             services.AddAuthorization(options =>
@@ -62,7 +55,6 @@ namespace Glow.Sample
                     v.RequireClaim(ClaimTypes.NameIdentifier, testUser.Id);
                 });
             });
-            services.AddGlow();
 
             services.AddTestAuthentication(testUser.Id, testUser.DisplayName, testUser.Email);
 
@@ -74,15 +66,8 @@ namespace Glow.Sample
                 //options.SetPartialWritePolicy("sample-configuration", "test-policy");
             }, new[] { typeof(Startup).Assembly });
 
-            services.Configure<ApiBehaviorOptions>(options =>
-            {
-                //options.SuppressConsumesConstraintForFormFileParameters = true;
-                //options.SuppressInferBindingSourcesForParameters = true;
-                options.SuppressModelStateInvalidFilter = true;
-            });
-
-            services.AddMediatR(typeof(Startup), typeof(Clocks.Clock));
-            services.AddAutoMapper(cfg => { cfg.AddCollectionMappers(); }, typeof(Startup));
+            // services.AddMediatR(typeof(Startup), typeof(Clocks.Clock));
+            // services.AddAutoMapper(cfg => { cfg.AddCollectionMappers(); }, typeof(Startup));
 
             services.AddDbContext<DataContext>(options =>
             {
@@ -90,32 +75,12 @@ namespace Glow.Sample
                 options.EnableSensitiveDataLogging(true);
             });
 
-            services.AddVersionedApiExplorer(o => o.GroupNameFormat = "'v'VVV");
-
-            services.AddApiVersioning(options =>
-            {
-                options.AssumeDefaultVersionWhenUnspecified = true;
-                options.DefaultApiVersion = new ApiVersion(1, 0);
-                options.ReportApiVersions = true;
-            });
-
-            services.AddOptions();
-
             services.AddTypescriptGeneration(new TsGenerationOptions
             {
                 Path = "./models/",
                 Assemblies = new [] { GetType().Assembly },
                 GenerateApi = false
             });
-            //services.AddTypescriptGeneration(new[] { GetType().Assembly }, options =>
-            //{
-            //    //options.Path =
-            //});
-
-            //services.AddTypescriptGeneration(new[] { Assembly.GetAssembly(typeof(GlowCoreModule)) }, options =>
-            //{
-            //    options.Path = "../core/web/src/";
-            //});
         }
 
         public void Configure(

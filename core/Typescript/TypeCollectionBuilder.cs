@@ -71,7 +71,6 @@ namespace Glow.Core.Typescript
             {
                 TsEnum e = AsEnum(type);
                 tsEnums.TryAdd(e.Id, e);
-                Console.WriteLine("add enum " + e.Name);
                 return e;
             }
             else
