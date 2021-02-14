@@ -71,11 +71,13 @@ steps:
 #     nuGetFeedType: 'external'
 #     publishFeedCredentials: 'nuget.org'
 
-- task: NuGetCommand@2
-  displayName: 'NuGet push'
-  inputs:
-    command: push
-    nuGetFeedType: external
-    publishFeedCredentials: nuget.org
-    packagesToPush: '$(Build.ArtifactStagingDirectory)/*.nupkg'
-  condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/heads/master'))
+- script: 'ls */**.nupkg'
+
+# - task: NuGetCommand@2
+#   displayName: 'NuGet push'
+#   inputs:
+#     command: push
+#     nuGetFeedType: external
+#     publishFeedCredentials: nuget.org
+#     packagesToPush: '$(Build.ArtifactStagingDirectory)/*.nupkg'
+#   condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/heads/master'))
