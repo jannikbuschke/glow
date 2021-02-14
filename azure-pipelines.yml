@@ -57,7 +57,7 @@ steps:
   displayName: 'dotnet pack'
   inputs:
     command: 'pack'
-    packagesToPack: 'core/core.csproj'
+    packagesToPack: 'core/glow.core.csproj'
     includesymbols: true
     includesource: true
     versioningScheme: 'off'
