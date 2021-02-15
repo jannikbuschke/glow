@@ -36,5 +36,10 @@ namespace Glow.Core.Typescript
         public string DefaultValue { get; set; }
         public OneOf<TsType, TsEnum> TsType { get; set; }
         public bool IsCyclic { get; set; }
+
+        public override string ToString()
+        {
+            return PropertyName + ": " + TsType.Match(v => v.Name, v => v.Name);
+        }
     }
 }

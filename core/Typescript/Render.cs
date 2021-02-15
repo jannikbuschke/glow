@@ -96,7 +96,8 @@ namespace Glow.Core.Typescript
         {
             foreach (Property property in properties)
             {
-                if (property.TsType.IsT0 && !property.TsType.AsT0.IsPrimitive && property.TsType.AsT0.HasCyclicDependency)
+                TsType tsType = property.TsType.IsT0 ? property.TsType.AsT0 : null;
+                if (tsType!=null&&  !tsType.IsPrimitive && tsType.HasCyclicDependency && !tsType.IsCollection)
                 {
                     if (depth >= maxDepth)
                     {
