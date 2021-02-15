@@ -1,7 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.CompilerServices;
 using FluentAssertions;
+using Glow.Core.Linq;
 using Glow.Core.Typescript;
+using Glow.Core.Utils;
 using One;
 using Two;
 using Xunit;
@@ -15,11 +19,74 @@ namespace Glow.Test
         {
             var builder = new TypeCollectionBuilder();
             builder.Add<D>();
-            var collection = builder.Generate(null);
-            Render.ToDisk(collection,  $"./models/{nameof(MarkNonCyclicDependencies)}/");
-            foreach (var value in collection.Types.Values)
+            TypeCollection collection = builder.Generate(null);
+            Render.ToDisk(collection,  $"./models/{this.GetMethodName(getFullName: false)}/");
+            foreach (TsType value in collection.Types.Values)
             {
                 value.HasCyclicDependency.Should().BeFalse();
+            }
+        }
+
+        [Fact]
+        public void Foo()
+        {
+            var builder = new TypeCollectionBuilder();
+            builder.Add<G>();
+            TypeCollection collection = builder.Generate(null);
+            Render.ToDisk(collection,  $"./models/{this.GetMethodName(getFullName: false)}/");
+            foreach (TsType value in collection.Types.Values)
+            {
+                value.HasCyclicDependency.Should().BeTrue();
+            }
+        }
+
+        [Fact]
+        public void TopologicalSortShouldDetectCycles()
+        {
+            var builder = new TypeCollectionBuilder();
+            builder.Add<G>();
+            // builder.Add<K>();
+            TypeCollection collection = builder.Generate(null);
+
+            IEnumerable<TsType> t =
+                collection.All()
+                    .Where(v => v.IsT0)
+                    .Select(v => v.AsT0)
+                    .Where(v => !v.IsPrimitive)
+                    .DistinctBy(v => v.Id)
+                    .ToList();
+
+            IList<TsType> result = t.TopologicalSort(
+                v => v.Properties?.Where(v => v.TsType.IsT0).Select(v => v.TsType.AsT0));
+
+            t.Should().OnlyContain(v => v.HasCyclicDependency);
+        }
+
+        [Fact]
+        public void DetectDoubleCycles()
+        {
+            var builder = new TypeCollectionBuilder();
+            builder.Add<H>();
+            // builder.Add<K>();
+            TypeCollection collection = builder.Generate(null);
+            Render.ToDisk(collection,  $"./models/{this.GetMethodName(getFullName: false)}/");
+            foreach (TsType value in collection.Types.Values)
+            {
+                value.HasCyclicDependency.Should().BeTrue();
+            }
+        }
+
+        [Fact]
+        public void MarkCyclicDependenciesOtherDependencies()
+        {
+            var builder = new TypeCollectionBuilder();
+            builder.Add<G>();
+            // builder.Add<K>();
+            TypeCollection collection = builder.Generate(null);
+            Render.ToDisk(collection,  $"./models/{this.GetMethodName(getFullName: false)}/");
+            foreach (TsType value in collection.Types.Values)
+            {
+                value.HasCyclicDependency.Should().BeTrue();
             }
         }
 
@@ -29,7 +96,7 @@ namespace Glow.Test
             var builder = new TypeCollectionBuilder();
             builder.Add<Parent>();
             TypeCollection collection = builder.Generate(null);
-            Render.ToDisk(collection,  $"./models/{nameof(HandleCyclicDependencies)}/");
+            Render.ToDisk(collection,  $"./models/{this.GetMethodName(getFullName: false)}/");
             foreach (TsType value in collection.Types.Values)
             {
                 value.HasCyclicDependency.Should().BeTrue();
@@ -41,8 +108,9 @@ namespace Glow.Test
         {
             var builder = new TypeCollectionBuilder();
             builder.Add<A>();
+            builder.Add<K>();
             TypeCollection collection = builder.Generate(null);
-            Render.ToDisk(collection, $"./models/{nameof(HandleCyclicDependenciesWithDepthGreater1)}/");
+            Render.ToDisk(collection, $"./models/{this.GetMethodName(getFullName: false)}/");
             foreach (TsType value in collection.Types.Values)
             {
                 value.HasCyclicDependency.Should().BeTrue();
@@ -57,7 +125,7 @@ namespace Glow.Test
             builder.Add<IEnumerable<string>>();
             builder.Add<Dictionary<string, object>>();
 
-            builder.Add<Generic<Foo>>();
+            // builder.Add<Generic<Foo>>();
 
             builder.Add<string>();
             builder.Add<Bar>();
@@ -69,9 +137,12 @@ namespace Glow.Test
 
             builder.Add<ReferenceToOtherModule>();
 
-            var result = builder.Generate(null);
+            builder.Add<One.Enum>();
+            builder.Add<One.Enum2>();
 
-            Render.ToDisk(result, $"./models/{nameof(NotCrash)}/");
+            TypeCollection result = builder.Generate(null);
+
+            Render.ToDisk(result, $"./models/{this.GetMethodName(getFullName: false)}/");
         }
 
         // var typeWithConcreteArgument = typeof(List<string>);
@@ -85,6 +156,16 @@ namespace Glow.Test
 
 namespace One
 {
+    public enum Enum
+    {
+        One, Two, Three
+    }
+
+    public enum Enum2
+    {
+        Two=2, Three=3
+    }
+
     public class Bar
     {
         public string Foo { get; set; }
@@ -138,6 +219,7 @@ namespace One
     public class C
     {
         public A A { get; set; }
+        public CyclicOtherNamespace CyclicOtherNamespace { get; set; }
     }
 
     public class D
@@ -149,6 +231,27 @@ namespace One
     {
 
     }
+
+    public class G
+    {
+        public CyclicOtherNamespace CyclicOtherNamespace { get; set; }
+    }
+
+    public class H
+    {
+        public I I { get; set; }
+    }
+
+    public class I
+    {
+        public H H { get; set; }
+        public L L { get; set; }
+    }
+
+    public class L
+    {
+        public I I { get; set; }
+    }
 }
 
 namespace Two
@@ -156,5 +259,16 @@ namespace Two
     public class OtherNamespaceClass
     {
         public string DisplayName { get; set; }
+    }
+
+    public class CyclicOtherNamespace
+    {
+        public G G { get; set; }
+        public K K { get; set; }
+    }
+
+    public class K
+    {
+        public CyclicOtherNamespace CyclicOtherNamespace { get; set; }
     }
 }

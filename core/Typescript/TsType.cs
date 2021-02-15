@@ -8,13 +8,11 @@ namespace Glow.Core.Typescript
 
     public class TsType
     {
-        //public string Id
-        //{
-        //    get
-        //    {
-        //        return FullName;
-        //    }
-        //}
+        public override string ToString()
+        {
+            return Id;
+        }
+
         public string Id { get; set; }
         public bool IsPrimitive { get; set; }
         public string FullName { get; set; }

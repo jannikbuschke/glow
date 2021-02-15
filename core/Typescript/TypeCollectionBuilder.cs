@@ -5,11 +5,21 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using Glow.Core.Linq;
 using Glow.TypeScript;
 using OneOf;
 
 namespace Glow.Core.Typescript
 {
+    public record Dependency
+    {
+        public string Id { get; init; }
+        public string Name { get; init; }
+        public string Namespace { get; init; }
+        public bool IsPrimitive { get; init; }
+        public TsType TsType { get; set; }
+    }
+
     public class TypeCollectionBuilder
     {
         private readonly IList<Type> types = new List<Type>();
@@ -251,6 +261,7 @@ namespace Glow.Core.Typescript
             { typeof(bool),new Tuple<string, string>( "boolean", "false") },
             { typeof(bool?), new Tuple<string, string>("boolean | null", "null") },
             { typeof(Dictionary<string, string>), new Tuple<string, string>("{ [key: string]: string }", "{}") },
+            { typeof(Dictionary<string, decimal>), new Tuple<string, string>("{ [key: string]: number }", "{}") },
             { typeof(Dictionary<string, int>), new Tuple<string, string>("{ [key: string]: number }", "{}") },
             { typeof(Dictionary<string, object>), new Tuple<string, string>("{ [key: string]: any }", "{}") },
             { typeof(IDictionary<string, object>), new Tuple<string, string>("{ [key: string]: any }", "{}") },
@@ -258,6 +269,7 @@ namespace Glow.Core.Typescript
             { typeof(byte[]), new Tuple<string, string>("string | null", "null") },
             { typeof(List<string>), new Tuple<string, string>("(string | null)[]", "[]") },
             { typeof(IEnumerable<string>), new Tuple<string, string>("(string | null)[]", "[]") },
+            { typeof(IEnumerable<double>), new Tuple<string, string>("number[]", "[]") },
             { typeof(Collection<string>), new Tuple<string, string>("(string | null)[]", "[]") },
             { typeof(ICollection<string>), new Tuple<string, string>("(string | null)[]", "[]") },
 
