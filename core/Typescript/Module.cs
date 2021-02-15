@@ -59,11 +59,8 @@ namespace Glow.Core.Typescript
                     }))
                 .Where(v => !v.IsPrimitive)
                 .Where(v => v.Namespace != this.Namespace && v.Name != "any");
-                // .DistinctBy(v => v.Id)
-                // .GroupBy(v => v.Namespace);
 
                 var subDependencies = this.TsTypes
-                    .Where(v => v.HasCyclicDependency)
                     .SelectMany(v => v.Properties)
                     .Where(v => v.TsType.IsT0)
                     .Select(v => v.TsType.AsT0)

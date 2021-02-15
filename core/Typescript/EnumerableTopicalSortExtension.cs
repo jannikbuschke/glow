@@ -38,11 +38,11 @@ namespace Glow.Core.Typescript
             {
                 if (inProcess)
                 {
-                    foreach (var v in visited)
-                    {
-                        v.Key.HasCyclicDependency = true;
-                    }
-                    // item.HasCyclicDependency = true;
+                    // foreach (var v in visited)
+                    // {
+                    //     v.Key.HasCyclicDependency = true;
+                    // }
+                    item.HasCyclicDependency = true;
                     throw new ArgumentException($"Cyclic dependency found. ({item.Name})");
                 }
             }
