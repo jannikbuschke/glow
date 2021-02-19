@@ -31,7 +31,7 @@ namespace Glow.Configurations
             Meta partialConfiguration = partialConfigurations.Get().Single(v => v.Id == request.ConfigurationId);
 
             var builder = new DbContextOptionsBuilder<ConfigurationDataContext>();
-            StartupExtensions.optionsAction(builder);
+            StartupExtensions.optionsAction?.Invoke(builder);
             using var ctx = new ConfigurationDataContext(builder.Options);
 
             ConfigurationVersion current = await ctx

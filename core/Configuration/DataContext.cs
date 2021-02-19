@@ -50,7 +50,7 @@ namespace Glow.Configurations
         Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default);
     }
 
-    internal class SqlServerConfigurationDataContext : ConfigurationDataContext, IConfigurationDataContext
+    public class SqlServerConfigurationDataContext : ConfigurationDataContext, IConfigurationDataContext
     {
         public SqlServerConfigurationDataContext(DbContextOptions<SqlServerConfigurationDataContext> options) : base(options)
         {
