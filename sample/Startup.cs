@@ -4,13 +4,16 @@ using System.Security.Claims;
 using AutoMapper;
 using AutoMapper.EquivalencyExpression;
 using Glow.Configurations;
+using Glow.Core.BackgroundTasks;
+using Glow.Tests;
+using Glow.TypeScript;
+using MediatR;
+using System.Reflection;
+using System.Security.Claims;
 using Glow.Core;
 using Glow.Sample.Configurations;
 using Glow.Sample.Users;
-using Glow.Tests;
-using Glow.TypeScript;
 using Glow.Users;
-using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -40,6 +43,8 @@ namespace Glow.Sample
                 typeof(Startup).Assembly,
                 typeof(Clocks.Clock).Assembly
             });
+
+            services.AddBackgroundTasks();
 
             UserDto testUser = TestUsers.TestUser();
 
@@ -75,11 +80,20 @@ namespace Glow.Sample
                 options.EnableSensitiveDataLogging(true);
             });
 
-            services.AddTypescriptGeneration(new TsGenerationOptions
+            services.AddOptions();
+
+            services.AddTypescriptGeneration(new []
             {
-                Path = "./models/",
-                Assemblies = new [] { GetType().Assembly },
-                GenerateApi = false
+                new TsGenerationOptions
+                {
+                    Assemblies = new[] { Assembly.GetAssembly(typeof(GlowCoreModule)) },
+                    Path = "../core/web/src/ts-models-core/",
+                },
+                new TsGenerationOptions
+                {
+                    Assemblies = new[] { this.GetType().Assembly },
+                    Path = "../core/web/src/ts-models/",
+                }
             });
         }
 

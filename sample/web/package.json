@@ -13,14 +13,14 @@
     "less": "3.11.1",
     "react-router-dom": "6.0.0-alpha.4",
     "react-router": "6.0.0-alpha.4",
-    "react-scripts": "3.4.1",
-    "glow-react": "0.14.0",
+    "react-scripts": "4.0.1",
+    "glow-react": "0.14.1",
     "react-query": "3.4.0",
     "@ant-design/icons": "4.2.2",
     "mitt": "1.2.0"
   },
   "scripts": {
-    "start": "set PORT=3001 && react-app-rewired start",
+    "start": "set PORT=3001 && react-scripts start",
     "build": "react-app-rewired build",
     "build:old": "react-scripts build",
     "test": "react-app-rewired test --env=jsdom",
