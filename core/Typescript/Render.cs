@@ -97,7 +97,15 @@ namespace Glow.Core.Typescript
             foreach (Property property in properties)
             {
                 TsType tsType = property.TsType.IsT0 ? property.TsType.AsT0 : null;
-                if (tsType!=null&&  !tsType.IsPrimitive && tsType.HasCyclicDependency && !tsType.IsCollection)
+                if (tsType?.IsCollection == true)
+                {
+                    builder.AppendLine($"  {property.PropertyName}: [],");
+                }
+                else if (tsType?.IsPrimitive != true)
+                {
+                    builder.AppendLine($"  {property.PropertyName}: {{}} as any,");
+                }
+                else if (tsType!=null&&  !tsType.IsPrimitive && tsType.HasCyclicDependency && !tsType.IsCollection)
                 {
                     if (depth >= maxDepth)
                     {
