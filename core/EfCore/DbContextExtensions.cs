@@ -72,14 +72,17 @@ namespace Glow.Core.EfCore
                 {
                     await v.Database.EnsureDeletedAsync();
                 }
-                await v.Database.EnsureCreatedAsync();
+
+                await v.Database.MigrateAsync();
+                if (request.AfterCreated != null)
+                {
+                    await request.AfterCreated.Invoke();
+                }
             }
             catch (Exception e)
             {
-
                 throw e;
             }
-
         }
     }
 
@@ -89,6 +92,7 @@ namespace Glow.Core.EfCore
     {
         public bool DeleteDatabase { get; set; }
         public bool IKnowWhatIAmDoing { get; set; }
+        public Func<Task> AfterCreated { get; set; }
     }
 
     public enum DatabaseProvider
