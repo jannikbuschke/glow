@@ -19,6 +19,8 @@ namespace Glow.Files
         public string Name { get; set; }
     }
 
+    public class EmptyRequest{}
+
     public class FileService
     {
         public async Task<IList<T>> WriteFormfilesToPath<T>(IFormFileCollection files, string path) where T : IFile
