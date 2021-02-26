@@ -8,6 +8,7 @@ using Glow.Core.Authentication;
 using Glow.Core.EfMsalTokenStore;
 using Glow.Core.EfTicketStore;
 using Glow.Files;
+using Glow.MsGraph.Mails;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Hosting;
@@ -69,6 +70,8 @@ namespace Glow.Core
 
             services.AddMediatR(assembliesToScan);
             services.AddAutoMapper(cfg => { cfg.AddCollectionMappers(); }, assembliesToScan);
+
+            services.AddScoped<MailService>();
 
             return services;
         }
