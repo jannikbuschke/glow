@@ -49,7 +49,7 @@ export function SelectEntity<T>({
   const value = field.value
   React.useEffect(() => {
     debouncedSearch("")
-    if (value) {
+    if (value && restProps.mode !== "multiple") {
       sendQuery(
         {
           where: { operation: "Equals", property: "Id", value },
@@ -82,12 +82,21 @@ export function SelectEntity<T>({
       }}
       onBlur={() => {
         form.setTouched(true)
+        debouncedSearch("")
       }}
       style={{ width: "100%", ...restProps?.style }}
       showSearch={true}
       onDeselect={(v) => {
+        console.log("ondeselect", v, value)
         if (restProps.mode === "multiple") {
-          form.setValue((value as any[]).filter((item) => item != v))
+          if (v.value) {
+            console.log({ value: v.value, values: value })
+            form.setValue(
+              (value as any[]).filter((item) => item.value != v.value),
+            )
+          } else {
+            form.setValue((value as any[]).filter((item) => item != v))
+          }
         }
       }}
       onSelect={(v) => {

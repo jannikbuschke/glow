@@ -15,6 +15,7 @@ export function SelectAsync<T extends SelectValue>({
   disabled,
   name,
   fetcher,
+  onChange,
   ...restProps
 }: SelectAsyncProps<T>) {
   const [options, setOptions] = React.useState<LabeledValue[]>([])
@@ -25,7 +26,7 @@ export function SelectAsync<T extends SelectValue>({
         setOptions(data)
       })()
     }, 150),
-    [],
+    [fetcher],
   )
   React.useEffect(() => {
     debouncedSearch("")
@@ -39,10 +40,11 @@ export function SelectAsync<T extends SelectValue>({
     <Select<T>
       dropdownMatchSelectWidth={false}
       value={field.value}
-      onChange={(value) => {
+      onChange={(value, o) => {
         if (value === undefined) {
           form.setValue(null)
         }
+        onChange && onChange(value, o)
       }}
       onBlur={() => {
         form.setTouched(true)
