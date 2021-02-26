@@ -1,5 +1,6 @@
 import * as React from "react"
-import { Alert } from "antd"
+import { Alert, notification } from "antd"
+import { ProblemDetails } from "../Forms/use-submit"
 
 export function WarningBanner({ message }: { message: any }) {
   return render("warning", message)
@@ -34,4 +35,8 @@ function render(
       }}
     />
   ) : null
+}
+
+export function notifyError(r: ProblemDetails) {
+  notification.error({ message: r.title || r.detail || r.status })
 }

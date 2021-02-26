@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Reflection;
 using System.Security.Claims;
@@ -13,6 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Graph;
 using Serilog;
 
 namespace Glow.Core
@@ -150,6 +152,16 @@ namespace Glow.Core
                                 Status = (int) HttpStatusCode.NotFound,
                                 Detail = "Datensatz wurde nicht gefunden. Evtl wurde er gelöscht oder verschoben.",
                                 Type = "not_found"
+                            };
+                        }
+                        else if (ex is ServiceException se && se.StatusCode == HttpStatusCode.Forbidden)
+                        {
+                            return new ProblemDetails
+                            {
+                                Title = "Forbidden",
+                                Status = (int) HttpStatusCode.Forbidden,
+                                Detail = ex.Message,
+                                Type = "forbidden_request"
                             };
                         }
                         else
