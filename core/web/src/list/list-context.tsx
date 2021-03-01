@@ -1,5 +1,9 @@
 import * as React from "react"
-import { useGlowQuery, UseGlowQueryResult } from "../query/use-data"
+import {
+  QueryParameter,
+  useGlowQuery,
+  UseGlowQueryResult,
+} from "../query/use-data"
 
 interface IListContext<T> {
   glowQuery: UseGlowQueryResult<T>
@@ -10,11 +14,17 @@ const context = React.createContext<IListContext<any>>(null as any)
 export function ListContext({
   url,
   children,
-}: React.PropsWithChildren<{ url: string }>) {
-  const glowQuery = useGlowQuery<any>(url, {
-    value: [],
-    count: null,
-  })
+  initialQuery,
+}: React.PropsWithChildren<{ url: string; initialQuery?: QueryParameter }>) {
+  const glowQuery = useGlowQuery<any>(
+    url,
+    {
+      value: [],
+      count: null,
+    },
+    undefined,
+    initialQuery,
+  )
 
   return <context.Provider value={{ glowQuery }}>{children}</context.Provider>
 }

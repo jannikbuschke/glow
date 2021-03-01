@@ -61,21 +61,20 @@ export function List<RecordType extends { id: string } = any>({
     { result: data, setOrderBy, skip, take, setSkip, setTake },
     { isLoading },
   ] = ctx.glowQuery
-  // const [
-  //   { result: data, setOrderBy, skip, take, setSkip, setTake },
-  //   { isLoading },
-  // ] = useGlowQuery<any>(baseUrl, {
-  //   value: [],
-  //   count: null,
-  // })
 
-  const pageSize = take
-  const currentPage = skip / pageSize + 1
+  React.useEffect(() => {
+    if (!paginate) {
+      setTake(null)
+    }
+  }, [paginate])
+
+  const pageSize = take || 0
+  const currentPage = pageSize == 0 ? 1 : skip / pageSize + 1
 
   const pagination: false | TablePaginationConfig | undefined = paginate
     ? {
         current: currentPage,
-        pageSize: pageSize,
+        pageSize: pageSize || 10,
         onChange: (page, size) => {
           if (size) {
             setTake(size)

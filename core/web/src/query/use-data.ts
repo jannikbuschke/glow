@@ -30,11 +30,11 @@ export type UseGlowQueryResult<T> = [
 export interface UseGlowQuery<T> {
   result: QueryResult<T>
   skip: number
-  take: number
+  take: number | null
   search: string | null
   setSearch: React.Dispatch<React.SetStateAction<string | null>>
   setSkip: React.Dispatch<React.SetStateAction<number>>
-  setTake: React.Dispatch<React.SetStateAction<number>>
+  setTake: React.Dispatch<React.SetStateAction<number | null>>
   setOrderBy: React.Dispatch<React.SetStateAction<null | OrderBy>>
   setWhere: React.Dispatch<React.SetStateAction<null | Where>>
   sendQuery: (query: Query, url: string) => Promise<QueryResult<T>>
@@ -57,38 +57,46 @@ function createSendQuery<T>(
   return sendQuery
 }
 
+export type QueryParameter = {
+  take: number | null
+  skip: number
+  orderBy: OrderBy
+  where: Where
+  search: string | null
+}
+
+type QueryKey = [string, QueryParameter]
+
 export function useGlowQuery<T>(
   url: string,
   placeholder: QueryResult<T>,
   config?: QueryOptions<QueryResult<T>>,
+  initialQuery?: QueryParameter,
 ): UseGlowQueryResult<T> {
   const fetch = useFetchJson<QueryResult<T>>()
   const sendQuery = React.useMemo(() => createSendQuery<T>(fetch), [fetch])
-  const [take, setTake] = React.useState(10)
-  const [skip, setSkip] = React.useState(0)
-  const [orderBy, setOrderBy] = React.useState<null | OrderBy>(null)
-  const [search, setSearch] = React.useState<null | string>(null)
-  const [where, setWhere] = React.useState<null | Where>(null)
+  const [take, setTake] = React.useState<number | null>(
+    initialQuery?.take || 10,
+  )
+  const [skip, setSkip] = React.useState(initialQuery?.skip || 0)
+  const [orderBy, setOrderBy] = React.useState<null | OrderBy>(
+    initialQuery?.orderBy || null,
+  )
+  const [search, setSearch] = React.useState<null | string>(
+    initialQuery?.search || null,
+  )
+  const [where, setWhere] = React.useState<null | Where>(
+    initialQuery?.where || null,
+  )
 
-  const useQueryResult = useQuery<QueryResult<T>, any>(
-    url,
-    async () => {
+  const useQueryResult = useQuery<QueryResult<T>>(
+    [url, { take, skip, orderBy, where }] as QueryKey,
+    async ({ queryKey }: { queryKey: QueryKey }) => {
       const query: Query = {
-        orderBy: (orderBy as any) as OrderBy,
-        where: where as Where,
-        search,
-        // orderBy: { direction: "Asc", property: "Id" },
-        // where: {
-        //   operation: "Contains",
-        //   property: "",
-        //   value: "",
-        // },
-        skip,
-        take,
+        ...queryKey[1],
         count: true,
       }
       const result = await sendQuery(query, url)
-
       return result
     },
     config,

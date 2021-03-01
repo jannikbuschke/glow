@@ -81,12 +81,16 @@ namespace Glow.Core.Queries
             {
                 count = self.Count();
             }
+
+            IEnumerable<T> value = self.Skip(query.Skip ?? 0);
+            if (query.Take != null)
+            {
+                value = value.Take(query.Take.Value);
+            }
             return new QueryResult<T>
             {
                 Count = count,
-                Value = self
-                .Skip(query.Skip ?? 0)
-                .Take(query.Take ?? 10)
+                Value = value
             };
         }
 

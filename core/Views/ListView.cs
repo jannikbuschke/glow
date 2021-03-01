@@ -20,8 +20,12 @@ namespace Glow.Core.Views
         }
 
         [HttpPost("query")]
-        public QueryResult<T> Query(Query query)
+        public ActionResult<QueryResult<T>> Query(Query query)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
             return Get(query.Search).Apply(query);
         }
     }
