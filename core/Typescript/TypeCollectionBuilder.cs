@@ -149,7 +149,11 @@ namespace Glow.Core.Typescript
         private TsType AsEnumerable(Type type)
         {
             Type[] args = type.GenericTypeArguments;
-            TsType argTsType = type.IsArray? CreateOrGet(type.GetElementType()).AsT0:  CreateOrGet(args.First()).AsT0;
+            TsType argTsType = type.IsArray
+                ? CreateOrGet(type.GetElementType()).AsT0
+                : args.Length == 0
+                    ? TsType.Any()
+                    : CreateOrGet(args.First()).AsT0;
             return new TsType
             {
                 Id = argTsType.Namespace + "." + argTsType.Name + "[]",

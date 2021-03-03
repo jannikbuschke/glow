@@ -27,6 +27,18 @@ namespace Glow.Core.Typescript
         public PropertyInfo[] PropertyInfos { get; set; }
 
         public bool HasCyclicDependency { get; set; }
+
+        public static TsType Any()
+        {
+            return new()
+            {
+                Id = "any",
+                IsPrimitive = true,
+                FullName = "any",
+                Name = "any",
+                DefaultValue = "null"
+            };
+        }
     }
 
     public class Property
