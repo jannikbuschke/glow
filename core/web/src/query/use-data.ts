@@ -90,7 +90,7 @@ export function useGlowQuery<T>(
   )
 
   const useQueryResult = useQuery<QueryResult<T>>(
-    [url, { take, skip, orderBy, where }] as QueryKey,
+    [url, { search, take, skip, orderBy, where }] as QueryKey,
     async ({ queryKey }: { queryKey: QueryKey }) => {
       const query: Query = {
         ...queryKey[1],

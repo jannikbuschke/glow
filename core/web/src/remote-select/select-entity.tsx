@@ -87,10 +87,8 @@ export function SelectEntity<T>({
       style={{ width: "100%", ...restProps?.style }}
       showSearch={true}
       onDeselect={(v) => {
-        console.log("ondeselect", v, value)
         if (restProps.mode === "multiple") {
           if (v.value) {
-            console.log({ value: v.value, values: value })
             form.setValue(
               (value as any[]).filter((item) => item.value != v.value),
             )
