@@ -71,7 +71,7 @@ export function useGlowQuery<T>(
   url: string,
   placeholder: QueryResult<T>,
   config?: QueryOptions<QueryResult<T>>,
-  initialQuery?: QueryParameter,
+  initialQuery?: Partial<QueryParameter>,
 ): UseGlowQueryResult<T> {
   const fetch = useFetchJson<QueryResult<T>>()
   const sendQuery = React.useMemo(() => createSendQuery<T>(fetch), [fetch])
