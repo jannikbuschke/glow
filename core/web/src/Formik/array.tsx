@@ -1,5 +1,5 @@
 import * as React from "react"
-import { Field, FieldProps, FieldArray, FieldArrayRenderProps } from "formik"
+import { FieldArray, FieldArrayRenderProps, useField } from "formik"
 
 export function MyFieldArray({
   name,
@@ -15,35 +15,31 @@ export function MyFieldArray({
     path: string,
   ) => React.ReactNode
 }) {
+  const [field] = useField(name)
+
   return (
-    <Field name={name}>
-      {({ field }: FieldProps<any>) => {
-        return (
-          <FieldArray name={name}>
-            {(array) => {
-              const value = field.value || []
-              if (renderNewPlaceholder) {
-                return value
-                  .map((_: any, i: number) =>
-                    renderItem(i, false, array, name + "." + i + "."),
-                  )
-                  .concat([
-                    renderItem(
-                      value.length,
-                      true,
-                      array,
-                      name + "." + value.length + ".",
-                    ),
-                  ])
-              } else {
-                return value.map((_: any, i: number) =>
-                  renderItem(i, false, array, name + "." + i + "."),
-                )
-              }
-            }}
-          </FieldArray>
-        )
+    <FieldArray name={name}>
+      {(array) => {
+        const value = field.value || []
+        if (renderNewPlaceholder) {
+          return value
+            .map((_: any, i: number) =>
+              renderItem(i, false, array, name + "." + i + "."),
+            )
+            .concat([
+              renderItem(
+                value.length,
+                true,
+                array,
+                name + "." + value.length + ".",
+              ),
+            ])
+        } else {
+          return value.map((_: any, i: number) =>
+            renderItem(i, false, array, name + "." + i + "."),
+          )
+        }
       }}
-    </Field>
+    </FieldArray>
   )
 }
