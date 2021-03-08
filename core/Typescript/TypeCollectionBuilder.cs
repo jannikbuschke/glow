@@ -254,6 +254,8 @@ namespace Glow.Core.Typescript
             { typeof(float?), new Tuple<string, string>("number | null", "null") },
             { typeof(int), new Tuple<string, string>("number","0") },
             { typeof(int?), new Tuple<string, string>("number | null", "null") },
+            { typeof(long), new Tuple<string, string>("number", "0") },
+            { typeof(long?), new Tuple<string, string>("number | null", "null") },
             { typeof(decimal), new Tuple<string, string>("number", "0") },
             { typeof(decimal?), new Tuple<string, string>("number | null", "null") },
             { typeof(DateTime), new Tuple<string, string>("string", @"""1/1/0001 12:00:00 AM""") },
