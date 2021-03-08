@@ -51,9 +51,9 @@ namespace Glow.MsGraph.Mails
                 .Request(new List<HeaderOption>() { new HeaderOption("Prefer", "IdType=\"ImmutableId\"") })
                 .AddAsync(mail);
 
-            await client.Me.Messages[draft.Id].Send().Request().PostAsync();
+            await userRequestBuilder.Messages[draft.Id].Send().Request().PostAsync();
 
-            Message msg = await client.Me.Messages[draft.Id].Request().GetAsync();
+            Message msg = await userRequestBuilder.Messages[draft.Id].Request().GetAsync();
 
             return msg;
         }
