@@ -71,14 +71,15 @@ namespace Glow.Core.Authentication
                 {
                     if (e.Classification == UiRequiredExceptionClassification.ConsentRequired)
                     {
-                        var message = "We could not yet fullfill you request. Please first allow the app to act on your behalf, then try again.";
+                        var message = $"Consent missing: The app does not yet have your consent to the scope '{scopes[0]}'." +
+                                      $" Please first allow the app to act on your behalf, then try again."+
+                                      $" Scopes can be granted under the account settings.";
                         logger.LogError("Missing consent {@scopes}", scopes);
                         throw new MissingConsentException(message, scopes[0]);
                     }
                     throw;
                 }
             }
-
         }
 
         public async Task<GraphServiceClient> GetClientForUser(string[] scopes, bool useBetaEndpoint = false)
