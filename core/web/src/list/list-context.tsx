@@ -15,7 +15,10 @@ export function ListContext({
   url,
   children,
   initialQuery,
-}: React.PropsWithChildren<{ url: string; initialQuery?: QueryParameter }>) {
+}: React.PropsWithChildren<{
+  url: string
+  initialQuery?: Partial<QueryParameter>
+}>) {
   const glowQuery = useGlowQuery<any>(
     url,
     {
