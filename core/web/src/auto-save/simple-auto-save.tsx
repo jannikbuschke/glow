@@ -2,13 +2,12 @@ import * as React from "react"
 import { useFormikContext } from "formik"
 import { useDebounce } from "use-lodash-debounce"
 
-export function SimpleAutoSave({
-  delayMs = 500,
-  getId,
-}: {
+interface SimpleAutoSaveProps {
   delayMs?: number
   getId?: (values: any) => string
-}) {
+}
+
+export function SimpleAutoSave({ delayMs = 500, getId }: SimpleAutoSaveProps) {
   const ctx = useFormikContext()
   const values = useDebounce(ctx.values, delayMs)
 
@@ -27,7 +26,7 @@ export function SimpleAutoSave({
     if (firstUpdate.current) {
       firstUpdate.current = false
       return
-    } else if (ctx.dirty) {
+    } else {
       ctx.submitForm()
     }
   }, [values])
