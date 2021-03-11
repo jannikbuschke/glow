@@ -23,15 +23,19 @@ export function useFeatureFlags() {
 interface Props {
   feature: string
   ifUndefined?: "show" | "hide"
+  overrideEnable?: boolean
 }
 
 export const IfFeature: React.FC<Props> = ({
   ifUndefined,
   feature,
   children,
+  overrideEnable
 }) => {
   const isEnabled = useFeatureFlags()
-
+  if(overrideEnable === true) {
+    return children as React.ReactElement<any>
+  }
   if (isEnabled(feature, ifUndefined)) {
     return children as React.ReactElement<any>
   }
