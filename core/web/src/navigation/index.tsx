@@ -33,3 +33,4 @@ export function RoutedTabs({
 
 export * from "./menu"
 export * from "./left-navigation"
+export * from "./paths-context"
