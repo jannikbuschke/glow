@@ -10,12 +10,15 @@ export type SelectEntityProps<T> = {
   url: string
   name: string
   map: (v: T) => LabeledValue
+  customItems?: LabeledValue[]
 } & Omit<SelectProps<LabeledValue>, "fetcher">
 
 export function SelectEntity<T>({
   url,
   name,
   map,
+  onSearch,
+  customItems,
   ...restProps
 }: SelectEntityProps<T>) {
   const [{ result, setSearch, setWhere, sendQuery }, {}] = useGlowQuery<T>(
@@ -30,11 +33,14 @@ export function SelectEntity<T>({
   const [fieldValue, setFieldValue] = React.useState<LabeledValue | null>(null)
 
   const options = React.useMemo(() => {
-    if (fieldValue && !searchOptions.some((v) => v.key == fieldValue.key)) {
-      return [...searchOptions, fieldValue]
-    }
-    return searchOptions
-  }, [searchOptions, fieldValue])
+    return [
+      ...searchOptions,
+      ...(fieldValue && !searchOptions.some((v) => v.key == fieldValue.key)
+        ? [fieldValue]
+        : []),
+      ...(customItems !== null && customItems !== undefined ? customItems : []),
+    ]
+  }, [searchOptions, fieldValue, customItems])
 
   const debouncedSearch = React.useCallback(
     debounce((v: any) => {
@@ -109,6 +115,7 @@ export function SelectEntity<T>({
       }}
       onSearch={(search: string) => {
         debouncedSearch(search)
+        onSearch && onSearch(search)
       }}
       filterOption={false}
       {...restProps}
