@@ -223,61 +223,62 @@ namespace Glow.Core.Typescript
                 (var name, var defaultValue) = primitives[type];
                 return new TsType
                 {
-                    Name = name,
-                    DefaultValue = defaultValue,
-                    IsPrimitive = true,
-                    Properties = new List<Property>()
+                    Name = name, DefaultValue = defaultValue, IsPrimitive = true, Properties = new List<Property>()
                 };
             }
+
             if (IsDictionary(type))
             {
                 (var name, var defaultValue) = primitives[type];
                 return new TsType
                 {
-                    Name = name,
-                    DefaultValue = defaultValue,
-                    IsPrimitive = true,
-                    Properties = new List<Property>()
+                    Name = name, DefaultValue = defaultValue, IsPrimitive = true, Properties = new List<Property>()
                 };
             }
+
             return null;
         }
 
-        private readonly Dictionary<Type, Tuple<string, string>> primitives = new Dictionary<Type, Tuple<string, string>>
-        {
-            { typeof(string), new Tuple<string, string>("string | null", "null") },
-            { typeof(double), new Tuple<string, string>("number", "0") },
-            { typeof(double?), new Tuple<string, string>("number | null", "null") },
-            { typeof(float), new Tuple<string, string>("number", "0") },
-            { typeof(float?), new Tuple<string, string>("number | null", "null") },
-            { typeof(int), new Tuple<string, string>("number","0") },
-            { typeof(int?), new Tuple<string, string>("number | null", "null") },
-            { typeof(long), new Tuple<string, string>("number", "0") },
-            { typeof(long?), new Tuple<string, string>("number | null", "null") },
-            { typeof(decimal), new Tuple<string, string>("number", "0") },
-            { typeof(decimal?), new Tuple<string, string>("number | null", "null") },
-            { typeof(DateTime), new Tuple<string, string>("string", @"""1/1/0001 12:00:00 AM""") },
-            { typeof(DateTime?), new Tuple<string, string>("string | null", "null") },
-            { typeof(DateTimeOffset), new Tuple<string, string>("string", @"""00:00:00""") },
-            { typeof(DateTimeOffset?), new Tuple<string, string>("string | null", "null") },
-            { typeof(Guid), new Tuple<string, string>("string", @"""00000000-0000-0000-0000-000000000000""") },
-            { typeof(Guid?),new Tuple<string, string>( "string | null", "null") },
-            { typeof(bool),new Tuple<string, string>( "boolean", "false") },
-            { typeof(bool?), new Tuple<string, string>("boolean | null", "null") },
-            { typeof(Dictionary<string, string>), new Tuple<string, string>("{ [key: string]: string }", "{}") },
-            { typeof(Dictionary<string, decimal>), new Tuple<string, string>("{ [key: string]: number }", "{}") },
-            { typeof(Dictionary<string, int>), new Tuple<string, string>("{ [key: string]: number }", "{}") },
-            { typeof(Dictionary<string, object>), new Tuple<string, string>("{ [key: string]: any }", "{}") },
-            { typeof(IDictionary<string, object>), new Tuple<string, string>("{ [key: string]: any }", "{}") },
-            { typeof(object), new Tuple<string, string>("any", "null") },
-            { typeof(byte[]), new Tuple<string, string>("string | null", "null") },
-            { typeof(List<string>), new Tuple<string, string>("(string | null)[]", "[]") },
-            { typeof(IEnumerable<string>), new Tuple<string, string>("(string | null)[]", "[]") },
-            { typeof(IEnumerable<double>), new Tuple<string, string>("number[]", "[]") },
-            { typeof(Collection<string>), new Tuple<string, string>("(string | null)[]", "[]") },
-            { typeof(ICollection<string>), new Tuple<string, string>("(string | null)[]", "[]") },
-
-        };
+        private readonly Dictionary<Type, Tuple<string, string>> primitives =
+            new Dictionary<Type, Tuple<string, string>>
+            {
+                {typeof(string), new Tuple<string, string>("string | null", "null")},
+                {typeof(double), new Tuple<string, string>("number", "0")},
+                {typeof(double?), new Tuple<string, string>("number | null", "null")},
+                {typeof(float), new Tuple<string, string>("number", "0")},
+                {typeof(float?), new Tuple<string, string>("number | null", "null")},
+                {typeof(int), new Tuple<string, string>("number", "0")},
+                {typeof(int?), new Tuple<string, string>("number | null", "null")},
+                {typeof(short), new Tuple<string, string>("number", "0")},
+                {typeof(short?), new Tuple<string, string>("number | null", "null")},
+                {typeof(long), new Tuple<string, string>("number", "0")},
+                {typeof(long?), new Tuple<string, string>("number | null", "null")},
+                {typeof(decimal), new Tuple<string, string>("number", "0")},
+                {typeof(decimal?), new Tuple<string, string>("number | null", "null")},
+                {typeof(DateTime), new Tuple<string, string>("string", @"""1/1/0001 12:00:00 AM""")},
+                {typeof(DateTime?), new Tuple<string, string>("string | null", "null")},
+                {typeof(DateTimeOffset), new Tuple<string, string>("string", @"""00:00:00""")},
+                {typeof(DateTimeOffset?), new Tuple<string, string>("string | null", "null")},
+                {typeof(Guid), new Tuple<string, string>("string", @"""00000000-0000-0000-0000-000000000000""")},
+                {typeof(Guid?), new Tuple<string, string>("string | null", "null")},
+                {typeof(bool), new Tuple<string, string>("boolean", "false")},
+                {typeof(bool?), new Tuple<string, string>("boolean | null", "null")},
+                {typeof(Dictionary<string, string>), new Tuple<string, string>("{ [key: string]: string }", "{}")},
+                {typeof(Dictionary<string, decimal>), new Tuple<string, string>("{ [key: string]: number }", "{}")},
+                {typeof(Dictionary<string, int>), new Tuple<string, string>("{ [key: string]: number }", "{}")},
+                {typeof(Dictionary<string, object>), new Tuple<string, string>("{ [key: string]: any }", "{}")},
+                {typeof(IDictionary<string, object>), new Tuple<string, string>("{ [key: string]: any }", "{}")},
+                {typeof(object), new Tuple<string, string>("any", "null")},
+                {typeof(byte[]), new Tuple<string, string>("string | null", "null")},
+                {typeof(string[]), new Tuple<string, string>("(string | null)[]", "[]")},
+                {typeof(List<string>), new Tuple<string, string>("(string | null)[]", "[]")},
+                {typeof(IEnumerable<string>), new Tuple<string, string>("(string | null)[]", "[]")},
+                {typeof(IEnumerable<Guid>), new Tuple<string, string>("string[]", "[]")},
+                {typeof(IEnumerable<Guid?>), new Tuple<string, string>("(string | null)[]", "[]")},
+                {typeof(IEnumerable<double>), new Tuple<string, string>("number[]", "[]")},
+                {typeof(Collection<string>), new Tuple<string, string>("(string | null)[]", "[]")},
+                {typeof(ICollection<string>), new Tuple<string, string>("(string | null)[]", "[]")},
+            };
 
         private void PopuplateProperties(TsType type)
         {
@@ -291,8 +292,10 @@ namespace Glow.Core.Typescript
                     {
                         return "default" + v2.Name;
                     });
-                    var typeName = tsType.Match(v1 => {
+                    var typeName = tsType.Match(v1 =>
+                    {
                         if (v1.Name == "any") { return "any"; }
+
                         return v1.IsPrimitive ? v1.Name : v1.Name;
                     }, v2 => v2.Name);
                     return new Property
@@ -301,7 +304,7 @@ namespace Glow.Core.Typescript
                         DefaultValue = defaultValue,
                         TsType = tsType,
                         TypeName = typeName,
-                        IsCyclic = tsType.IsT0 && visited.Contains(tsType.AsT0),// true, // if already visited
+                        IsCyclic = tsType.IsT0 && visited.Contains(tsType.AsT0), // true, // if already visited
                     };
                 }).ToList();
         }
@@ -358,16 +361,19 @@ namespace Glow.Core.Typescript
                     PropertyInfos = Array.Empty<PropertyInfo>()
                 };
             }
+
             Type[] genericTypeArguments = type.GenericTypeArguments;
             Type[] genericArguments = type.GetGenericArguments();
 
             var name = genericTypeArguments.Length != 0
                 ? type.Name.StartsWith("Nullable")
                     ? genericTypeArguments.First().Name + " | null"
-                    : type.Name.Replace(".","").Replace("`","") + string.Join("", genericTypeArguments.Select(v => v.Name))
+                    : type.Name.Replace(".", "").Replace("`", "") +
+                      string.Join("", genericTypeArguments.Select(v => v.Name))
                 : genericArguments.Length != 0
-                ? Regex.Replace(type.Name, "`.*$", "<" + string.Join(", ", genericArguments.Select(v => v.Name)) + ">")
-                : type.Name;
+                    ? Regex.Replace(type.Name, "`.*$",
+                        "<" + string.Join(", ", genericArguments.Select(v => v.Name)) + ">")
+                    : type.Name;
 
 
             PropertyInfo[] props = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
