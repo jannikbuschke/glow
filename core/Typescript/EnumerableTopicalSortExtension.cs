@@ -3,12 +3,17 @@ using System.Collections.Generic;
 
 namespace Glow.Core.Typescript
 {
+    public class CyclicDependencyException : Exception
+    {
+        public CyclicDependencyException(string msg) : base(msg) { }
+    }
+
     public static class EnumerableTopicalSortExtension
     {
         public static IList<T> TopologicalSort<T>(
             this IEnumerable<T> source,
             Func<T, IEnumerable<T>> getDependencies
-        ) where T: TsType
+        ) where T : TsType
         {
             var sorted = new List<T>();
             var visited = new Dictionary<T, bool>();
@@ -19,7 +24,7 @@ namespace Glow.Core.Typescript
                 {
                     Visit(item, getDependencies, sorted, visited);
                 }
-                catch (ArgumentException) { }
+                catch (CyclicDependencyException) { }
             }
 
             return sorted;
@@ -30,7 +35,7 @@ namespace Glow.Core.Typescript
             Func<T, IEnumerable<T>> getDependencies,
             List<T> sorted,
             Dictionary<T, bool> visited
-        ) where T: TsType
+        ) where T : TsType
         {
             var alreadyVisited = visited.TryGetValue(item, out var inProcess);
 
@@ -43,7 +48,7 @@ namespace Glow.Core.Typescript
                     //     v.Key.HasCyclicDependency = true;
                     // }
                     item.HasCyclicDependency = true;
-                    throw new ArgumentException($"Cyclic dependency found. ({item.Name})");
+                    throw new CyclicDependencyException($"Cyclic dependency found. ({item.Name})");
                 }
             }
             else
