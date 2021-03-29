@@ -58,14 +58,13 @@ namespace Glow.Core.Typescript
                 visited.Clear();
                 OneOf<TsType, TsEnum> result = CreateOrGet(type);
             }
-            var collection =  new TypeCollection {
-                Types = tsTypes,
-                Enums = tsEnums
-            };
+
+            var collection = new TypeCollection {Types = tsTypes, Enums = tsEnums};
             if (update != null)
             {
                 //var all = collection.All().Select(v => v.AsT0).Where(v => v != null).ToList();
-                var meeting = collection.All().Where(v =>v.IsT0&& v.AsT0?.Name?.StartsWith("Meeting")==true).ToList();
+                var meeting = collection.All().Where(v => v.IsT0 && v.AsT0?.Name?.StartsWith("Meeting") == true)
+                    .ToList();
                 foreach (OneOf<TsType, TsEnum> v in collection.All())
                 {
                     update(v);
@@ -96,11 +95,7 @@ namespace Glow.Core.Typescript
 
                 if (IsDictionary(type))
                 {
-                    return new TsType
-                    {
-                        Name = "any",
-                        DefaultValue = "{ }"
-                    };
+                    return new TsType {Name = "any", DefaultValue = "{ }"};
                 }
 
                 if (IsEnumerableType(type))
@@ -123,7 +118,7 @@ namespace Glow.Core.Typescript
                             tsType.Id = id;
                             tsTypes.Add(id, tsType);
                             PopuplateProperties(tsType);
-                        }, v1=>
+                        }, v1 =>
                         {
                             tsEnums.TryAdd(v1.Id, v1);
                         });
@@ -138,10 +133,12 @@ namespace Glow.Core.Typescript
                         {
                             return tsType;
                         }
+
                         tsTypes.Add(id, tsType);
                         PopuplateProperties(tsType);
                     }
                 }
+
                 return tsTypes[id];
             }
         }
@@ -149,16 +146,17 @@ namespace Glow.Core.Typescript
         private TsType AsEnumerable(Type type)
         {
             Type[] args = type.GenericTypeArguments;
-            TsType argTsType = type.IsArray
-                ? CreateOrGet(type.GetElementType()).AsT0
+            var argTsType = type.IsArray
+                ? CreateOrGet(type.GetElementType())
                 : args.Length == 0
                     ? TsType.Any()
-                    : CreateOrGet(args.First()).AsT0;
+                    : CreateOrGet(args.First());
+            var argsTsType = argTsType.Match(v => new {v.Name, v.Namespace}, v => new {v.Name, v.Namespace});
             return new TsType
             {
-                Id = argTsType.Namespace + "." + argTsType.Name + "[]",
-                Name = argTsType.Name + "[]",
-                Namespace = argTsType.Namespace,
+                Id = argsTsType.Namespace + "." + argsTsType.Name + "[]",
+                Name = argsTsType.Name + "[]",
+                Namespace = argsTsType.Namespace,
                 DefaultValue = "[]",
                 Properties = new List<Property>(),
                 IsCollection = true
@@ -196,8 +194,8 @@ namespace Glow.Core.Typescript
         {
             if (t.FullName.Contains("AgendaItemType"))
             {
-
             }
+
             IEnumerable<string> values = GetEnumValues(t);
             return new TsEnum
             {
