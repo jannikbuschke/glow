@@ -8,7 +8,7 @@ import { ErrorBanner } from "../errors/error-banner"
 import { useListContext } from "./list-context"
 
 interface ListProps<T> {
-  path: string
+  path?: string
   columns: (Omit<ColumnType<T>, "render"> & {
     title: string
     key: string
@@ -98,7 +98,7 @@ export function List<RecordType extends { id: string } = any>({
         },
       }}
       onRow={(record) => ({
-        onClick: () => navigate(path + record.id),
+        onClick: path ? () => navigate(path + record.id) : undefined,
       })}
       dataSource={data.value}
       onChange={(pagination, filters, sorter) => {
