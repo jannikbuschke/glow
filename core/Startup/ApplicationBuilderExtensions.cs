@@ -181,8 +181,8 @@ namespace Glow.Core
                         ClaimsPrincipal user = context.User;
                         var id = user?.GetObjectId();
                         var name = user?.Name();
-                        Log.Logger.Information("User is encountering an error {id} {user}", id, name);
-                        Log.Logger.Information("Problem details = {@details}", problemDetails);
+                        Log.Logger.Information("User is encountering an error {id} {user} {exception}", id, name, problemDetails.Title);
+                        // Log.Logger.Information("Problem details = {@details}", problemDetails);
                     }
 
                     context.Response.StatusCode = problemDetails.Status.Value;
