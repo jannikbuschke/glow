@@ -27,7 +27,9 @@ export function SimpleAutoSave({ delayMs = 500, getId }: SimpleAutoSaveProps) {
       firstUpdate.current = false
       return
     } else {
-      ctx.submitForm()
+      if (ctx.submitCount > 0 || ctx.dirty) {
+        ctx.submitForm()
+      }
     }
   }, [values])
 
