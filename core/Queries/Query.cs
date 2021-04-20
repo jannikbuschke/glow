@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using Glow.TypeScript;
+using Serilog;
 
 namespace Glow.Core.Queries
 {
@@ -94,6 +95,13 @@ namespace Glow.Core.Queries
             };
         }
 
+        private static ConstantExpression ToConstant(Type propertyType, string value)
+        {
+            if (propertyType == typeof(int)) return Expression.Constant(int.Parse(value));
+            if (propertyType == typeof(Guid)) return Expression.Constant(Guid.Parse(value));
+            return Expression.Constant(value);
+        }
+
         private static Func<T, bool> CreateWhereExpression<T>(Where where)
         {
             if (where == null) { return null; }
@@ -103,9 +111,7 @@ namespace Glow.Core.Queries
 
             MemberExpression property = Expression.Property(parameter, propertyInfo);
 
-            BinaryExpression constant = propertyInfo.PropertyType == typeof(int)
-                ? Expression.Equal(property, Expression.Constant(int.Parse(where.Value)))
-                : Expression.Equal(property, Expression.Constant(where.Value));
+            ConstantExpression constant = ToConstant(propertyInfo.PropertyType, where.Value);
 
             Expression StringInvocation(string methodName)
             {
