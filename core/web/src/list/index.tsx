@@ -8,7 +8,8 @@ import { ErrorBanner } from "../errors/error-banner"
 import { useListContext } from "./list-context"
 
 interface ListProps<T> {
-  path?: string
+  path?: string | ((v: T) => string)
+  listPath?: string
   columns: (Omit<ColumnType<T>, "render"> & {
     title: string
     key: string
@@ -39,6 +40,7 @@ export function ListError() {
 
 export function List<RecordType extends { id: string } = any>({
   path,
+  listPath,
   columns,
   paginate = true,
   ...props
@@ -94,11 +96,21 @@ export function List<RecordType extends { id: string } = any>({
       rowKey={(row) => row.id}
       components={{
         body: {
-          row: (props: any) => <HighlightableRow path={path} {...props} />,
+          row: (props: any) => (
+            <HighlightableRow
+              path={listPath || typeof path === "string" ? path : undefined}
+              {...props}
+            />
+          ),
         },
       }}
       onRow={(record) => ({
-        onClick: path ? () => navigate(path + record.id) : undefined,
+        onClick:
+          typeof path === "function"
+            ? () => navigate(path(record))
+            : path
+            ? () => navigate(path + record.id)
+            : undefined,
       })}
       dataSource={data.value}
       onChange={(pagination, filters, sorter) => {
