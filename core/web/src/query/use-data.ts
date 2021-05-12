@@ -3,22 +3,92 @@ import { QueryOptions, useQuery, UseQueryResult } from "react-query"
 import { useFetchJson } from "../http/fetch"
 import { OrderBy, Query, QueryResult, Where } from "../ts-models"
 
-export function useData<T>(
+interface GlowGetOptions {
+  type: "GET"
+}
+
+interface GlowPostOptions<T> {
+  type: "POST"
+  payload: T
+}
+
+export function useData<T, U = any>(
   url: string,
   placeholder: T,
   config?: QueryOptions<T>,
+  glowOptions?: GlowGetOptions | GlowPostOptions<U>,
 ) {
   const fetchJson = useFetchJson<T>()
-  const { data, ...rest } = useQuery<T, any>(url, () => fetchJson(url), {
-    retry: 1,
-    refetchOnWindowFocus: false,
-    ...config,
-  })
+  const { data, ...rest } = useQuery<T, any>(
+    url,
+    () =>
+      glowOptions?.type === "POST"
+        ? fetchJson(url, {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify(glowOptions.payload),
+          })
+        : fetchJson(url),
+    {
+      retry: 1,
+      refetchOnWindowFocus: false,
+      ...config,
+    },
+  )
   return {
     data: Boolean(data) ? data! : placeholder,
     loading: rest.status === "loading",
     reload: rest.refetch,
     ...rest,
+  }
+}
+
+interface UseApiGetProps<Result> {
+  url: string
+  placeholder: Result
+  queryOptions?: QueryOptions<Result>
+  method: "GET"
+}
+
+interface UseApiPostProps<Result, Request> {
+  url: string
+  placeholder: Result
+  queryOptions?: QueryOptions<Result>
+  method: "POST" | undefined
+  payload: Request
+}
+
+export function useApi<Result = any, Request = any>({
+  url,
+  placeholder,
+  queryOptions,
+  ...rest
+}: UseApiGetProps<Result> | UseApiPostProps<Result, Request>) {
+  const fetchJson = useFetchJson<Result>()
+  const { data, ...queryRest } = useQuery<Result, any>(
+    url,
+    () =>
+      rest.method === "POST" || rest.method === undefined
+        ? fetchJson(url, {
+            method: "POST",
+            headers: {
+              "content-type": "application/json",
+              "x-submit-intent": "execute",
+            },
+            body: JSON.stringify(rest.payload),
+          })
+        : fetchJson(url),
+    {
+      retry: 1,
+      refetchOnWindowFocus: false,
+      ...queryOptions,
+    },
+  )
+  return {
+    data: Boolean(data) ? data! : placeholder,
+    loading: queryRest.status === "loading",
+    reload: queryRest.refetch,
+    ...queryRest,
   }
 }
 
