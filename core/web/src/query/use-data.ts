@@ -3,6 +3,8 @@ import { QueryOptions, useQuery, UseQueryResult } from "react-query"
 import { useFetchJson } from "../http/fetch"
 import { OrderBy, Query, QueryResult, Where } from "../ts-models"
 
+type GlowOptions<T> = GlowGetOptions | GlowPostOptions<T>
+
 interface GlowGetOptions {
   type: "GET"
 }
@@ -16,7 +18,7 @@ export function useData<T, U = any>(
   url: string,
   placeholder: T,
   config?: QueryOptions<T>,
-  glowOptions?: GlowGetOptions | GlowPostOptions<U>,
+  glowOptions?: GlowOptions<T>,
 ) {
   const fetchJson = useFetchJson<T>()
   const { data, ...rest } = useQuery<T, any>(
