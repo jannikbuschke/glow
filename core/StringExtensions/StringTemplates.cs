@@ -25,7 +25,7 @@ namespace Glow.Core.StringExtensions
             var getFormatPattern = @$"(?<={{{identifier}:).*?(?=}})";
 
             var input = self;
-            var matches =  Regex.Matches(input, globalSearchPattern).ToList();
+            var matches = Regex.Matches(input, globalSearchPattern).ToList();
 
             var result = input;
             foreach (Match v in matches)
@@ -57,7 +57,7 @@ namespace Glow.Core.StringExtensions
             var getFormatPattern = @$"(?<={{{identifier}:).*?(?=}})";
 
             var input = self;
-            var matches =  Regex.Matches(input, globalSearchPattern).ToList();
+            var matches = Regex.Matches(input, globalSearchPattern).ToList();
 
             var result = input;
 
@@ -66,7 +66,10 @@ namespace Glow.Core.StringExtensions
                 var val = v.Value;
                 Match innerMatch = Regex.Match(val, getFormatPattern);
                 var innerValue = innerMatch.Value;
-                result = result.Replace(v.Value, $@"<a href=""{url}"">{innerValue}</a>");
+                result = result.Replace(v.Value,
+                    url == null
+                        ? $@"<b>## could not replace {{{identifier}}} ##</b>"
+                        : $@"<a href=""{url}"">{innerValue}</a>");
             }
 
             return result;
