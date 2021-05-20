@@ -61,6 +61,7 @@ namespace Glow.Core.Queries
             {
                 throw new ArgumentException(nameof(query));
             }
+
             Func<T, bool> where = CreateWhereExpression<T>(query.Where);
 
             if (where != null)
@@ -88,23 +89,22 @@ namespace Glow.Core.Queries
             {
                 value = value.Take(query.Take.Value);
             }
-            return new QueryResult<T>
-            {
-                Count = count,
-                Value = value
-            };
+
+            return new QueryResult<T> {Count = count, Value = value};
         }
 
         private static ConstantExpression ToConstant(Type propertyType, string value)
         {
             if (propertyType == typeof(int)) return Expression.Constant(int.Parse(value));
             if (propertyType == typeof(Guid)) return Expression.Constant(Guid.Parse(value));
+            if (propertyType == typeof(bool)) return Expression.Constant(bool.Parse(value));
             return Expression.Constant(value);
         }
 
         private static Func<T, bool> CreateWhereExpression<T>(Where where)
         {
             if (where == null) { return null; }
+
             ParameterExpression parameter = Expression.Parameter(typeof(T));
 
             PropertyInfo propertyInfo = typeof(T).GetProperty(where.Property);
@@ -117,7 +117,7 @@ namespace Glow.Core.Queries
             {
                 MemberExpression m = Expression.MakeMemberAccess(parameter, propertyInfo);
                 ConstantExpression c = Expression.Constant(where.Value, typeof(string));
-                MethodInfo mi = typeof(string).GetMethod(methodName, new Type[] { typeof(string) });
+                MethodInfo mi = typeof(string).GetMethod(methodName, new Type[] {typeof(string)});
                 Expression call = Expression.Call(m, mi, c);
                 return call;
             }
@@ -132,7 +132,9 @@ namespace Glow.Core.Queries
                 _ => null
             };
 
-            Func<T, bool> result = comparision != null ? Expression.Lambda<Func<T, bool>>(comparision, parameter).Compile() : null;
+            Func<T, bool> result = comparision != null
+                ? Expression.Lambda<Func<T, bool>>(comparision, parameter).Compile()
+                : null;
             return result;
         }
 
@@ -142,6 +144,7 @@ namespace Glow.Core.Queries
             {
                 return null;
             }
+
             ParameterExpression param = Expression.Parameter(typeof(T), "v");
             Expression conversion = Expression.Convert(Expression.Property(param, propertyName), typeof(object));
             return Expression.Lambda<Func<T, object>>(conversion, param).Compile();
