@@ -19,6 +19,7 @@ namespace Glow.Core.Views
             return Get(search);
         }
 
+        [HttpPost]
         [HttpPost("query")]
         public ActionResult<QueryResult<T>> Query(Query query)
         {
