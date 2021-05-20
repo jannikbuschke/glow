@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -18,24 +19,42 @@ namespace Glow.Core.Authentication
         private readonly TokenService tokenService;
         private readonly IOptions<AzureAdOptions> options;
         private readonly ILogger<GraphTokenService> logger;
+        private readonly IOptionsSnapshot<ServiceUserConfiguration> serviceUserConfiguration;
+        private readonly IHttpClientFactory clientFactory;
 
         public GraphTokenService(
             IHttpContextAccessor accessor,
             TokenService tokenService,
             IOptions<AzureAdOptions> options,
-            ILogger<GraphTokenService> logger
+            ILogger<GraphTokenService> logger,
+            IOptionsSnapshot<ServiceUserConfiguration> serviceUserConfiguration,
+            IHttpClientFactory clientFactory
         )
-
         {
             this.accessor = accessor;
             this.tokenService = tokenService;
             this.options = options;
             this.logger = logger;
+            this.serviceUserConfiguration = serviceUserConfiguration;
+            this.clientFactory = clientFactory;
         }
 
         public Task<string> AccessTokenForApp()
         {
             throw new System.NotImplementedException();
+        }
+
+        public async Task<string> AccessTokenForServiceUser()
+        {
+            var httpClient = clientFactory.CreateClient();
+            var token = await httpClient.GetMsAccessTokentWithUsernamePassword(
+                options.Value.ClientSecret,
+                serviceUserConfiguration.Value.Username,
+                serviceUserConfiguration.Value.Password,
+                options.Value.ClientId,
+                options.Value.TenantId);
+
+            return token.access_token;
         }
 
         public async Task<AuthenticationResult> TokenForCurrentUser(string[] scopes)

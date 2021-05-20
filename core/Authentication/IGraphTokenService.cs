@@ -9,6 +9,7 @@ namespace Glow.Core.Authentication
         Task<AuthenticationResult> TokenForCurrentUser(string[] scope);
         Task<string> AccessTokenForCurrentUser(string[] scope);
         Task<string> AccessTokenForApp();
+        Task<string> AccessTokenForServiceUser();
         Task<GraphServiceClient> GetClientForUser(string[] scopes, bool useBetaEndpoint = false);
     }
 }

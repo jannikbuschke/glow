@@ -20,6 +20,11 @@ namespace Glow.Core.AzdoAuthentication
             throw new NotImplementedException();
         }
 
+        public Task<string> AccessTokenForServiceUser()
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<GraphServiceClient> GetClientForUser(string[] scopes, bool useBetaEndpoint = false)
         {
             throw new NotImplementedException();
