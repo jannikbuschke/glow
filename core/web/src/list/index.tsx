@@ -6,6 +6,7 @@ import { useNavigate } from "react-router"
 import { HighlightableRow } from "../antd/highlightable-row"
 import { ErrorBanner } from "../errors/error-banner"
 import { useListContext } from "./list-context"
+import styled from "styled-components"
 
 interface ListProps<T> {
   path?: string | ((v: T) => string)
@@ -91,7 +92,8 @@ export function List<RecordType extends { id: string } = any>({
     : false
 
   return (
-    <Table<RecordType>
+    <InternalTable<RecordType>
+      elevated={true}
       loading={isLoading}
       rowKey={(row) => row.id}
       components={{
@@ -161,5 +163,16 @@ export function List<RecordType extends { id: string } = any>({
 List.Error = ListError
 
 List.Search = ListSearch
+
+export const InternalTable = styled(Table)<{ elevated: boolean }>`
+  ${({ elevated }) =>
+    elevated
+      ? `& .ant-table-content {
+  box-shadow: 0 5px 8px rgba(0, 0, 0, 0.09), 0 3px 3px rgba(0, 0, 0, 0.13);
+}`
+      : `& .ant-table-content {
+        box-shadow: none !important;
+      }`}
+` as <T>(props: TableProps<T> & { elevated: boolean }) => React.ReactElement
 
 export * from "./list-context"
