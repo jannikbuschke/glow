@@ -41,7 +41,9 @@ export function UserSelect<T = any>({
       const userId = setByReference ? field.value : field.value.id
       fetchJson<User>(`/api/user/${userId}`).then((v) => {
         if (v !== null) {
-          setDataSource((current) => [...current, v])
+          setDataSource((current) =>
+            current.some((v) => v.id == v.id) ? current : [...current, v],
+          )
         }
       })
     }
@@ -62,10 +64,9 @@ export function UserSelect<T = any>({
           })),
         )
         const result = normalize<User>(data, [user])
-        if(result.entities.users){
+        if (result.entities.users) {
           setUsers(result.entities.users)
-        }
-        else{
+        } else {
           console.error("could not normalize user data")
         }
       })()
