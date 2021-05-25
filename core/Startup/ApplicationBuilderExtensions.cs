@@ -187,7 +187,7 @@ namespace Glow.Core
 
                     context.Response.StatusCode = problemDetails.Status.Value;
 
-                    context.Response.ContentType = "application/problem+json";
+                    context.Response.Headers["content-type"] = "application/problem+json";
 
                     await context.Response.WriteAsJsonAsync(problemDetails);
                 });
