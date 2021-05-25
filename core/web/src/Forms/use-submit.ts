@@ -1,6 +1,7 @@
 import * as React from "react"
 import { set } from "lodash"
 import { useFetch } from "../http/fetch-context"
+import { Modal } from "antd"
 
 export type Result<T> = Success<T> | Error
 
@@ -56,25 +57,48 @@ export function useSubmit<T = any>(url: string): UseSubmit<T> {
   const [error, setError] = React.useState<null | string>(null)
   const fetch = useFetch()
   const [submitting, setSubmitting] = React.useState(false)
-  // todo: add isSubmitting
 
   return [
     async (values: any): Promise<Result<T>> => {
       setSubmitting(true)
       const response = await fetch(url, execute(values))
       setSubmitting(false)
+
       if (!response.ok) {
         if (response.headers.has("content-type")) {
           const contentType = response.headers.get("content-type")
-          if (contentType == "application/problem+json") {
+          if (
+            contentType == "application/problem+json" ||
+            contentType == "application/json" ||
+            contentType?.startsWith("application/json")
+          ) {
             const description = (await response.json()) as ProblemDetails
             setError(
               `${description.title}: ${description.detail} (${description.status})`,
             )
+
+            if (
+              description.type === "missing_consent" &&
+              description.status === 403 &&
+              description.extensions["scope"]
+            ) {
+              const scope = description.extensions["scope"]
+              Modal.confirm({
+                title: "Consent required",
+                content: `Consent for ${scope} is required`,
+                onOk: () => {
+                  window.location.replace(
+                    `/Account/SignIn?redirectUrl=${window.location.pathname}&scopes=${scope}`,
+                  )
+                },
+              })
+            }
             return { error: description, ok: false, result: "error" } as Error
+          } else {
+            const content = await response.text()
+            console.error(content)
           }
         }
-        console.error(response)
         return {
           error: {
             status: response.status,
