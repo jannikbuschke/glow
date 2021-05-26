@@ -38,5 +38,10 @@ function render(
 }
 
 export function notifyError(r: ProblemDetails) {
-  notification.error({ message: r.title || r.detail || r.status })
+  notification.error({
+    message:
+      r.title && r.detail
+        ? r.title + ": " + r.detail
+        : r.title || r.detail || r.status,
+  })
 }
