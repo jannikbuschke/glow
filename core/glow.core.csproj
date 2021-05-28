@@ -6,10 +6,12 @@
     <PackageId>Glow.Core</PackageId>
     <AssemblyName>Glow.Core</AssemblyName>
     <RootNamespace>Glow.Core</RootNamespace>
-    <Version>0.15.0</Version>
+    <Version>0.15.1</Version>
     <Authors>Jannik Buschke</Authors>
     <SpaRoot>web\</SpaRoot>
     <DefaultItemExcludes>$(DefaultItemExcludes);$(SpaRoot)node_modules\**</DefaultItemExcludes>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
 
   <ItemGroup>

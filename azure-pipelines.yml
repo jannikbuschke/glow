@@ -57,10 +57,13 @@ steps:
   displayName: 'dotnet pack'
   inputs:
     command: 'pack'
+    arguments: "-p:SymbolPackageFormat=snupkg"
     packagesToPack: 'core/glow.core.csproj'
-    includesymbols: true
-    includesource: true
     versioningScheme: 'off'
+
+- script: 'ls $(Build.ArtifactStagingDirectory)/*.nupkg'
+
+- script: 'dotnet nuget push $(Build.ArtifactStagingDirectory)\*.nupkg --api-key $(nuget_key) --source https://api.nuget.org/v3/index.json'
 
 # - task: DotNetCoreCLI@2
 #   displayName: 'dotnet nuget push'
@@ -71,7 +74,6 @@ steps:
 #     nuGetFeedType: 'external'
 #     publishFeedCredentials: 'nuget.org'
 
-- script: 'ls $(Build.ArtifactStagingDirectory)/*.nupkg'
 
 # - task: NuGetCommand@2
 #   displayName: 'NuGet push'
