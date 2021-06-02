@@ -32,6 +32,24 @@ namespace Glow.Core.Views
     }
 
     [ApiController]
+    public abstract class AsyncListView<T> : ControllerBase
+    {
+        protected abstract Task<IQueryable<T>> Get(string search);
+
+        [HttpPost]
+        public async Task<ActionResult<QueryResult<T>>> Query(Query query)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var q = await Get(query.Search);
+            return q.Apply(query);
+        }
+    }
+
+    [ApiController]
     public abstract class QueryableController<T> : ControllerBase
     {
         protected abstract Task<QueryResult<T>> OnQuery(Query query);
