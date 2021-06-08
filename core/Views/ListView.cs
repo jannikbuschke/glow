@@ -55,6 +55,7 @@ namespace Glow.Core.Views
         protected abstract Task<QueryResult<T>> OnQuery(Query query);
 
         [HttpPost("query")]
+        [HttpPost]
         public Task<QueryResult<T>> Query(Query query)
         {
             return OnQuery(query);
