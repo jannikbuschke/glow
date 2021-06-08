@@ -8,6 +8,8 @@ namespace Gertrud.Users
     public class User : IUser
     {
         public const string SystemUserId = "___system___";
+        public const string NoTenantId = "___no-tenant___";
+
         public string Id { get; set; }
         public string TenantId { get; set; }
         public string DisplayName { get; set; }
