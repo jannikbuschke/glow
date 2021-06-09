@@ -18,11 +18,20 @@ namespace Glow.AuditLog
 {
     public static class AuditLogStartupExtension
     {
-        public static void AddAuditLog<T>(this IServiceCollection services) where T : class, IAuditLog
+        public static void AddAuditLog<T>(this IServiceCollection services, Options options = null) where
+            T : class, IAuditLog
         {
             services.AddScoped<IAuditLog>(provider => provider.GetService<T>());
             services.AddScoped<AuditLogService>();
+            services.AddSingleton(
+                options ?? new Options() {SystemDisplayName = "System", SystemUserId = "___system___"});
         }
+    }
+
+    public class Options
+    {
+        public string SystemUserId { get; set; }
+        public string SystemDisplayName { get; set; }
     }
 
     public abstract class AuditLogController<T> where T : IEntity
@@ -48,20 +57,24 @@ namespace Glow.AuditLog
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly IAuditLog log;
         private readonly IClock clock;
+        private readonly Options options;
 
-        public AuditLogService(IHttpContextAccessor httpContextAccessor, IAuditLog log, IClock clock)
+        public AuditLogService(IHttpContextAccessor httpContextAccessor, IAuditLog log, IClock clock, Options options)
         {
             this.httpContextAccessor = httpContextAccessor;
             this.log = log;
             this.clock = clock;
+            this.options = options;
         }
 
-        public void Log<T>(T entity, AuditItemDefaultOperations operation, bool includeChanges = false, bool noLogIfNoChanges = false) where T : IEntity
+        public void Log<T>(T entity, AuditItemDefaultOperations operation, bool includeChanges = false,
+            bool noLogIfNoChanges = false) where T : IEntity
         {
             Log<T>(entity, operation.ToString(), includeChanges, noLogIfNoChanges);
         }
 
-        public void Log<T>(T entity, string messageType, bool includeChanges = false, bool noLogIfNoChanges = false) where T : IEntity
+        public void Log<T>(T entity, string messageType, bool includeChanges = false, bool noLogIfNoChanges = false)
+            where T : IEntity
         {
             string entityId = entity.Id.ToString();
             if (string.IsNullOrEmpty(entityId))
@@ -69,9 +82,9 @@ namespace Glow.AuditLog
                 throw new BadRequestException("Entity needs to have an id set");
             }
 
-            ClaimsPrincipal user = httpContextAccessor.HttpContext.User;
-            string userId = user.GetObjectId();
-            string userName = user.Name();
+            ClaimsPrincipal user = httpContextAccessor.HttpContext?.User;
+            string userId = user?.GetObjectId() ?? options.SystemUserId;
+            string userName = user.Name() ?? options.SystemDisplayName;
             AuditItem auditItem = new()
             {
                 CreatedAt = clock.Now,
@@ -94,7 +107,8 @@ namespace Glow.AuditLog
                     State = v.State,
                     FullTypeName = v.Entity.GetType().FullName,
                     Key = (v.Entity as IEntity)?.Id.ToString()
-                          ?? v.Metadata.FindPrimaryKey().Properties.Select(p => v.Property(p.Name).CurrentValue).First().ToString(),
+                          ?? v.Metadata.FindPrimaryKey().Properties.Select(p => v.Property(p.Name).CurrentValue).First()
+                              .ToString(),
                     DisplayName = (v.Entity as IEntity)?.DisplayName ?? (v.Entity as IAuditLogDisplayName)?.DisplayName,
                     ChangedProperties = v.OriginalValues.Properties.Select(p =>
                         {
@@ -126,7 +140,6 @@ namespace Glow.AuditLog
             {
                 log.AuditItem.Add(auditItem);
             }
-
         }
 
         public class Change
