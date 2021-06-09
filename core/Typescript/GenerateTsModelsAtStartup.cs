@@ -10,7 +10,7 @@ using Microsoft.VisualStudio.Services.Common;
 
 namespace Glow.Core.Typescript
 {
-    public class GenerateTsModelsAtStartupV2 : IHostedService
+    public class GenerateTsModelsAtStartupV2 : BackgroundService
     {
         private readonly IWebHostEnvironment environment;
         private readonly TsGenerationOptions[] options;
@@ -24,8 +24,11 @@ namespace Glow.Core.Typescript
             this.options = options;
         }
 
-        public async Task StartAsync(CancellationToken cancellationToken)
+        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
+            // https://github.com/dotnet/runtime/issues/36063#issuecomment-671110933
+            await Task.Yield();
+
             foreach (TsGenerationOptions option in options)
             {
                 await GenerateTypes(option);
