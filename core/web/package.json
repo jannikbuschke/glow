@@ -1,6 +1,6 @@
 {
   "name": "glow-react",
-  "version": "0.14.1",
+  "version": "0.17.0",
   "private": false,
   "files": [
     "lib",
@@ -62,8 +62,8 @@
     "dayjs": "1.10.5",
     "semantic-release": "17.3.9",
     "immer": "8.0.1",
-    "lodash": "4.17.20",
-    "@types/lodash": "4.14.141",
+    "lodash": "4.17.21",
+    "@types/lodash": "4.14.170",
     "file-saver": "2.0.2",
     "@types/file-saver": "2.0.1",
     "react-query": "3.4.0",
