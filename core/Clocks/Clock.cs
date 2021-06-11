@@ -4,7 +4,14 @@ namespace Glow.Clocks
 {
     public interface IClock
     {
+        /// <summary>
+        /// Returns DateTime.UtcNow
+        /// </summary>
+        [Obsolete("Use IClock.Now")]
         DateTime UtcNow();
+        /// <summary>
+        /// Returns DateTime.UtcNow
+        /// </summary>
         DateTime Now { get; }
     }
 

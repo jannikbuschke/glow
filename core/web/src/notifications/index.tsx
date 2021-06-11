@@ -18,6 +18,11 @@ export interface Message {
 
 export function useNotifications() {
   const ctx = React.useContext(NotificationsContext)
+  if (!ctx) {
+    throw new Error(
+      "cannot use useNotifications outside of NotificationsProvider",
+    )
+  }
   return ctx
 }
 
