@@ -71,9 +71,21 @@ export function NotificationsProvider({
         })
 
       connection.on("message", (messageType: string, payload: any) => {
-        console.log(`[[message]] ${messageType}`, payload)
+        console.log(`emitting [[message]] ${messageType}`, payload)
+        console.log(messageType)
         emitter.emit(messageType, payload)
       })
+
+      connection.on(
+        "notification",
+        (notificationType: string, notification: any) => {
+          console.log(
+            `emitting [[notification]] ${notificationType}`,
+            notification,
+          )
+          emitter.emit(notificationType, notification)
+        },
+      )
     })()
   }, [connection, emitter])
 
