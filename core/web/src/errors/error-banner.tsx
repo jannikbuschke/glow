@@ -1,6 +1,7 @@
 import * as React from "react"
 import { Alert, notification } from "antd"
 import { ProblemDetails } from "../Forms/use-submit"
+import { RenderObject } from "../debugging"
 
 export function WarningBanner({ message }: { message: any }) {
   return render("warning", message)
@@ -18,12 +19,20 @@ export function SuccessBanner({ message }: { message: any }) {
 
 function render(
   type: "error" | "info" | "warning" | "success",
-  msg: string | null | undefined,
+  msg: string | null | undefined | any,
 ) {
   return msg ? (
     <Alert
       type={type}
-      message={React.isValidElement(msg) ? msg : msg.toString()}
+      message={
+        React.isValidElement(msg) ? (
+          msg
+        ) : typeof msg === "object" ? (
+          <RenderObject {...msg} />
+        ) : (
+          msg.toString()
+        )
+      }
       showIcon={false}
       style={{
         borderRight: "none",
