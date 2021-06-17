@@ -35,7 +35,7 @@ namespace Glow.Core.Actions
 
             IEnumerable<Type> candidates = assemblies
                 .SelectMany(v => v.GetExportedTypes()
-                .Where(x => x.GetCustomAttributes(typeof(ActionAttribute), true).Any()));
+                    .Where(x => x.GetCustomAttributes(typeof(ActionAttribute), true).Any()));
 
             foreach (Type candidate in candidates)
             {
@@ -48,15 +48,21 @@ namespace Glow.Core.Actions
 
                     if (interfaces.Contains(typeof(IRequest)))
                     {
+                        Type returnType = typeof(Unit);
                         feature.Controllers.Add(
-                            typeof(ActionController<,>).MakeGenericType(candidate, typeof(Unit)).GetTypeInfo()
+                            typeof(ActionController<,>).MakeGenericType(candidate, returnType).GetTypeInfo()
                         );
                     }
                     else
                     {
-                        Type arg = interfaces.FirstOrDefault().GenericTypeArguments?.FirstOrDefault();
+                        Type returnType = interfaces.Where(v =>
+                                v.IsGenericType && v.GetGenericTypeDefinition() == typeof(IRequest<>))
+                            .FirstOrDefault()
+                            .GenericTypeArguments
+                            ?.FirstOrDefault();
+
                         feature.Controllers.Add(
-                            typeof(ActionController<,>).MakeGenericType(candidate, arg).GetTypeInfo()
+                            typeof(ActionController<,>).MakeGenericType(candidate, returnType).GetTypeInfo()
                         );
                     }
 
@@ -66,9 +72,10 @@ namespace Glow.Core.Actions
                     //    typeof(ActionController<,>).MakeGenericType(candidate).GetTypeInfo()
                     //);
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
-
+                    Console.WriteLine("Could not create Action");
+                    Console.WriteLine(e.Message);
                 }
             }
         }
@@ -77,7 +84,7 @@ namespace Glow.Core.Actions
     [ApiController]
     // workaround: ApiController attributes need a RouteAttribute
     [Route("api/actions/__generic")]
-    public class ActionController<T, Payload> where T : IRequest<Payload>
+    public class ActionController<Request, ResponsePayload> where Request : IRequest<ResponsePayload>
     {
         private readonly IMediator mediator;
 
@@ -88,7 +95,7 @@ namespace Glow.Core.Actions
 
         [Validatable]
         [HttpPost]
-        public Task<Payload> Execute(T request)
+        public Task<ResponsePayload> Execute(Request request)
         {
             return mediator.Send(request);
         }
@@ -104,6 +111,7 @@ namespace Glow.Core.Actions
                 ActionAttribute attribute = genericType.GetCustomAttribute<ActionAttribute>();
                 if (attribute != null)
                 {
+                    // TODO: remove ApiControllerAttribute
                     controller.Filters.Add(new ApiControllerAttribute());
                     controller.Filters.Add(new AuthorizeFilter(attribute.Policy));
                     controller.Selectors.Add(new SelectorModel
