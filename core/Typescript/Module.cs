@@ -24,8 +24,8 @@ namespace Glow.Core.Typescript
 
             TsTypes = new List<TsType>();
             var missing = tsTypes.Where(v => !sorted.Contains(v) && !v.IsPrimitive).ToList();
-            TsTypes.AddRange(sorted.Where(v=>v.Namespace==this.Namespace));
-            TsTypes.AddRange(missing.Where(v=>v.Namespace==this.Namespace));
+            TsTypes.AddRange(sorted.Where(v => v.Namespace == this.Namespace));
+            TsTypes.AddRange(missing.Where(v => v.Namespace == this.Namespace));
         }
 
         public string Namespace { get; set; }
@@ -36,7 +36,7 @@ namespace Glow.Core.Typescript
 
         public IEnumerable<IGrouping<string, Dependency>> GetDependencies()
         {
-            var directDependencies =  this.Types
+            var directDependencies = this.Types
                 .Where(v => v.IsT0)
                 .Select(v => v.AsT0)
                 .Where(v => v.Properties != null)
@@ -44,54 +44,50 @@ namespace Glow.Core.Typescript
                 .Select(v => v.TsType.Match(
                     v => new Dependency
                     {
-                        Id =  v.Id?.Replace("[]",""),
+                        Id = v.Id?.Replace("[]", ""),
                         Namespace = v.Namespace,
-                        Name = v.Name?.Replace("[]",""),
+                        Name = v.Name?.Replace("[]", ""),
                         IsPrimitive = v.IsPrimitive,
                         TsType = v
                     },
                     v => new Dependency
                     {
-                        Id = v.Id.Replace("[]",""),
+                        Id = v.Id.Replace("[]", ""),
                         Namespace = v.Namespace,
-                        Name = v.Name.Replace("[]",""),
+                        Name = v.Name.Replace("[]", ""),
                         IsPrimitive = false
                     }))
                 .Where(v => !v.IsPrimitive)
                 .Where(v => v.Namespace != this.Namespace && v.Name != "any");
 
-                var subDependencies = this.TsTypes
-                    .SelectMany(v => v.Properties)
-                    .Where(v => v.TsType.IsT0)
-                    .Select(v => v.TsType.AsT0)
-                    .Where(v => v.HasCyclicDependency)
-                    .SelectMany(v => v.Properties)
-                    .Select(v => v.TsType.Match(
-                        v => new Dependency
-                        {
-                            Id = v.Id?.Replace("[]",""),
-                            Namespace = v.Namespace,
-                            Name = v.Name?.Replace("[]",""),
-                            IsPrimitive = v.IsPrimitive,
-                            TsType = v
-                        },
-                        v => new Dependency
-                        {
-                            Id = v.Id,
-                            Namespace = v.Namespace,
-                            Name = v.Name,
-                            IsPrimitive = false
-                        }))
-                    .Where(v => !v.IsPrimitive)
-                    .Where(v => v.Namespace != this.Namespace && v.Name != "any");
+            var subDependencies = this.TsTypes
+                .SelectMany(v => v.Properties)
+                .Where(v => v.TsType.IsT0)
+                .Select(v => v.TsType.AsT0)
+                .Where(v => v.HasCyclicDependency)
+                .SelectMany(v => v.Properties)
+                .Select(v => v.TsType.Match(
+                    v => new Dependency
+                    {
+                        Id = v.Id?.Replace("[]", ""),
+                        Namespace = v.Namespace,
+                        Name = v.Name?.Replace("[]", ""),
+                        IsPrimitive = v.IsPrimitive,
+                        TsType = v
+                    },
+                    v => new Dependency {Id = v.Id, Namespace = v.Namespace, Name = v.Name, IsPrimitive = false}))
+                .Where(v => !v.IsPrimitive)
+                .Where(v => v.Namespace != this.Namespace && v.Name != "any");
 
-                var all = new List<Dependency>();
-                all.AddRange(directDependencies);
-                all.AddRange(subDependencies);
+            var all = new List<Dependency>();
+            all.AddRange(directDependencies);
+            all.AddRange(subDependencies);
 
-                var result = all.DistinctBy(v => v.Id)
-                    .GroupBy(v => v.Namespace);
-                return result;
+            var result = all
+                .DistinctBy(v => v.Id)
+                .DistinctBy(v => v.Namespace + v.Name)
+                .GroupBy(v => v.Namespace);
+            return result;
         }
     }
 }
