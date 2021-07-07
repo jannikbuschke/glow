@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Glow.Core.Linq;
 using OneOf;
@@ -18,8 +19,12 @@ namespace Glow.Core.Typescript
                 .Where(v => !v.IsPrimitive)
                 .DistinctBy(v => v.Id)
                 .ToList();
+
+            // very slow for big collections (<100 might be okay)
+            // especially slow with debugger attached
             var sorted = tsTypes.TopologicalSort(
-                v => v.Properties?.Where(v => v.TsType.IsT0 && !v.TsType.AsT0.IsPrimitive).Select(v => v.TsType.AsT0));
+                v => v.Properties?.Where(v => v.TsType.IsT0 && !v.TsType.AsT0.IsPrimitive)
+                    .Select(v => v.TsType.AsT0));
             sorted = sorted.Where(v => !v.IsCollection).ToList();
 
             TsTypes = new List<TsType>();
@@ -34,7 +39,14 @@ namespace Glow.Core.Typescript
         public IEnumerable<TsEnum> TsEnums { get; private set; }
         public List<TsType> TsTypes { get; private set; }
 
-        public IEnumerable<IGrouping<string, Dependency>> GetDependencies()
+        public IEnumerable<IGrouping<string, Dependency>> GetDependenciesGroupedByNamespace()
+        {
+            var result = GetDependencies()
+                .GroupBy(v => v.Namespace);
+            return result;
+        }
+
+        public IEnumerable<Dependency> GetDependencies()
         {
             var directDependencies = this.Types
                 .Where(v => v.IsT0)
@@ -85,8 +97,7 @@ namespace Glow.Core.Typescript
 
             var result = all
                 .DistinctBy(v => v.Id)
-                .DistinctBy(v => v.Namespace + v.Name)
-                .GroupBy(v => v.Namespace);
+                .DistinctBy(v => v.Namespace + v.Name);
             return result;
         }
     }

@@ -1,12 +1,12 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using Glow.Core.Authentication;
 using Glow.Core.Linq;
 using Glow.TypeScript;
+using Microsoft.VisualStudio.Services.Common;
 using OneOf;
 
 namespace Glow.Core.Typescript
@@ -76,6 +76,22 @@ namespace Glow.Core.Typescript
 
         private OneOf<TsType, TsEnum> CreateOrGet(Type type, bool skipDependencies = false)
         {
+            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(KeyValuePair<,>))
+            {
+                Type[] argTypes = type.GetGenericArguments();
+                return new TsType
+                {
+                    Id = type.GetTypeId(),
+                    Namespace = type.Namespace,
+                    Name = "{ key: any, value: any }",
+                    DefaultValue = "{ key: null, value: null }",
+                    IsPrimitive = true,
+                    IsCollection = false,
+                    Properties = new List<Property>(),
+                    Type = type
+                };
+            }
+
             if (type.IsEnum)
             {
                 TsEnum e = AsEnum(type);
@@ -84,29 +100,41 @@ namespace Glow.Core.Typescript
             }
             else
             {
-                if (IsPrimitive(type))
+                if (type.IsPrimitive())
                 {
-                    TsType valueType = GetPrimitive(type);
-                    if (valueType != null)
+                    TsType primitiveTsType = GetPrimitive(type);
+                    if (primitiveTsType != null)
                     {
-                        return valueType;
+                        return primitiveTsType;
                     }
                 }
 
-                if (IsDictionary(type))
+                if (type.IsDictionary())
                 {
                     return new TsType {Name = "any", DefaultValue = "{ }"};
                 }
 
-                if (IsEnumerableType(type))
+                if (type.IsEnumerableType())
                 {
-                    // to early?
-                    // does not generate dependency
-                    // problem if typeargument primitive
-                    return AsEnumerable(type);
+                    Type elementType = type.GetCollectionElementType();
+
+                    if (elementType.IsPrimitive())
+                    {
+                        TsType primitiveTsType = GetPrimitiveCollection(type);
+                        return primitiveTsType;
+                    }
+
+                    if (type.FullName.Contains("Newtonsoft"))
+                    {
+                        return TsType.Any();
+                    }
+
+                    TsType enumerable = AsEnumerable(type);
+                    tsTypes.TryAdd(enumerable.Id, enumerable);
+                    return enumerable;
                 }
 
-                var id = type.FullName ?? (type.IsGenericParameter ? "T" : null);
+                var id = type.GetTypeId();
                 if (!tsTypes.ContainsKey(id))
                 {
                     if (IsNullable(type))
@@ -145,21 +173,24 @@ namespace Glow.Core.Typescript
 
         private TsType AsEnumerable(Type type)
         {
-            Type[] args = type.GenericTypeArguments;
-            var argTsType = type.IsArray
-                ? CreateOrGet(type.GetElementType())
-                : args.Length == 0
-                    ? TsType.Any()
-                    : CreateOrGet(args.First());
-            var argsTsType = argTsType.Match(v => new {v.Name, v.Namespace}, v => new {v.Name, v.Namespace});
+            Type elementType = type.GetCollectionElementType();
+
+            OneOf<TsType, TsEnum> elementTsType =
+                elementType == null ? TsType.Any() : CreateOrGet(elementType, skipDependencies: false);
+
+            var name = elementTsType.Match(v1 => v1.Name, v2 => v2.Name);
+            var nameSpace = elementTsType.Match(v1 => v1.Namespace, v2 => v2.Namespace);
+            var id = type.GetTypeId();
+
             return new TsType
             {
-                Id = argsTsType.Namespace + "." + argsTsType.Name + "[]",
-                Name = argsTsType.Name + "[]",
-                Namespace = argsTsType.Namespace,
+                Id = id, //argsTsType.Namespace + "." + argsTsType.Name + "[]",
+                Name = name + "[]",
+                Namespace = nameSpace,
                 DefaultValue = "[]",
                 Properties = new List<Property>(),
-                IsCollection = true
+                IsCollection = true,
+                IsPrimitive = elementTsType.Match(v1 => v1.IsPrimitive, v2 => true)
             };
         }
 
@@ -174,28 +205,8 @@ namespace Glow.Core.Typescript
             );
         }
 
-        private bool IsDictionary(Type t)
-        {
-            var isDict = t.IsGenericType && t.GetGenericTypeDefinition() == typeof(Dictionary<,>);
-            return isDict;
-        }
-
-        private bool IsEnumerableType(Type type)
-        {
-            return (type.GetInterface(nameof(IEnumerable)) != null);
-        }
-
-        private bool IsPrimitive(Type type)
-        {
-            return primitives.ContainsKey(type);
-        }
-
         private TsEnum AsEnum(Type t)
         {
-            if (t.FullName.Contains("AgendaItemType"))
-            {
-            }
-
             IEnumerable<string> values = GetEnumValues(t);
             return new TsEnum
             {
@@ -210,75 +221,64 @@ namespace Glow.Core.Typescript
         private static IEnumerable<string> GetEnumValues(Type t)
         {
             Array values = Enum.GetValues(t);
-            foreach (var val in values)
+            foreach (object val in values)
             {
                 yield return Enum.GetName(t, val);
             }
         }
 
-        private TsType GetPrimitive(Type type)
+        private TsType GetPrimitiveCollection(Type type)
         {
-            if (primitives.ContainsKey(type))
+            Type elementType = type.GetCollectionElementType();
+            try
             {
-                (var name, var defaultValue) = primitives[type];
+                (var name, var defaultValue) = GetTypeExtension.primitiveCollection[elementType];
                 return new TsType
                 {
-                    Name = name, DefaultValue = defaultValue, IsPrimitive = true, Properties = new List<Property>()
+                    Name = name,
+                    DefaultValue = defaultValue,
+                    IsPrimitive = true,
+                    Properties = new List<Property>(),
+                    Type = type,
+                };
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Could not get primitive for " + type.FullName + " / element type = " +
+                                    elementType.FullName);
+            }
+        }
+
+        private TsType GetPrimitive(Type type)
+        {
+            if (GetTypeExtension.primitives.ContainsKey(type))
+            {
+                (var name, var defaultValue) = GetTypeExtension.primitives[type];
+                return new TsType
+                {
+                    Name = name,
+                    DefaultValue = defaultValue,
+                    IsPrimitive = true,
+                    Properties = new List<Property>(),
+                    Type = type,
                 };
             }
 
-            if (IsDictionary(type))
+            if (type.IsDictionary())
             {
-                (var name, var defaultValue) = primitives[type];
+                (var name, var defaultValue) = GetTypeExtension.primitives[type];
                 return new TsType
                 {
-                    Name = name, DefaultValue = defaultValue, IsPrimitive = true, Properties = new List<Property>()
+                    Name = name,
+                    DefaultValue = defaultValue,
+                    IsPrimitive = true,
+                    Properties = new List<Property>(),
+                    Type = type
                 };
             }
 
             return null;
         }
-
-        private readonly Dictionary<Type, Tuple<string, string>> primitives =
-            new Dictionary<Type, Tuple<string, string>>
-            {
-                {typeof(string), new Tuple<string, string>("string | null", "null")},
-                {typeof(double), new Tuple<string, string>("number", "0")},
-                {typeof(double?), new Tuple<string, string>("number | null", "null")},
-                {typeof(float), new Tuple<string, string>("number", "0")},
-                {typeof(float?), new Tuple<string, string>("number | null", "null")},
-                {typeof(int), new Tuple<string, string>("number", "0")},
-                {typeof(int?), new Tuple<string, string>("number | null", "null")},
-                {typeof(short), new Tuple<string, string>("number", "0")},
-                {typeof(short?), new Tuple<string, string>("number | null", "null")},
-                {typeof(long), new Tuple<string, string>("number", "0")},
-                {typeof(long?), new Tuple<string, string>("number | null", "null")},
-                {typeof(decimal), new Tuple<string, string>("number", "0")},
-                {typeof(decimal?), new Tuple<string, string>("number | null", "null")},
-                {typeof(DateTime), new Tuple<string, string>("string", @"""1/1/0001 12:00:00 AM""")},
-                {typeof(DateTime?), new Tuple<string, string>("string | null", "null")},
-                {typeof(DateTimeOffset), new Tuple<string, string>("string", @"""00:00:00""")},
-                {typeof(DateTimeOffset?), new Tuple<string, string>("string | null", "null")},
-                {typeof(Guid), new Tuple<string, string>("string", @"""00000000-0000-0000-0000-000000000000""")},
-                {typeof(Guid?), new Tuple<string, string>("string | null", "null")},
-                {typeof(bool), new Tuple<string, string>("boolean", "false")},
-                {typeof(bool?), new Tuple<string, string>("boolean | null", "null")},
-                {typeof(Dictionary<string, string>), new Tuple<string, string>("{ [key: string]: string }", "{}")},
-                {typeof(Dictionary<string, decimal>), new Tuple<string, string>("{ [key: string]: number }", "{}")},
-                {typeof(Dictionary<string, int>), new Tuple<string, string>("{ [key: string]: number }", "{}")},
-                {typeof(Dictionary<string, object>), new Tuple<string, string>("{ [key: string]: any }", "{}")},
-                {typeof(IDictionary<string, object>), new Tuple<string, string>("{ [key: string]: any }", "{}")},
-                {typeof(object), new Tuple<string, string>("any", "null")},
-                {typeof(byte[]), new Tuple<string, string>("string | null", "null")},
-                {typeof(string[]), new Tuple<string, string>("(string | null)[]", "[]")},
-                {typeof(List<string>), new Tuple<string, string>("(string | null)[]", "[]")},
-                {typeof(IEnumerable<string>), new Tuple<string, string>("(string | null)[]", "[]")},
-                {typeof(IEnumerable<Guid>), new Tuple<string, string>("string[]", "[]")},
-                {typeof(IEnumerable<Guid?>), new Tuple<string, string>("(string | null)[]", "[]")},
-                {typeof(IEnumerable<double>), new Tuple<string, string>("number[]", "[]")},
-                {typeof(Collection<string>), new Tuple<string, string>("(string | null)[]", "[]")},
-                {typeof(ICollection<string>), new Tuple<string, string>("(string | null)[]", "[]")},
-            };
 
         private void PopuplateProperties(TsType type)
         {

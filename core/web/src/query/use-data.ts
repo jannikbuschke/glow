@@ -57,7 +57,14 @@ interface UseApiPostProps<Result, Request> {
   placeholder: Result
   queryOptions?: QueryOptions<Result>
   method: "POST" | undefined
+  // rename to request or params/parameters
   payload: Request
+}
+
+export type ApiResult<Result> = UseQueryResult<Result, any> & {
+  data: Result
+  loading: boolean
+  reload: () => void
 }
 
 export function useApi<Result = any, Request = any>({
@@ -65,7 +72,9 @@ export function useApi<Result = any, Request = any>({
   placeholder,
   queryOptions,
   ...rest
-}: UseApiGetProps<Result> | UseApiPostProps<Result, Request>) {
+}:
+  | UseApiGetProps<Result>
+  | UseApiPostProps<Result, Request>): ApiResult<Result> {
   const fetchJson = useFetchJson<Result>()
   const { data, ...queryRest } = useQuery<Result, any>(
     url,
@@ -91,7 +100,7 @@ export function useApi<Result = any, Request = any>({
     loading: queryRest.status === "loading",
     reload: queryRest.refetch,
     ...queryRest,
-  }
+  } as ApiResult<Result>
 }
 
 export type UseGlowQueryResult<T> = [

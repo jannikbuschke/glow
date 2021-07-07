@@ -10,7 +10,7 @@ using File = System.IO.File;
 
 namespace Glow.Core.Typescript
 {
-    public static class Render
+    public static class RenderTypes
     {
         public static void ToDisk(TypeCollection types, string path)
         {
@@ -18,11 +18,10 @@ namespace Glow.Core.Typescript
             {
                 throw new ArgumentException("path must end with /");
             }
+
             Directory.CreateDirectory(path);
 
-            IEnumerable<IGrouping<string, OneOf<TsType, TsEnum>>> byNamespace = types.All().GroupBy(v => v.Match(v1 => v1.Namespace, v2 => v2.Namespace));
-
-            var modules = byNamespace.Select(v => new Module(v.Key, v)).ToList();
+            IEnumerable<Module> modules = types.Modules;
 
             foreach (Module v in modules)
             {
@@ -32,28 +31,43 @@ namespace Glow.Core.Typescript
 
         private static void RenderModule(Module module, string path)
         {
+            IEnumerable<TsEnum> enumerables = module.TsEnums;
+            var tsTypes = module.TsTypes;
+            if (enumerables.Count() == 0 && tsTypes.Count() == 0)
+            {
+                File.WriteAllText(path + module.Namespace + ".ts", @"export type NeedToExportSomething = {}");
+
+                return;
+            }
+
             var builder = new StringBuilder();
 
-            IEnumerable<IGrouping<string, Dependency>> dependencies = module.GetDependencies();
+            IEnumerable<IGrouping<string, Dependency>> dependencies = module.GetDependenciesGroupedByNamespace();
 
             foreach (IGrouping<string, Dependency> group in dependencies)
             {
-                builder.AppendLine($"import {{ {string.Join(", ", group.Select(v => v.Name.Replace("[]","")))} }} from \"./{group.Key}\"");
-                builder.AppendLine($"import {{ {string.Join(", ", group.Where(v => v != null).Select(v => "default" + v.Name.Replace("[]","")))} }} from \"./{group.Key}\"");
+                builder.AppendLine(
+                    $"import {{ {string.Join(", ", group.Select(v => v.Name.Replace("[]", "")))} }} from \"./{group.Key}\"");
+                builder.AppendLine(
+                    $"import {{ {string.Join(", ", group.Where(v => v != null).Select(v => "default" + v.Name.Replace("[]", "")))} }} from \"./{group.Key}\"");
             }
-            if(dependencies.Count() != 0){
+
+            if (dependencies.Count() != 0)
+            {
                 builder.AppendLine("");
             }
 
-            IEnumerable<TsEnum> enumerables = module.TsEnums;
             foreach (TsEnum v in enumerables)
             {
                 RenderTsEnum(v, builder);
             }
 
-            foreach (TsType tsType in module.TsTypes)
+            foreach (TsType tsType in tsTypes)
             {
-                RenderTsType(tsType, builder);
+                if (!tsType.IsCollection)
+                {
+                    RenderTsType(tsType, builder);
+                }
             }
 
             File.WriteAllText(path + module.Namespace + ".ts", builder.ToString());
@@ -105,7 +119,7 @@ namespace Glow.Core.Typescript
                 {
                     builder.AppendLine($"  {property.PropertyName}: {{}} as any,");
                 }
-                else if (tsType!=null&&  !tsType.IsPrimitive && tsType.HasCyclicDependency && !tsType.IsCollection)
+                else if (tsType != null && !tsType.IsPrimitive && tsType.HasCyclicDependency && !tsType.IsCollection)
                 {
                     if (depth >= maxDepth)
                     {
@@ -134,6 +148,5 @@ namespace Glow.Core.Typescript
                 }
             }
         }
-
     }
 }

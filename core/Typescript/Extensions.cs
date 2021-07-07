@@ -5,6 +5,7 @@ using System.Reflection;
 using Glow.Core.Typescript;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using OneOf;
 
 namespace Glow.TypeScript
@@ -17,7 +18,13 @@ namespace Glow.TypeScript
         public Action<OneOf<TsType, TsEnum>> Update { get; set; }
         public string GetPath()
         {
-            return Path ?? "web/src/";
+            var configuredPath = Path ?? "web/src/";
+            if(!configuredPath.EndsWith(".ts") && !configuredPath.EndsWith("/"))
+            {
+                throw new Exception($"configured path '{configuredPath}' must end with / or .ts");
+            }
+
+            return configuredPath;
         }
     }
 
@@ -42,7 +49,8 @@ namespace Glow.TypeScript
         {
             services.AddHostedService(provider => new GenerateTsModelsAtStartupV2(
                 provider.GetService<IWebHostEnvironment>(),
-                options
+                options,
+                provider.GetService<ILogger<GenerateTsModelsAtStartupV2>>()
             ));
         }
     }

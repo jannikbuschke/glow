@@ -47,19 +47,27 @@ export interface ProblemDetails {
   extensions: any
 }
 
-type UseSubmit<T> = [
-  (values: any) => Promise<Result<T>>,
-  (values: any) => Promise<SerializableError | undefined>,
+export type UseSubmit<RequestPayload = any, ResultPayload = any> = [
+  (values: RequestPayload) => Promise<Result<ResultPayload>>,
+  (values: RequestPayload) => Promise<SerializableError | undefined>,
   { error: string | null; submitting: boolean },
 ]
 
-export function useSubmit<T = any>(url: string): UseSubmit<T> {
+export function useAction<RequestPayload = any, ResultPayload = any>(
+  url: string,
+): UseSubmit<RequestPayload, ResultPayload> {
+  return useSubmit<ResultPayload, RequestPayload>(url)
+}
+
+export function useSubmit<ResultPayload = any, RequestPayload = any>(
+  url: string,
+): UseSubmit<RequestPayload, ResultPayload> {
   const [error, setError] = React.useState<null | string>(null)
   const fetch = useFetch()
   const [submitting, setSubmitting] = React.useState(false)
 
   return [
-    async (values: any): Promise<Result<T>> => {
+    async (values: any): Promise<Result<ResultPayload>> => {
       setSubmitting(true)
       const response = await fetch(url, execute(values))
       setSubmitting(false)
@@ -110,8 +118,12 @@ export function useSubmit<T = any>(url: string): UseSubmit<T> {
           result: "error",
         } as Error
       } else {
-        const data = (await response.json()) as T
-        return { payload: data, ok: true, result: "success" } as Success<T>
+        const data = (await response.json()) as ResultPayload
+        return {
+          payload: data,
+          ok: true,
+          result: "success",
+        } as Success<ResultPayload>
       }
     },
     async (values: any): Promise<any | undefined> => {

@@ -1,11 +1,15 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Glow.Core.Actions;
 using Glow.TypeScript;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.Services.Common;
 
 namespace Glow.Core.Typescript
@@ -14,14 +18,17 @@ namespace Glow.Core.Typescript
     {
         private readonly IWebHostEnvironment environment;
         private readonly TsGenerationOptions[] options;
+        private readonly ILogger<GenerateTsModelsAtStartupV2> logger;
 
         public GenerateTsModelsAtStartupV2(
             IWebHostEnvironment environment,
-            TsGenerationOptions[] options
+            TsGenerationOptions[] options,
+            ILogger<GenerateTsModelsAtStartupV2> logger
         )
         {
             this.environment = environment;
             this.options = options;
+            this.logger = logger;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -31,7 +38,15 @@ namespace Glow.Core.Typescript
 
             foreach (TsGenerationOptions option in options)
             {
-                await GenerateTypes(option);
+                try
+                {
+                    await GenerateTypes(option);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Error while generating types " + e.Message);
+                    logger.LogError(e, "Error while generating TS client code");
+                }
             }
         }
 
@@ -42,6 +57,7 @@ namespace Glow.Core.Typescript
                 Console.WriteLine("Skip TS model generation");
                 return Task.CompletedTask;
             }
+
             Console.WriteLine("Generate TS models");
             IEnumerable<Type> profileTypes = option.Assemblies
                 .SelectMany(v => v.GetTypes())
@@ -59,6 +75,11 @@ namespace Glow.Core.Typescript
                 .SelectMany(v => v.GetExportedTypes()
                     .Where(x => x.GetCustomAttributes(typeof(GenerateTsInterface), true).Any()));
 
+            var actions = option.Assemblies.GetActions();
+
+            builder.AddRange(actions.Select(v => v.Input));
+            builder.AddRange(actions.Select(v => v.Output));
+
             builder.AddRange(additionalTypes);
 
             if (builder.Count == 0)
@@ -69,21 +90,13 @@ namespace Glow.Core.Typescript
             {
                 //builder.Insert(0, "/* eslint-disable prettier/prettier */");
 
-                var configuredPath = option.GetPath();
-                if(!configuredPath.EndsWith(".ts") && !configuredPath.EndsWith("/"))
-                {
-                    throw new Exception($"configured path '{configuredPath}' must end with / or .ts");
-                }
                 var path = option.GetPath();
-                //var path = configuredPath.EndsWith(".ts")
-                //    ? configuredPath
-                //    : $"{option.GetPath()}ts-models.ts";
+
                 Console.WriteLine(path);
-
-                Render.ToDisk(builder.Generate(option.Update), path);
+                TypeCollection typeCollection = builder.Generate(option.Update);
+                RenderTypes.ToDisk(typeCollection, path);
+                RenderApi.Render(typeCollection, option);
             }
-
-            //File.WriteAllText(path, text);
 
             return Task.CompletedTask;
         }
