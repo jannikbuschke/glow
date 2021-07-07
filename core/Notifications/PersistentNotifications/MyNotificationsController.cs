@@ -23,6 +23,7 @@ namespace Glow.NotificationsCore
             return Ok();
         }
 
+        [HttpGet]
         public async Task<IEnumerable<Notification>> GetNotifications()
         {
             return await svc.GetUnreadNotifications();
