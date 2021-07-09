@@ -39,9 +39,19 @@ namespace Glow.Core.Authentication
             this.clientFactory = clientFactory;
         }
 
-        public Task<string> AccessTokenForApp()
+        public async Task<string> AccessTokenForApp()
         {
-            throw new System.NotImplementedException();
+            AzureAdOptions o = options.Value;
+
+            IConfidentialClientApplication app = ConfidentialClientApplicationBuilder.Create(clientId: o.ClientId)
+                .WithClientSecret(o.ClientSecret)
+                .WithTenantId(o.TenantId)
+                .Build();
+
+            var scopes = new string[] {"https://graph.microsoft.com/.default"};
+
+            var token = await app.AcquireTokenForClient(scopes).ExecuteAsync();
+            return token.AccessToken;
         }
 
         public async Task<string> AccessTokenForServiceUser()
