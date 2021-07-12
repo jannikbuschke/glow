@@ -29,10 +29,9 @@ namespace Glow.Core.Actions
                 }
                 else
                 {
-                    Type returnType = interfaces.Where(v =>
-                            v.IsGenericType && v.GetGenericTypeDefinition() == typeof(IRequest<>))
-                        .FirstOrDefault()
-                        .GenericTypeArguments
+                    Type returnType = interfaces
+                        .FirstOrDefault(v => v.IsGenericType && v.GetGenericTypeDefinition() == typeof(IRequest<>))
+                        ?.GenericTypeArguments
                         ?.FirstOrDefault();
 
                     yield return new ActionMeta() {Input = candidate, Output = returnType, ActionAttribute = attribute};
