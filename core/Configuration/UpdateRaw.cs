@@ -22,72 +22,100 @@ namespace Glow.Configurations
                 {
                     AddAllValues(v, result);
                 }
+
                 return result;
+            }
+        }
+
+        private string ParsePath(string tokenPath)
+        {
+            if (tokenPath.Contains("['"))
+            {
+                // MinimumLevel.Override['Microsoft.EntityFrameworkCore']
+                var split = tokenPath.Split("['");
+                var first = split[0]
+                    .Replace("[", ":")
+                    .Replace("].", ":")
+                    .Replace(".", ":");
+                return first + ":" + split[1].Replace("']", "");
+            }
+            else
+            {
+                var path = tokenPath
+                    .Replace("[", ":")
+                    .Replace("].", ":")
+                    .Replace(".", ":");
+                return path;
             }
         }
 
         private void AddAllValues(JToken token, Dictionary<string, object> result)
         {
-            var path = token.Path
-                .Replace("[", ":")
-                .Replace("].", ":")
-                .Replace(".", ":");
+            if (token.Path.Contains("['"))
+            {
+                var split = token.Path.Split("['");
+            }
+
+            var path = ParsePath(token.Path);
 
             switch (token.Type)
             {
                 case JTokenType.String:
-                    {
-                        result[path] = token.Value<string>();
-                        break;
-                    }
+                {
+                    var value = token.Value<string>();
+                    result[path] = value;
+                    break;
+                }
                 case JTokenType.Integer:
-                    {
-                        result[path] = token.Value<long>();
-                        break;
-                    }
+                {
+                    result[path] = token.Value<long>();
+                    break;
+                }
                 case JTokenType.Float:
-                    {
-                        result[path] = token.Value<double>();
-                        break;
-                    }
+                {
+                    result[path] = token.Value<double>();
+                    break;
+                }
                 case JTokenType.Property:
-                    {
-                        var property = token as JProperty;
-                        AddAllValues(property.Value, result);
-                        break;
-                    }
+                {
+                    var property = token as JProperty;
+                    AddAllValues(property.Value, result);
+                    break;
+                }
                 case JTokenType.Object:
+                {
+                    var o = token as JObject;
+                    foreach (JToken item in o.Children())
                     {
-                        var o = token as JObject;
-                        foreach (JToken item in o.Children())
-                        {
-                            AddAllValues(item, result);
-                        }
-                        break;
+                        AddAllValues(item, result);
                     }
+
+                    break;
+                }
                 case JTokenType.Array:
+                {
+                    var array = token as JArray;
+                    foreach (JToken item in array.Children())
                     {
-                        var array = token as JArray;
-                        foreach (JToken item in array.Children())
-                        {
-                            AddAllValues(item, result);
-                        }
-                        break;
+                        AddAllValues(item, result);
                     }
+
+                    break;
+                }
                 case JTokenType.Null:
-                    {
-                        //no-op
-                        break;
-                    }
+                {
+                    //no-op
+                    break;
+                }
                 case JTokenType.Boolean:
-                    {
-                        result[path] = token.Value<bool>();
-                        break;
-                    }
+                {
+                    result[path] = token.Value<bool>();
+                    break;
+                }
                 default:
-                    {
-                        throw new System.Exception($"Not Supported JTokenType '{token.Type}'");
-                    }
+                {
+                    throw new System.Exception($"Not Supported JTokenType '{token.Type}'");
+                }
             }
         }
 
@@ -95,9 +123,7 @@ namespace Glow.Configurations
         {
             return new ConfigurationUpdate
             {
-                ConfigurationId = ConfigurationId,
-                Values = ConfigurationValues,
-                Name = Name
+                ConfigurationId = ConfigurationId, Values = ConfigurationValues, Name = Name
             };
         }
     }
