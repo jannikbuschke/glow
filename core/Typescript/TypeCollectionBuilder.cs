@@ -124,6 +124,13 @@ namespace Glow.Core.Typescript
                         return primitiveTsType;
                     }
 
+                    if (type.FullName == null)
+                    {
+                        Console.WriteLine("Cannot generate type for " + type.Name + " ( element type = " +
+                                          elementType.Name + ") as Fullname is null (not yet supported)");
+                        return TsType.Any();
+                    }
+
                     if (type.FullName.Contains("Newtonsoft"))
                     {
                         return TsType.Any();
