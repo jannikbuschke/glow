@@ -78,6 +78,15 @@ namespace Glow.Core.Typescript
             var name = type.Name;
             builder.AppendLine($"export type {name} = {string.Join(" | ", type.Values.Select(v => $@"""{v}"""))}");
             builder.AppendLine($@"export const default{name} = ""{type.DefaultValue ?? "NULL"}""");
+            builder.AppendLine($@"export const {name}Values: {{ [key in {name}]: {name} }} = {{");
+            foreach (var v in type.Values)
+            {
+                builder.AppendLine($@"  {v}: ""{v}"",");
+            }
+
+            builder.AppendLine("}");
+            builder.AppendLine($@"export const {name}ValuesArray: {name}[] = Object.keys({name}Values) as {name}[]");
+
             builder.AppendLine("");
         }
 

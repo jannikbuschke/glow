@@ -1,8 +1,21 @@
 export type Operation = "StartsWith" | "Equals" | "LessThan" | "GreaterThan" | "Contains"
 export const defaultOperation = "StartsWith"
+export const OperationValues: { [key in Operation]: Operation } = {
+  StartsWith: "StartsWith",
+  Equals: "Equals",
+  LessThan: "LessThan",
+  GreaterThan: "GreaterThan",
+  Contains: "Contains",
+}
+export const OperationValuesArray: Operation[] = Object.keys(OperationValues) as Operation[]
 
 export type Direction = "Asc" | "Desc"
 export const defaultDirection = "Asc"
+export const DirectionValues: { [key in Direction]: Direction } = {
+  Asc: "Asc",
+  Desc: "Desc",
+}
+export const DirectionValuesArray: Direction[] = Object.keys(DirectionValues) as Direction[]
 
 export interface Where {
   property: string | null
