@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Hosting;
@@ -17,13 +18,15 @@ namespace Glow.Configurations
         private readonly IConfiguration configuration;
         private readonly Configurations partialConfigurations;
         private readonly IWebHostEnvironment environment;
+        private readonly IServiceProvider serviceProvider;
         private readonly IConfigurationRoot efConfiguration;
 
         public UpdateController(
             IMediator mediator,
             IConfiguration configuration,
             Configurations partialConfigurations,
-            IWebHostEnvironment environment
+            IWebHostEnvironment environment,
+            IServiceProvider serviceProvider
         )
         {
             this.mediator = mediator;
@@ -31,6 +34,7 @@ namespace Glow.Configurations
             this.partialConfigurations = partialConfigurations;
 
             this.environment = environment;
+            this.serviceProvider = serviceProvider;
 
             // TODO remove duplication
             var cs = configuration.GetValue<string>("ConnectionString");
@@ -84,7 +88,15 @@ namespace Glow.Configurations
             {
                 return BadRequest(ModelState);
             }
-            await mediator.Send(value.ToConfigurationUpdate());
+
+            var request = value.ToConfigurationUpdate();
+            await mediator.Send(request);
+            MethodInfo? m = typeof(T).GetMethod("OnSuccess");
+            if (m != null)
+            {
+                m.Invoke(value.Value, new object[] {serviceProvider});
+            }
+
             return Ok();
         }
     }
