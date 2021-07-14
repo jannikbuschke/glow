@@ -76,8 +76,10 @@ export function useApi<Result = any, Request = any>({
   | UseApiGetProps<Result>
   | UseApiPostProps<Result, Request>): ApiResult<Result> {
   const fetchJson = useFetchJson<Result>()
+  const inputKey = rest.method === "POST" ? rest.payload : {}
+
   const { data, ...queryRest } = useQuery<Result, any>(
-    url,
+    url + " " + JSON.stringify(inputKey),
     () =>
       rest.method === "POST" || rest.method === undefined
         ? fetchJson(url, {
@@ -95,6 +97,7 @@ export function useApi<Result = any, Request = any>({
       ...queryOptions,
     },
   )
+
   return {
     data: Boolean(data) ? data! : placeholder,
     loading: queryRest.status === "loading",
