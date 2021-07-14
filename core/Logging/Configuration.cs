@@ -33,6 +33,8 @@ namespace Glow.Core.Logging
         {
             IConfiguration? configuration = provider.GetService<IConfiguration>();
 
+            // not recommended and does not really work
+            // https://swimburger.net/blog/dotnet/changing-serilog-minimum-level-without-application-restart-on-dotnet-framework-and-core
             Log.Logger = new LoggerConfiguration()
                 .ReadFrom.Configuration(configuration)
                 .CreateLogger();
@@ -65,6 +67,7 @@ namespace Glow.Core.Logging
             }
             set
             {
+                if (value == null) { return;}
                 // todo: parse only real loglevels
                 var dict = new Dictionary<string, string>();
                 foreach (KeyValuePair<string, string> v in value)
