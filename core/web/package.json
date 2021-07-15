@@ -67,10 +67,10 @@
     "file-saver": "2.0.2",
     "@types/file-saver": "2.0.1",
     "react-query": "3.4.0",
+    "react-use": "17.1.0",
     "normalizr": "3.6.1",
     "mitt": "1.2.0",
     "@microsoft/teams-js": "1.8.0",
-    "@ant-design/icons": "4.2.2",
-    "react-use": "17.1.0"
+    "@ant-design/icons": "4.2.2"
   }
 }
