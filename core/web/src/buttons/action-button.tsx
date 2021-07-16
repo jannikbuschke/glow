@@ -1,60 +1,53 @@
 import * as React from "react"
-import { Button, notification, Popconfirm } from "antd"
+import { Button, notification } from "antd"
 import { ButtonProps } from "antd/lib/button"
-import { PopconfirmProps } from "antd/lib/popconfirm"
+import { Result, useAction } from "../Forms/use-submit"
+import { notifyError } from "../errors/error-banner"
 
-type Props = Omit<ButtonProps, "onClick"> & { onClick: () => Promise<void> }
+export * from "./promise-button"
+export * from "./promise-popconfirm"
 
-export function PromiseButton({ onClick, ...props }: Props) {
-  const [loading, setLoading] = React.useState(false)
-  return (
-    <>
-      <Button
-        loading={loading}
-        onClick={async () => {
-          setLoading(true)
-          try {
-            await onClick()
-          } catch (E) {
-            notification.error({ message: "An error occured:" + E.toString() })
-          } finally {
-            setLoading(false)
-          }
-        }}
-        {...props}
-      />
-    </>
-  )
+type ActionProps<Input, Output> = {
+  url: string
+  input: Input
+  onResult?: (result: Result<Output>) => void
+  onSuccess?: (output: Output) => void
+  onErrorResult?: (error: any) => void
 }
 
-export type PromisePopconfirmProps = Omit<PopconfirmProps, "onConfirm"> & {
-  onConfirm: () => Promise<void>
-}
+type ActionButtonProps<Input, Output> = Omit<
+  ButtonProps,
+  "onClick" | "loading"
+> &
+  ActionProps<Input, Output>
 
-export function PromisePopconfirm({
-  onConfirm,
-  children,
+export function ActionButton<Input, Output>({
+  onResult,
+  onSuccess,
+  onErrorResult,
   ...props
-}: PromisePopconfirmProps) {
-  const [loading, setLoading] = React.useState(false)
-
+}: ActionButtonProps<Input, Output>) {
+  const input = props.input
+  const [submit, validate, { submitting }] = useAction<Input, Output>(props.url)
   return (
-    <Popconfirm
+    <Button
       {...props}
-      onConfirm={async () => {
-        setLoading(true)
+      loading={submitting}
+      onClick={async () => {
         try {
-          await onConfirm()
+          const response = await submit(input)
+          onResult && onResult(response)
+          response.ok && onSuccess && onSuccess(response.payload)
+          !response.ok && onErrorResult && onErrorResult(response.error)
+          !response.ok && !onErrorResult && notifyError(response.error)
         } catch (E) {
-          notification.error({ message: "An error occured:" + E.toString() })
-        } finally {
-          setLoading(false)
+          onErrorResult
+            ? onErrorResult(E)
+            : notification.error({
+                message: "An error occured:" + E.toString(),
+              })
         }
       }}
-    >
-      {React.Children.map(children, (v) =>
-        React.cloneElement(v as any, { loading }),
-      )}
-    </Popconfirm>
+    />
   )
 }

@@ -1,5 +1,5 @@
 import * as React from "react"
-import { Alert, notification } from "antd"
+import { Alert, message, notification } from "antd"
 import { ProblemDetails } from "../Forms/use-submit"
 import { RenderObject } from "../debugging"
 
@@ -53,4 +53,14 @@ export function notifyError(r: ProblemDetails) {
         ? r.title + ": " + r.detail
         : r.title || r.detail || r.status,
   })
+}
+
+export function notifySuccess(message: string) {
+  notification.success({
+    message,
+  })
+}
+
+export function messageSuccess(msg: React.ReactNode | string) {
+  message.success(msg)
 }
