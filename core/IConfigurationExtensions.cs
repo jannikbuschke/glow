@@ -13,5 +13,10 @@ namespace Glow.Core
         {
             return configuration["ConnectionString"] ?? configuration["ConnectionStrings:DefaultConnection"] ?? throw new System.Exception("Connectionstring not configured");
         }
+
+        public static bool IsDemo(this IConfiguration configuration)
+        {
+            return configuration.GetValue<string>("Global:IsDemo") == "true";
+        }
     }
 }
