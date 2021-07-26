@@ -143,7 +143,17 @@ export function useSubmit<ResultPayload = any, RequestPayload = any>(
 }
 
 function camelize(str: string) {
-  return str.split(".").map(_camelize).join(".")
+  return str
+    .split(".")
+    .map((v) => {
+      if (v.endsWith("]") && v.includes("[")) {
+        const split = v.split("[")
+        return `${_camelize(split[0])}[${split[1]}`
+      } else {
+        return _camelize(v)
+      }
+    })
+    .join(".")
 }
 
 function _camelize(str: string) {
