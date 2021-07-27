@@ -47,7 +47,7 @@ export function TeamsFetchContextProvider({
 }: React.PropsWithChildren<{
   onSuccess?: () => void
   onError?: (e: any) => void
-  onPrepareRequest: (input: RequestInfo, init?: RequestInit) => void
+  onPrepareRequest?: (input: RequestInfo, init?: RequestInit) => void
 }>): JSX.Element | null {
   const [loading, setLoading] = React.useState(true)
   const [token, setToken] = React.useState<string | null>(null)
