@@ -21,11 +21,7 @@ function getLocale(lang: string) {
   return deDe
 }
 
-export function useLocale({
-  onLanguageChanged,
-}: {
-  onLanguageChanged: (lang: string) => void
-}) {
+export function useLocale() {
   const [locale, setLocale] = React.useState(enUs)
   const [language, setLanguage] = React.useState(i18n.language || "de")
   React.useEffect(() => {
@@ -35,13 +31,11 @@ export function useLocale({
     dayjs.locale(lang)
     setLocale(getLocale(lang))
     setLanguage(lang)
-    onLanguageChanged(lang)
     i18n.on("languageChanged", (lng) => {
       document.documentElement.lang = lng
       dayjs.locale(lng)
       setLocale(getLocale(lng))
-      onLanguageChanged(lng)
-    setLanguage(lng)
+      setLanguage(lng)
     })
   }, [])
   return { language, locale }
