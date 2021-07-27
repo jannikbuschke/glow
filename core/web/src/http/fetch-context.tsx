@@ -43,21 +43,25 @@ export function TeamsFetchContextProvider({
   children,
   onError,
   onSuccess,
+  onPrepareRequest
 }: React.PropsWithChildren<{
   onSuccess?: () => void
   onError?: (e: any) => void
+  onPrepareRequest: (input: RequestInfo, init?: RequestInit) => void
 }>): JSX.Element | null {
   const [loading, setLoading] = React.useState(true)
   const [token, setToken] = React.useState<string | null>(null)
   const f = React.useCallback(
-    (input, init) => {
+    (input: RequestInfo, init?: RequestInit) => {
       if (token !== null) {
         const i = init || {}
         i.headers = Object.assign(Object.assign({}, i.headers), {
           Authorization: "Bearer " + token,
         })
+        onPrepareRequest && onPrepareRequest(input,i)
         return fetch(input, i)
       } else {
+        onPrepareRequest && onPrepareRequest(input,init)
         return fetch(input, init)
       }
     },
