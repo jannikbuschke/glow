@@ -61,8 +61,9 @@ export function TeamsFetchContextProvider({
         onPrepareRequest && onPrepareRequest(input,i)
         return fetch(input, i)
       } else {
-        onPrepareRequest && onPrepareRequest(input,init)
-        return fetch(input, init)
+        const i = init || {}
+        onPrepareRequest && onPrepareRequest(input, i)
+        return fetch(input, i)
       }
     },
     [token],
