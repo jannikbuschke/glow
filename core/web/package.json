@@ -23,16 +23,6 @@
     "lodash.debounce": "4.0.8",
     "@types/lodash.debounce": "4.0.6"
   },
-  "peerDependencies": {
-    "antd": ">= 3.11.5",
-    "formik": ">= 2.0.3 < 3",
-    "lodash": ">= 4.17.11 < 5",
-    "styled-components": ">= 5 < 6",
-    "formik-antd": ">= 1.6.0",
-    "use-lodash-debounce": ">= 1.0.0 < 2",
-    "react-router-dom": ">= 6.0.0-alpha.2",
-    "react-router": ">= 6.0.0-alpha.2"
-  },
   "devDependencies": {
     "react": "17.0.2",
     "react-dom": "17.0.2",
