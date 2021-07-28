@@ -61,6 +61,8 @@
     "@ant-design/icons": "4.6.2",
     "i18next": "19.0.0",
     "i18next-browser-languagedetector": "4.0.1",
-    "react-i18next": "11.0.1"
+    "react-i18next": "11.0.1",
+    "moment": "^2.25.3",
+    "moment-duration-format": "2.2.2"
   }
 }
