@@ -43,7 +43,7 @@ export function TeamsFetchContextProvider({
   children,
   onError,
   onSuccess,
-  onPrepareRequest
+  onPrepareRequest,
 }: React.PropsWithChildren<{
   onSuccess?: () => void
   onError?: (e: any) => void
@@ -58,7 +58,7 @@ export function TeamsFetchContextProvider({
         i.headers = Object.assign(Object.assign({}, i.headers), {
           Authorization: "Bearer " + token,
         })
-        onPrepareRequest && onPrepareRequest(input,i)
+        onPrepareRequest && onPrepareRequest(input, i)
         return fetch(input, i)
       } else {
         const i = init || {}
@@ -66,7 +66,7 @@ export function TeamsFetchContextProvider({
         return fetch(input, i)
       }
     },
-    [token],
+    [token, onPrepareRequest],
   )
   React.useEffect(() => {
     teamsInitialized
