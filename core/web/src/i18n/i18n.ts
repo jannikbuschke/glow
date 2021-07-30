@@ -14,6 +14,7 @@ export function initializeI18n(resources: Resource) {
     .init({
       fallbackLng: "de",
       debug: true,
+      keySeparator: ":",
       defaultNS: "translation",
       // I'm hardcoding the translations here for the sake of simplicity,
       // but in a real-world application you would get these from a backend.
