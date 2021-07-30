@@ -1,6 +1,6 @@
 import * as React from "react"
 import { Formik } from "formik"
-import { message, PageHeader, Button, Card, Tooltip } from "antd"
+import { message, PageHeader, Button, Card, Tooltip, ColProps } from "antd"
 import {
   Input,
   Switch,
@@ -90,6 +90,8 @@ interface Props {
   allowEdit?: boolean
   name?: string
   disabled?: boolean
+  containerStyles?: React.CSSProperties | undefined
+  labelCol?: ColProps
 }
 
 type WithChildren = Props & { type: "children"; children: React.ReactNode }
@@ -100,6 +102,8 @@ type WithEditors = Props & {
 type P = WithChildren | WithEditors
 
 export function StronglyTypedOptions({
+  containerStyles,
+  labelCol,
   title,
   url,
   configurationId,
@@ -165,13 +169,14 @@ export function StronglyTypedOptions({
             >
               <br />
               <br />
-              <div>
+              <div style={containerStyles ? containerStyles : undefined}>
                 {children
                   ? children
                   : data &&
                     Object.keys(data).map((v) => (
                       <Form.Item
                         name={v}
+                        labelCol={labelCol ? labelCol : undefined}
                         htmlFor={name}
                         label={<b>{prettify(v)}</b>}
                         colon={false}
