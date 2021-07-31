@@ -60,6 +60,23 @@ namespace Glow.Sample.Migrations
                     b.ToTable("PortfolioFiles");
                 });
 
+            modelBuilder.Entity("Glow.Sample.MdxBundle.Entity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Content")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Path")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("MdxBundle");
+                });
+
             modelBuilder.Entity("Glow.Sample.Files.PortfolioFile", b =>
                 {
                     b.HasOne("Glow.Sample.Files.Portfolio", null)

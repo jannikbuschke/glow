@@ -57,6 +57,19 @@ namespace Glow.Core
                 });
             });
 
+            app.Map("/glow", app =>
+            {
+                app.UseSpa(spa =>
+                {
+                    spa.Options.SourcePath = "docs";
+
+                    // if (env.IsDevelopment())
+                    // {
+                    //     spa.UseProxyToSpaDevelopmentServer("http://localhost:8000");
+                    // }
+                });
+            });
+
             app.UseSpa(spa =>
             {
                 spa.Options.SourcePath = "web";

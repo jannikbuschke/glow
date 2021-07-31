@@ -21,6 +21,7 @@ import { DetailviewExample } from "./examples/detail-view"
 import { ListViewExample } from "./examples/list-view"
 import { FormExample } from "./examples/form"
 import { QueryClient, QueryClientProvider } from "react-query"
+import { MdxBundleExample } from "./examples/mdx-bundle"
 
 function App() {
   return (
@@ -67,6 +68,11 @@ function App() {
             icon: <EditOutlined />,
             content: "Select Async",
           },
+          {
+            key: "mdx-bundle",
+            icon: <EditOutlined />,
+            content: "MDX Bundle",
+          },
         ]}
       />
       <Content>
@@ -78,6 +84,7 @@ function App() {
         <FormExample />
         <MasterDetailViewExample />
         <SelectAsyncExample />
+        <MdxBundleExample />
       </Content>
     </Container>
   )

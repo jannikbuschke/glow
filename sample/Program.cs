@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using Glow.Configurations;
 using Glow.Core.EfCore;
+using Jering.Javascript.NodeJS;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;

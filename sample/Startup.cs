@@ -8,12 +8,11 @@ using Glow.Configurations;
 using Glow.Tests;
 using Glow.TypeScript;
 using MediatR;
-using System.Reflection;
-using System.Security.Claims;
 using Glow.Core;
 using Glow.Sample.Configurations;
 using Glow.Sample.Users;
 using Glow.Users;
+using Jering.Javascript.NodeJS;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -81,18 +80,38 @@ namespace Glow.Sample
 
             services.AddOptions();
 
+            // services.AddTypescriptGeneration(new[]
+            // {
+            //     new TsGenerationOptions
+            //     {
+            //         Assemblies = new[] {Assembly.GetAssembly(typeof(GlowCoreModule))},
+            //         Path = "../core/web/src/ts-models-core/",
+            //         GenerateApi = false
+            //     },
+            //     new TsGenerationOptions
+            //     {
+            //         Assemblies = new[] {this.GetType().Assembly},
+            //         Path = "./web/src/ts-models/",
+            //         GenerateApi = true
+            //     }
+            // });
+
             services.AddTypescriptGeneration(new[]
             {
                 new TsGenerationOptions
                 {
-                    Assemblies = new[] {Assembly.GetAssembly(typeof(GlowCoreModule))},
-                    Path = "../core/web/src/ts-models-core/",
-                },
-                new TsGenerationOptions
-                {
-                    Assemblies = new[] {this.GetType().Assembly}, Path = "../core/web/src/ts-models/",
+                    Assemblies = new[] {this.GetType().Assembly},
+                    Path = "./web/src/ts-models/",
+                    GenerateApi = true
                 }
             });
+
+            services.AddNodeJS();
+            // services.Configure<NodeJSProcessOptions>(options => options.ProjectPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "NodeRuntime","js")); // AppDomain.CurrentDomain.BaseDirectory is your bin/<configuration>/<targetframework> directory
+            services.Configure<NodeJSProcessOptions>(options =>
+                options.ProjectPath =
+                    Path.Combine(env.ContentRootPath, "MdxBundle",
+                        "js")); // AppDomain.CurrentDomain.BaseDirectory is your bin/<configuration>/<targetframework> directory
         }
 
         public void Configure(
@@ -100,13 +119,9 @@ namespace Glow.Sample
             IWebHostEnvironment env
         )
         {
-            app.Map("/hello", app =>
+            app.UseCors(options =>
             {
-                app.Run(async ctx =>
-                {
-                    ctx.Response.StatusCode = (int) HttpStatusCode.OK;
-                    await ctx.Response.WriteAsync("hello world");
-                });
+                options.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin();
             });
             app.UseGlow(env, configuration, options =>
             {

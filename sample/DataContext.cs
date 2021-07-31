@@ -9,6 +9,7 @@ namespace Glow.Sample
 
         public DbSet<PortfolioFile> PortfolioFiles { get; set; }
         public DbSet<Portfolio> Portfolios { get; set; }
+        public DbSet<MdxBundle.Entity> MdxBundle { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -2,7 +2,7 @@ import * as React from "react"
 import styled from "styled-components"
 import { Avatar, Button } from "antd"
 import { Input } from "formik-antd"
-import { CSSTransition, TransitionGroup } from "react-transition-group"
+// import { CSSTransition, TransitionGroup } from "react-transition-group"
 import "./list.css"
 import { Formik } from "formik"
 // import useSWR from "swr"
@@ -122,25 +122,25 @@ export function PeopleList() {
           />
         </div>
         <ul className="list">
-          <TransitionGroup className="list">
-            {items.map((item, index) => (
-              <CSSTransition
-                key={item.name}
-                timeout={300}
-                classNames="alert"
-                unmountOnExit
-              >
-                <li
-                  // onClick={() => {
-                  //   setItems(items.filter((v) => v.name != item.name))
-                  // }}
-                  className="alert li"
-                >
-                  <Item path={`user.${index}.`} hover={hover} />
-                </li>
-              </CSSTransition>
-            ))}
-          </TransitionGroup>
+          {/* <TransitionGroup className="list"> */}
+          {items.map((item, index) => (
+            // <CSSTransition
+            //   key={item.name}
+            //   timeout={300}
+            //   classNames="alert"
+            //   unmountOnExit
+            // >
+            <li
+              // onClick={() => {
+              //   setItems(items.filter((v) => v.name != item.name))
+              // }}
+              className="alert li"
+            >
+              <Item path={`user.${index}.`} hover={hover} />
+            </li>
+            // </CSSTransition>
+          ))}
+          {/* </TransitionGroup> */}
         </ul>
       </div>
     </Formik>
