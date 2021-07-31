@@ -1,0 +1,11 @@
+{
+  "name": "javascript",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "lodash": "4.17.21",
+    "mdx-bundler": "5.1.2",
+    "esbuild": "0.12.15"
+  }
+}
