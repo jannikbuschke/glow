@@ -1,0 +1,33 @@
+.list {
+  list-style: none;
+  padding-left: 0;
+}
+
+.list > li {
+  padding: 0px 8px;
+  margin-top: 2px;
+  transition: box-shadow;
+  transition-duration: 500ms;
+}
+
+.li:hover {
+  box-shadow: 3px 1px 5px 4px #f7f7f7;
+}
+
+.alert-enter {
+  opacity: 0;
+  transform: scale(0.9);
+}
+.alert-enter-active {
+  opacity: 1;
+  transform: translateX(0);
+  transition: opacity 300ms, transform 300ms;
+}
+.alert-exit {
+  opacity: 1;
+}
+.alert-exit-active {
+  opacity: 0;
+  transform: scale(0.9);
+  transition: opacity 300ms, transform 300ms;
+}
