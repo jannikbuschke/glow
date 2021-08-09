@@ -28,7 +28,11 @@ function render(
         React.isValidElement(msg) ? (
           msg
         ) : typeof msg === "object" ? (
-          <RenderObject {...msg} />
+          msg instanceof Error ? (
+            msg.message
+          ) : (
+            <RenderObject msg={msg} />
+          )
         ) : (
           msg.toString()
         )
@@ -55,9 +59,9 @@ export function notifyError(r: ProblemDetails) {
   })
 }
 
-export function notifySuccess(message: string) {
+export function notifySuccess(message?: string) {
   notification.success({
-    message,
+    message: message || "success",
   })
 }
 
