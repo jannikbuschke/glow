@@ -4,13 +4,14 @@ import { useField } from "formik"
 import debounce from "lodash.debounce"
 import { SelectProps } from "antd/lib/select"
 import { LabeledValue } from "antd/lib/tree-select"
-import { useGlowQuery } from "../query/use-data"
+import { QueryParameter, useGlowQuery } from "../query/use-data"
 
 export type SelectEntityProps<T> = {
   url: string
   name: string
   map: (v: T) => LabeledValue
   customItems?: LabeledValue[]
+  initialParameters?: Partial<QueryParameter>
 } & Omit<SelectProps<LabeledValue>, "fetcher">
 
 export function SelectEntity<T>({
@@ -19,6 +20,7 @@ export function SelectEntity<T>({
   map,
   onSearch,
   customItems,
+  initialParameters,
   ...restProps
 }: SelectEntityProps<T>) {
   const [{ result, setSearch, setWhere, sendQuery }, {}] = useGlowQuery<T>(
@@ -27,6 +29,8 @@ export function SelectEntity<T>({
       count: 0,
       value: [],
     },
+    undefined,
+    initialParameters,
   )
 
   const searchOptions = React.useMemo(() => result.value.map(map), [result])
