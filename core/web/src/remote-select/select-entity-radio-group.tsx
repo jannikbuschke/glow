@@ -11,12 +11,14 @@ export type SelectEntityPropsRadioGroup<T> = {
   url: string
   name: string
   map: (v: T) => Option
+  onSelectEntity?: (v: T | null) => void
 }
 
 export function SelectEntityRadioGroup<T>({
   url,
   name,
   map,
+  onSelectEntity,
   ...restProps
 }: SelectEntityPropsRadioGroup<T>) {
   const [{ result, setSearch }, {}] = useGlowQuery<T>(url, {
@@ -27,7 +29,14 @@ export function SelectEntityRadioGroup<T>({
   const options = result.value.map(map)
 
   return (
-    <Radio.Group name={name}>
+    <Radio.Group
+      name={name}
+      onChange={(v) => {
+        const id = v?.target?.value
+        const item = result?.value?.find((v: any) => v.id == id) || null
+        onSelectEntity && onSelectEntity(item)
+      }}
+    >
       {options.map((v) => (
         <Radio.Button name={name} value={v.value}>
           {v.label}
