@@ -13,6 +13,30 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Glow.CrudHelpers
 {
+    public abstract class BaseGetSingle<Entity> : IRequest<Entity>
+    {
+        [Required]
+        public Guid? Id { get; set; }
+    }
+
+    public abstract class SimpleGetSingleHandler<DataContext, GetSingle, Entity>
+        : IRequestHandler<GetSingle, Entity>
+        where GetSingle : BaseGetSingle<Entity> where DataContext : DbContext where Entity : class
+    {
+        private readonly DataContext ctx;
+
+        public SimpleGetSingleHandler(IServiceProvider ctx)
+        {
+            this.ctx = ctx.GetRequiredService<DataContext>();
+        }
+
+        public async Task<Entity> Handle(GetSingle request, CancellationToken cancellationToken)
+        {
+            Entity entity = await ctx.Set<Entity>().FindAsync(request.Id);
+            return entity;
+        }
+    }
+
     public abstract class BaseGetList<Entity> : IRequest<IEnumerable<Entity>>
     {
     }
