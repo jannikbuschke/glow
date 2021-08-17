@@ -10,6 +10,7 @@ import {
   Table,
   AddRowButton,
   RemoveRowButton,
+  FormikDebug,
 } from "formik-antd"
 import { useActions, badRequestResponseToFormikErrors } from "./validation"
 import { useData } from "../query/use-data"
@@ -83,7 +84,7 @@ const Row = styled.div`
   }
 `
 
-interface Props {
+type BaseProps = {
   title: string
   url: string
   configurationId: string
@@ -92,14 +93,15 @@ interface Props {
   disabled?: boolean
   containerStyles?: React.CSSProperties | undefined
   labelCol?: ColProps
+  formikDebug?: boolean
 }
 
-type WithChildren = Props & { type: "children"; children: React.ReactNode }
-type WithEditors = Props & {
+type WithChildren = BaseProps & { type: "children"; children: React.ReactNode }
+type WithEditors = BaseProps & {
   type?: "editors"
   overrideEditors?: { [key: string]: React.ReactNode }
 }
-type P = WithChildren | WithEditors
+type Props = WithChildren | WithEditors
 
 export function StronglyTypedOptions({
   containerStyles,
@@ -110,8 +112,9 @@ export function StronglyTypedOptions({
   allowEdit = true,
   name = "",
   disabled,
+  formikDebug,
   ...rest
-}: P) {
+}: Props) {
   const { submit } = useActions(url)
   const { data, error, refetch } = useData<any>(
     name ? url + "/" + name : url,
@@ -175,6 +178,7 @@ export function StronglyTypedOptions({
                   : data &&
                     Object.keys(data).map((v) => (
                       <Form.Item
+                        key={v}
                         name={v}
                         labelCol={labelCol ? labelCol : undefined}
                         htmlFor={name}
@@ -182,18 +186,23 @@ export function StronglyTypedOptions({
                         colon={false}
                         style={{ marginBottom: 5 }}
                       >
-                        {overrideEditors && Boolean(overrideEditors[v])
-                          ? overrideEditors[v]
-                          : toType(
+                        {overrideEditors && Boolean(overrideEditors[v]) ? (
+                          <>{overrideEditors[v]}</>
+                        ) : (
+                          <>
+                            {toType(
                               typeof data[v],
                               v,
                               Array.isArray(data[v]),
                               disabled,
                             )}
+                          </>
+                        )}
                       </Form.Item>
                     ))}
               </div>
             </PageHeader>
+            {formikDebug && <FormikDebug />}
           </Form>
         )}
       </Formik>
