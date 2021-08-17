@@ -81,7 +81,7 @@ export function SortableTable({ name, columns, sortProperty, ...rest }: Props) {
     // Stop overlay.
     setActiveId(null)
   }
-  if (!Array.isArray) {
+  if (!Array.isArray(value)) {
     return <div>Field '{name}' is not an array</div>
   }
   return (
@@ -111,10 +111,15 @@ export function SortableTable({ name, columns, sortProperty, ...rest }: Props) {
 
   function DraggableWrapper(props: any) {
     const { children, ...restProps } = props
+
     return (
       <SortableContext
         // `children[1]` is `dataSource`.
-        items={children[1].map((child: any) => child.key)}
+        items={
+          Array.isArray(children[1])
+            ? children[1].map((child: any) => child.key)
+            : []
+        }
         strategy={verticalListSortingStrategy}
         {...restProps}
       >
@@ -157,16 +162,20 @@ export function SortableTable({ name, columns, sortProperty, ...rest }: Props) {
             : undefined
         }
       >
-        {children.map((child: any) => {
-          const { children, key, ...restProps } = child
-          return key === "dragHandle" ? (
-            <td {...listeners} {...restProps}>
-              {child}
-            </td>
-          ) : (
-            <td {...restProps}>{child}</td>
-          )
-        })}
+        {Array.isArray(children) ? (
+          children.map((child: any) => {
+            const { children, key, ...restProps } = child
+            return key === "dragHandle" ? (
+              <td {...listeners} {...restProps}>
+                {child}
+              </td>
+            ) : (
+              <td {...restProps}>{child}</td>
+            )
+          })
+        ) : (
+          <td />
+        )}
       </tr>
     )
   }
