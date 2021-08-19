@@ -94,6 +94,7 @@ type BaseProps = {
   containerStyles?: React.CSSProperties | undefined
   labelCol?: ColProps
   formikDebug?: boolean
+  subHeader?: React.ReactElement
 }
 
 type WithChildren = BaseProps & { type: "children"; children: React.ReactNode }
@@ -113,6 +114,7 @@ export function StronglyTypedOptions({
   name = "",
   disabled,
   formikDebug,
+  subHeader,
   ...rest
 }: Props) {
   const { submit } = useActions(url)
@@ -170,6 +172,7 @@ export function StronglyTypedOptions({
                 </Button>,
               ]}
             >
+              {subHeader ? subHeader : null}
               <br />
               <br />
               <div style={containerStyles ? containerStyles : undefined}>
