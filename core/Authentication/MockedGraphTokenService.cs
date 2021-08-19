@@ -4,7 +4,7 @@ using Glow.Core.Authentication;
 using Microsoft.Graph;
 using Microsoft.Identity.Client;
 
-namespace Glow.Core.AzdoAuthentication
+namespace Glow.Core.Authentication
 {
     // glow/profile uses IGraphTokenService to get some scopes
     // in azdo apps we use this to mock it (workaround)
