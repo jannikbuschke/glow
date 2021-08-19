@@ -11,5 +11,6 @@ namespace Glow.Core.Authentication
         Task<string> AccessTokenForApp();
         Task<string> AccessTokenForServiceUser();
         Task<GraphServiceClient> GetClientForUser(string[] scopes, bool useBetaEndpoint = false);
+        Task ThrowIfCurrentUserNotConsentedToScope(string scope);
     }
 }

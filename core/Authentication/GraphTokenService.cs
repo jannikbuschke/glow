@@ -126,6 +126,11 @@ namespace Glow.Core.Authentication
             return client;
         }
 
+        public async Task ThrowIfCurrentUserNotConsentedToScope(string scope)
+        {
+            var _ = await TokenForCurrentUser(new string[] {scope});
+        }
+
         public async Task<string> AccessTokenForCurrentUser(string[] scopes)
         {
             AuthenticationResult result = await TokenForCurrentUser(scopes);

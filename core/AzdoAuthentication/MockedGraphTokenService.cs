@@ -30,6 +30,11 @@ namespace Glow.Core.AzdoAuthentication
             throw new NotImplementedException();
         }
 
+        public Task ThrowIfCurrentUserNotConsentedToScope(string scope)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<AuthenticationResult> TokenForCurrentUser(string[] scope)
         {
             throw new NotImplementedException();
