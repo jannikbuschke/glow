@@ -12,32 +12,34 @@ namespace Glow.Core.AzdoAuthentication
     {
         public Task<string> AccessTokenForApp()
         {
-            throw new NotImplementedException();
+            return Task.FromResult("");
         }
 
         public Task<string> AccessTokenForCurrentUser(string[] scope)
         {
-            throw new NotImplementedException();
+            return Task.FromResult("");
         }
 
         public Task<string> AccessTokenForServiceUser()
         {
-            throw new NotImplementedException();
+            return Task.FromResult("");
         }
 
         public Task<GraphServiceClient> GetClientForUser(string[] scopes, bool useBetaEndpoint = false)
         {
-            throw new NotImplementedException();
+            return null;
         }
 
         public Task ThrowIfCurrentUserNotConsentedToScope(string scope)
         {
-            throw new NotImplementedException();
+            return Task.CompletedTask;
         }
 
         public Task<AuthenticationResult> TokenForCurrentUser(string[] scope)
         {
-            throw new NotImplementedException();
+            return Task.FromResult(
+                new AuthenticationResult("", false, "", DateTimeOffset.Now, DateTimeOffset.Now, "",
+                null, "", null, Guid.Empty, null));
         }
     }
 }
