@@ -110,7 +110,7 @@ namespace Glow.Sample
             // services.Configure<NodeJSProcessOptions>(options => options.ProjectPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "NodeRuntime","js")); // AppDomain.CurrentDomain.BaseDirectory is your bin/<configuration>/<targetframework> directory
             services.Configure<NodeJSProcessOptions>(options =>
                 options.ProjectPath =
-                    Path.Combine(env.ContentRootPath, "NodeRuntime",
+                    Path.Combine(env.ContentRootPath, "MdxBundle",
                         "js")); // AppDomain.CurrentDomain.BaseDirectory is your bin/<configuration>/<targetframework> directory
         }
 

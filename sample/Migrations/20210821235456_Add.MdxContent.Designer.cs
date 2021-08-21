@@ -4,14 +4,16 @@ using Glow.Sample;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Glow.Sample.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20210821235456_Add.MdxContent")]
+    partial class AddMdxContent
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -60,7 +62,7 @@ namespace Glow.Sample.Migrations
                     b.ToTable("PortfolioFiles");
                 });
 
-            modelBuilder.Entity("Glow.Sample.MdxBundle.Entity", b =>
+            modelBuilder.Entity("Glow.Sample.MdxSourceFiles.Entity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -74,7 +76,7 @@ namespace Glow.Sample.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("MdxBundle");
+                    b.ToTable("MdxContent");
                 });
 
             modelBuilder.Entity("Glow.Sample.Files.PortfolioFile", b =>

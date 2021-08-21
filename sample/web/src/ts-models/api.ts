@@ -6,7 +6,7 @@ import * as Glow_Configurations from "./Glow.Configurations"
 import * as Glow_Core_Profiles from "./Glow.Core.Profiles"
 import * as System_Collections_Generic from "./System.Collections.Generic"
 import * as Glow_Sample_Configurations from "./Glow.Sample.Configurations"
-import * as Glow_Sample_MdxSourceFiles from "./Glow.Sample.MdxSourceFiles"
+import * as Glow_Sample_MdxBundle from "./Glow.Sample.MdxBundle"
 import * as Glow_Sample_Actions from "./Glow.Sample.Actions"
 import * as MediatR from "./MediatR"
 import * as Glow_Sample_Views from "./Glow.Sample.Views"
@@ -14,22 +14,22 @@ import * as Glow_Sample_Users from "./Glow.Sample.Users"
 import * as Glow_Sample_Forms from "./Glow.Sample.Forms"
 
 type QueryInputs = {
-  "/api/source-file/get-list": Glow_Sample_MdxSourceFiles.GetList,
-  "/api/source-file/get-single": Glow_Sample_MdxSourceFiles.GetEntityViewmodel,
+  "/api/source-file/get-list": Glow_Sample_MdxBundle.GetList,
+  "/api/source-file/get-single": Glow_Sample_MdxBundle.GetEntityViewmodel,
 }
 type QueryOutputs = {
-  "/api/source-file/get-list": Glow_Sample_MdxSourceFiles.Entity[],
-  "/api/source-file/get-single": Glow_Sample_MdxSourceFiles.EntityViewmodel,
+  "/api/source-file/get-list": Glow_Sample_MdxBundle.Entity[],
+  "/api/source-file/get-single": Glow_Sample_MdxBundle.EntityViewmodel,
 }
 type Outputs = {
-  "/api/source-file/create": Glow_Sample_MdxSourceFiles.Entity,
-  "/api/source-file/update": Glow_Sample_MdxSourceFiles.Entity,
+  "/api/source-file/create": Glow_Sample_MdxBundle.Entity,
+  "/api/source-file/update": Glow_Sample_MdxBundle.Entity,
   "/api/actions/sample": MediatR.Unit,
   "/api/actions/sample-2": Glow_Sample_Actions.Response,
 }
 type Actions = {
-  "/api/source-file/create": Glow_Sample_MdxSourceFiles.Create,
-  "/api/source-file/update": Glow_Sample_MdxSourceFiles.Update,
+  "/api/source-file/create": Glow_Sample_MdxBundle.Create,
+  "/api/source-file/update": Glow_Sample_MdxBundle.Update,
   "/api/actions/sample": Glow_Sample_Actions.SampleAction,
   "/api/actions/sample-2": Glow_Sample_Actions.SampleAction2,
 }

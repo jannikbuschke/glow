@@ -17,7 +17,8 @@
     "glow-react": "0.22.1",
     "react-query": "3.4.0",
     "@ant-design/icons": "4.6.2",
-    "mitt": "1.2.0"
+    "mitt": "1.2.0",
+    "mdx-bundler": "5.1.2"
   },
   "scripts": {
     "start": "set PORT=3001 && react-scripts start",
