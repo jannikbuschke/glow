@@ -1,8 +1,9 @@
-﻿const lodash = require('lodash');
-const {bundleMDX} = require('mdx-bundler')
+
+const lodash = require("lodash");
+const { bundleMDX } = require("mdx-bundler");
 
 module.exports = async (arg) => {
-    const mdxSource = `
+  const mdxSource = `
 ---
 title: Example Post
 published: 2021-02-13
@@ -29,12 +30,11 @@ function Demo() {
 
 export default Demo
     `,
-  },
-})
 
-const {code, frontmatter} = result
-return code
-// callback(null, code);
-}
+    },
+  });
 
-
+  const { code, frontmatter } = result;
+  return code;
+  // callback(null, code);
+};

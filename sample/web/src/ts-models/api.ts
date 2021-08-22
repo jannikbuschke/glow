@@ -14,24 +14,26 @@ import * as Glow_Sample_Users from "./Glow.Sample.Users"
 import * as Glow_Sample_Forms from "./Glow.Sample.Forms"
 
 type QueryInputs = {
-  "/api/source-file/get-list": Glow_Sample_MdxBundle.GetList,
-  "/api/source-file/get-single": Glow_Sample_MdxBundle.GetEntityViewmodel,
+  "/api/mdx/get-list": Glow_Sample_MdxBundle.GetMdxList,
+  "/api/mdx/get-single": Glow_Sample_MdxBundle.GetEntityViewmodel,
 }
 type QueryOutputs = {
-  "/api/source-file/get-list": Glow_Sample_MdxBundle.Entity[],
-  "/api/source-file/get-single": Glow_Sample_MdxBundle.EntityViewmodel,
+  "/api/mdx/get-list": Glow_Sample_MdxBundle.Mdx[],
+  "/api/mdx/get-single": Glow_Sample_MdxBundle.MdxViewmodel,
 }
 type Outputs = {
-  "/api/source-file/create": Glow_Sample_MdxBundle.Entity,
-  "/api/source-file/update": Glow_Sample_MdxBundle.Entity,
+  "/api/mdx/create": Glow_Sample_MdxBundle.Mdx,
+  "/api/mdx/update": Glow_Sample_MdxBundle.Mdx,
   "/api/actions/sample": MediatR.Unit,
   "/api/actions/sample-2": Glow_Sample_Actions.Response,
+  "/api/mdx/transpile": Glow_Sample_MdxBundle.TranspileResult,
 }
 type Actions = {
-  "/api/source-file/create": Glow_Sample_MdxBundle.Create,
-  "/api/source-file/update": Glow_Sample_MdxBundle.Update,
+  "/api/mdx/create": Glow_Sample_MdxBundle.CreateMdx,
+  "/api/mdx/update": Glow_Sample_MdxBundle.UpdateMdx,
   "/api/actions/sample": Glow_Sample_Actions.SampleAction,
   "/api/actions/sample-2": Glow_Sample_Actions.SampleAction2,
+  "/api/mdx/transpile": Glow_Sample_MdxBundle.Transpile,
 }
 
 type TagWithKey<TagName extends string, T> = {

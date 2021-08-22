@@ -2,6 +2,9 @@ import { Button, notification, Table } from "antd"
 import { Input } from "formik-antd"
 import * as React from "react"
 import { Route, Routes, useNavigate, useParams } from "react-router"
+import { Input } from "formik-antd"
+import * as React from "react"
+import { useNavigate, useParams } from "react-router"
 import {
   ErrorBanner,
   InternalTable,
@@ -10,11 +13,15 @@ import {
   VerticalSpace,
 } from "glow-react"
 import { Form, FormikDebug, SubmitButton } from "formik-antd"
+  Space,
+  VerticalSpace,
+} from "glow-react"
+import { Form, SubmitButton } from "formik-antd"
 import { Formik } from "formik"
 import { useTypedAction, useTypedQuery } from "../../ts-models/api"
 import { HighlightableRow } from "glow-react/es/antd/highlightable-row"
 import { PromiseButton } from "glow-react/es/buttons/promise-button"
-import { defaultSourceFileViewmodel } from "../../ts-models/Glow.Sample.NodeRuntime"
+import { defaultMdxViewmodel } from "../../ts-models/Glow.Sample.MdxBundle"
 import { MasterDetailView } from "glow-react/es/layouts/master-detail-view"
 import { getMDXComponent } from "mdx-bundler/client"
 
@@ -39,15 +46,36 @@ export function MdxBundleExample() {
 
 function Detail() {
   const params = useParams()
-  const { data } = useTypedQuery("/api/source-file/get-single", {
+  const { data } = useTypedQuery("/api/mdx/get-single", {
     input: { id: params.id },
-    placeholder: defaultSourceFileViewmodel,
+    placeholder: defaultMdxViewmodel,
   })
   // todo: add frontmatter
-  const [update] = useTypedAction("/api/source-file/update")
-  const Component = React.useMemo(() => getMDXComponent(data.code || ""), [
-    data.code,
-  ])
+  const [update] = useTypedAction("/api/mdx/update")
+  const [transpile] = useTypedAction("/api/mdx/transpile")
+
+  const [code, setCode] = React.useState<string | null>(null)
+  const [frontmatter, setFrontmatter] = React.useState<{
+    [key: string]: string
+  }>({})
+  const Component = React.useMemo(() => getMDXComponent(code || ""), [code])
+
+  React.useEffect(() => {
+    console.log("EFFECT")
+
+    if (data.content === null) {
+      return
+    }
+    transpile({ source: data.content }).then((v) => {
+      if (v.ok) {
+        const { code, frontmatter } = v.payload
+        // setCode(code)
+        // setFrontmatter(frontmatter)
+      } else {
+        notifyError(v.error)
+      }
+    })
+  }, [data])
   return (
     <>
       <div>
@@ -61,17 +89,29 @@ function Detail() {
             }
           }}
         >
-          <Form>
-            <VerticalSpace>
-              <Input name="path" />
-              <Input.TextArea name="content" rows={25} />
-              <SubmitButton>Save</SubmitButton>
-            </VerticalSpace>
-          </Form>
+          {(f) => (
+            <Form>
+              <VerticalSpace>
+                <Input name="path" />
+                <Input.TextArea name="content" rows={25} />
+                <Space>
+                  <SubmitButton>Save</SubmitButton>
+                  <PromiseButton
+                    onClick={async () => {
+                      setCode(f.values.content)
+                    }}
+                  >
+                    Transpile
+                  </PromiseButton>
+                </Space>
+              </VerticalSpace>
+            </Form>
+          )}
         </Formik>
       </div>
       <div>
         {/* <div>{data.code}</div> */}
+        <div>{JSON.stringify(frontmatter)}</div>
         {Component ? <Component /> : <div>undefined {typeof Component}</div>}
       </div>
     </>
@@ -80,13 +120,13 @@ function Detail() {
 
 function List() {
   const navigate = useNavigate()
-  const { data, error } = useTypedQuery("/api/source-file/get-list", {
+  const { data, error } = useTypedQuery("/api/mdx/get-list", {
     input: {},
     placeholder: [],
   })
   const listPath = constants.path
   const path = constants.path
-  const [createFile] = useTypedAction("/api/source-file/create")
+  const [createFile] = useTypedAction("/api/mdx/create")
   return (
     <div>
       <ErrorBanner error={error} />

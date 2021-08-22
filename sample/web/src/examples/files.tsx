@@ -1,6 +1,7 @@
 import * as React from "react"
 import { Formik } from "formik"
-import { useSubmit, HtmlText, ErrorBanner } from "glow-react"
+import { HtmlText, ErrorBanner } from "glow-react"
+import { useSubmit } from "glow-react/es/Forms/use-submit"
 import { StageFiles, Files } from "glow-react/es/files/upload-files"
 import { Form, Input, SubmitButton } from "formik-antd"
 import { notification, Button, Card, Col, Table } from "antd"
