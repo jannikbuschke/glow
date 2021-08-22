@@ -1,7 +1,9 @@
+import { Func1Task } from "./System"
+
 export interface ResetDatabase {
   deleteDatabase: boolean
   iKnowWhatIAmDoing: boolean
-  afterCreated: any
+  afterCreated: Func1Task
 }
 
 export const defaultResetDatabase: ResetDatabase = {
