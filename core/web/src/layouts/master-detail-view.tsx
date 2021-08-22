@@ -9,11 +9,13 @@ export function MasterDetailView({
   detail,
   path,
   create,
+  masteDetailContainerStyle,
 }: {
   path: string
   master: React.ReactElement
   detail: React.ReactElement
   create?: React.ReactElement
+  masteDetailContainerStyle?: React.CSSProperties
 }) {
   return (
     <Routes>
@@ -23,7 +25,7 @@ export function MasterDetailView({
       <Route
         path={path + ":id"}
         element={
-          <MasterDetailContainer>
+          <MasterDetailContainer style={masteDetailContainerStyle}>
             {master}
             {detail}
           </MasterDetailContainer>
