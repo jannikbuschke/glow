@@ -81,7 +81,8 @@ namespace Glow.Sample
                             configure.MigrationsAssembly(typeof(StartupExtensions).Assembly.FullName);
                         }));
                     }
-                });
+                })
+                .UseSerilog();
         }
 
         private static string GetEnvironmentName
