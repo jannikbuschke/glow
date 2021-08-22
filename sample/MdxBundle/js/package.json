@@ -3,8 +3,12 @@
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
+  "scripts": {
+    "format": "prettier --write ."
+  },
   "dependencies": {
     "mdx-bundler": "5.1.2",
-    "esbuild": "0.12.15"
+    "esbuild": "0.12.15",
+    "prettier": "2.3.2"
   }
 }
