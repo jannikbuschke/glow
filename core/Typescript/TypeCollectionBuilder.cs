@@ -111,7 +111,9 @@ namespace Glow.Core.Typescript
 
                 if (type.IsDictionary())
                 {
-                    return new TsType {Name = "any", DefaultValue = "{ }"};
+                    Tuple<string, string> dictTuple = AsDictionary(type);
+                    TsType tsType = TupleAsPrimitive(dictTuple, type);
+                    return tsType;
                 }
 
                 if (type.IsEnumerableType())
@@ -203,13 +205,36 @@ namespace Glow.Core.Typescript
 
         private Tuple<string, string> AsDictionary(Type type)
         {
+            Type keyType = type.GenericTypeArguments[0];
             TsType keyTsType = GetPrimitive(type.GenericTypeArguments[0]);
+
+            var keyName = keyTsType.Type == typeof(string)
+                ? "string"
+                : keyTsType.Name;
+
+            Type valueType = type.GenericTypeArguments[1];
+            OneOf<TsType, TsEnum> valueTsType = CreateOrGet(valueType);
+
+            var name = valueTsType.Match(v1 => v1.Name, v2 => v2.Name);
 
             return new Tuple<string, string>
             (
-                $"{{ [key: {keyTsType.Name}]: {CreateOrGet(type).AsT0.Name} }}",
+                $"{{ [key: {keyName}]: {name} }}",
                 "{}"
             );
+        }
+
+        private TsType TupleAsPrimitive(Tuple<string, string> value, Type type)
+        {
+            (var name, var defaultValue) = value;
+            return new TsType
+            {
+                Name = name,
+                DefaultValue = defaultValue,
+                IsPrimitive = true,
+                Properties = new List<Property>(),
+                Type = type,
+            };
         }
 
         private TsEnum AsEnum(Type t)
@@ -239,15 +264,10 @@ namespace Glow.Core.Typescript
             Type elementType = type.GetCollectionElementType();
             try
             {
-                (var name, var defaultValue) = GetTypeExtension.primitiveCollection[elementType];
-                return new TsType
-                {
-                    Name = name,
-                    DefaultValue = defaultValue,
-                    IsPrimitive = true,
-                    Properties = new List<Property>(),
-                    Type = type,
-                };
+                Tuple<string, string> primitiveTuple = GetTypeExtension.primitiveCollection[elementType];
+                (var name, var defaultValue) = primitiveTuple;
+                TsType t = TupleAsPrimitive(primitiveTuple, type);
+                return t;
             }
             catch (Exception e)
             {
