@@ -1,7 +1,9 @@
 import * as React from "react"
 import * as signalR from "@aspnet/signalr"
 import mitt from "mitt"
+import * as emitt from "mitt"
 import { useAuthentication } from "../authentication"
+import { notification } from "antd"
 
 interface INotificationsContext {
   emitter: mitt.Emitter
@@ -24,6 +26,24 @@ export function useNotifications() {
     )
   }
   return ctx
+}
+
+// use
+export function useNotification<T>(
+  name: string,
+  callback: (notification: T) => void,
+  deps?: any[],
+) {
+  const { emitter } = useNotifications()
+
+  React.useEffect(() => {
+    const msgName = name
+    const on: emitt.Handler = callback
+    emitter.on(msgName, on)
+    return () => {
+      emitter.off(msgName, on)
+    }
+  }, deps)
 }
 
 export function NotificationsProvider({
@@ -70,12 +90,14 @@ export function NotificationsProvider({
           console.error(e)
         })
 
+      //remove
       connection.on("message", (messageType: string, payload: any) => {
         console.log(`emitting [[message]] ${messageType}`, payload)
         console.log(messageType)
         emitter.emit(messageType, payload)
       })
 
+      // this is the new one
       connection.on(
         "notification",
         (notificationType: string, notification: any) => {

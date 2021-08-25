@@ -8,7 +8,7 @@ namespace Glow.NotificationsCore
     {
     }
 
-    [Obsolete("Use INotification instead")]
+    [Obsolete("Use IClientNotification instead")]
     public interface IMessage<T>
     {
         string Kind { get; }
@@ -23,6 +23,15 @@ namespace Glow.NotificationsCore
         ) where THub : Hub
         {
             await hub.Clients.All.SendAsync("notification", notification.GetType().FullName, notification);
+        }
+
+        public static async Task PublishNotification<THub>(
+            this IHubContext<THub> hub,
+            IClientNotification notification,
+            string groupName
+        ) where THub : Hub
+        {
+            await hub.Clients.Group(groupName).SendAsync("notification", notification.GetType().FullName, notification);
         }
 
         public static async Task SendMessage<THub, T>(
