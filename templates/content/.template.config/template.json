@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "Jannik Buschke",
+  "classifications": [
+    "AspNetCore",
+    "React"
+  ],
+  "groupIdentity": "Glow.App.Template",
+  "identity": "Glow.App.Template",
+  "name": "Opinionated ASP.NET Core + React boilerplate",
+  "shortName": "glow-app",
+  "tags": {
+    "language": "C#",
+    "type": "project"
+  },
+  "sourceName": "TemplateName",
+  "preferNameDirectory": false,
+  "defaultName": "MyApp",
+  "sources": [
+    {
+      "modifiers": [
+        {
+          "exclude": [ "*.git" ]
+        }
+      ]
+    }
+  ],
+}

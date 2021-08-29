@@ -1,0 +1,30 @@
+name: react-antd-aspnetcore-app
+
+trigger:
+- master
+- release/*
+
+pool:
+  vmImage: 'windows-latest'
+
+steps:
+- checkout: self
+  submodules: 'recursive'
+
+- task: NuGetToolInstaller@1
+  inputs:
+    versionSpec: '5.2'
+
+- task: NuGetCommand@2
+  displayName: 'NuGet pack'
+  inputs:
+    command: pack
+    packagesToPack: app/glow.app.nuspec
+
+- task: NuGetCommand@2
+  displayName: 'NuGet push'
+  inputs:
+    command: push
+    nuGetFeedType: external
+    publishFeedCredentials: nuget.org
+  condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/heads/release'))

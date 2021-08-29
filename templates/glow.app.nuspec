@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>Glow.App.Template</id>
+    <version>0.22.0</version>
+    <description>
+      Opinionated Asp .Net Core + React template
+      https://github.com/jannikbuschke/glow https://www.jannikbuschke.de/glow
+    </description>
+    <authors>Jannik Buschke</authors>
+    <packageTypes>
+      <packageType name="Template" />
+    </packageTypes>
+  </metadata>
+</package>
