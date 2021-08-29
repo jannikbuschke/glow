@@ -1,4 +1,4 @@
-`/app/Properties/launchSettings.json`
+Create the file `/app/Properties/launchSettings.json` with following content:
 
 ```json
   "profiles": {
@@ -20,3 +20,5 @@
   }
 }
 ```
+
+ClientId, TenantId and ClientSecret are values from Azure. For this create an appregistration in the Azure portal.
