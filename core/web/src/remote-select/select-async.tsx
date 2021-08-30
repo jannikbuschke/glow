@@ -12,7 +12,6 @@ export type SelectAsyncProps<T> = {
 } & SelectProps<T>
 
 export function SelectAsync<T extends SelectValue>({
-  disabled,
   name,
   fetcher,
   onChange,
