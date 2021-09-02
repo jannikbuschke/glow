@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Glow.Core.Linq;
@@ -87,7 +87,7 @@ namespace Glow.Core.Typescript
                         IsPrimitive = v.IsPrimitive,
                         TsType = v
                     },
-                    v => new Dependency {Id = v.Id, Namespace = v.Namespace, Name = v.Name, IsPrimitive = false}))
+                    v => new Dependency { Id = v.Id, Namespace = v.Namespace, Name = v.Name, IsPrimitive = false }))
                 .Where(v => !v.IsPrimitive)
                 .Where(v => v.Namespace != this.Namespace && v.Name != "any");
 

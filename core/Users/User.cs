@@ -31,7 +31,7 @@ namespace Gertrud.Users
 
         public UserDto ToDto()
         {
-            return new UserDto {Id = Id, DisplayName = DisplayName, Email = Email};
+            return new UserDto { Id = Id, DisplayName = DisplayName, Email = Email };
         }
     }
 
@@ -39,7 +39,7 @@ namespace Gertrud.Users
     {
         public static User ToUser(this Microsoft.Graph.User user)
         {
-            return new User {Id = user.Id, DisplayName = user.DisplayName, Email = user.Mail};
+            return new User { Id = user.Id, DisplayName = user.DisplayName, Email = user.Mail };
         }
     }
 }

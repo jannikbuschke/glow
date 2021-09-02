@@ -7,6 +7,7 @@ namespace Glow.NotificationsCore
             EntityName = entityName;
             Operation = operation;
         }
+
         public string EntityName { get; private set; }
         public Operation Operation { get; private set; }
     }

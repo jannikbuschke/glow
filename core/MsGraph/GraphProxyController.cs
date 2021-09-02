@@ -35,6 +35,7 @@ namespace Glow.MsGraph
 
         // ReSharper disable once ArrangeAccessorOwnerBody
         private static string TeamsKey => GetCacheKey<Team>();
+
         // ReSharper disable once ArrangeAccessorOwnerBody
         private static string ChannelKey => GetCacheKey<Channel>();
 
@@ -66,7 +67,7 @@ namespace Glow.MsGraph
             return data;
         }
 
-        private void AddToCache<T>(List<T> data, string cacheKey) where T: Microsoft.Graph.Entity
+        private void AddToCache<T>(List<T> data, string cacheKey) where T : Microsoft.Graph.Entity
         {
             var cached = new Dictionary<string, T>();
 
@@ -81,7 +82,9 @@ namespace Glow.MsGraph
                     cached[v.Id] = v;
                 }
             }
-            MemoryCacheEntryOptions options = new MemoryCacheEntryOptions().SetSlidingExpiration(TimeSpan.FromMinutes(10));
+
+            MemoryCacheEntryOptions options =
+                new MemoryCacheEntryOptions().SetSlidingExpiration(TimeSpan.FromMinutes(10));
             memoryCache.Set(cacheKey, cached, options);
         }
     }
@@ -134,7 +137,8 @@ namespace Glow.MsGraph
             }
             catch (Exception e)
             {
-                return Problem(detail: e.Message, statusCode: (int) HttpStatusCode.InternalServerError, title: "Server Error");
+                return Problem(detail: e.Message, statusCode: (int) HttpStatusCode.InternalServerError,
+                    title: "Server Error");
             }
         }
     }

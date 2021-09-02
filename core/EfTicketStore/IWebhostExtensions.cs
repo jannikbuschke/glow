@@ -1,4 +1,4 @@
-﻿using Glow.Core.EfCore;
+using Glow.Core.EfCore;
 using Microsoft.AspNetCore.Hosting;
 
 namespace Glow.Core.EfTicketStore
@@ -8,7 +8,6 @@ namespace Glow.Core.EfTicketStore
         public static void MigrateTicketStoreDbContext(this IWebHost self)
         {
             self.MigrateDatabase<SqlServerTicketStoreDbContext>();
-
         }
     }
 }

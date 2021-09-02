@@ -29,10 +29,7 @@ namespace Glow.Glue.AspNetCore
         [HttpGet("value-unauthenticated")]
         public ActionResult<GlobalSettings> GetSettingsUnauthenticated()
         {
-            var settings = new GlobalSettings()
-            {
-                { "GloballyRequireAuthenticatedUser" , "true" }
-            };
+            var settings = new GlobalSettings() { { "GloballyRequireAuthenticatedUser", "true" } };
             return settings;
         }
     }

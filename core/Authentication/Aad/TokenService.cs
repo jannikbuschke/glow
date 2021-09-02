@@ -21,10 +21,12 @@ namespace Glow.Authentication.Aad
             this.tokenCacheProvider = tokenCacheProvider;
         }
 
-        public async Task<AuthenticationResult> GetAccessTokenByAuthorizationCodeAsync(ClaimsPrincipal principal, string code)
+        public async Task<AuthenticationResult> GetAccessTokenByAuthorizationCodeAsync(ClaimsPrincipal principal,
+            string code)
         {
             IConfidentialClientApplication app = BuildApp(principal);
-            AuthenticationResult result = await app.AcquireTokenByAuthorizationCode(scopes, code).ExecuteAsync().ConfigureAwait(false);
+            AuthenticationResult result = await app.AcquireTokenByAuthorizationCode(scopes, code).ExecuteAsync()
+                .ConfigureAwait(false);
             IAccount account = await app.GetAccountAsync(principal.GetMsalAccountId());
             return result;
         }
@@ -46,7 +48,8 @@ namespace Glow.Authentication.Aad
                 account = accounts.FirstOrDefault(a => a.Username == principal.GetLoginHint());
             }
 
-            AuthenticationResult token = await app.AcquireTokenSilent(scopes, account).ExecuteAsync().ConfigureAwait(false);
+            AuthenticationResult token =
+                await app.AcquireTokenSilent(scopes, account).ExecuteAsync().ConfigureAwait(false);
             return token;
         }
 

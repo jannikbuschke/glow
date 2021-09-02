@@ -49,7 +49,6 @@ namespace Glow.Authentication.Aad
 
                 if (azureOptions.DefaultScopes != null && azureOptions.DefaultScopes.Length > 0)
                 {
-
                     foreach (var scope in azureOptions.DefaultScopes)
                     {
                         options.Scope.Add(scope);
@@ -91,7 +90,8 @@ namespace Glow.Authentication.Aad
                     },
                     OnRedirectToIdentityProvider = context =>
                     {
-                        System.Collections.Generic.IDictionary<string, object> properties = context.Properties.Parameters;
+                        System.Collections.Generic.IDictionary<string, object> properties =
+                            context.Properties.Parameters;
                         if (properties.ContainsKey("scopes"))
                         {
                             var scopes = properties["scopes"] as string[];
@@ -101,6 +101,7 @@ namespace Glow.Authentication.Aad
                                 context.ProtocolMessage.Scope = context.ProtocolMessage.Scope + " " + encoded;
                             }
                         }
+
                         return Task.CompletedTask;
                     },
                     OnAuthorizationCodeReceived = async (context) =>
@@ -112,7 +113,8 @@ namespace Glow.Authentication.Aad
 
                         var code = context.ProtocolMessage.Code;
 
-                        Microsoft.Identity.Client.AuthenticationResult result = await tokenService.GetAccessTokenByAuthorizationCodeAsync(context.Principal, code);
+                        Microsoft.Identity.Client.AuthenticationResult result =
+                            await tokenService.GetAccessTokenByAuthorizationCodeAsync(context.Principal, code);
 
                         // Do not share the access token with ASP.NET Core otherwise ASP.NET will cache it
                         // and will not send the OAuth 2.0 request in case a further call to

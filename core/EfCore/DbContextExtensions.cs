@@ -32,12 +32,10 @@ namespace Glow.Core.EfCore
 
     public static class DbContextExtensions
     {
-
         public static void Migrate(this DbContext v, string migration = "")
         {
             if (string.IsNullOrEmpty(migration))
             {
-
                 v.Database.Migrate();
             }
             else
@@ -68,6 +66,7 @@ namespace Glow.Core.EfCore
                 {
                     throw new BadRequestException("");
                 }
+
                 if (request.DeleteDatabase)
                 {
                     await v.Database.EnsureDeletedAsync();
@@ -88,7 +87,7 @@ namespace Glow.Core.EfCore
 
     [Action(Policy = "Admin", Route = "api/glow/db/reset-database")]
     [GenerateTsInterface]
-    public class ResetDatabase: IRequest
+    public class ResetDatabase : IRequest
     {
         public bool DeleteDatabase { get; set; }
         public bool IKnowWhatIAmDoing { get; set; }

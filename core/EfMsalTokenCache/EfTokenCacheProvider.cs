@@ -63,6 +63,7 @@ namespace Glow.Authentication.Aad
             {
                 ctx.MsalTokens.Add(new MsalToken { Id = key, Value = value });
             }
+
             ctx.SaveChanges();
         }
 

@@ -1,4 +1,4 @@
-﻿using System.Security.Claims;
+using System.Security.Claims;
 using Microsoft.Identity.Client;
 
 namespace Glow.Authentication.Aad

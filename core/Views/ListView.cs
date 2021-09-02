@@ -27,6 +27,7 @@ namespace Glow.Core.Views
             {
                 return BadRequest(ModelState);
             }
+
             return Get(query.Search).Apply(query);
         }
     }

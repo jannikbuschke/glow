@@ -1,6 +1,5 @@
 namespace Glow.NotificationsCore
 {
-
     public class EntryModified : IMessage<EntryModifiedPayload>
     {
         public string Kind

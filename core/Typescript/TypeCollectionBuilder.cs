@@ -59,7 +59,7 @@ namespace Glow.Core.Typescript
                 OneOf<TsType, TsEnum> result = CreateOrGet(type);
             }
 
-            var collection = new TypeCollection {Types = tsTypes, Enums = tsEnums};
+            var collection = new TypeCollection { Types = tsTypes, Enums = tsEnums };
             if (update != null)
             {
                 //var all = collection.All().Select(v => v.AsT0).Where(v => v != null).ToList();

@@ -24,17 +24,20 @@ namespace Glow.Configurations
                         {
                             throw new Exception($"You need to set a policy for configuration '{configuration.Id}'");
                         }
+
                         controller.Filters.Add(new AuthorizeFilter(configuration.Policy));
                     }
                     else
                     {
-                        controller.Actions.Single(v => v.ActionName == "Post").Filters.Add(new AuthorizeFilter(configuration.Policy));
+                        controller.Actions.Single(v => v.ActionName == "Post").Filters
+                            .Add(new AuthorizeFilter(configuration.Policy));
                         controller.Filters.Add(new AuthorizeFilter(configuration.ReadPolicy));
                     }
 
                     controller.Selectors.Add(new SelectorModel
                     {
-                        AttributeRouteModel = new AttributeRouteModel(new RouteAttribute("api/configurations/" + configuration.Id)),
+                        AttributeRouteModel =
+                            new AttributeRouteModel(new RouteAttribute("api/configurations/" + configuration.Id)),
                     });
                 }
             }

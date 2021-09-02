@@ -60,14 +60,14 @@ namespace Glow.Core.Profiles
         {
             if (User == null || !User.Identity.IsAuthenticated)
             {
-                return new Profile
-                {
-                    IsAuthenticated = false
-                };
+                return new Profile { IsAuthenticated = false };
             }
+
             var mockExternalSystems = env.IsDevelopment() && configuration.MockExternalSystems();
             var isAuthenticated = User?.Identity.IsAuthenticated ?? false;
-            IEnumerable<KeyValuePair<string, string>> claims = env.IsDevelopment() ? User.Claims.Select(v => new KeyValuePair<string, string>(v.Type, v.Value)) : null;
+            IEnumerable<KeyValuePair<string, string>> claims = env.IsDevelopment()
+                ? User.Claims.Select(v => new KeyValuePair<string, string>(v.Type, v.Value))
+                : null;
 
             IEnumerable<string> scopes = mockExternalSystems || !expandScopes
                 ? new List<string>()
@@ -80,7 +80,6 @@ namespace Glow.Core.Profiles
                 Id = User.NameIdentifier(),
                 IdentityName = User?.Identity.Name,
                 IsAuthenticated = isAuthenticated,
-
                 Scopes = scopes,
                 ObjectId = User.GetObjectId(),
                 UserId = User.GetObjectId(),
@@ -132,6 +131,7 @@ namespace Glow.Core.Profiles
                 {
                     return new HasConsented { Value = false };
                 }
+
                 throw e;
             }
         }
@@ -151,7 +151,8 @@ namespace Glow.Core.Profiles
         [HttpGet]
         public async Task<Microsoft.Graph.User> Me()
         {
-            Microsoft.Graph.GraphServiceClient client = await graphTokenService.GetClientForUser(new string[] { "profile" });
+            Microsoft.Graph.GraphServiceClient client =
+                await graphTokenService.GetClientForUser(new string[] { "profile" });
             Microsoft.Graph.User me = await client.Me.Request().GetAsync();
             return me;
         }

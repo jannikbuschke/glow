@@ -21,7 +21,7 @@ namespace Glow.Configurations
             Serilog.Log.Logger.Information("Populate " + nameof(ConfigurationsControllerProvider));
             IEnumerable<Type> candidates = assemblies
                 .SelectMany(v => v.GetExportedTypes()
-                .Where(x => x.GetCustomAttributes(typeof(ConfigurationAttribute), true).Any()));
+                    .Where(x => x.GetCustomAttributes(typeof(ConfigurationAttribute), true).Any()));
 
             foreach (Type candidate in candidates)
             {

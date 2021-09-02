@@ -103,6 +103,7 @@ namespace Glow.Core
                 services.AddSingleton<ITokenCacheProvider, TokenCacheProvider>();
                 services.AddSingleton<ITicketStore, InmemoryTicketStore>();
             }
+
             services.AddMemoryCache();
 
             return services;

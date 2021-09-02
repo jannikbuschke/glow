@@ -48,7 +48,7 @@ namespace Glow.Core.Authentication
                 .WithTenantId(o.TenantId)
                 .Build();
 
-            var scopes = new string[] {"https://graph.microsoft.com/.default"};
+            var scopes = new string[] { "https://graph.microsoft.com/.default" };
 
             var token = await app.AcquireTokenForClient(scopes).ExecuteAsync();
             return token.AccessToken;
@@ -69,7 +69,8 @@ namespace Glow.Core.Authentication
 
         public async Task<AuthenticationResult> TokenForCurrentUser(string[] scopes)
         {
-            if (accessor.HttpContext.Request.Headers.TryGetValue("Authorization", out Microsoft.Extensions.Primitives.StringValues value))
+            if (accessor.HttpContext.Request.Headers.TryGetValue("Authorization",
+                out Microsoft.Extensions.Primitives.StringValues value))
             {
                 var token = value.FirstOrDefault();
 
@@ -80,7 +81,8 @@ namespace Glow.Core.Authentication
                     .WithTenantId(o.TenantId)
                     .Build();
 
-                AuthenticationResult t = await app.AcquireTokenOnBehalfOf(scopes, new UserAssertion(token.Split(" ")[1])).ExecuteAsync();
+                AuthenticationResult t =
+                    await app.AcquireTokenOnBehalfOf(scopes, new UserAssertion(token.Split(" ")[1])).ExecuteAsync();
 
                 return t;
             }
@@ -91,6 +93,7 @@ namespace Glow.Core.Authentication
                 {
                     throw new ForbiddenException("Not authenticated");
                 }
+
                 try
                 {
                     AuthenticationResult result = await tokenService.GetAccessTokenAsync(user, scopes);
@@ -100,12 +103,14 @@ namespace Glow.Core.Authentication
                 {
                     if (e.Classification == UiRequiredExceptionClassification.ConsentRequired)
                     {
-                        var message = $"Consent missing: The app does not yet have your consent to the scope '{scopes[0]}'." +
-                                      $" Please first allow the app to act on your behalf, then try again."+
-                                      $" Scopes can be granted under the account settings.";
+                        var message =
+                            $"Consent missing: The app does not yet have your consent to the scope '{scopes[0]}'." +
+                            $" Please first allow the app to act on your behalf, then try again." +
+                            $" Scopes can be granted under the account settings.";
                         logger.LogError("Missing consent {@scopes}", scopes);
                         throw new MissingConsentException(message, scopes[0]);
                     }
+
                     throw;
                 }
             }
@@ -128,7 +133,7 @@ namespace Glow.Core.Authentication
 
         public async Task ThrowIfCurrentUserNotConsentedToScope(string scope)
         {
-            var _ = await TokenForCurrentUser(new string[] {scope});
+            var _ = await TokenForCurrentUser(new string[] { scope });
         }
 
         public async Task<string> AccessTokenForCurrentUser(string[] scopes)

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Glow.Authentication.Aad;
 using Microsoft.AspNetCore.Authentication;
@@ -23,7 +23,8 @@ namespace Glow.Core.EfTicketStore
             ITicketStoreDbContext context = scope.ServiceProvider.GetRequiredService<ITicketStoreDbContext>();
             if (Guid.TryParse(key, out Guid id))
             {
-                DbAuthenticationTicket ticket = await context.AuthenticationTickets.SingleOrDefaultAsync(x => x.Id == id);
+                DbAuthenticationTicket ticket =
+                    await context.AuthenticationTickets.SingleOrDefaultAsync(x => x.Id == id);
                 if (ticket != null)
                 {
                     context.AuthenticationTickets.Remove(ticket);

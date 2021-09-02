@@ -6,7 +6,8 @@ namespace Glow.AzdoAuthentication
 {
     public static class SingletonOptionsStartupExtension
     {
-        public static void ConfigureSingleton<T>(this IServiceCollection services, string configurationSectionKey) where T : class, new()
+        public static void ConfigureSingleton<T>(this IServiceCollection services, string configurationSectionKey)
+            where T : class, new()
         {
             ServiceProvider provider = services.BuildServiceProvider();
             services.Configure<T>(provider.GetRequiredService<IConfiguration>().GetSection(configurationSectionKey));

@@ -1,4 +1,4 @@
-﻿namespace Glow.Core.EfMsalTokenStore
+namespace Glow.Core.EfMsalTokenStore
 {
     public class MsalToken
     {

@@ -19,7 +19,8 @@ namespace Glow.AzdoAuthentication
         private readonly AzdoConfig config;
         private readonly IHttpClientFactory clientFactory;
 
-        public AzdoAuthenticationService(AzdoConfig config, IHttpClientFactory clientFactory, ActiveUsersCache tokenCache)
+        public AzdoAuthenticationService(AzdoConfig config, IHttpClientFactory clientFactory,
+            ActiveUsersCache tokenCache)
         {
             this.config = config;
             this.clientFactory = clientFactory;
@@ -49,13 +50,13 @@ namespace Glow.AzdoAuthentication
             if (ValidateCallbackValues(code, state.ToString(), out var error))
             {
                 var form = new Dictionary<string, string>()
-                    {
-                        { "client_assertion_type", "urn:ietf:params:oauth:client-assertion-type:jwt-bearer" },
-                        { "client_assertion", config.ClientSecret },
-                        { "grant_type", "urn:ietf:params:oauth:grant-type:jwt-bearer" },
-                        { "assertion", code },
-                        { "redirect_uri", config.RedirectUri }
-                    };
+                {
+                    {"client_assertion_type", "urn:ietf:params:oauth:client-assertion-type:jwt-bearer"},
+                    {"client_assertion", config.ClientSecret},
+                    {"grant_type", "urn:ietf:params:oauth:grant-type:jwt-bearer"},
+                    {"assertion", code},
+                    {"redirect_uri", config.RedirectUri}
+                };
 
                 HttpClient httpClient = clientFactory.CreateClient();
 
@@ -76,7 +77,8 @@ namespace Glow.AzdoAuthentication
                 {
                     error = responseMessage.ReasonPhrase;
                     var content = await responseMessage.Content.ReadAsStringAsync();
-                    throw new Exception($"{responseMessage.ReasonPhrase} {(string.IsNullOrEmpty(content) ? "" : $"({content})")}");
+                    throw new Exception(
+                        $"{responseMessage.ReasonPhrase} {(string.IsNullOrEmpty(content) ? "" : $"({content})")}");
                 }
             }
 
@@ -109,7 +111,8 @@ namespace Glow.AzdoAuthentication
                     }
                     else
                     {
-                        authorizationRequests[authorizationRequestKey].IsPending = false; // mark the state value as used so it can't be reused
+                        authorizationRequests[authorizationRequestKey].IsPending =
+                            false; // mark the state value as used so it can't be reused
                     }
                 }
             }
@@ -126,13 +129,13 @@ namespace Glow.AzdoAuthentication
                 requestMessage.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
                 var form = new Dictionary<string, string>()
-                    {
-                        { "client_assertion_type", "urn:ietf:params:oauth:client-assertion-type:jwt-bearer" },
-                        { "client_assertion", config.ClientSecret },
-                        { "grant_type", "refresh_token" },
-                        { "assertion", refreshToken },
-                        { "redirect_uri", config.RedirectUri }
-                    };
+                {
+                    {"client_assertion_type", "urn:ietf:params:oauth:client-assertion-type:jwt-bearer"},
+                    {"client_assertion", config.ClientSecret},
+                    {"grant_type", "refresh_token"},
+                    {"assertion", refreshToken},
+                    {"redirect_uri", config.RedirectUri}
+                };
                 requestMessage.Content = new FormUrlEncodedContent(form);
 
                 HttpClient httpClient = clientFactory.CreateClient();

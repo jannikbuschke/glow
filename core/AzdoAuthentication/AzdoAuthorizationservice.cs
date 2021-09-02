@@ -39,7 +39,9 @@ namespace Glow.Glue.AspNetCore.AzdoAuthentication
             public string ClientId { get; set; }
             public string Scope { get; set; }
             public string RedirectUri { get; set; }
+
             public string TokenUrl { get; set; } = "https://app.vssps.visualstudio.com/oauth2/token";
+
             //public string AppSecret { get; set; }
             public string ClientSecret { get; set; }
         }
@@ -51,7 +53,8 @@ namespace Glow.Glue.AspNetCore.AzdoAuthentication
 
         public static class StartupExtension
         {
-            public static AuthenticationBuilder AddAzdo(this AuthenticationBuilder builder, Action<AzdoConfig> configure)
+            public static AuthenticationBuilder AddAzdo(this AuthenticationBuilder builder,
+                Action<AzdoConfig> configure)
             {
                 var config = new AzdoConfig();
                 configure(config);
@@ -72,7 +75,9 @@ namespace Glow.Glue.AspNetCore.AzdoAuthentication
 
         public class AzdoAuthorizationservice
         {
-            private static readonly Dictionary<Guid, AzdoToken> authorizationRequests = new Dictionary<Guid, AzdoToken>();
+            private static readonly Dictionary<Guid, AzdoToken> authorizationRequests =
+                new Dictionary<Guid, AzdoToken>();
+
             private readonly AzdoConfig config;
             private readonly IHttpClientFactory clientFactory;
 
@@ -107,11 +112,11 @@ namespace Glow.Glue.AspNetCore.AzdoAuthentication
                 {
                     var form = new Dictionary<string, string>()
                     {
-                        { "client_assertion_type", "urn:ietf:params:oauth:client-assertion-type:jwt-bearer" },
-                        { "client_assertion", config.ClientSecret },
-                        { "grant_type", "urn:ietf:params:oauth:grant-type:jwt-bearer" },
-                        { "assertion", code },
-                        { "redirect_uri", config.RedirectUri }
+                        {"client_assertion_type", "urn:ietf:params:oauth:client-assertion-type:jwt-bearer"},
+                        {"client_assertion", config.ClientSecret},
+                        {"grant_type", "urn:ietf:params:oauth:grant-type:jwt-bearer"},
+                        {"assertion", code},
+                        {"redirect_uri", config.RedirectUri}
                     };
 
                     HttpClient httpClient = clientFactory.CreateClient();
@@ -133,7 +138,8 @@ namespace Glow.Glue.AspNetCore.AzdoAuthentication
                     {
                         error = responseMessage.ReasonPhrase;
                         var content = await responseMessage.Content.ReadAsStringAsync();
-                        throw new Exception($"{responseMessage.ReasonPhrase} {(string.IsNullOrEmpty(content) ? "" : $"({content})")}");
+                        throw new Exception(
+                            $"{responseMessage.ReasonPhrase} {(string.IsNullOrEmpty(content) ? "" : $"({content})")}");
                     }
                 }
 
@@ -166,7 +172,8 @@ namespace Glow.Glue.AspNetCore.AzdoAuthentication
                         }
                         else
                         {
-                            authorizationRequests[authorizationRequestKey].IsPending = false; // mark the state value as used so it can't be reused
+                            authorizationRequests[authorizationRequestKey].IsPending =
+                                false; // mark the state value as used so it can't be reused
                         }
                     }
                 }
@@ -184,11 +191,11 @@ namespace Glow.Glue.AspNetCore.AzdoAuthentication
 
                     var form = new Dictionary<string, string>()
                     {
-                        { "client_assertion_type", "urn:ietf:params:oauth:client-assertion-type:jwt-bearer" },
-                        { "client_assertion", config.ClientSecret },
-                        { "grant_type", "refresh_token" },
-                        { "assertion", refreshToken },
-                        { "redirect_uri", config.RedirectUri }
+                        {"client_assertion_type", "urn:ietf:params:oauth:client-assertion-type:jwt-bearer"},
+                        {"client_assertion", config.ClientSecret},
+                        {"grant_type", "refresh_token"},
+                        {"assertion", refreshToken},
+                        {"redirect_uri", config.RedirectUri}
                     };
                     requestMessage.Content = new FormUrlEncodedContent(form);
 
@@ -215,5 +222,4 @@ namespace Glow.Glue.AspNetCore.AzdoAuthentication
             }
         }
     }
-
 }

@@ -17,6 +17,7 @@ namespace Glow.Core.Tests
     {
         protected readonly HttpClient client;
         protected Faker Faker { get; set; } = new Faker();
+
         public BaseIntegrationTest(WebApplicationFactory<Startup> factory)
         {
             Factory = factory;
@@ -24,6 +25,7 @@ namespace Glow.Core.Tests
         }
 
         private FakeClock clock;
+
         protected FakeClock Clock
         {
             get
@@ -32,6 +34,7 @@ namespace Glow.Core.Tests
                 {
                     clock = GetRequiredService<FakeClock>();
                 }
+
                 return clock;
             }
         }
@@ -70,6 +73,7 @@ namespace Glow.Core.Tests
             {
                 var error = await result.Content.ReadAsStringAsync();
             }
+
             result.EnsureSuccessStatusCode();
             var data = await result.Content.ReadAsByteArrayAsync();
             return data;

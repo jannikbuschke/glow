@@ -5,7 +5,6 @@ using OneOf;
 
 namespace Glow.Core.Typescript
 {
-
     public class TsType
     {
         public override string ToString()

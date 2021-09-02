@@ -27,7 +27,8 @@ namespace Glow.TokenCache
         }
     }
 
-    internal class SqlServerTokenDataContext : TokenDataContext, ITokenDataContext
+    internal class SqlServerTokenDataContext : TokenDataContext,
+                                               ITokenDataContext
     {
         public SqlServerTokenDataContext(DbContextOptions<SqlServerTokenDataContext> options) : base(options)
         {
@@ -39,7 +40,8 @@ namespace Glow.TokenCache
         public SqlServerTokenDataContext CreateDbContext(string[] args)
         {
             var options = new DbContextOptionsBuilder<SqlServerTokenDataContext>();
-            options.UseSqlServer("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=azdo-token-cache-dev;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
+            options.UseSqlServer(
+                "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=azdo-token-cache-dev;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
 
             return new SqlServerTokenDataContext(options.Options);
         }

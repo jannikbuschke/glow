@@ -81,14 +81,17 @@ namespace Glow.Core
             });
         }
 
-        public static void AddGlowErrorHandler(this IApplicationBuilder app, IWebHostEnvironment env, IConfiguration configuration)
+        public static void AddGlowErrorHandler(this IApplicationBuilder app, IWebHostEnvironment env,
+            IConfiguration configuration)
         {
             app.UseExceptionHandler(CreateErrorHandler(env, configuration));
         }
 
-        public static Action<IApplicationBuilder> CreateErrorHandler(IWebHostEnvironment env, IConfiguration configuration)
+        public static Action<IApplicationBuilder> CreateErrorHandler(IWebHostEnvironment env,
+            IConfiguration configuration)
         {
-            var withDetails = env.IsDevelopment() || "true".Equals(configuration["EnableExceptionDetails"], StringComparison.OrdinalIgnoreCase);
+            var withDetails = env.IsDevelopment() || "true".Equals(configuration["EnableExceptionDetails"],
+                StringComparison.OrdinalIgnoreCase);
 
             void errorHandler(IApplicationBuilder options)
             {
@@ -108,8 +111,9 @@ namespace Glow.Core
                             return new ProblemDetails
                             {
                                 Title = "Invalid request",
-                                Status = (int) typeof(Microsoft.AspNetCore.Http.BadHttpRequestException).GetProperty("StatusCode",
-                                BindingFlags.NonPublic | BindingFlags.Instance).GetValue(badHttpRequestException),
+                                Status = (int) typeof(Microsoft.AspNetCore.Http.BadHttpRequestException).GetProperty(
+                                    "StatusCode",
+                                    BindingFlags.NonPublic | BindingFlags.Instance).GetValue(badHttpRequestException),
                                 Detail = badHttpRequestException.Message,
                                 Type = "kestrel_bad_request"
                             };
@@ -143,7 +147,8 @@ namespace Glow.Core
                                 Detail = ex.Message,
                                 Type = "missing_consent"
                             };
-                            problemDetails.Extensions.Add("extensions", new Dictionary<string, object> { { "scope", mce.Scope } });
+                            problemDetails.Extensions.Add("extensions",
+                                new Dictionary<string, object> { { "scope", mce.Scope } });
                             return problemDetails;
                         }
                         else if (ex is DbUpdateConcurrencyException dbc)
@@ -152,7 +157,8 @@ namespace Glow.Core
                             {
                                 Title = "Conflict",
                                 Status = (int) HttpStatusCode.Conflict,
-                                Detail = "Datensatz wurde zwischenzeitlich bearbeitet. Bitte Seite neu laden und erneut probieren.",
+                                Detail =
+                                    "Datensatz wurde zwischenzeitlich bearbeitet. Bitte Seite neu laden und erneut probieren.",
                                 Type = "db_conflict"
                             };
                             return problemDetails;
@@ -194,7 +200,8 @@ namespace Glow.Core
                         ClaimsPrincipal user = context.User;
                         var id = user?.GetObjectId();
                         var name = user?.Name();
-                        Log.Logger.Information("User is encountering an error {id} {user} {exception}", id, name, problemDetails.Title);
+                        Log.Logger.Information("User is encountering an error {id} {user} {exception}", id, name,
+                            problemDetails.Title);
                         // Log.Logger.Information("Problem details = {@details}", problemDetails);
                     }
 

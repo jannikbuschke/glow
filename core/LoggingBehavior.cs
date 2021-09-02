@@ -7,7 +7,6 @@ using Microsoft.Extensions.Logging;
 
 namespace Glow.Glue.AspNetCore
 {
-
     public class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
     {
         private readonly ILogger<LoggingBehavior<TRequest, TResponse>> logger;
@@ -18,7 +17,8 @@ namespace Glow.Glue.AspNetCore
             this.logger = logger;
         }
 
-        public async Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken, RequestHandlerDelegate<TResponse> next)
+        public async Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken,
+            RequestHandlerDelegate<TResponse> next)
         {
             stopWatch.Start();
             logger.LogDebug($"[Handling Request]: {typeof(TRequest).Name}");
@@ -26,7 +26,8 @@ namespace Glow.Glue.AspNetCore
             TResponse response = await next();
             stopWatch.Stop();
             TimeSpan ts = stopWatch.Elapsed;
-            logger.LogInformation("[Handled Request]: {requestName} ({timeMs} ms)", typeof(TRequest).Name, ts.TotalMilliseconds);
+            logger.LogInformation("[Handled Request]: {requestName} ({timeMs} ms)", typeof(TRequest).Name,
+                ts.TotalMilliseconds);
             logger.LogTrace("Response payload {@values}", response);
             return response;
         }

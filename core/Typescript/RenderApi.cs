@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -37,9 +37,11 @@ namespace Glow.Core.Typescript
                     {
                         Console.WriteLine(t.Name);
                     }
+
                     throw new Exception("Namespace is null " + options.Path);
                     continue;
                 }
+
                 imports.AppendLine(
                     $"import * as {v.Namespace.Replace(".", "_")} from \"./{v.Namespace}\"");
             }
@@ -93,6 +95,7 @@ namespace Glow.Core.Typescript
                     actionInputs.AppendLine($@"  ""/{v.ActionAttribute.Route}"": {inputTypeName},");
                 }
             }
+
             queryInputs.AppendLine("}");
             queryOutputs.AppendLine("}");
             actionOutputs.AppendLine("}");

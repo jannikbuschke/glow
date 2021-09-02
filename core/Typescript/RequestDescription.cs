@@ -2,7 +2,6 @@ using System.Collections.Generic;
 
 namespace Glow.TypeScript
 {
-
     public class RequestDescription
     {
         public string Id { get; set; }
@@ -14,4 +13,3 @@ namespace Glow.TypeScript
         public IEnumerable<ParameterDescription> ParameterDescriptions { get; set; }
     }
 }
-

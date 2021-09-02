@@ -39,7 +39,7 @@ namespace Glow.Core.Authentication
         {
             return Task.FromResult(
                 new AuthenticationResult("", false, "", DateTimeOffset.Now, DateTimeOffset.Now, "",
-                null, "", null, Guid.Empty, null));
+                    null, "", null, Guid.Empty, null));
         }
     }
 }

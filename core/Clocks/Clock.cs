@@ -9,6 +9,7 @@ namespace Glow.Clocks
         /// </summary>
         [Obsolete("Use IClock.Now")]
         DateTime UtcNow();
+
         /// <summary>
         /// Returns DateTime.UtcNow
         /// </summary>

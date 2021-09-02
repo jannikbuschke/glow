@@ -12,6 +12,7 @@ namespace Glow.Configurations
     public static class StartupExtensions
     {
         internal static Action<DbContextOptionsBuilder> optionsAction;
+
         public static IConfigurationBuilder AddEFConfiguration(
             this IConfigurationBuilder builder,
             Action<DbContextOptionsBuilder> optionsAction)
@@ -40,16 +41,16 @@ namespace Glow.Configurations
             services.AddSingleton<Configurations>();
 
             services.AddMvcCore(options =>
-            {
-                options.Conventions.Add(new ConfigurationControllerRouteConvention());
-                options.Conventions.Add(new ActionsControllerRouteConvention());
-            })
-            .ConfigureApplicationPartManager(m =>
-            {
-                m.FeatureProviders.Add(new ConfigurationsControllerProvider(a));
-                m.FeatureProviders.Add(new ActionsControllerProvider(a));
-            })
-            .AddApplicationPart(typeof(ActionsControllerProvider).Assembly);
+                {
+                    options.Conventions.Add(new ConfigurationControllerRouteConvention());
+                    options.Conventions.Add(new ActionsControllerRouteConvention());
+                })
+                .ConfigureApplicationPartManager(m =>
+                {
+                    m.FeatureProviders.Add(new ConfigurationsControllerProvider(a));
+                    m.FeatureProviders.Add(new ActionsControllerProvider(a));
+                })
+                .AddApplicationPart(typeof(ActionsControllerProvider).Assembly);
 
             switch (dbProvider)
             {

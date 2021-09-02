@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text.Json;
 using System.Threading;
@@ -116,7 +116,7 @@ namespace Glow.Sample.MdxBundle
 
             try
             {
-                var result = await mediator.Send(new Transpile() {Source = entity.Content});
+                var result = await mediator.Send(new Transpile() { Source = entity.Content });
 
                 return new MdxViewmodel()
                 {
@@ -131,7 +131,7 @@ namespace Glow.Sample.MdxBundle
             }
             catch (Exception e)
             {
-                return new MdxViewmodel() {Error = e.Message};
+                return new MdxViewmodel() { Error = e.Message };
             }
         }
 
@@ -162,13 +162,13 @@ namespace Glow.Sample.MdxBundle
             {
                 if (request.Source == null)
                 {
-                    return new TranspileResult() {Code = "", Frontmatter = new Dictionary<string, string>()};
+                    return new TranspileResult() { Code = "", Frontmatter = new Dictionary<string, string>() };
                 }
                 var files = await ctx.MdxBundle.ToListAsync();
                 Data result1 = await node
-                    .InvokeFromFileAsync<Data>("./transpile-react.js", args: new object[] {request.Source, files})
+                    .InvokeFromFileAsync<Data>("./transpile-react.js", args: new object[] { request.Source, files })
                     .ConfigureAwait(false);
-                return new TranspileResult() {Code = result1.Code, Frontmatter = result1.FrontMatter};
+                return new TranspileResult() { Code = result1.Code, Frontmatter = result1.FrontMatter };
             }
         }
     }

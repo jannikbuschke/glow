@@ -78,6 +78,7 @@ namespace Glow.Configurations
             {
                 return options.Value;
             }
+
             return NotFound();
         }
 
@@ -94,7 +95,7 @@ namespace Glow.Configurations
             MethodInfo? m = typeof(T).GetMethod("OnSuccess");
             if (m != null)
             {
-                m.Invoke(value.Value, new object[] {serviceProvider});
+                m.Invoke(value.Value, new object[] { serviceProvider });
             }
 
             return Ok();

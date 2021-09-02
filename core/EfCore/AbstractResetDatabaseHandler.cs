@@ -1,11 +1,11 @@
-﻿using System.Threading;
+using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Glow.Core.EfCore
 {
-    public abstract class AbstractResetDatabaseHandler<T> where T: DbContext
+    public abstract class AbstractResetDatabaseHandler<T> where T : DbContext
     {
         private readonly T ctx;
 

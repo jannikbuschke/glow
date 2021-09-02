@@ -47,7 +47,8 @@ namespace Glow.Configurations
             var nextValues = new Dictionary<string, object>();
             foreach (KeyValuePair<string, object> value in request.Values)
             {
-                var key = $"{partialConfiguration.SectionId}{(request.Name == Options.DefaultName ? "" : $":{request.Name}")}:{value.Key}";
+                var key =
+                    $"{partialConfiguration.SectionId}{(request.Name == Options.DefaultName ? "" : $":{request.Name}")}:{value.Key}";
                 nextValues[key] = value.Value;
             }
 

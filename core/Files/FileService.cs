@@ -19,7 +19,9 @@ namespace Glow.Files
         public string Name { get; set; }
     }
 
-    public class EmptyRequest{}
+    public class EmptyRequest
+    {
+    }
 
     public class FileService
     {
@@ -30,6 +32,7 @@ namespace Glow.Files
             {
                 Directory.CreateDirectory(folder);
             }
+
             var result = new List<T>();
             foreach (IFormFile file in files)
             {
@@ -43,6 +46,7 @@ namespace Glow.Files
                 await file.CopyToAsync(stream);
                 result.Add(newFile);
             }
+
             return result;
         }
     }

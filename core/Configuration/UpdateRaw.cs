@@ -61,61 +61,61 @@ namespace Glow.Configurations
             switch (token.Type)
             {
                 case JTokenType.String:
-                {
-                    var value = token.Value<string>();
-                    result[path] = value;
-                    break;
-                }
+                    {
+                        var value = token.Value<string>();
+                        result[path] = value;
+                        break;
+                    }
                 case JTokenType.Integer:
-                {
-                    result[path] = token.Value<long>();
-                    break;
-                }
+                    {
+                        result[path] = token.Value<long>();
+                        break;
+                    }
                 case JTokenType.Float:
-                {
-                    result[path] = token.Value<double>();
-                    break;
-                }
+                    {
+                        result[path] = token.Value<double>();
+                        break;
+                    }
                 case JTokenType.Property:
-                {
-                    var property = token as JProperty;
-                    AddAllValues(property.Value, result);
-                    break;
-                }
+                    {
+                        var property = token as JProperty;
+                        AddAllValues(property.Value, result);
+                        break;
+                    }
                 case JTokenType.Object:
-                {
-                    var o = token as JObject;
-                    foreach (JToken item in o.Children())
                     {
-                        AddAllValues(item, result);
-                    }
+                        var o = token as JObject;
+                        foreach (JToken item in o.Children())
+                        {
+                            AddAllValues(item, result);
+                        }
 
-                    break;
-                }
+                        break;
+                    }
                 case JTokenType.Array:
-                {
-                    var array = token as JArray;
-                    foreach (JToken item in array.Children())
                     {
-                        AddAllValues(item, result);
-                    }
+                        var array = token as JArray;
+                        foreach (JToken item in array.Children())
+                        {
+                            AddAllValues(item, result);
+                        }
 
-                    break;
-                }
+                        break;
+                    }
                 case JTokenType.Null:
-                {
-                    //no-op
-                    break;
-                }
+                    {
+                        //no-op
+                        break;
+                    }
                 case JTokenType.Boolean:
-                {
-                    result[path] = token.Value<bool>();
-                    break;
-                }
+                    {
+                        result[path] = token.Value<bool>();
+                        break;
+                    }
                 default:
-                {
-                    throw new System.Exception($"Not Supported JTokenType '{token.Type}'");
-                }
+                    {
+                        throw new System.Exception($"Not Supported JTokenType '{token.Type}'");
+                    }
             }
         }
 
@@ -123,7 +123,9 @@ namespace Glow.Configurations
         {
             return new ConfigurationUpdate
             {
-                ConfigurationId = ConfigurationId, Values = ConfigurationValues, Name = Name
+                ConfigurationId = ConfigurationId,
+                Values = ConfigurationValues,
+                Name = Name
             };
         }
     }

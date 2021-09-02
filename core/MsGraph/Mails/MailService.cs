@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Glow.Authentication.Aad;
@@ -25,7 +25,7 @@ namespace Glow.MsGraph.Mails
 
         public async Task<Message> Send(Message mail, string mailboxOrUserId = null, string scope = "profile")
         {
-            GraphServiceClient client = await tokenService.GetClientForUser(new string[] {scope});
+            GraphServiceClient client = await tokenService.GetClientForUser(new string[] { scope });
             // AuthenticationResult token = await service.GetAccessTokenAsync(httpContextAccessor.HttpContext.User);
             //
             // var client = new GraphServiceClient(

@@ -1,8 +1,8 @@
-﻿using System;
+using System;
 using System.Linq.Expressions;
+using Ganss.XSS;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Ganss.XSS;
 
 namespace Glow.Core.EfCore
 {
@@ -13,7 +13,7 @@ namespace Glow.Core.EfCore
     /// </summary>
     public class HtmlSanitizeValueConverter : ValueConverter<string, string>
     {
-        private static HtmlSanitizer sanitizer = new ();
+        private static HtmlSanitizer sanitizer = new();
 
         private static Expression<Func<string, string>> convertToProviderExpression =
             x => sanitizer.Sanitize(x, null, null);

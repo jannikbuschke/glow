@@ -90,7 +90,7 @@ namespace Glow.Core.Queries
                 value = value.Take(query.Take.Value);
             }
 
-            return new QueryResult<T> {Count = count, Value = value};
+            return new QueryResult<T> { Count = count, Value = value };
         }
 
         private static ConstantExpression ToConstant(Type propertyType, string value)
@@ -117,7 +117,7 @@ namespace Glow.Core.Queries
             {
                 MemberExpression m = Expression.MakeMemberAccess(parameter, propertyInfo);
                 ConstantExpression c = Expression.Constant(where.Value, typeof(string));
-                MethodInfo mi = typeof(string).GetMethod(methodName, new Type[] {typeof(string)});
+                MethodInfo mi = typeof(string).GetMethod(methodName, new Type[] { typeof(string) });
                 Expression call = Expression.Call(m, mi, c);
                 return call;
             }

@@ -5,14 +5,14 @@ using System.Security.Claims;
 using AutoMapper;
 using AutoMapper.EquivalencyExpression;
 using Glow.Configurations;
-using Glow.Tests;
-using Glow.TypeScript;
-using MediatR;
 using Glow.Core;
 using Glow.Sample.Configurations;
 using Glow.Sample.Users;
+using Glow.Tests;
+using Glow.TypeScript;
 using Glow.Users;
 using Jering.Javascript.NodeJS;
+using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -66,7 +66,7 @@ namespace Glow.Sample
             {
                 //options.SetPartialReadPolicy("sample-configuration", "test-policy");
                 //options.SetPartialWritePolicy("sample-configuration", "test-policy");
-            }, new[] {typeof(Startup).Assembly});
+            }, new[] { typeof(Startup).Assembly });
 
             // services.AddMediatR(typeof(Startup), typeof(Clocks.Clock));
             // services.AddAutoMapper(cfg => { cfg.AddCollectionMappers(); }, typeof(Startup));

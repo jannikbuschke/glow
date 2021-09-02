@@ -71,7 +71,8 @@ namespace Glow.Glue.AspNetCore.Tests
             else
             {
                 var content = await response.Content.ReadAsStringAsync();
-                throw new Exception("Http call was unsuccessfull: " + response.StatusCode + " " + response.ReasonPhrase + " " + content);
+                throw new Exception("Http call was unsuccessfull: " + response.StatusCode + " " +
+                                    response.ReasonPhrase + " " + content);
             }
         }
     }

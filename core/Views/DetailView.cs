@@ -18,6 +18,7 @@ namespace Glow.Core.Views
             {
                 return NotFound();
             }
+
             return result;
         }
     }

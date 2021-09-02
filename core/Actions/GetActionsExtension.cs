@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -24,7 +24,9 @@ namespace Glow.Core.Actions
                 {
                     yield return new ActionMeta()
                     {
-                        Input = candidate, Output = typeof(Unit), ActionAttribute = attribute
+                        Input = candidate,
+                        Output = typeof(Unit),
+                        ActionAttribute = attribute
                     };
                 }
                 else
@@ -34,7 +36,7 @@ namespace Glow.Core.Actions
                         ?.GenericTypeArguments
                         ?.FirstOrDefault();
 
-                    yield return new ActionMeta() {Input = candidate, Output = returnType, ActionAttribute = attribute};
+                    yield return new ActionMeta() { Input = candidate, Output = returnType, ActionAttribute = attribute };
                 }
             }
         }

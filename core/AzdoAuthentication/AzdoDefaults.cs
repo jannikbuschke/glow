@@ -1,4 +1,4 @@
-﻿namespace Glow.AzdoAuthentication
+namespace Glow.AzdoAuthentication
 {
     public static class AzdoDefaults
     {

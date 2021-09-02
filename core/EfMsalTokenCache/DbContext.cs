@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore.Design;
 
 namespace Glow.Core.EfMsalTokenStore
 {
-
     public interface IMsalTokenDbContext
     {
         DbSet<MsalToken> MsalTokens { get; set; }
@@ -13,11 +12,13 @@ namespace Glow.Core.EfMsalTokenStore
         int SaveChanges();
     }
 
-    public abstract class MsalTokenDbContext : DbContext, IMsalTokenDbContext
+    public abstract class MsalTokenDbContext : DbContext,
+                                               IMsalTokenDbContext
     {
         public MsalTokenDbContext(DbContextOptions options) : base(options)
         {
         }
+
         public DbSet<MsalToken> MsalTokens { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -39,7 +40,8 @@ namespace Glow.Core.EfMsalTokenStore
         public SqlServerMsalTokenDbContext CreateDbContext(string[] args)
         {
             var options = new DbContextOptionsBuilder<SqlServerMsalTokenDbContext>();
-            options.UseSqlServer("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=ticket-store;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
+            options.UseSqlServer(
+                "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=ticket-store;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
 
             return new SqlServerMsalTokenDbContext(options.Options);
         }

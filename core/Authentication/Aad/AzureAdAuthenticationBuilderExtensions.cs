@@ -14,7 +14,8 @@ namespace Glow.Authentication.Aad
             return builder.AddAzureAd(_ => { });
         }
 
-        public static AuthenticationBuilder AddAzureAd(this AuthenticationBuilder builder, Action<AzureAdOptions> configureOptions)
+        public static AuthenticationBuilder AddAzureAd(this AuthenticationBuilder builder,
+            Action<AzureAdOptions> configureOptions)
         {
             builder.Services.Configure(configureOptions);
             builder.Services.AddSingleton<IConfigureOptions<OpenIdConnectOptions>, ConfigureAzureOptions>();

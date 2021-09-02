@@ -8,6 +8,8 @@ namespace Glow.Tests
     public class SendCommandBuilderV2<R, Startup> : SendBuilder<R, Startup> where Startup : class
     {
         public SendCommandBuilderV2(WebApplicationFactory<Startup> factory, IRequest<R> request)
-            : base(factory, request) { }
+            : base(factory, request)
+        {
+        }
     }
 }

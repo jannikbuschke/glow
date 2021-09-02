@@ -16,10 +16,11 @@ namespace Glow.TypeScript
         public bool GenerateApi { get; set; }
         public Assembly[] Assemblies { get; set; }
         public Action<OneOf<TsType, TsEnum>> Update { get; set; }
+
         public string GetPath()
         {
             var configuredPath = Path ?? "web/src/";
-            if(!configuredPath.EndsWith(".ts") && !configuredPath.EndsWith("/"))
+            if (!configuredPath.EndsWith(".ts") && !configuredPath.EndsWith("/"))
             {
                 throw new Exception($"configured path '{configuredPath}' must end with / or .ts");
             }

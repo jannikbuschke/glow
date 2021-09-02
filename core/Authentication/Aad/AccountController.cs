@@ -8,15 +8,13 @@ namespace Glow.Authentication.Aad
     [Route("[controller]/[action]")]
     public class AccountController : ControllerBase
     {
-
         [HttpGet]
         public IActionResult SignIn(string[] scopes, string redirectUrl)
         {
-            var url = string.IsNullOrEmpty(redirectUrl) ? "/" : redirectUrl;// Url.Action(nameof(AccountController.SignIn), "Home");
-            var para = new AuthenticationProperties
-            {
-                RedirectUri = url,
-            };
+            var url = string.IsNullOrEmpty(redirectUrl)
+                ? "/"
+                : redirectUrl; // Url.Action(nameof(AccountController.SignIn), "Home");
+            var para = new AuthenticationProperties { RedirectUri = url, };
             if (scopes != null)
             {
                 para.Parameters.Add("scopes", scopes);

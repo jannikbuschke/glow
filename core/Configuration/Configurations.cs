@@ -17,7 +17,8 @@ namespace Glow.Configurations
         public IEnumerable<Meta> Get()
         {
             IEnumerable<Meta> attributes = assemblies
-                .SelectMany(v => v.GetExportedTypes().Where(v => v.GetCustomAttributes(typeof(ConfigurationAttribute), true).Any())
+                .SelectMany(v => v.GetExportedTypes()
+                    .Where(v => v.GetCustomAttributes(typeof(ConfigurationAttribute), true).Any())
                     .SelectMany(v => v.GetCustomAttributes<ConfigurationAttribute>())
                 ).Select(v => v.ToPartialConfiguration());
             return attributes;

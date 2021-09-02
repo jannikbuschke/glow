@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Glow.NotificationsCore
 {
-
     [ApiController]
     [Route("api/my-notifications")]
     public class MyNotificationsController : ControllerBase

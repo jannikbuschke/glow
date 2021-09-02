@@ -17,7 +17,8 @@ namespace Glow.Core
 
         public bool MockExternSystems(bool allowInNonDevelopmentEnvironment = false)
         {
-            return (allowInNonDevelopmentEnvironment || env.IsDevelopment()) && configuration.GetValue<bool>("MockExternalSystems");
+            return (allowInNonDevelopmentEnvironment || env.IsDevelopment()) &&
+                   configuration.GetValue<bool>("MockExternalSystems");
         }
     }
 }

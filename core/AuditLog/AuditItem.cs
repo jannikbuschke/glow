@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,7 +24,7 @@ namespace Glow.AuditLog
             services.AddScoped<IAuditLog>(provider => provider.GetService<T>());
             services.AddScoped<AuditLogService>();
             services.AddSingleton(
-                options ?? new Options() {SystemDisplayName = "System", SystemUserId = "___system___"});
+                options ?? new Options() { SystemDisplayName = "System", SystemUserId = "___system___" });
         }
     }
 

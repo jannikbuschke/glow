@@ -9,7 +9,6 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Glow.AzdoAuthentication
 {
-
     public class ActiveUsersCache
     {
         private readonly Dictionary<string, ActiveUser> tokens = new Dictionary<string, ActiveUser>();
@@ -28,16 +27,13 @@ namespace Glow.AzdoAuthentication
             UserToken existingToken = await ctx.GlowTokenCache.SingleOrDefaultAsync(v => v.UserId == userId);
             if (existingToken == null)
             {
-                ctx.GlowTokenCache.Add(new UserToken
-                {
-                    UserId = userId,
-                    AccessToken = user.AccessToken
-                });
+                ctx.GlowTokenCache.Add(new UserToken { UserId = userId, AccessToken = user.AccessToken });
             }
             else
             {
                 existingToken.AccessToken = user.AccessToken;
             }
+
             await ctx.SaveChangesAsync();
             tokens[userId] = user;
         }
@@ -48,10 +44,12 @@ namespace Glow.AzdoAuthentication
             {
                 await Initialize();
             }
+
             if (!tokens.ContainsKey(userId))
             {
                 throw new ForbiddenException($"No token for user '{userId}' found");
             }
+
             return tokens[userId];
         }
 
@@ -64,6 +62,7 @@ namespace Glow.AzdoAuthentication
             {
                 tokens[token.UserId] = new ActiveUser(token.UserId, "", "", token.AccessToken);
             }
+
             initialized = true;
         }
     }

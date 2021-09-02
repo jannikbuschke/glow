@@ -1,4 +1,4 @@
-﻿namespace Glow.NotificationsCore
+namespace Glow.NotificationsCore
 {
     public enum PushNotificationType
     {

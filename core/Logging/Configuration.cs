@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Glow.Configurations;
@@ -67,7 +67,8 @@ namespace Glow.Core.Logging
             }
             set
             {
-                if (value == null) { return;}
+                if (value == null) { return; }
+
                 // todo: parse only real loglevels
                 var dict = new Dictionary<string, string>();
                 foreach (KeyValuePair<string, string> v in value)

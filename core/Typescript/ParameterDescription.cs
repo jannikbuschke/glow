@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace Glow.TypeScript
 {
@@ -9,4 +9,3 @@ namespace Glow.TypeScript
         public object Source { get; set; }
     }
 }
-

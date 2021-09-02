@@ -5,7 +5,6 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Glow.Core.EfTicketStore
 {
-
     public static class ServiceCollectionExtensions
     {
         public static void AddEfTicketStore(this IServiceCollection services, Action<DbContextOptionsBuilder> options)

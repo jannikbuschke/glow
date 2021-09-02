@@ -35,7 +35,8 @@ namespace Glow.Configurations
 
         private async Task TestPermission()
         {
-            AuthorizationResult result = await authorizationService.AuthorizeAsync(httpContextAccessor.HttpContext.User, options.ReadAllPolicy);
+            AuthorizationResult result =
+                await authorizationService.AuthorizeAsync(httpContextAccessor.HttpContext.User, options.ReadAllPolicy);
             if (!result.Succeeded)
             {
                 throw new ForbiddenException("Forbidden");
@@ -61,7 +62,9 @@ namespace Glow.Configurations
         {
             await TestPermission();
             var n = name ?? "";
-            ConfigurationVersion r = await ctx.GlowConfigurations.SingleOrDefaultAsync(v => v.Id == id && v.Version == version && v.Name == n);
+            ConfigurationVersion r =
+                await ctx.GlowConfigurations.SingleOrDefaultAsync(
+                    v => v.Id == id && v.Version == version && v.Name == n);
             return r;
         }
     }

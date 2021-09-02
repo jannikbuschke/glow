@@ -37,11 +37,13 @@ namespace Glow.Validation
                         {
                             context.Result = new BadRequestObjectResult(context.ModelState);
                         }
+
                         break;
                     }
-                default: context.Result = new BadRequestObjectResult($"Unknown _action parameter value: '{ParameterName}'"); break;
+                default:
+                    context.Result = new BadRequestObjectResult($"Unknown _action parameter value: '{ParameterName}'");
+                    break;
             }
-
         }
     }
 }

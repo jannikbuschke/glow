@@ -60,6 +60,7 @@ namespace Glow.Configurations
                     {
                         continue;
                     }
+
                     if (typeof(IEnumerable<object>).IsAssignableFrom(item.Value.GetType()))
                     {
                         var values = (item.Value as IEnumerable<object>).ToList();
@@ -168,7 +169,8 @@ namespace Glow.Configurations
 
         protected void OnReload()
         {
-            ConfigurationReloadToken previousToken = Interlocked.Exchange(ref _reloadToken, new ConfigurationReloadToken());
+            ConfigurationReloadToken previousToken =
+                Interlocked.Exchange(ref _reloadToken, new ConfigurationReloadToken());
             previousToken.OnReload();
         }
     }

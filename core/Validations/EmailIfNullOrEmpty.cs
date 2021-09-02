@@ -6,7 +6,6 @@ namespace Glow.Validation
     [AttributeUsage(AttributeTargets.Property)]
     public class EmailIfNullOrEmpty : ValidationAttribute
     {
-
         private string[] PropertyName { get; set; }
 
         public EmailIfNullOrEmpty(params string[] properties)
@@ -35,5 +34,4 @@ namespace Glow.Validation
             return ValidationResult.Success;
         }
     }
-
 }

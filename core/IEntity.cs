@@ -8,7 +8,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Glow.AspNetCore.Utils.Module
 {
-    public interface IEntity: IEntity<Guid>{}
+    public interface IEntity : IEntity<Guid>
+    {
+    }
 
     public interface IEntity<T>
     {
@@ -32,7 +34,8 @@ namespace Glow.AspNetCore.Utils.Module
 
     public static class DataContextExtension
     {
-        public static void HandleITrackEdits(this DbContext self, IServiceProvider services, string systemUserId = User.SystemUserId)
+        public static void HandleITrackEdits(this DbContext self, IServiceProvider services,
+            string systemUserId = User.SystemUserId)
         {
             IHttpContextAccessor httpContextAccessor = services.GetRequiredService<IHttpContextAccessor>();
             var userId = httpContextAccessor?.HttpContext?.GetUserObjectId() ?? systemUserId;

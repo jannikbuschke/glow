@@ -46,6 +46,5 @@ namespace Glow.NotificationsCore
                 message
             );
         }
-
     }
 }

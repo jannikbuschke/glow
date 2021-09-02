@@ -7,7 +7,6 @@ namespace Glow.GlowStartup
     {
         public static IWebHostBuilder CreateDefaultWebHostBuilder<Startup>(string[] args) where Startup : class
         {
-
             return WebHost.CreateDefaultBuilder(args)
                 .ConfigureKestrel((context, options) =>
                 {
@@ -33,6 +32,5 @@ namespace Glow.GlowStartup
             //    }
             //});
         }
-
     }
 }

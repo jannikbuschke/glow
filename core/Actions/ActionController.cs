@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using Glow.Validation;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;

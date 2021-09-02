@@ -12,7 +12,8 @@ namespace Glow.Core.Files
 {
     public static class HttpClientExtensions
     {
-        public static async Task<IEnumerable<T>> UploadFiles<T>(this HttpClient client, IEnumerable<T> files, string actionUrl) where T : IFile
+        public static async Task<IEnumerable<T>> UploadFiles<T>(this HttpClient client, IEnumerable<T> files,
+            string actionUrl) where T : IFile
         {
             var faker = new Faker();
             var formContent = new MultipartFormDataContent { };

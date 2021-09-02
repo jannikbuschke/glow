@@ -209,5 +209,5 @@ namespace Glow.Sample.Files
         }
     }
 
-    public class Foo{}
+    public class Foo { }
 }

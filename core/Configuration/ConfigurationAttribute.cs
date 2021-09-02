@@ -3,16 +3,19 @@ using System;
 namespace Glow.Configurations
 {
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
-    public class ConfigurationAttribute : Attribute, IConfigurationMeta
+    public class ConfigurationAttribute : Attribute,
+                                          IConfigurationMeta
     {
         /// <summary>
         /// Required. Unique identifier
         /// </summary>
         public string Id { get; set; }
+
         public string Policy { get; set; }
         public string ReadPolicy { get; set; }
         public string SectionId { get; set; }
         private string path;
+
         /// <summary>
         /// (Optional) Part of the path. The fully qualified path will be
         /// api/configurations/:path
@@ -24,6 +27,7 @@ namespace Glow.Configurations
             [Obsolete("Use Id instead")]
             set { path = value; }
         }
+
         public string Route
         {
             get

@@ -11,11 +11,13 @@ namespace Glow.Core.EfTicketStore
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     }
 
-    public abstract class TicketStoreDbContext : DbContext, ITicketStoreDbContext
+    public abstract class TicketStoreDbContext : DbContext,
+                                                 ITicketStoreDbContext
     {
         public TicketStoreDbContext(DbContextOptions options) : base(options)
         {
         }
+
         public DbSet<DbAuthenticationTicket> AuthenticationTickets { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -37,7 +39,8 @@ namespace Glow.Core.EfTicketStore
         public SqlServerTicketStoreDbContext CreateDbContext(string[] args)
         {
             var options = new DbContextOptionsBuilder<SqlServerTicketStoreDbContext>();
-            options.UseSqlServer("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=ticket-store;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
+            options.UseSqlServer(
+                "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=ticket-store;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
 
             return new SqlServerTicketStoreDbContext(options.Options);
         }

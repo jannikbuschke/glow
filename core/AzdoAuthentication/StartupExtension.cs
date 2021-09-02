@@ -29,7 +29,7 @@ namespace Glow.AzdoAuthentication
             switch (dbProvider)
             {
                 case DatabaseProvider.SqlServer:
-                    services.AddDbContext<SqlServerTokenDataContext>(options=>
+                    services.AddDbContext<SqlServerTokenDataContext>(options =>
                     {
                         options.UseSqlServer(connectionString, options =>
                         {

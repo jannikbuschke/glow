@@ -1,4 +1,4 @@
-﻿using System.Net.Http;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Glow.Users;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -9,7 +9,6 @@ namespace Glow.Glue.AspNetCore.Tests
     {
         public GetBuilder(WebApplicationFactory<T> factory) : base(factory)
         {
-
         }
 
         public GetBuilder<T> From(string url)
@@ -40,5 +39,4 @@ namespace Glow.Glue.AspNetCore.Tests
             return base.ExecuteRaw();
         }
     }
-
 }

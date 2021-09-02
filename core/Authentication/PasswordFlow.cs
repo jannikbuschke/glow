@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -23,16 +23,17 @@ namespace Glow.Core.Authentication
 
             var dict = new Dictionary<string, string>
             {
-                { "Content-Type", "application/x-www-form-urlencoded" },
-                { "scope", scope },
-                { "grant_type", grant_type },
-                { "client_secret", clientSecret },
-                { "username", username },
-                { "password", password },
-                { "client_id", clientId },
+                {"Content-Type", "application/x-www-form-urlencoded"},
+                {"scope", scope},
+                {"grant_type", grant_type},
+                {"client_secret", clientSecret},
+                {"username", username},
+                {"password", password},
+                {"client_id", clientId},
             };
 
-            HttpResponseMessage response = await httpClient.PostAsync($"https://login.microsoftonline.com/{tenantId}/oauth2/v2.0/token",
+            HttpResponseMessage response = await httpClient.PostAsync(
+                $"https://login.microsoftonline.com/{tenantId}/oauth2/v2.0/token",
                 new FormUrlEncodedContent(dict)
             );
 
@@ -56,12 +57,16 @@ namespace Glow.Core.Authentication
         {
             // ReSharper disable once InconsistentNaming
             public string token_type { get; set; }
+
             // ReSharper disable once InconsistentNaming
             public string scope { get; set; }
+
             // ReSharper disable once InconsistentNaming
             public int expires_in { get; set; }
+
             // ReSharper disable once InconsistentNaming
             public int ext_expires_in { get; set; }
+
             // ReSharper disable once InconsistentNaming
             public string access_token { get; set; }
             public string Message { get; set; }

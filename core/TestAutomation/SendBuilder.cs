@@ -54,6 +54,7 @@ namespace Glow.Tests
                 {
                     client.SetUserId(user.Id);
                 }
+
                 if (user.DisplayName != null)
                 {
                     client.SetUsername(user.DisplayName);
@@ -64,6 +65,7 @@ namespace Glow.Tests
             {
                 throw new NullReferenceException(nameof(url));
             }
+
             HttpResponseMessage response = await client.PostAsJsonAsync(url, request);
             return response;
         }
@@ -95,6 +97,7 @@ namespace Glow.Tests
             {
                 throw new ArgumentException("User.Id is null");
             }
+
             client.SetUserId(user.Id);
             if (user.DisplayName != null)
             {

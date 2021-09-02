@@ -36,16 +36,16 @@ namespace Glow.Tests
         }
 
         public static void AddTestAuthentication(
-          this IServiceCollection services,
-          string userId,
-          string userName,
-          string email,
-          IEnumerable<Claim> additionalClaims
+            this IServiceCollection services,
+            string userId,
+            string userName,
+            string email,
+            IEnumerable<Claim> additionalClaims
         )
         {
-            IEnumerable<Claim> claims = additionalClaims.Concat(new[] {
-                new Claim(ClaimTypes.NameIdentifier, userId),
-                new Claim(ClaimTypes.Name, userName),
+            IEnumerable<Claim> claims = additionalClaims.Concat(new[]
+            {
+                new Claim(ClaimTypes.NameIdentifier, userId), new Claim(ClaimTypes.Name, userName),
                 new Claim(ClaimTypes.Email, email),
             });
             AddTestAuthentication(services, claims);
@@ -56,16 +56,13 @@ namespace Glow.Tests
             IEnumerable<Claim> additionalClaims
         )
         {
-            services.AddSingleton(new AdditionalClaims
-            {
-                Claims = additionalClaims
-            });
+            services.AddSingleton(new AdditionalClaims { Claims = additionalClaims });
             services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = FakeAuthenticationDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = FakeAuthenticationDefaults.AuthenticationScheme;
-            })
-            .AddScheme<AuthenticationSchemeOptions, TestAuthenticationHandler>("TestAuthentication", null);
+                {
+                    options.DefaultAuthenticateScheme = FakeAuthenticationDefaults.AuthenticationScheme;
+                    options.DefaultChallengeScheme = FakeAuthenticationDefaults.AuthenticationScheme;
+                })
+                .AddScheme<AuthenticationSchemeOptions, TestAuthenticationHandler>("TestAuthentication", null);
         }
     }
 
@@ -87,7 +84,7 @@ namespace Glow.Tests
             AdditionalClaims additionalClaims,
             IHttpContextAccessor httpContextAccessor
         )
-        : base(options, logger, encoder, clock)
+            : base(options, logger, encoder, clock)
         {
             claims = additionalClaims.Claims;
             this.httpContextAccessor = httpContextAccessor;
@@ -100,9 +97,13 @@ namespace Glow.Tests
             StringValues userNames = httpContextAccessor.HttpContext.Request.Headers["x-username"];
             var userName = userIds.FirstOrDefault();
             IEnumerable<Claim> newClaims = claims
-                .Select(v => userId != null && v.Type == ClaimsPrincipalExtensions.ObjectId ? new Claim("oid", userId) : v)
+                .Select(v =>
+                    userId != null && v.Type == ClaimsPrincipalExtensions.ObjectId ? new Claim("oid", userId) : v)
                 .Select(v => userId != null && v.Type == "oid" ? new Claim("oid", userId) : v)
-                .Select(v => userId != null && v.Type == ClaimTypes.NameIdentifier ? new Claim(ClaimTypes.NameIdentifier, userId) : v)
+                .Select(v =>
+                    userId != null && v.Type == ClaimTypes.NameIdentifier
+                        ? new Claim(ClaimTypes.NameIdentifier, userId)
+                        : v)
                 .Select(v => userName != null && v.Type == ClaimTypes.Name ? new Claim(ClaimTypes.Name, userName) : v);
 
             var identity = new ClaimsIdentity(newClaims, Scheme.Name);

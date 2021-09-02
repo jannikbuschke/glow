@@ -6,7 +6,6 @@ namespace Glow.Validation
     [AttributeUsage(AttributeTargets.Property)]
     public class RequiredIfNullOrEmpty : RequiredAttribute
     {
-
         private string[] PropertyName { get; set; }
 
         public RequiredIfNullOrEmpty(params string[] properties)

@@ -30,7 +30,8 @@ namespace Glow.Configurations
         {
             base.OnModelCreating(modelBuilder);
 
-            EntityTypeBuilder<ConfigurationVersion> partialConfigurationVersion = modelBuilder.Entity<ConfigurationVersion>();
+            EntityTypeBuilder<ConfigurationVersion> partialConfigurationVersion =
+                modelBuilder.Entity<ConfigurationVersion>();
             partialConfigurationVersion.Property(v => v.Values)
                 .HasConversion(
                     v => JsonConvert.SerializeObject(v),
@@ -50,9 +51,11 @@ namespace Glow.Configurations
         Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default);
     }
 
-    public class SqlServerConfigurationDataContext : ConfigurationDataContext, IConfigurationDataContext
+    public class SqlServerConfigurationDataContext : ConfigurationDataContext,
+                                                     IConfigurationDataContext
     {
-        public SqlServerConfigurationDataContext(DbContextOptions<SqlServerConfigurationDataContext> options) : base(options)
+        public SqlServerConfigurationDataContext(DbContextOptions<SqlServerConfigurationDataContext> options) :
+            base(options)
         {
         }
     }
@@ -62,7 +65,8 @@ namespace Glow.Configurations
         public SqlServerConfigurationDataContext CreateDbContext(string[] args)
         {
             var options = new DbContextOptionsBuilder<SqlServerConfigurationDataContext>();
-            options.UseSqlServer("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=glow-configuration-design-time-dev;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
+            options.UseSqlServer(
+                "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=glow-configuration-design-time-dev;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
 
             return new SqlServerConfigurationDataContext(options.Options);
         }
@@ -73,7 +77,8 @@ namespace Glow.Configurations
         public static void GlowMigrateConfigurationSqlServer(this IServiceProvider serviceProvider)
         {
             using IServiceScope scope = serviceProvider.CreateScope();
-            SqlServerConfigurationDataContext db = scope.ServiceProvider.GetRequiredService<SqlServerConfigurationDataContext>();
+            SqlServerConfigurationDataContext db =
+                scope.ServiceProvider.GetRequiredService<SqlServerConfigurationDataContext>();
             db.Migrate();
         }
     }
