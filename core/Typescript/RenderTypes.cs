@@ -31,6 +31,10 @@ namespace Glow.Core.Typescript
 
         private static void RenderModule(Module module, string path)
         {
+            if (module.Namespace.StartsWith("System"))
+            {
+                return;
+            }
             IEnumerable<TsEnum> enumerables = module.TsEnums;
             var tsTypes = module.TsTypes;
             if (enumerables.Count() == 0 && tsTypes.Count() == 0)

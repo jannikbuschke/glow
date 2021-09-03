@@ -22,7 +22,7 @@ namespace Glow.Core.Typescript
 
             // very slow for big collections (<100 might be okay)
             // especially slow with debugger attached
-            var sorted = tsTypes.TopologicalSort(
+            IList<TsType> sorted = tsTypes.TopologicalSort(
                 v => v.Properties?.Where(v => v.TsType.IsT0 && !v.TsType.AsT0.IsPrimitive)
                     .Select(v => v.TsType.AsT0));
             sorted = sorted.Where(v => !v.IsCollection).ToList();
@@ -41,14 +41,14 @@ namespace Glow.Core.Typescript
 
         public IEnumerable<IGrouping<string, Dependency>> GetDependenciesGroupedByNamespace()
         {
-            var result = GetDependencies()
+            IEnumerable<IGrouping<string, Dependency>> result = GetDependencies()
                 .GroupBy(v => v.Namespace);
             return result;
         }
 
         public IEnumerable<Dependency> GetDependencies()
         {
-            var directDependencies = this.Types
+            IEnumerable<Dependency> directDependencies = this.Types
                 .Where(v => v.IsT0)
                 .Select(v => v.AsT0)
                 .Where(v => v.Properties != null)
@@ -72,7 +72,7 @@ namespace Glow.Core.Typescript
                 .Where(v => !v.IsPrimitive)
                 .Where(v => v.Namespace != this.Namespace && v.Name != "any");
 
-            var subDependencies = this.TsTypes
+            IEnumerable<Dependency> subDependencies = this.TsTypes
                 .SelectMany(v => v.Properties)
                 .Where(v => v.TsType.IsT0)
                 .Select(v => v.TsType.AsT0)
@@ -87,7 +87,7 @@ namespace Glow.Core.Typescript
                         IsPrimitive = v.IsPrimitive,
                         TsType = v
                     },
-                    v => new Dependency { Id = v.Id, Namespace = v.Namespace, Name = v.Name, IsPrimitive = false }))
+                    v => new Dependency {Id = v.Id, Namespace = v.Namespace, Name = v.Name, IsPrimitive = false}))
                 .Where(v => !v.IsPrimitive)
                 .Where(v => v.Namespace != this.Namespace && v.Name != "any");
 
@@ -95,7 +95,8 @@ namespace Glow.Core.Typescript
             all.AddRange(directDependencies);
             all.AddRange(subDependencies);
 
-            var result = all
+            IEnumerable<Dependency> result = all
+                .Where(v => !v.Namespace.StartsWith("System.Collections"))
                 .DistinctBy(v => v.Id)
                 .DistinctBy(v => v.Namespace + v.Name);
             return result;

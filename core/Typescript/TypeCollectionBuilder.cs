@@ -76,6 +76,7 @@ namespace Glow.Core.Typescript
 
         private OneOf<TsType, TsEnum> CreateOrGet(Type type, bool skipDependencies = false)
         {
+
             if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(KeyValuePair<,>))
             {
                 Type[] argTypes = type.GetGenericArguments();
@@ -163,6 +164,11 @@ namespace Glow.Core.Typescript
                     }
                     else
                     {
+                        if (type.Namespace.StartsWith("System"))
+                        {
+                            return TsType.Any();
+                        }
+
                         TsType tsType = Create(type, skipDependencies);
 
                         tsType.Id = id;

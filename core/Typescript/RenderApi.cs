@@ -23,10 +23,19 @@ namespace Glow.Core.Typescript
             var path = options.GetPath();
             IEnumerable<ActionMeta> actions = options.Assemblies.GetActions();
 
+            var glowPath = options.Assemblies.FirstOrDefault()?.FullName.StartsWith("Glow.Core") == true
+                ? ".."
+                : "glow-react";
+            var useSubmitPath = options.Assemblies.FirstOrDefault()?.FullName.StartsWith("Glow.Core") == true
+                ? ".."
+                : "glow-react/es";
+
             var imports = new StringBuilder();
             imports.AppendLine(@"import { QueryOptions } from ""react-query"";");
-            imports.AppendLine(@"import { useApi, ApiResult } from ""glow-react"";");
-            imports.AppendLine(@"import { useAction, useSubmit, UseSubmit } from ""glow-react/es/Forms/use-submit"";");
+            // allow adjusting?
+            imports.AppendLine($@"import {{ useApi, ApiResult }} from ""{glowPath}"";");
+            imports.AppendLine(
+                $@"import {{ useAction, useSubmit, UseSubmit }} from ""{useSubmitPath}/Forms/use-submit"";");
 
             var modules = types.Modules;
             foreach (var v in modules)
@@ -42,8 +51,11 @@ namespace Glow.Core.Typescript
                     continue;
                 }
 
-                imports.AppendLine(
-                    $"import * as {v.Namespace.Replace(".", "_")} from \"./{v.Namespace}\"");
+                if (!v.Namespace.StartsWith("System."))
+                {
+                    imports.AppendLine(
+                        $"import * as {v.Namespace.Replace(".", "_")} from \"./{v.Namespace}\"");
+                }
             }
 
             IEnumerable<Dependency> dependencies = types
