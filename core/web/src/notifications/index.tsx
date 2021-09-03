@@ -117,3 +117,19 @@ export function NotificationsProvider({
     </NotificationsContext.Provider>
   )
 }
+
+function BackgroundNotifications() {
+  useNotification(
+    "Gertrud.Generic.BackgroundQueueNotification",
+    (v: any) => {
+      if (process.env.NODE_ENV === "development") {
+        notification.info({ message: v.title, description: v.message })
+      } else {
+        // production code
+      }
+    },
+    [],
+  )
+
+  return null
+}
