@@ -1,17 +1,7 @@
 import * as React from "react"
 import { notification } from "antd"
 import { useFetch } from "../http/fetch-context"
-
-export interface Profile {
-  displayName: string | null
-  identityName: string | null
-  email: string | null
-  objectId: string | null
-  userId: string | null
-  isAuthenticated: boolean
-  scopes: string[]
-  claims: any[]
-}
+import { defaultProfile, Profile } from "../ts-models/Glow.Core.Profiles"
 
 export enum Status {
   checking = "cheking",
@@ -40,19 +30,11 @@ export function useAuthentication() {
   return ctx
 }
 
+//maybe rename to ProfileProvider
 export function AuthenticationProvider(props: React.PropsWithChildren<{}>) {
   const [status, setStatus] = React.useState<Status>(Status.checking)
   const fetch = useFetch()
-  const [profile, setProfile] = React.useState<Profile>({
-    claims: [],
-    displayName: null,
-    email: null,
-    userId: null,
-    identityName: null,
-    isAuthenticated: false,
-    objectId: null,
-    scopes: [],
-  })
+  const [profile, setProfile] = React.useState<Profile>(defaultProfile)
 
   React.useEffect(() => {
     setStatus(Status.checking)
@@ -63,16 +45,7 @@ export function AuthenticationProvider(props: React.PropsWithChildren<{}>) {
         if (v.ok) {
           return v.json() as Promise<Profile>
         } else if (v.status === 403) {
-          return {
-            claims: [],
-            displayName: null,
-            email: null,
-            identityName: null,
-            isAuthenticated: false,
-            objectId: null,
-            scopes: [],
-            userId: null,
-          } as Profile
+          return defaultProfile
         } else {
           throw new Error("" + v.statusText + v.status)
         }

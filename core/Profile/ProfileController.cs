@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Glow.Authentication.Aad;
 using Glow.Core.Authentication;
+using Glow.TypeScript;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -13,6 +14,7 @@ using Microsoft.Identity.Client;
 
 namespace Glow.Core.Profiles
 {
+    [GenerateTsInterface]
     public class Profile
     {
         public string DisplayName { get; set; }
@@ -25,6 +27,7 @@ namespace Glow.Core.Profiles
         public string UserId { get; set; }
         public IEnumerable<string> Scopes { get; set; }
         public IEnumerable<KeyValuePair<string, string>> Claims { get; set; }
+        public string AuthenticationType { get; set; }
     }
 
     public class HasConsented
@@ -83,7 +86,8 @@ namespace Glow.Core.Profiles
                 Scopes = scopes,
                 ObjectId = User.GetObjectId(),
                 UserId = User.GetObjectId(),
-                Claims = claims
+                Claims = claims,
+                AuthenticationType =  User?.Identity?.AuthenticationType
             };
         }
 

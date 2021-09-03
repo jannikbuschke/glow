@@ -1,6 +1,6 @@
 import * as React from "react"
 import { useFetch } from "../http/fetch-context"
-import { Profile } from "../models"
+import { Profile } from "../ts-models/Glow.Core.Profiles"
 
 export function useProfile(expandScopes: boolean = true) {
   const [error, setError] = React.useState("")
