@@ -4,8 +4,11 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Glow.Core.Authentication;
+using Glow.TestAutomation;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Microsoft.Graph;
 using Microsoft.Identity.Client;
@@ -20,16 +23,19 @@ namespace Glow.Core.Authentication
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly IHttpClientFactory clientFactory;
         private readonly IConfiguration configuration;
+        private readonly IOptions<AadFakeAuthenticationOptions> fakeAuthOptions;
 
         public MockedGraphTokenService(
             IHttpContextAccessor httpContextAccessor,
             IHttpClientFactory clientFactory,
-            IConfiguration configuration
+            IConfiguration configuration,
+            IOptions<AadFakeAuthenticationOptions> fakeAuthOptions
         )
         {
             this.httpContextAccessor = httpContextAccessor;
             this.clientFactory = clientFactory;
             this.configuration = configuration;
+            this.fakeAuthOptions = fakeAuthOptions;
         }
 
         public Task<string> AccessTokenForApp()
@@ -71,19 +77,23 @@ namespace Glow.Core.Authentication
         public async Task<AuthenticationResult> TokenForCurrentUser(string[] scope)
         {
             StringValues userIds = httpContextAccessor.HttpContext.Request.Headers["x-userid"];
-            var userId = userIds.FirstOrDefault() ?? "stanley.kubrick@gertruddemo.onmicrosoft.com";
+            var userId = userIds.FirstOrDefault() ?? fakeAuthOptions.Value.DefaultUserName;
+
+            FakeUser? user = fakeAuthOptions.Value.Users?.FirstOrDefault(v => v.UserName == userId);
+            if (user == null)
+            {
+                return null;
+            }
 
             var tenantId = configuration["OpenIdConnect:TenantId"];
             var clientId = configuration["OpenIdConnect:ClientId"];
             var clientSecret = configuration["ClientSecret"];
 
-            var userPassword = configuration["AadFakeAuthentication:Users:" + userId];
-
             HttpClient client = clientFactory.CreateClient();
             PasswordFlow.AccessTokenResponse result = await client.GetMsAccessTokentWithUsernamePassword(
                 clientSecret,
                 userId,
-                userPassword,
+                user.Password,
                 clientId,
                 tenantId);
 

@@ -54,6 +54,7 @@ namespace Glow.TestAutomation
 
     public class AadFakeAuthenticationOptions
     {
+        public string DefaultUserName { get; set; }
         public IEnumerable<FakeUser> Users { get; set; }
     }
 
@@ -101,6 +102,7 @@ namespace Glow.TestAutomation
         private readonly IHttpClientFactory clientFactory;
         private readonly IConfiguration configuration;
         private readonly IOptions<AadFakeAuthenticationOptions> fakeAuthOptions;
+        private readonly IGraphTokenService tokenService;
 
         public GlowAadFakeAuthenticationHandler(
             IOptionsMonitor<AuthenticationSchemeOptions> options,
@@ -110,7 +112,8 @@ namespace Glow.TestAutomation
             IHttpContextAccessor httpContextAccessor,
             IHttpClientFactory clientFactory,
             IConfiguration configuration,
-            IOptions<AadFakeAuthenticationOptions> fakeAuthOptions
+            IOptions<AadFakeAuthenticationOptions> fakeAuthOptions,
+            IGraphTokenService tokenService
         )
             : base(options, logger, encoder, clock)
         {
@@ -118,32 +121,14 @@ namespace Glow.TestAutomation
             this.clientFactory = clientFactory;
             this.configuration = configuration;
             this.fakeAuthOptions = fakeAuthOptions;
+            this.tokenService = tokenService;
         }
 
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
         {
-            StringValues userIds = httpContextAccessor.HttpContext.Request.Headers["x-userid"];
-            var userId = userIds.FirstOrDefault();
+            var accessToken  = await tokenService.AccessTokenForCurrentUser(new[] {"profile"});
 
-            FakeUser? user = fakeAuthOptions.Value.Users?.FirstOrDefault(v => v.UserName == userId);
-            if (user == null)
-            {
-                return AuthenticateResult.Fail($"User '{userId}' not found");
-            }
-
-            var tenantId = configuration["OpenIdConnect:TenantId"];
-            var clientId = configuration["OpenIdConnect:ClientId"];
-            var clientSecret = configuration["ClientSecret"];
-
-
-            HttpClient client = clientFactory.CreateClient();
-            PasswordFlow.AccessTokenResponse result = await client.GetMsAccessTokentWithUsernamePassword(
-                clientSecret,
-                userId,
-                user.Password,
-                clientId,
-                tenantId);
-            JwtSecurityToken token = new JwtSecurityTokenHandler().ReadJwtToken(result.access_token);
+            JwtSecurityToken token = new JwtSecurityTokenHandler().ReadJwtToken(accessToken);
             var principal = new ClaimsPrincipal(new ClaimsIdentity(token.Claims, Scheme.Name));
 
             var ticket = new AuthenticationTicket(principal, Scheme.Name);
