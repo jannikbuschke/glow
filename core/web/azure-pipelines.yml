@@ -6,9 +6,10 @@ trigger:
 pool:
   vmImage: "ubuntu-latest"
 
-variables:
-  workingDir: "core/web"
-
+  variables:
+    - group: semantic-release
+    - name: workingDir
+      value: "core/web"
 
 jobs:
   - job: "Check_for_changes"
