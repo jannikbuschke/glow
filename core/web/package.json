@@ -1,6 +1,10 @@
 {
   "name": "glow-react",
-  "version": "0.23.0",
+  "version": "0.0.0-development",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jannikbuschke/glow.git"
+  },
   "private": false,
   "files": [
     "lib",
@@ -55,7 +59,8 @@
     "@storybook/react": "5.3.13",
     "use-lodash-debounce": "1.1.0",
     "babel-loader": "8.0.6",
-    "semantic-release": "17.3.9",
+    "dayjs": "1.10.5",
+    "semantic-release": "17.4.7",
     "immer": "8.0.1",
     "lodash": "4.17.21",
     "@types/lodash": "4.14.170",
