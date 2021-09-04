@@ -4,6 +4,8 @@ using AutoMapper;
 using AutoMapper.EquivalencyExpression;
 using Glow.Authentication.Aad;
 using Glow.Clocks;
+using Glow.Configurations;
+using Glow.Core.Actions;
 using Glow.Core.Authentication;
 using Glow.Core.EfMsalTokenStore;
 using Glow.Core.EfTicketStore;
@@ -54,6 +56,18 @@ namespace Glow.Core
                 {
                     v.SuppressModelStateInvalidFilter = true;
                 });
+
+            services.AddMvcCore(options =>
+                {
+                    options.Conventions.Add(new ConfigurationControllerRouteConvention());
+                    options.Conventions.Add(new ActionsControllerRouteConvention());
+                })
+                .ConfigureApplicationPartManager(m =>
+                {
+                    m.FeatureProviders.Add(new ConfigurationsControllerProvider(assembliesToScan));
+                    m.FeatureProviders.Add(new ActionsControllerProvider(assembliesToScan));
+                })
+                .AddApplicationPart(typeof(ActionsControllerProvider).Assembly);
 
             configureAdditionalMvcOptions?.Invoke(mvcBuilder);
 
