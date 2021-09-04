@@ -7,53 +7,87 @@ pool:
 
 variables:
   workingDir: "core/web"
-steps:
-  - task: Npm@1
-    displayName: "npm install"
-    continueOnError: true
-    inputs:
-      verbose: false
-      workingDir: $(workingDir)
 
-  - script: |
-      dd /home/vsts/.npm/
-      ls
 
-  - task: Npm@1
-    displayName: "npm run test"
-    continueOnError: true
-    inputs:
-      command: custom
-      verbose: false
-      customCommand: "run test"
-      workingDir: $(workingDir)
+jobs:
+  - job: "Check_for_changes"
+    steps:
+      - checkout: self
+        submodules: "recursive"
+      - bash: |
+          PATH_FILTER="core/"
+          CHANGED_FILES=$(git diff HEAD HEAD~ --name-only)
+          MATCH_COUNT=0
 
-  - task: Npm@1
-    displayName: "npm run build"
-    inputs:
-      command: custom
-      verbose: false
-      customCommand: "run build"
-      workingDir: $(workingDir)
+          echo "Checking for file changes..."
+          for FILE in $CHANGED_FILES
+          do
+            if [[ $FILE == *$PATH_FILTER* ]]; then
+              echo "MATCH:  ${FILE} changed"
+              MATCH_COUNT=$(($MATCH_COUNT+1))
+            else
+              echo "IGNORE: ${FILE} changed"
+            fi
+          done
 
-  - task: Npm@1
-    displayName: "npm publish beta (refs/heads/beta)"
-    inputs:
-      command: custom
-      verbose: false
-      customCommand: "publish --tag beta"
-      publishEndpoint: npm
-      customEndpoint: npm
-      workingDir: $(workingDir)
-    continueOnError: true
-    condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/heads/beta'))
+          echo "$MATCH_COUNT match(es) for filter '$PATH_FILTER' found."
+          if [[ $MATCH_COUNT -gt 0 ]]; then
+            echo "##vso[task.setvariable variable=SOURCE_CODE_CHANGED;isOutput=true]true"
+          else
+            echo "##vso[task.setvariable variable=SOURCE_CODE_CHANGED;isOutput=true]false"
+          fi
+        name: check_changes
+        displayName: "Check changed files"
+  - job: Publish
+    dependsOn: "Check_for_changes"
+    condition: eq(dependencies.Check_for_changes.outputs['check_changes.SOURCE_CODE_CHANGED'], 'true') #map doThing and check the value
+    steps:
+      - task: Npm@1
+        displayName: "npm install"
+        continueOnError: true
+        inputs:
+          verbose: false
+          workingDir: $(workingDir)
 
-  - task: Npm@1
-    displayName: "npm publish release (refs/heads/master)"
-    inputs:
-      command: publish
-      verbose: false
-      publishEndpoint: npm
-      customEndpoint: npm
-      workingDir: $(workingDir)
-    condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/heads/master'))
+      - script: |
+          dd /home/vsts/.npm/
+          ls
+
+      - task: Npm@1
+        displayName: "npm run test"
+        continueOnError: true
+        inputs:
+          command: custom
+          verbose: false
+          customCommand: "run test"
+          workingDir: $(workingDir)
+
+      - task: Npm@1
+        displayName: "npm run build"
+        inputs:
+          command: custom
+          verbose: false
+          customCommand: "run build"
+          workingDir: $(workingDir)
+
+      - task: Npm@1
+        displayName: "npm publish beta (refs/heads/beta)"
+        inputs:
+          command: custom
+          verbose: false
+          customCommand: "publish --tag beta"
+          publishEndpoint: npm
+          customEndpoint: npm
+          workingDir: $(workingDir)
+        continueOnError: true
+        condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/heads/beta'))
+
+      - task: Npm@1
+        displayName: "npm publish release (refs/heads/master)"
+        inputs:
+          command: publish
+          verbose: false
+          publishEndpoint: npm
+          customEndpoint: npm
+          workingDir: $(workingDir)
+        condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/heads/master'))
