@@ -13,7 +13,7 @@ jobs:
       - checkout: self
         submodules: "recursive"
       - bash: |
-          PATH_FILTER="templates/content/"
+          PATH_FILTER="templates/"
           CHANGED_FILES=$(git diff HEAD HEAD~ --name-only)
           MATCH_COUNT=0
 
