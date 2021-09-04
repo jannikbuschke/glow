@@ -18,7 +18,10 @@ namespace Glow.Core.Actions
                 {
                     // TODO: remove ApiControllerAttribute
                     controller.Filters.Add(new ApiControllerAttribute());
-                    controller.Filters.Add(new AuthorizeFilter(attribute.Policy));
+                    if (!string.IsNullOrEmpty(attribute.Policy))
+                    {
+                        controller.Filters.Add(new AuthorizeFilter(attribute.Policy));
+                    }
                     controller.Selectors.Add(new SelectorModel
                     {
                         AttributeRouteModel = new AttributeRouteModel(new RouteAttribute(attribute.Route)),
