@@ -1,6 +1,7 @@
 trigger:
   - master
   - beta/*
+  - next
 
 pool:
   vmImage: "ubuntu-latest"
