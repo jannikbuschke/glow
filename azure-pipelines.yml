@@ -1,85 +1,115 @@
-
 trigger:
-- master
+  - master
 
 pool:
-  vmImage: 'windows-2019'
+  vmImage: "windows-2019"
 
 variables:
-  buildConfiguration: 'Release'
+  buildConfiguration: "Release"
   system.debug: false
 
-steps:
-- checkout: self
-  submodules: true
+jobs:
+  - job: "Check_for_changes"
+    steps:
+      - checkout: self
+        submodules: "recursive"
+      - bash: |
+          PATH_FILTER="core/"
+          CHANGED_FILES=$(git diff HEAD HEAD~ --name-only)
+          MATCH_COUNT=0
 
-- task: NuGetToolInstaller@1
-  inputs:
-    versionSpec: '5.x'
+          echo "Checking for file changes..."
+          for FILE in $CHANGED_FILES
+          do
+            if [[ $FILE == *$PATH_FILTER* ]]; then
+              echo "MATCH:  ${FILE} changed"
+              MATCH_COUNT=$(($MATCH_COUNT+1))
+            else
+              echo "IGNORE: ${FILE} changed"
+            fi
+          done
 
-- task: DotNetCoreCLI@2
-  displayName: 'dotnet restore'
-  inputs:
-    command: 'restore'
+          echo "$MATCH_COUNT match(es) for filter '$PATH_FILTER' found."
+          if [[ $MATCH_COUNT -gt 0 ]]; then
+            echo "##vso[task.setvariable variable=SOURCE_CODE_CHANGED;isOutput=true]true"
+          else
+            echo "##vso[task.setvariable variable=SOURCE_CODE_CHANGED;isOutput=true]false"
+          fi
+        name: check_changes
+        displayName: "Check changed files"
+  - job: Publish
+    dependsOn: "Check_for_changes"
+    condition: eq(dependencies.Check_for_changes.outputs['check_changes.SOURCE_CODE_CHANGED'], 'true') #map doThing and check the value
+    steps:
+      - checkout: self
+        submodules: true
 
-- task: DotNetCoreCLI@2
-  displayName: 'dotnet build'
-  inputs:
-    command: 'build'
-    publishWebProjects: false # mutually exclusive with 'projects'
-    projects: './sample/sample.csproj'
-    arguments: --configuration $(buildConfiguration)
+      - task: NuGetToolInstaller@1
+        inputs:
+          versionSpec: "5.x"
 
-# - task: DotNetCoreCLI@2
-#   inputs:
-#     command: test
-#     projects: ./test/test.csproj
-#     arguments: -c $(buildConfiguration) --collect:"XPlat Code Coverage" -- RunConfiguration.DisableAppDomain=true
-#   displayName: dotnet test
+      - task: DotNetCoreCLI@2
+        displayName: "dotnet restore"
+        inputs:
+          command: "restore"
 
-# - task: DotNetCoreCLI@2
-#   inputs:
-#     command: custom
-#     custom: tool
-#     arguments: install --tool-path . dotnet-reportgenerator-globaltool
-#   displayName: dotnet tool install dotnet-reportgenerator
+      - task: DotNetCoreCLI@2
+        displayName: "dotnet build"
+        inputs:
+          command: "build"
+          publishWebProjects: false # mutually exclusive with 'projects'
+          projects: "./sample/sample.csproj"
+          arguments: --configuration $(buildConfiguration)
 
-# - script: reportgenerator -reports:$(Agent.TempDirectory)/**/coverage.cobertura.xml -targetdir:$(Build.SourcesDirectory)/coverlet/reports -reporttypes:"Cobertura"
-#   displayName: generate reports
+      # - task: DotNetCoreCLI@2
+      #   inputs:
+      #     command: test
+      #     projects: ./test/test.csproj
+      #     arguments: -c $(buildConfiguration) --collect:"XPlat Code Coverage" -- RunConfiguration.DisableAppDomain=true
+      #   displayName: dotnet test
 
-# - task: PublishCodeCoverageResults@1
-#   displayName: 'publish code coverage'
-#   inputs:
-#     codeCoverageTool: Cobertura
-#     summaryFileLocation: $(Build.SourcesDirectory)/coverlet/reports/Cobertura.xml
+      # - task: DotNetCoreCLI@2
+      #   inputs:
+      #     command: custom
+      #     custom: tool
+      #     arguments: install --tool-path . dotnet-reportgenerator-globaltool
+      #   displayName: dotnet tool install dotnet-reportgenerator
 
-- task: DotNetCoreCLI@2
-  displayName: 'dotnet pack'
-  inputs:
-    command: 'pack'
-    arguments: "-p:SymbolPackageFormat=snupkg"
-    packagesToPack: 'core/glow.core.csproj'
-    versioningScheme: 'off'
+      # - script: reportgenerator -reports:$(Agent.TempDirectory)/**/coverage.cobertura.xml -targetdir:$(Build.SourcesDirectory)/coverlet/reports -reporttypes:"Cobertura"
+      #   displayName: generate reports
 
-- script: 'ls $(Build.ArtifactStagingDirectory)/*.nupkg'
+      # - task: PublishCodeCoverageResults@1
+      #   displayName: 'publish code coverage'
+      #   inputs:
+      #     codeCoverageTool: Cobertura
+      #     summaryFileLocation: $(Build.SourcesDirectory)/coverlet/reports/Cobertura.xml
 
-- script: 'dotnet nuget push $(Build.ArtifactStagingDirectory)\*.nupkg --api-key $(nuget_key) --source https://api.nuget.org/v3/index.json'
+      - task: DotNetCoreCLI@2
+        displayName: "dotnet pack"
+        inputs:
+          command: "pack"
+          arguments: "-p:SymbolPackageFormat=snupkg"
+          packagesToPack: "core/glow.core.csproj"
+          versioningScheme: "off"
 
-# - task: DotNetCoreCLI@2
-#   displayName: 'dotnet nuget push'
-#   inputs:
-#     command: 'custom'
-#     custom: 'nuget push --api-key $(nuget_key)'
-#     packagesToPush: '$(Build.ArtifactStagingDirectory)/*.nupkg'
-#     nuGetFeedType: 'external'
-#     publishFeedCredentials: 'nuget.org'
+      - script: "ls $(Build.ArtifactStagingDirectory)/*.nupkg"
 
+      - script: 'dotnet nuget push $(Build.ArtifactStagingDirectory)\*.nupkg --api-key $(nuget_key) --source https://api.nuget.org/v3/index.json'
 
-# - task: NuGetCommand@2
-#   displayName: 'NuGet push'
-#   inputs:
-#     command: push
-#     nuGetFeedType: external
-#     publishFeedCredentials: nuget.org
-#     packagesToPush: '$(Build.ArtifactStagingDirectory)/*.nupkg'
-#   condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/heads/master'))
+    # - task: DotNetCoreCLI@2
+    #   displayName: 'dotnet nuget push'
+    #   inputs:
+    #     command: 'custom'
+    #     custom: 'nuget push --api-key $(nuget_key)'
+    #     packagesToPush: '$(Build.ArtifactStagingDirectory)/*.nupkg'
+    #     nuGetFeedType: 'external'
+    #     publishFeedCredentials: 'nuget.org'
+
+    # - task: NuGetCommand@2
+    #   displayName: 'NuGet push'
+    #   inputs:
+    #     command: push
+    #     nuGetFeedType: external
+    #     publishFeedCredentials: nuget.org
+    #     packagesToPush: '$(Build.ArtifactStagingDirectory)/*.nupkg'
+    #   condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/heads/master'))
