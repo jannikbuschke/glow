@@ -71,10 +71,6 @@ namespace TemplateName
                     try
                     {
                         DataContext db = service.GetRequiredService<DataContext>();
-                        if (EnvironmentName == "Development" || EnvironmentName == "Test")
-                        {
-                            //db.Database.EnsureDeleted();
-                        }
                         db.Database.Migrate();
                     }
                     catch (Exception ex)

@@ -1,39 +1,39 @@
 import React from "react"
-import logo from "./logo.svg"
-import "./App.css"
-import { Formik } from "formik"
-import { Input, SubmitButton, Form } from "formik-antd"
-import { notification } from "antd"
-import { AntDesignOutlined } from "@ant-design/icons"
-
+import { Example } from "./example"
+import { QueryClient, QueryClientProvider } from "react-query"
+import { BrowserRouter as Router, Link } from "react-router-dom"
+import { Header } from "./header"
+import { Layout } from "antd"
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-      </header>
-
-      <div style={{ background: "white", padding: "20px" }}>
-        <Formik
-          initialValues={{ field1: "hello world" }}
-          onSubmit={(values, f) => {
-            notification.info({ message: values.field1 })
-            f.setSubmitting(false)
-          }}
-        >
-          <Form>
-            <Input name="field1" />
-            <SubmitButton
-              style={{ marginTop: 10 }}
-              icon={<AntDesignOutlined />}
-            >
-              Submit
-            </SubmitButton>
-          </Form>
-        </Formik>
+    <Layout
+      style={
+        {
+          // display: "flex", flex: 1
+        }
+      }
+    >
+      <Header />
+      <div
+        style={{
+          padding: 48,
+          // flex: 1
+        }}
+      >
+        <Example />
       </div>
-    </div>
+    </Layout>
   )
 }
 
-export default App
+const client: QueryClient = new QueryClient({})
+
+export function Root() {
+  return (
+    <Router>
+      <QueryClientProvider client={client}>
+        <App />
+      </QueryClientProvider>
+    </Router>
+  )
+}

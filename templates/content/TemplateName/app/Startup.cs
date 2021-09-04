@@ -8,6 +8,8 @@ using AutoMapper.EquivalencyExpression;
 using Glow.Authentication.Aad;
 using Glow.Configurations;
 using Glow.Core;
+using Glow.Core.Actions;
+using Glow.Core.Authentication;
 using Glow.Core.EfMsalTokenStore;
 using Glow.Glue.AspNetCore;
 using Glow.Tests;
@@ -45,25 +47,38 @@ namespace TemplateName
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddCustomAuthentication(env, configuration);
+            services.AddAadAuthentication(env, configuration);
             services.AddCustomAuthorization();
 
-            services.AddGlowApplicationServices(assembliesToScan: new[]
-            {
-                typeof(Startup).Assembly, typeof(Glow.Core.ServiceExtensions).Assembly
-            });
+            var assemblies = new[] { typeof(Startup).Assembly, typeof(Glow.Core.ServiceExtensions).Assembly};
+            services.AddGlowApplicationServices(assembliesToScan: assemblies);
+
+            services.AddMvcCore().AddApplicationPart(typeof(GlowCoreModule).Assembly);
 
             services.AddApplicationInsightsTelemetry();
 
             services.AddDbContext<DataContext>(options =>
             {
-                options.UseSqlServer(configuration.GetValue<string>("ConnectionString"));
+                options.UseInMemoryDatabase("test");
+                // options.UseSqlServer(configuration.GetValue<string>("ConnectionString"));
             });
 
             services.AddTypescriptGeneration(new TsGenerationOptions
             {
                 Path = "./web/src/ts-models/", Assemblies = new[] {typeof(Startup).Assembly}, GenerateApi = true
             });
+            //
+            // services.AddMvcCore(options =>
+            //     {
+            //         options.Conventions.Add(new ConfigurationControllerRouteConvention());
+            //         options.Conventions.Add(new ActionsControllerRouteConvention());
+            //     })
+            //     .ConfigureApplicationPartManager(m =>
+            //     {
+            //         m.FeatureProviders.Add(new ConfigurationsControllerProvider(assemblies));
+            //         m.FeatureProviders.Add(new ActionsControllerProvider(assemblies));
+            //     })
+            //     .AddApplicationPart(typeof(ActionsControllerProvider).Assembly);
         }
 
         public void Configure(
@@ -100,14 +115,14 @@ namespace TemplateName
                 //    builder.Requirements.Add(new IsPlannerRequirement());
                 //});
 
-                //options.AddPolicy(Policies.AuthenticatedUser, builder =>
-                //{
-                //    builder.RequireAuthenticatedUser();
-                //});
+                options.AddPolicy(DefaultPolicies.AuthenticatedUser, builder =>
+                {
+                    builder.RequireAuthenticatedUser();
+                });
             });
         }
 
-        public static void AddCustomAuthentication(
+        public static void AddAadAuthentication(
             this IServiceCollection services,
             IWebHostEnvironment env,
             IConfiguration configuration
