@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
   <metadata>
     <id>Glow.App.Template</id>
-    <version>0.22.2</version>
+    <version>0.23.0</version>
     <description>
       Opinionated Asp .Net Core + React template
       https://www.jannikbuschke.de/glow
