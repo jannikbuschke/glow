@@ -52,36 +52,39 @@ jobs:
     dependsOn: "Check_for_changes"
     condition: eq(dependencies.Check_for_changes.outputs['check_changes.SOURCE_CODE_CHANGED'], 'true') #map doThing and check the value
     steps:
-      - task: Npm@1
-        displayName: "npm install"
-        continueOnError: true
-        inputs:
-          verbose: false
-          workingDir: $(workingDir)
+      # - task: Npm@1
+      #   displayName: "npm install"
+      #   continueOnError: true
+      #   inputs:
+      #     verbose: false
+      #     workingDir: $(workingDir)
 
-      - script: |
-          dd /home/vsts/.npm/
-          ls
+      # - script: |
+      #     dd /home/vsts/.npm/
+      #     ls
 
-      - task: Npm@1
-        displayName: "npm run test"
-        continueOnError: true
-        inputs:
-          command: custom
-          verbose: false
-          customCommand: "run test"
-          workingDir: $(workingDir)
+      # - task: Npm@1
+      #   displayName: "npm run test"
+      #   continueOnError: true
+      #   inputs:
+      #     command: custom
+      #     verbose: false
+      #     customCommand: "run test"
+      #     workingDir: $(workingDir)
 
-      - task: Npm@1
-        displayName: "npm run build"
-        inputs:
-          command: custom
-          verbose: false
-          customCommand: "run build"
-          workingDir: $(workingDir)
+      # - task: Npm@1
+      #   displayName: "npm run build"
+      #   inputs:
+      #     command: custom
+      #     verbose: false
+      #     customCommand: "run build"
+      #     workingDir: $(workingDir)
 
       - task: Npm@1
         displayName: "semantic release"
+        env:
+          GH_TOKEN: $(GH_TOKEN)
+          NPM_TOKEN: $(NPM_TOKEN)
         inputs:
           command: custom
           customCommand: "run semantic-release"
