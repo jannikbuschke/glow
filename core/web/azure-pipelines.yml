@@ -8,6 +8,10 @@ pool:
 
 variables:
   - group: semantic-release
+  - name: GH_TOKEN
+    value: $[variables.GH_TOKEN]
+  - name: NPM_TOKEN
+    value: $[variables.NPM_TOKEN]
   - name: workingDir
     value: "core/web"
 
