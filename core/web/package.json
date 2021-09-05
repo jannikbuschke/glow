@@ -20,7 +20,7 @@
     "prettier": "prettier --write src/**/*.* package.json",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook",
-    "semantic-release": "semantic-release --no-ci --debug"
+    "semantic-release": "semantic-release --debug"
   },
   "dependencies": {
     "formik-antd": "2.1.0-beta.4",
