@@ -8,9 +8,9 @@ pool:
 
 variables:
   - group: semantic-release
-  - name: GH_TOKEN
+  - name: GH_TOKEN1
     value: $[variables.GH_TOKEN]
-  - name: NPM_TOKEN
+  - name: NPM_TOKEN1
     value: $[variables.NPM_TOKEN]
   - name: workingDir
     value: "core/web"
@@ -20,8 +20,10 @@ jobs:
     steps:
       - checkout: self
         submodules: "recursive"
-      - bash: echo $(NPM_TOKEN)
-      - bash: echo $(GH_TOKEN)
+      - script: echo $(NPM_TOKEN)
+      - script: echo $(GH_TOKEN)
+      - script: echo $(GH_TOKEN1)
+      - script: echo $(GH_TOKEN1)
       - bash: |
           PATH_FILTER="core/"
           CHANGED_FILES=$(git diff HEAD HEAD~ --name-only)
