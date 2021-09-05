@@ -20,5 +20,3 @@ export * from "./Formik/sortable-table"
 export * from "./antd/highlightable-row"
 export * from "./antd/styled-components"
 export * from "./layouts/master-detail-view"
-
-export * as antd from "antd"
