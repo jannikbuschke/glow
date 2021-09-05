@@ -52,12 +52,12 @@ jobs:
     dependsOn: "Check_for_changes"
     condition: eq(dependencies.Check_for_changes.outputs['check_changes.SOURCE_CODE_CHANGED'], 'true') #map doThing and check the value
     steps:
-      # - task: Npm@1
-      #   displayName: "npm install"
-      #   continueOnError: true
-      #   inputs:
-      #     verbose: false
-      #     workingDir: $(workingDir)
+      - task: Npm@1
+        displayName: "npm install"
+        continueOnError: true
+        inputs:
+          verbose: false
+          workingDir: $(workingDir)
 
       # - script: |
       #     dd /home/vsts/.npm/
