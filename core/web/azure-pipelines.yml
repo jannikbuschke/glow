@@ -20,6 +20,8 @@ jobs:
     steps:
       - checkout: self
         submodules: "recursive"
+      - bash: echo $(NPM_TOKEN)
+      - bash: echo $(GH_TOKEN)
       - bash: |
           PATH_FILTER="core/"
           CHANGED_FILES=$(git diff HEAD HEAD~ --name-only)
