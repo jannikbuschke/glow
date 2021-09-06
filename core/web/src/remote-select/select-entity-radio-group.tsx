@@ -54,7 +54,7 @@ export function SelectEntityRadioGroup<T>({
       {...restProps}
     >
       {options.map((v) => (
-        <Radio.Button name={name} value={v.value}>
+        <Radio.Button key={v.value} name={name} value={v.value}>
           {v.label}
         </Radio.Button>
       ))}
