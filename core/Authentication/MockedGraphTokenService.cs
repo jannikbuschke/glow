@@ -3,6 +3,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using Glow.Authentication.Aad;
 using Glow.Core.Authentication;
 using Glow.TestAutomation;
 using Microsoft.AspNetCore.Authentication;
@@ -24,18 +25,21 @@ namespace Glow.Core.Authentication
         private readonly IHttpClientFactory clientFactory;
         private readonly IConfiguration configuration;
         private readonly IOptions<AadFakeAuthenticationOptions> fakeAuthOptions;
+        private readonly IOptionsSnapshot<AzureAdOptions> aadOptions;
 
         public MockedGraphTokenService(
             IHttpContextAccessor httpContextAccessor,
             IHttpClientFactory clientFactory,
             IConfiguration configuration,
-            IOptions<AadFakeAuthenticationOptions> fakeAuthOptions
+            IOptions<AadFakeAuthenticationOptions> fakeAuthOptions,
+            IOptionsSnapshot<AzureAdOptions> aadOptions
         )
         {
             this.httpContextAccessor = httpContextAccessor;
             this.clientFactory = clientFactory;
             this.configuration = configuration;
             this.fakeAuthOptions = fakeAuthOptions;
+            this.aadOptions = aadOptions;
         }
 
         public Task<string> AccessTokenForApp()
@@ -85,9 +89,10 @@ namespace Glow.Core.Authentication
                 return null;
             }
 
-            var tenantId = configuration["OpenIdConnect:TenantId"];
-            var clientId = configuration["OpenIdConnect:ClientId"];
-            var clientSecret = configuration["ClientSecret"];
+            var aad = aadOptions.Value;
+            var tenantId = aad.TenantId;//  configuration["OpenIdConnect:TenantId"];
+            var clientId = aad.ClientId;// configuration["OpenIdConnect:ClientId"];
+            var clientSecret = aad.ClientSecret;// configuration["ClientSecret"];
 
             HttpClient client = clientFactory.CreateClient();
             PasswordFlow.AccessTokenResponse result = await client.GetMsAccessTokentWithUsernamePassword(
