@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Graph;
 using Serilog;
@@ -69,6 +70,9 @@ namespace Glow.Core
                     // }
                 });
             });
+
+            app.UseStaticFiles();
+            app.UseSpaStaticFiles();
 
             app.UseSpa(spa =>
             {
