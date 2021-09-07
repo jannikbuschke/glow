@@ -19,7 +19,7 @@
     "semantic-release": "semantic-release"
   },
   "dependencies": {
-    "formik-antd": "2.1.0-beta.4",
+    "formik-antd": "2.1.0-beta.5",
     "antd": "4.16.9",
     "formik": "2.2.9",
     "styled-components": "5.3.0",
