@@ -40,18 +40,6 @@ namespace Glow.Configurations
 
             services.AddSingleton<Configurations>();
 
-            services.AddMvcCore(options =>
-                {
-                    options.Conventions.Add(new ConfigurationControllerRouteConvention());
-                    options.Conventions.Add(new ActionsControllerRouteConvention());
-                })
-                .ConfigureApplicationPartManager(m =>
-                {
-                    m.FeatureProviders.Add(new ConfigurationsControllerProvider(a));
-                    m.FeatureProviders.Add(new ActionsControllerProvider(a));
-                })
-                .AddApplicationPart(typeof(ActionsControllerProvider).Assembly);
-
             switch (dbProvider)
             {
                 case DatabaseProvider.SqlServer:
