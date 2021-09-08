@@ -2,6 +2,7 @@ using System;
 using System.Reflection;
 using AutoMapper;
 using AutoMapper.EquivalencyExpression;
+using AutoMapper.Extensions.ExpressionMapping;
 using Glow.Authentication.Aad;
 using Glow.Clocks;
 using Glow.Configurations;
@@ -83,7 +84,12 @@ namespace Glow.Core
             services.AddHttpContextAccessor();
 
             services.AddMediatR(assembliesToScan);
-            services.AddAutoMapper(cfg => { cfg.AddCollectionMappers(); }, assembliesToScan);
+            services.AddAutoMapper(cfg =>
+            {
+                cfg.AddCollectionMappers();
+                cfg.AddExpressionMapping();
+
+            }, assembliesToScan);
 
             services.AddScoped<MailService>();
 
