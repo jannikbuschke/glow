@@ -8,18 +8,6 @@ import { ErrorBanner } from "../errors/error-banner"
 import { useListContext } from "./list-context"
 import styled from "styled-components"
 
-interface ListProps<T> {
-  path?: string | ((v: T) => string)
-  listPath?: string
-  columns: (Omit<ColumnType<T>, "render"> & {
-    title: string
-    key: string
-    render: (item: T) => React.ReactNode
-    sortable?: boolean
-  })[]
-  paginate?: boolean
-}
-
 export function ListSearch(props: Omit<InputProps, "value" | "onChange">) {
   const ctx = useListContext()
   const [{ search, setSearch }] = ctx.glowQuery
@@ -39,24 +27,49 @@ export function ListError() {
   return error ? <ErrorBanner error={error} /> : null
 }
 
+// interface ListProps<T> {
+//   path?: string | ((v: T) => string)
+//   listPath?: string
+//   columns: (Omit<ColumnType<T>, "render"> & {
+//     title: string
+//     key: string
+//     render: (item: T) => React.ReactNode
+//     sortable?: boolean
+//   })[]
+//   paginate?: boolean
+// }
+
+export type ListProps<RecordType extends { id: string } = any> = {
+  path?: string | ((v: RecordType) => string)
+  listPath?: string
+  onSelect?: (v: RecordType) => void
+  columns: (Omit<ColumnType<RecordType>, "render"> & {
+    title: string
+    key: string
+    render: (item: RecordType) => React.ReactNode
+    sortable?: boolean
+  })[]
+  paginate?: boolean
+} & Omit<
+  TableProps<RecordType>,
+  | "columns"
+  | "loading"
+  | "onRow"
+  | "rowKey"
+  | "components"
+  | "dataSource"
+  | "onChange"
+  | "pagination"
+>
+
 export function List<RecordType extends { id: string } = any>({
   path,
   listPath,
   columns,
+  onSelect,
   paginate = true,
   ...props
-}: Omit<
-  TableProps<RecordType>,
-  | "columns"
-  | "loading"
-  | "rowKey"
-  | "components"
-  | "onRow"
-  | "dataSource"
-  | "onChange"
-  | "pagination"
-> &
-  ListProps<RecordType>) {
+}: ListProps<RecordType>) {
   const navigate = useNavigate()
 
   const ctx = useListContext()
@@ -107,12 +120,16 @@ export function List<RecordType extends { id: string } = any>({
         },
       }}
       onRow={(record) => ({
-        onClick:
-          typeof path === "function"
-            ? () => navigate(path(record))
-            : path
-            ? () => navigate(path + record.id)
-            : undefined,
+        onClick: () => {
+          if (typeof path === "function") {
+            navigate(path(record))
+          } else if (path !== null && path !== undefined) {
+            navigate(path + record.id)
+          } else {
+            // do nothing
+          }
+          onSelect && onSelect(record)
+        },
       })}
       dataSource={data.value}
       onChange={(pagination, filters, sorter) => {
