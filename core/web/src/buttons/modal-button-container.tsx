@@ -1,19 +1,45 @@
 import { Button, ButtonProps } from "antd"
 import * as React from "react"
+import { RenderObject } from ".."
 
-type Props = Omit<ButtonProps, "onClick"> & { modal: React.ReactElement }
+type Props = Omit<ButtonProps, "onClick"> & {
+  modal: React.ReactElement<AutoControlledModalProps>
+  unmountModalOnAfterClose?: boolean
+}
 
-export function ModalButtonContainer({ modal, ...props }: Props) {
+export type AutoControlledModalProps = {
+  visible: boolean
+  onCancel: () => void
+  afterClose: () => void
+}
+
+export function ModalButtonContainer({
+  modal,
+  unmountModalOnAfterClose,
+  ...props
+}: Props) {
   const [visible, setVisible] = React.useState(false)
+  const [mountModal, setMountModal] = React.useState(false)
   return (
     <>
-      <Button {...props} onClick={() => setVisible(true)} />
-      {visible
-        ? React.cloneElement(modal, {
+      <Button
+        {...props}
+        onClick={() => {
+          setVisible(true)
+          setMountModal(true)
+        }}
+      />
+      {unmountModalOnAfterClose && !mountModal
+        ? null
+        : React.cloneElement(modal, {
             visible,
-            onClose: () => setVisible(false),
-          })
-        : false}
+            onCancel: () => {
+              setVisible(false)
+            },
+            afterClose: () => {
+              setMountModal(false)
+            },
+          } as AutoControlledModalProps)}
     </>
   )
 }
