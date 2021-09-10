@@ -25,10 +25,10 @@ export const constants = {
 export function MdxBundleExample() {
   return (
     <MasterDetailView
-      masteDetailContainerStyle={{
-        gridTemplateColumns: "200px 1fr 1fr",
-        gridGap: 16,
-      }}
+      // masteDetailContainerStyle={{
+      //   gridTemplateColumns: "200px 1fr 1fr",
+      //   gridGap: 16,
+      // }}
       detail={<Detail />}
       master={<List />}
       path="/mdx-bundle/"

@@ -8,6 +8,7 @@ export interface Profile {
   userId: string | null
   scopes: (string | null)[]
   claims: { key: any, value: any }[]
+  authenticationType: string | null
 }
 
 export const defaultProfile: Profile = {
@@ -20,5 +21,6 @@ export const defaultProfile: Profile = {
   userId: null,
   scopes: [],
   claims: [],
+  authenticationType: null,
 }
 
