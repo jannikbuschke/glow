@@ -16,6 +16,7 @@ import { PromiseButton } from "glow-react/es/buttons/promise-button"
 import { defaultMdxViewmodel } from "../../ts-models/Glow.Sample.MdxBundle"
 import { MasterDetailView } from "glow-react/es/layouts/master-detail-view"
 import { getMDXComponent } from "mdx-bundler/client"
+import dayjs from "dayjs"
 
 export const constants = {
   path: "/mdx-bundle/",
@@ -25,10 +26,10 @@ export const constants = {
 export function MdxBundleExample() {
   return (
     <MasterDetailView
-      // masteDetailContainerStyle={{
-      //   gridTemplateColumns: "200px 1fr 1fr",
-      //   gridGap: 16,
-      // }}
+      masteDetailContainerStyle={{
+        gridTemplateColumns: "200px 1fr 1fr",
+        gridGap: 16,
+      }}
       detail={<Detail />}
       master={<List />}
       path="/mdx-bundle/"
@@ -61,8 +62,9 @@ function Detail() {
     transpile({ source: data.content }).then((v) => {
       if (v.ok) {
         const { code, frontmatter } = v.payload
-        // setCode(code)
-        // setFrontmatter(frontmatter)
+        setCode(code)
+        setFrontmatter(frontmatter)
+        // could set Component from here
       } else {
         notifyError(v.error)
       }
@@ -90,7 +92,16 @@ function Detail() {
                   <SubmitButton>Save</SubmitButton>
                   <PromiseButton
                     onClick={async () => {
-                      setCode(f.values.content)
+                      transpile({ source: f.values.content }).then((v) => {
+                        if (v.ok) {
+                          const { code, frontmatter } = v.payload
+                          setCode(code)
+                          setFrontmatter(frontmatter)
+                          // could set Component from here
+                        } else {
+                          notifyError(v.error)
+                        }
+                      })
                     }}
                   >
                     Transpile
@@ -102,8 +113,13 @@ function Detail() {
         </Formik>
       </div>
       <div>
-        {/* <div>{data.code}</div> */}
-        <div>{JSON.stringify(frontmatter)}</div>
+        {/* <div>
+          {frontmatter &&
+            frontmatter["last-update"] &&
+            dayjs(frontmatter["last-update"]).format("LLLL")}
+        </div> */}
+        <div>Author: {frontmatter && frontmatter["author"]}</div>
+        <br />
         {Component ? <Component /> : <div>undefined {typeof Component}</div>}
       </div>
     </>
