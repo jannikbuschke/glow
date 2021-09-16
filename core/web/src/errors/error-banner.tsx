@@ -6,8 +6,14 @@ import { RenderObject } from "../debugging"
 export function WarningBanner({ message }: { message: any }) {
   return render("warning", message)
 }
-export function ErrorBanner({ error }: { error: any }) {
-  return render("error", error)
+export function ErrorBanner({
+  error,
+  message,
+}: {
+  error?: any
+  message?: any
+}) {
+  return render("error", message || error)
 }
 
 export function InfoBanner({ message }: { message: any }) {
