@@ -15,10 +15,12 @@ namespace Glow.Core.Typescript
 
         public static bool IsDictionary(this Type t)
         {
-            var isDict = t.IsGenericType && t.GetGenericTypeDefinition() == typeof(Dictionary<,>);
+            var isDict = t.IsGenericType && (t.GetGenericTypeDefinition() == typeof(Dictionary<,>) ||
+                                             t.GetGenericTypeDefinition() == typeof(IDictionary<,>));
             return isDict;
         }
 
+        [Obsolete("Use Extensions.IsEnumerable()")]
         public static bool IsEnumerableType(this Type type)
         {
             return (type.GetInterface(nameof(IEnumerable)) != null);
