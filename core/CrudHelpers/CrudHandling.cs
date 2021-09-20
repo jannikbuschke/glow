@@ -101,8 +101,8 @@ namespace Glow.CrudHelpers
         : IRequestHandler<Update, Entity>
         where Update : BaseUpdate<Entity> where DataContext : DbContext where Entity : class
     {
-        private readonly DataContext ctx;
-        private readonly IMapper mapper;
+        protected readonly DataContext ctx;
+        protected readonly IMapper mapper;
 
         public SimpleUpdateHandler(IServiceProvider services)
         {
@@ -110,7 +110,7 @@ namespace Glow.CrudHelpers
             mapper = services.GetRequiredService<IMapper>();
         }
 
-        public async Task<Entity> Handle(Update request, CancellationToken cancellationToken)
+        public virtual async Task<Entity> Handle(Update request, CancellationToken cancellationToken)
         {
             await Validate(request);
             Entity entity = await ctx.Set<Entity>().FindAsync(request.Id);
