@@ -112,8 +112,7 @@ namespace Glow.Core.Authentication
                 account: null,
                 idToken: null,
                 scopes: scope,
-                correlationId: Guid.NewGuid(),
-                authenticationResultMetadata: null);
+                correlationId: Guid.NewGuid());
         }
     }
 }
