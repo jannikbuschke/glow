@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using AutoMapper.EquivalencyExpression;
+using EFCoreSecondLevelCacheInterceptor;
 using Glow.Configurations;
 using Glow.Core.FakeData;
 using Glow.Files;
@@ -124,7 +125,7 @@ namespace Glow.Sample.Files
         public async Task<Portfolio> Handle(UpdatePortfolio request, CancellationToken cancellationToken)
         {
             Portfolio result = await ctx.Portfolios.Include(v => v.Files).SingleAsync(v => v.Id == request.Id);
-            result.DisplayName = Guid.NewGuid().ToString();
+            result.DisplayName = request.DisplayName;
             ctx.Entry(result).Property(v => v.RowVersion).OriginalValue = request.RowVersion;
             await ctx.SaveChangesAsync();
             return result;
@@ -159,7 +160,8 @@ namespace Glow.Sample.Files
         [HttpGet("list")]
         public IQueryable<Portfolio> GetList()
         {
-            return ctx.Portfolios;
+            return ctx.Portfolios
+                .Cacheable();
         }
 
         [HttpGet("single/{id}")]

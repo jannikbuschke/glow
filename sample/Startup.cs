@@ -1,9 +1,11 @@
+using System;
 using System.IO;
 using System.Net;
 using System.Reflection;
 using System.Security.Claims;
 using AutoMapper;
 using AutoMapper.EquivalencyExpression;
+using EFCoreSecondLevelCacheInterceptor;
 using Glow.Configurations;
 using Glow.Core;
 using Glow.Sample.Configurations;
@@ -71,13 +73,23 @@ namespace Glow.Sample
             // services.AddMediatR(typeof(Startup), typeof(Clocks.Clock));
             // services.AddAutoMapper(cfg => { cfg.AddCollectionMappers(); }, typeof(Startup));
 
-            services.AddDbContext<DataContext>(options =>
-            {
-                options.UseSqlServer(
-                    "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=glow-sample;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
-                options.EnableSensitiveDataLogging(true);
-            });
-
+            // services.AddDbContext<DataContext>(options =>
+            // {
+            //     options.UseSqlServer(
+            //         "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=glow-sample;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
+            //     options.EnableSensitiveDataLogging(true);
+            // });
+            services.AddDbContextPool<DataContext>((serviceProvider, optionsBuilder) =>
+                optionsBuilder
+                    .UseSqlServer(
+                        "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=glow-sample;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False",
+                        sqlServerOptionsBuilder =>
+                        {
+                            sqlServerOptionsBuilder
+                                .CommandTimeout((int)TimeSpan.FromMinutes(3).TotalSeconds)
+                                .EnableRetryOnFailure();
+                        })
+                    .AddInterceptors(serviceProvider.GetRequiredService<SecondLevelCacheInterceptor>()));
             services.AddOptions();
 
             // services.AddTypescriptGeneration(new[]
@@ -112,6 +124,10 @@ namespace Glow.Sample
                 options.ProjectPath =
                     Path.Combine(env.ContentRootPath, "MdxBundle",
                         "js")); // AppDomain.CurrentDomain.BaseDirectory is your bin/<configuration>/<targetframework> directory
+
+            services.AddEFSecondLevelCache(options =>
+                    options.UseMemoryCacheProvider().DisableLogging(false).UseCacheKeyPrefix("EF_")
+            );
         }
 
         public void Configure(
