@@ -42,43 +42,35 @@ namespace Glow.Core.Authentication
             this.aadOptions = aadOptions;
         }
 
-        public Task<string> AccessTokenForApp()
+        public override Task<string> AccessTokenForApp()
         {
             return Task.FromResult("");
         }
 
-        public async Task<string> AccessTokenForCurrentUser(string[] scope)
+        public override async Task<string> AccessTokenForCurrentUser(string[] scope)
         {
-            var authResult = await TokenForCurrentUser(scope);
+            AuthenticationResult authResult = await TokenForCurrentUser(scope);
             return authResult.AccessToken;
         }
 
-        public Task<string> AccessTokenForServiceUser()
+        public override Task<string> AccessTokenForServiceUser()
         {
             return Task.FromResult("");
         }
 
-        public async Task<GraphServiceClient> GetClientForUser(string[] scopes, bool useBetaEndpoint = false)
+        public override async Task<GraphServiceClient> GetClientForUser(string[] scopes, bool useBetaEndpoint = false)
         {
             var token = await AccessTokenForCurrentUser(scopes);
-            var client = new GraphServiceClient(
-                useBetaEndpoint ? "https://graph.microsoft.com/beta/" : "https://graph.microsoft.com/v1.0/",
-                new DelegateAuthenticationProvider(
-                    (requestMessage) =>
-                    {
-                        requestMessage.Headers.Authorization = new AuthenticationHeaderValue("bearer", token);
-                        return Task.FromResult(requestMessage);
-                    }
-                ));
-            return client;
+            return CreateClient(token, useBetaEndpoint);
         }
 
-        public Task ThrowIfCurrentUserNotConsentedToScope(string scope)
+
+        public override Task ThrowIfCurrentUserNotConsentedToScope(string scope)
         {
             return Task.CompletedTask;
         }
 
-        public async Task<AuthenticationResult> TokenForCurrentUser(string[] scope)
+        public override async Task<AuthenticationResult> TokenForCurrentUser(string[] scope)
         {
             StringValues userIds = httpContextAccessor.HttpContext.Request.Headers["x-userid"];
             var userId = userIds.FirstOrDefault() ?? fakeAuthOptions.Value.DefaultUserName;
@@ -89,7 +81,7 @@ namespace Glow.Core.Authentication
                 return null;
             }
 
-            var aad = aadOptions.Value;
+            AzureAdOptions aad = aadOptions.Value;
             var tenantId = aad.TenantId;//  configuration["OpenIdConnect:TenantId"];
             var clientId = aad.ClientId;// configuration["OpenIdConnect:ClientId"];
             var clientSecret = aad.ClientSecret;// configuration["ClientSecret"];

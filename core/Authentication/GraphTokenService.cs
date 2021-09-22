@@ -39,7 +39,7 @@ namespace Glow.Core.Authentication
             this.clientFactory = clientFactory;
         }
 
-        public async Task<string> AccessTokenForApp()
+        public override async Task<string> AccessTokenForApp()
         {
             AzureAdOptions o = options.Value;
 
@@ -50,14 +50,14 @@ namespace Glow.Core.Authentication
 
             var scopes = new string[] { "https://graph.microsoft.com/.default" };
 
-            var token = await app.AcquireTokenForClient(scopes).ExecuteAsync();
+            AuthenticationResult token = await app.AcquireTokenForClient(scopes).ExecuteAsync();
             return token.AccessToken;
         }
 
-        public async Task<string> AccessTokenForServiceUser()
+        public override async Task<string> AccessTokenForServiceUser()
         {
-            var httpClient = clientFactory.CreateClient();
-            var token = await httpClient.GetMsAccessTokentWithUsernamePassword(
+            HttpClient httpClient = clientFactory.CreateClient();
+            PasswordFlow.AccessTokenResponse token = await httpClient.GetMsAccessTokentWithUsernamePassword(
                 options.Value.ClientSecret,
                 serviceUserConfiguration.Value.Username,
                 serviceUserConfiguration.Value.Password,
@@ -67,7 +67,7 @@ namespace Glow.Core.Authentication
             return token.access_token;
         }
 
-        public async Task<AuthenticationResult> TokenForCurrentUser(string[] scopes)
+        public override async Task<AuthenticationResult> TokenForCurrentUser(string[] scopes)
         {
             if (accessor.HttpContext.Request.Headers.TryGetValue("Authorization",
                 out Microsoft.Extensions.Primitives.StringValues value))
@@ -116,27 +116,19 @@ namespace Glow.Core.Authentication
             }
         }
 
-        public async Task<GraphServiceClient> GetClientForUser(string[] scopes, bool useBetaEndpoint = false)
+        public override async Task<GraphServiceClient> GetClientForUser(string[] scopes, bool useBetaEndpoint = false)
         {
             var token = await AccessTokenForCurrentUser(scopes);
-            var client = new GraphServiceClient(
-                useBetaEndpoint ? "https://graph.microsoft.com/beta/" : "https://graph.microsoft.com/v1.0/",
-                new DelegateAuthenticationProvider(
-                    (requestMessage) =>
-                    {
-                        requestMessage.Headers.Authorization = new AuthenticationHeaderValue("bearer", token);
-                        return Task.FromResult(requestMessage);
-                    }
-                ));
-            return client;
+
+            return CreateClient(token,useBetaEndpoint);
         }
 
-        public async Task ThrowIfCurrentUserNotConsentedToScope(string scope)
+        public override async Task ThrowIfCurrentUserNotConsentedToScope(string scope)
         {
-            var _ = await TokenForCurrentUser(new string[] { scope });
+            AuthenticationResult _ = await TokenForCurrentUser(new string[] { scope });
         }
 
-        public async Task<string> AccessTokenForCurrentUser(string[] scopes)
+        public override async Task<string> AccessTokenForCurrentUser(string[] scopes)
         {
             AuthenticationResult result = await TokenForCurrentUser(scopes);
             return result.AccessToken;
