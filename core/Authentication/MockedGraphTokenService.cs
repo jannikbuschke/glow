@@ -64,7 +64,6 @@ namespace Glow.Core.Authentication
             return CreateClient(token, useBetaEndpoint);
         }
 
-
         public override Task ThrowIfCurrentUserNotConsentedToScope(string scope)
         {
             return Task.CompletedTask;
@@ -72,19 +71,20 @@ namespace Glow.Core.Authentication
 
         public override async Task<AuthenticationResult> TokenForCurrentUser(string[] scope)
         {
-            StringValues userIds = httpContextAccessor.HttpContext.Request.Headers["x-userid"];
-            var userId = userIds.FirstOrDefault() ?? fakeAuthOptions.Value.DefaultUserName;
+            StringValues? userIds = httpContextAccessor?.HttpContext?.Request?.Headers["x-userid"];
+            var userId = userIds?.FirstOrDefault() ?? fakeAuthOptions.Value.DefaultUserName;
 
-            FakeUser? user = fakeAuthOptions.Value.Users?.FirstOrDefault(v => v.UserName == userId);
+            FakeUser? user = fakeAuthOptions.Value.Users?.FirstOrDefault(v => v.UserName == userId)
+                             ?? fakeAuthOptions.Value.Users?.FirstOrDefault(v=>v.UserName==fakeAuthOptions.Value.DefaultUserName);
             if (user == null)
             {
                 return null;
             }
 
             AzureAdOptions aad = aadOptions.Value;
-            var tenantId = aad.TenantId;//  configuration["OpenIdConnect:TenantId"];
-            var clientId = aad.ClientId;// configuration["OpenIdConnect:ClientId"];
-            var clientSecret = aad.ClientSecret;// configuration["ClientSecret"];
+            var tenantId = aad.TenantId;
+            var clientId = aad.ClientId;
+            var clientSecret = aad.ClientSecret;
 
             HttpClient client = clientFactory.CreateClient();
             PasswordFlow.AccessTokenResponse result = await client.GetMsAccessTokentWithUsernamePassword(
