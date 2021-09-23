@@ -7,15 +7,16 @@ export function RoutedTabs({
   baseUrl,
   parameter,
   children,
+  defaultView,
   ...rest
 }: React.PropsWithChildren<
-  { baseUrl: string; parameter: string } & Omit<
+  { baseUrl: string; parameter: string; defaultView?: string } & Omit<
     TabsProps,
     "activeKey" | "onChange" | "defaultActiveKey"
   >
 >) {
   const params = useParams()
-  const view = params[parameter]
+  const view = params[parameter] || defaultView
   const navigate = useNavigate()
 
   return (
