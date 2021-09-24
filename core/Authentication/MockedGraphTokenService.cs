@@ -71,11 +71,16 @@ namespace Glow.Core.Authentication
 
         public override async Task<AuthenticationResult> TokenForCurrentUser(string[] scope)
         {
-            StringValues? userIds = httpContextAccessor?.HttpContext?.Request?.Headers["x-userid"];
-            var userId = userIds?.FirstOrDefault() ?? fakeAuthOptions.Value.DefaultUserName;
+            StringValues? ids = httpContextAccessor?.HttpContext?.Request?.Headers["x-userid"];
+            var id = ids?.FirstOrDefault();
 
-            FakeUser? user = fakeAuthOptions.Value.Users?.FirstOrDefault(v => v.UserName == userId)
-                             ?? fakeAuthOptions.Value.Users?.FirstOrDefault(v=>v.UserName==fakeAuthOptions.Value.DefaultUserName);
+            StringValues? usernames = httpContextAccessor?.HttpContext?.Request?.Headers["x-username"];
+            var username = usernames?.FirstOrDefault() ?? fakeAuthOptions.Value.DefaultUserName;
+
+            FakeUser? user = id == null && username == null
+                ? null //fakeAuthOptions.Value.Users?.FirstOrDefault(v => v.UserName == fakeAuthOptions.Value.DefaultUserName)
+                :  fakeAuthOptions.Value.Users?.FirstOrDefault(v => v.Id == id || v.UserName == username);
+
             if (user == null)
             {
                 return null;
@@ -89,7 +94,7 @@ namespace Glow.Core.Authentication
             HttpClient client = clientFactory.CreateClient();
             PasswordFlow.AccessTokenResponse result = await client.GetMsAccessTokentWithUsernamePassword(
                 clientSecret,
-                userId,
+                user.UserName,
                 user.Password,
                 clientId,
                 tenantId);

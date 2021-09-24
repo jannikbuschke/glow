@@ -25,11 +25,11 @@ namespace Glow.Tests
             return this;
         }
 
-        public SendBuilder<TRequest, TStartup> As(string userId)
-        {
-            user = new UserDto { Id = userId };
-            return this;
-        }
+        // public SendBuilder<TRequest, TStartup> As(string userId)
+        // {
+        //     user = new UserDto { Id = userId };
+        //     return this;
+        // }
 
         public SendBuilder<TRequest, TStartup> As(UserDto user)
         {
@@ -55,9 +55,9 @@ namespace Glow.Tests
                     client.SetUserId(user.Id);
                 }
 
-                if (user.DisplayName != null)
+                if (user.Email != null)
                 {
-                    client.SetUsername(user.DisplayName);
+                    client.SetUsername(user.Email);
                 }
             }
 
@@ -99,9 +99,9 @@ namespace Glow.Tests
             }
 
             client.SetUserId(user.Id);
-            if (user.DisplayName != null)
+            if (user.Email != null)
             {
-                client.SetUsername(user.DisplayName);
+                client.SetUsername(user.Email);
             }
         }
 
