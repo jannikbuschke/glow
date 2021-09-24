@@ -1,7 +1,7 @@
 import * as React from "react"
 import { Select, notification, Avatar } from "antd"
 import { schema, normalize } from "normalizr"
-import { Field, FieldProps, useField, useFormikContext } from "formik"
+import { useField, useFormikContext } from "formik"
 import debounce from "lodash.debounce"
 import { SelectProps } from "antd/lib/select"
 import styled from "styled-components"
@@ -40,17 +40,38 @@ export function UserSelect<T = any>({
     if (field.value) {
       const userId = setByReference ? field.value : field.value.id
       fetchJson<User>(`/api/user/${userId}`).then((v) => {
-        if (v !== null) {
-          setDataSource((current) =>
-            current.some((v) => v.id == v.id) ? current : [...current, v],
-          )
-        }
+        setCurrentSelectedUser(v)
       })
+    } else {
+      setCurrentSelectedUser(null)
     }
   }, [field.value])
 
   const [dataSource, setDataSource] = React.useState<User[]>([])
   const [users, setUsers] = React.useState<{ [key: string]: User }>({})
+
+  const [
+    currentSelectedUser,
+    setCurrentSelectedUser,
+  ] = React.useState<User | null>(null)
+  const extendedDataSource = React.useMemo(() => {
+    if (currentSelectedUser !== null) {
+      if (dataSource.some((v) => v.id === currentSelectedUser.id)) {
+        return dataSource
+      } else {
+        return [
+          ...dataSource,
+          {
+            displayName: currentSelectedUser.displayName || "no displayname",
+            id: currentSelectedUser.id || "unknown",
+            email: currentSelectedUser.email!,
+          },
+        ]
+      }
+    } else {
+      return dataSource
+    }
+  }, [currentSelectedUser, dataSource])
 
   const debouncedSearch = React.useCallback(
     debounce<(search: string) => void>((v) => {
@@ -123,7 +144,7 @@ export function UserSelect<T = any>({
       filterOption={false}
       {...restProps}
     >
-      {dataSource.map((v) => (
+      {extendedDataSource.map((v) => (
         <Select.Option key={v.id!} value={v.id!}>
           <Container>
             <Avatar
