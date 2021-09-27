@@ -131,6 +131,8 @@ namespace Glow.Core.Typescript
                 {typeof(IEnumerable<double>), new Tuple<string, string>("number[]", "[]")},
                 {typeof(Collection<string>), new Tuple<string, string>("(string | null)[]", "[]")},
                 {typeof(ICollection<string>), new Tuple<string, string>("(string | null)[]", "[]")},
+                {typeof(TimeSpan), new Tuple<string, string>("string","null")},
+                {typeof(TimeSpan?), new Tuple<string, string>("string | null","null")},
             };
     }
 }
