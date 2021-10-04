@@ -7,6 +7,10 @@ namespace Glow.Core.StringExtensions
 {
     public static class StringTemplatesExtensions
     {
+        public static bool IsNullOrEmpty(this string self)
+        {
+            return string.IsNullOrEmpty(self);
+        }
         /// <summary>
         /// Replaces all occurences of the form {<identifier>:format} in the given string
         /// 'Identifier' is an argument that specifies the locations in the string where the given DateTime
