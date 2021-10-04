@@ -26,6 +26,10 @@ namespace Glow.Core.Actions
                     {
                         AttributeRouteModel = new AttributeRouteModel(new RouteAttribute(attribute.Route)),
                     });
+                    if (attribute.AllowAnoymous)
+                    {
+                        controller.Filters.Add(new AllowAnonymousFilter());
+                    }
                 }
             }
         }
