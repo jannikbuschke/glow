@@ -3,6 +3,8 @@ import { useApi, ApiResult } from "..";
 import { useAction, useSubmit, UseSubmit } from "../Forms/use-submit";
 import * as Glow_TestAutomation from "./Glow.TestAutomation"
 import * as Glow_Core_EfCore from "./Glow.Core.EfCore"
+import * as Glow_Core_OpenIdConnect from "./Glow.Core.OpenIdConnect"
+import * as Glow_Core_Application from "./Glow.Core.Application"
 import * as MediatR from "./MediatR"
 import * as Glow_Core_Queries from "./Glow.Core.Queries"
 import * as Glow_Core_Profiles from "./Glow.Core.Profiles"
@@ -16,9 +18,13 @@ type QueryOutputs = {
 }
 type Outputs = {
   "/api/glow/db/reset-database": MediatR.Unit,
+  "/api/glow/set-openid-connect-options": MediatR.Unit,
+  "/api/glow/restart-application": MediatR.Unit,
 }
 type Actions = {
   "/api/glow/db/reset-database": Glow_Core_EfCore.ResetDatabase,
+  "/api/glow/set-openid-connect-options": Glow_Core_OpenIdConnect.SetOpenIdConnectOptions,
+  "/api/glow/restart-application": Glow_Core_Application.RestartApplication,
 }
 
 type TagWithKey<TagName extends string, T> = {

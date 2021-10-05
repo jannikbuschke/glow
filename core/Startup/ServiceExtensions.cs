@@ -8,6 +8,7 @@ using Glow.Clocks;
 using Glow.Configurations;
 using Glow.Core.Actions;
 using Glow.Core.Authentication;
+using Glow.Core.AzureKeyVault;
 using Glow.Core.EfMsalTokenStore;
 using Glow.Core.EfTicketStore;
 using Glow.Files;
@@ -129,16 +130,17 @@ namespace Glow.Core
             return services;
         }
 
-        /// <summary>
-        /// Adds FileService, MockExternalSystems and Clock
-        /// </summary>
-        /// <param name="services"></param>
-        /// <returns></returns>
+        public static IServiceCollection AddGlowServices(this IServiceCollection serviceCollection)
+        {
+            return serviceCollection.AddGlow();
+        }
+
         public static IServiceCollection AddGlow(this IServiceCollection services)
         {
             services.AddSingleton<FileService>();
             services.AddSingleton<MockExternalSystems>();
             services.AddSingleton<IClock, Clock>();
+            services.AddAzureKeyvaultClientProvider();
 
             return services;
         }
