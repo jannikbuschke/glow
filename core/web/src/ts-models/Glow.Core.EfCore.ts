@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 export interface ResetDatabase {
   deleteDatabase: boolean
   iKnowWhatIAmDoing: boolean

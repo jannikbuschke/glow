@@ -31,14 +31,16 @@ namespace Glow.Core.Typescript
                 : "glow-react/es";
 
             var imports = new StringBuilder();
-            imports.AppendLine(@"import * as React from ""react"";");
-            imports.AppendLine(@"import { QueryOptions } from ""react-query"";");
+
+            imports.AppendLine(@"/* eslint-disable prettier/prettier */");
+            imports.AppendLine(@"import * as React from ""react""");
+            imports.AppendLine(@"import { QueryOptions } from ""react-query""");
             // allow adjusting?
-            imports.AppendLine($@"import {{ useApi, ApiResult, notifySuccess, notifyError }} from ""{glowPath}"";");
+            imports.AppendLine($@"import {{ useApi, ApiResult, notifySuccess, notifyError }} from ""{glowPath}""");
             imports.AppendLine(
-                $@"import {{ useAction, useSubmit, UseSubmit, ProblemDetails }} from ""{useSubmitPath}/Forms/use-submit"";");
-            imports.AppendLine(@"import { Formik, FormikFormProps } from ""formik"";");
-            imports.AppendLine(@"import { Form } from ""formik-antd"";");
+                $@"import {{ useAction, useSubmit, UseSubmit, ProblemDetails }} from ""{useSubmitPath}/Forms/use-submit""");
+            imports.AppendLine(@"import { Formik, FormikFormProps } from ""formik""");
+            imports.AppendLine(@"import { Form } from ""formik-antd""");
 
             var modules = types.Modules;
             foreach (var v in modules)

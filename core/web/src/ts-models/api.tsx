@@ -1,9 +1,10 @@
-import * as React from "react";
-import { QueryOptions } from "react-query";
-import { useApi, ApiResult, notifySuccess, notifyError } from "..";
-import { useAction, useSubmit, UseSubmit, ProblemDetails } from "../Forms/use-submit";
-import { Formik, FormikFormProps } from "formik";
-import { Form } from "formik-antd";
+/* eslint-disable prettier/prettier */
+import * as React from "react"
+import { QueryOptions } from "react-query"
+import { useApi, ApiResult, notifySuccess, notifyError } from ".."
+import { useAction, useSubmit, UseSubmit, ProblemDetails } from "../Forms/use-submit"
+import { Formik, FormikFormProps } from "formik"
+import { Form } from "formik-antd"
 import * as Glow_TestAutomation from "./Glow.TestAutomation"
 import * as Glow_Core_EfCore from "./Glow.Core.EfCore"
 import * as Glow_Core_OpenIdConnect from "./Glow.Core.OpenIdConnect"

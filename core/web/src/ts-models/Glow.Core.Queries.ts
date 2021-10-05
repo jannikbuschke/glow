@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 export type Operation = "StartsWith" | "Equals" | "LessThan" | "GreaterThan" | "Contains"
 export const defaultOperation = "StartsWith"
 export const OperationValues: { [key in Operation]: Operation } = {

@@ -48,6 +48,8 @@ namespace Glow.Core.Typescript
 
             IEnumerable<IGrouping<string, Dependency>> dependencies = module.GetDependenciesGroupedByNamespace();
 
+            builder.AppendLine(@"/* eslint-disable prettier/prettier */");
+
             foreach (IGrouping<string, Dependency> group in dependencies)
             {
                 builder.AppendLine(

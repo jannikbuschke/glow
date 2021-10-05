@@ -1,13 +1,13 @@
 import { Input, SubmitButton } from "formik-antd"
 import * as React from "react"
 import styled from "styled-components"
-import { DefaultForm } from "../Forms/default-form"
 import { VerticalSpace } from "../Layout"
+import { TypedForm } from "../ts-models/api"
 
 export function UpdateOpenidConnectOptionsView() {
   return (
     <Container>
-      <DefaultForm
+      <TypedForm
         actionName="/api/glow/set-openid-connect-options"
         initialValues={{ clientId: "", clientSecret: "", tenantId: "" }}
         onSuccess={(payload) => {
@@ -20,7 +20,7 @@ export function UpdateOpenidConnectOptionsView() {
           <Input.Password name="clientSecret" placeholder="ClientSecret" />
           <SubmitButton>Submit</SubmitButton>
         </VerticalSpace>
-      </DefaultForm>
+      </TypedForm>
     </Container>
   )
 }
