@@ -31,11 +31,14 @@ namespace Glow.Core.Typescript
                 : "glow-react/es";
 
             var imports = new StringBuilder();
+            imports.AppendLine(@"import * as React from ""react"";");
             imports.AppendLine(@"import { QueryOptions } from ""react-query"";");
             // allow adjusting?
-            imports.AppendLine($@"import {{ useApi, ApiResult }} from ""{glowPath}"";");
+            imports.AppendLine($@"import {{ useApi, ApiResult, notifySuccess, notifyError }} from ""{glowPath}"";");
             imports.AppendLine(
-                $@"import {{ useAction, useSubmit, UseSubmit }} from ""{useSubmitPath}/Forms/use-submit"";");
+                $@"import {{ useAction, useSubmit, UseSubmit, ProblemDetails }} from ""{useSubmitPath}/Forms/use-submit"";");
+            imports.AppendLine(@"import { Formik, FormikFormProps } from ""formik"";");
+            imports.AppendLine(@"import { Form } from ""formik-antd"";");
 
             var modules = types.Modules;
             foreach (var v in modules)
@@ -72,8 +75,8 @@ namespace Glow.Core.Typescript
 
             queryInputs.AppendLine("type QueryInputs = {");
             queryOutputs.AppendLine("type QueryOutputs = {");
-            actionInputs.AppendLine("type Actions = {");
-            actionOutputs.AppendLine("type Outputs = {");
+            actionInputs.AppendLine("export type Actions = {");
+            actionOutputs.AppendLine("export type Outputs = {");
 
             string GetTypeName(Type type)
             {
@@ -118,16 +121,36 @@ type TagWithKey<TagName extends string, T> = {
   [K in keyof T]: { [_ in TagName]: K } & T[K]
 };
 
-type ActionTable = TagWithKey<""url"", Actions>;
+//export function useTypedAction<ActionName extends keyof ActionTable>(key: ActionName): UseSubmit<Actions[ActionName], Outputs[ActionName]>{
+//  const s = useAction<Actions[ActionName], Outputs[ActionName]>(key)
+//  return s
+//}
 
-type Unionize<T> = T[keyof T];
+export type ActionTable = TagWithKey<""url"", Actions>
 
-type MyActions = Unionize<ActionTable>;
+export type TypedActionHookResult<
+  ActionName extends keyof ActionTable
+> = UseSubmit<Actions[ActionName], Outputs[ActionName]>
 
-export function useTypedAction<ActionName extends keyof ActionTable>(key: ActionName): UseSubmit<Actions[ActionName], Outputs[ActionName]>{
+export type TypedActionHook = <ActionName extends keyof ActionTable>(
+  key: ActionName,
+) => TypedActionHookResult<ActionName>
+
+export const useTypedAction: TypedActionHook = <
+  ActionName extends keyof ActionTable
+>(
+  key: ActionName,
+) => {
   const s = useAction<Actions[ActionName], Outputs[ActionName]>(key)
   return s
 }
+
+// export function useTypedAction<ActionName extends keyof ActionTable>(
+//   key: ActionName,
+// ): UseSubmit<Actions[ActionName], Outputs[ActionName]> {
+//   const s = useAction<Actions[ActionName], Outputs[ActionName]>(key)
+//   return s
+// }
 
 type QueryTable = TagWithKey<""url"", QueryInputs>;
 
@@ -155,15 +178,52 @@ export function useTypedQuery<ActionName extends keyof QueryTable>(key: ActionNa
   return { data: result, ...rest} as any
 }
 
-
-
+export function TypedForm<ActionName extends keyof ActionTable>({
+  initialValues,
+  actionName,
+  formProps,
+  children,
+  onSuccess,
+  onError,
+}: React.PropsWithChildren<{
+  actionName: ActionName
+  initialValues: Actions[ActionName]
+  formProps?: FormikFormProps
+  onSuccess?: (payload: Outputs[ActionName]) => void
+  onError?: (error: ProblemDetails) => void
+}>) {
+  const [submit, validate] = useTypedAction<ActionName>(actionName)
+  return (
+    <Formik
+      validate={validate}
+      validateOnBlur={true}
+      validateOnChange={false}
+      initialValues={initialValues}
+      onSubmit={async (values) => {
+        const response = await submit(values)
+        if (response.ok) {
+          onSuccess && onSuccess(response.payload)
+          !onSuccess && notifySuccess()
+        } else {
+          onError && onError(response.error)
+          !onError && notifyError(response.error)
+        }
+      }}
+    >
+      {(f) => (
+        <Form {...formProps}>
+          {typeof children === ""function"" ? children(f) : children}
+        </Form>
+      )}
+    </Formik>)
+}
 ");
 
-            File.WriteAllText(path + "api.ts", imports.ToString());
-            File.AppendAllText(path + "api.ts", queryInputs.ToString());
-            File.AppendAllText(path + "api.ts", queryOutputs.ToString());
-            File.AppendAllText(path + "api.ts", actionOutputs.ToString());
-            File.AppendAllText(path + "api.ts", actionInputs.ToString());
+            File.WriteAllText(path + "api.tsx", imports.ToString());
+            File.AppendAllText(path + "api.tsx", queryInputs.ToString());
+            File.AppendAllText(path + "api.tsx", queryOutputs.ToString());
+            File.AppendAllText(path + "api.tsx", actionOutputs.ToString());
+            File.AppendAllText(path + "api.tsx", actionInputs.ToString());
 
             Console.WriteLine("Rendered api " + options.Path);
         }
