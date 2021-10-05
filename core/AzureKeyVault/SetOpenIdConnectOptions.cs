@@ -42,7 +42,7 @@ namespace Glow.Core.OpenIdConnect
         public async Task<Unit> Handle(SetOpenIdConnectOptions request, CancellationToken cancellationToken)
         {
             SecretClient client = azureKeyvaultClientProvider.GetSecretClient();
-            if (configuration.GetValue<bool>("AllowConfiguration") == true)
+            if (configuration.AllowConfiguration())
             {
                 try
                 {
