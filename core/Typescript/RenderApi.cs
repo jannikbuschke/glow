@@ -205,7 +205,6 @@ export function TypedForm<ActionName extends keyof ActionTable>({
         const response = await submit(values)
         if (response.ok) {
           onSuccess && onSuccess(response.payload)
-          !onSuccess && notifySuccess()
         } else {
           onError && onError(response.error)
           !onError && notifyError(response.error)
