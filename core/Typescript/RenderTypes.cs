@@ -104,7 +104,7 @@ namespace Glow.Core.Typescript
             {
                 foreach (Property v in type.Properties)
                 {
-                    builder.AppendLine($"  {v.PropertyName}: {v.TypeName}");
+                    builder.AppendLine($"  {v.PropertyName}: {v.TypeName}{(v.IsNullable ? " | null" : "")}");
                 }
             }
 

@@ -331,11 +331,13 @@ namespace Glow.Core.Typescript
 
                         return v1.IsPrimitive ? v1.Name : v1.Name;
                     }, v2 => v2.Name);
+                    var isNullable = tsType.Match(v1 => false, v2 => v2.IsNullable);
                     return new Property
                     {
                         PropertyName = v.Name.CamelCase(),
                         DefaultValue = defaultValue,
                         TsType = tsType,
+                        IsNullable = isNullable,
                         TypeName = typeName,
                         IsCyclic = tsType.IsT0 && visited.Contains(tsType.AsT0), // true, // if already visited
                     };
@@ -357,6 +359,8 @@ namespace Glow.Core.Typescript
             if (genericArgument.IsEnum)
             {
                 TsEnum t = CreateOrGet(genericArgument).AsT1;
+                t.Name = t.Name;
+                t.IsNullable = true;
 
                 return t;
             }
