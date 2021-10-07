@@ -25,6 +25,7 @@ namespace Glow.MsGraph.Mails
 
         public async Task<Message> Send(Message mail, string mailboxOrUserId = null, string scope = "profile")
         {
+            // use scopes: mail.send, mail.readwrite.shared
             GraphServiceClient client = await tokenService.GetClientForUser(new string[] { scope });
             // AuthenticationResult token = await service.GetAccessTokenAsync(httpContextAccessor.HttpContext.User);
             //
