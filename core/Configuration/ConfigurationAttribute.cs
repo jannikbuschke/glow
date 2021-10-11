@@ -13,7 +13,13 @@ namespace Glow.Configurations
 
         public string Policy { get; set; }
         public string ReadPolicy { get; set; }
-        public string SectionId { get; set; }
+
+        private string sectionId;
+        /// <summary>
+        /// (Optional) The base name for the ASP.NET Core configuration path. If null 'Id' will be used
+        /// </summary>
+        public string SectionId { get { return sectionId ?? Id;} set { sectionId = value; } }
+
         private string path;
 
         /// <summary>
