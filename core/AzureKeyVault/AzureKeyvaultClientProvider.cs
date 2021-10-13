@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
 using Glow.Core.StringExtensions;
@@ -19,7 +19,7 @@ namespace Glow.Core.AzureKeyVault
         public SecretClient GetSecretClient()
         {
             var kvUri = configuration.GetKeyvaultDns();
-            if(kvUri.IsNullOrEmpty())
+            if (kvUri.IsNullOrEmpty())
             {
                 throw new BadRequestException("No keyvault configured");
             }

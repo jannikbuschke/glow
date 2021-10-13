@@ -120,7 +120,7 @@ namespace Glow.Core.Authentication
         {
             var token = await AccessTokenForCurrentUser(scopes);
 
-            return CreateClient(token,useBetaEndpoint);
+            return CreateClient(token, useBetaEndpoint);
         }
 
         public override async Task ThrowIfCurrentUserNotConsentedToScope(string scope)

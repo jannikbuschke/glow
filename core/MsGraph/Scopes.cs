@@ -1,4 +1,4 @@
-﻿namespace Glow.MsGraph
+namespace Glow.MsGraph
 {
     public static class Scopes
     {

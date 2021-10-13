@@ -27,7 +27,7 @@ namespace Glow.Core
         public static string GetKeyvaultDns(this IConfiguration cfg)
         {
             var name = cfg.GetValue<string>("KeyVaultName");
-            if (string.IsNullOrEmpty(name)) { return null;}
+            if (string.IsNullOrEmpty(name)) { return null; }
             var keyvaultDns = name.StartsWith("https://") ? name : $"https://{name}.vault.azure.net/";
             return keyvaultDns;
         }

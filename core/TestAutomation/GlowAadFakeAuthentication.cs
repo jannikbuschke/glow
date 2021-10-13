@@ -48,7 +48,7 @@ namespace Glow.TestAutomation
 
         public Task<FakeUsers> Handle(GetAvailableFakeUsers request, CancellationToken cancellationToken)
         {
-            return Task.FromResult(new FakeUsers() {Values = options.Value.Users});
+            return Task.FromResult(new FakeUsers() { Values = options.Value.Users });
         }
     }
 
@@ -126,7 +126,7 @@ namespace Glow.TestAutomation
 
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
         {
-            var accessToken  = await tokenService.AccessTokenForCurrentUser(new[] {"profile"});
+            var accessToken = await tokenService.AccessTokenForCurrentUser(new[] { "profile" });
 
             JwtSecurityToken token = new JwtSecurityTokenHandler().ReadJwtToken(accessToken);
             var principal = new ClaimsPrincipal(new ClaimsIdentity(token.Claims, Scheme.Name));

@@ -86,7 +86,7 @@ namespace Glow.Sample
                         sqlServerOptionsBuilder =>
                         {
                             sqlServerOptionsBuilder
-                                .CommandTimeout((int)TimeSpan.FromMinutes(3).TotalSeconds)
+                                .CommandTimeout((int) TimeSpan.FromMinutes(3).TotalSeconds)
                                 .EnableRetryOnFailure();
                         })
                     .AddInterceptors(serviceProvider.GetRequiredService<SecondLevelCacheInterceptor>()));

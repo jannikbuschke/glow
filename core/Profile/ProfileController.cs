@@ -87,7 +87,7 @@ namespace Glow.Core.Profiles
                 ObjectId = User.GetObjectId(),
                 UserId = User.GetObjectId(),
                 Claims = claims,
-                AuthenticationType =  User?.Identity?.AuthenticationType
+                AuthenticationType = User?.Identity?.AuthenticationType
             };
         }
 

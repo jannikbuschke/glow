@@ -79,7 +79,7 @@ namespace Glow.Core.Authentication
 
             FakeUser? user = id == null && username == null
                 ? null //fakeAuthOptions.Value.Users?.FirstOrDefault(v => v.UserName == fakeAuthOptions.Value.DefaultUserName)
-                :  fakeAuthOptions.Value.Users?.FirstOrDefault(v => v.UserName == username);
+                : fakeAuthOptions.Value.Users?.FirstOrDefault(v => v.UserName == username);
 
             if (user == null)
             {

@@ -1,16 +1,16 @@
-﻿using System;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
 using Glow.Core.Actions;
 using Glow.Core.Authentication;
+using Glow.Core.StringExtensions;
+using Glow.Glue.AspNetCore;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
-using Glow.Core.StringExtensions;
-using Glow.Glue.AspNetCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Glow.Core.Application

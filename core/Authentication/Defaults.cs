@@ -1,4 +1,4 @@
-﻿namespace Glow.Core.Authentication
+namespace Glow.Core.Authentication
 {
     public class DefaultPolicies
     {
