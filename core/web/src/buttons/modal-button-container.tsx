@@ -65,7 +65,8 @@ export function ModalButtonContainer({
           setMountModal(true)
         }}
       />
-
+      {/* if unmountModalOnAfterClose is undefined, modal will be mounted in
+      unvisible state */}
       {unmountModalOnAfterClose && !mountModal
         ? null
         : React.cloneElement(modal, {
