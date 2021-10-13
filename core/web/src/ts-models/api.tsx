@@ -111,6 +111,7 @@ export function TypedForm<ActionName extends keyof ActionTable>({
     <Formik
       validate={validate}
       validateOnBlur={true}
+      enableReinitialize={true}
       validateOnChange={false}
       initialValues={initialValues}
       onSubmit={async (values) => {
