@@ -27,19 +27,6 @@ namespace Glow.MsGraph.Mails
         {
             // use scopes: mail.send, mail.readwrite.shared
             GraphServiceClient client = await tokenService.GetClientForUser(new string[] { scope });
-            // AuthenticationResult token = await service.GetAccessTokenAsync(httpContextAccessor.HttpContext.User);
-            //
-            // var client = new GraphServiceClient(
-            //     "https://graph.microsoft.com/v1.0/",
-            //     new DelegateAuthenticationProvider(
-            //         (requestMessage) =>
-            //         {
-            //             requestMessage.Headers.Authorization = new AuthenticationHeaderValue("bearer", token.AccessToken);
-            //             return Task.CompletedTask;
-            //         }
-            //     ));
-
-            // User me = await client.Me.Request().GetAsync();
 
             IUserRequestBuilder userRequestBuilder = string.IsNullOrWhiteSpace(mailboxOrUserId)
                 ? client.Me
