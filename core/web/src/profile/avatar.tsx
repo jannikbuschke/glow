@@ -13,13 +13,17 @@ export function CurrentUserAvatar({
   if (error) {
     return <ErrorBanner error={error} />
   }
-  if (profile === null) {
-    return null
-  }
+
   return (
     <HeaderProfile>
-      <AntAvatar src={`/api/user/${profile.userId}/avatar`} />
-      {showDisplayName && <span>{profile?.displayName || "N/A"}</span>}
+      {profile === null ? (
+        "N/A"
+      ) : (
+        <>
+          <AntAvatar src={`/api/user/${profile.userId}/avatar`} />
+          {showDisplayName && <span>{profile?.displayName || "N/A"}</span>}
+        </>
+      )}
     </HeaderProfile>
   )
 }
