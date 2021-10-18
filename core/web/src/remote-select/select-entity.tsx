@@ -21,6 +21,7 @@ export function SelectEntity<T>({
   onSearch,
   customItems,
   initialParameters,
+  onSelect,
   ...restProps
 }: SelectEntityProps<T>) {
   const [{ result, setSearch, setWhere, sendQuery }, {}] = useGlowQuery<T>(
@@ -107,8 +108,10 @@ export function SelectEntity<T>({
           }
         }
       }}
-      onSelect={(v) => {
+      onSelect={(v, o) => {
+        onSelect && onSelect(v, o)
         if (v === undefined) {
+          //
           return
         }
         if (restProps.mode === "multiple") {
