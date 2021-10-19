@@ -74,3 +74,7 @@ export function notifySuccess(message?: string) {
 export function messageSuccess(msg: React.ReactNode | string) {
   message.success(msg)
 }
+
+export function notifyInfo(msg: React.ReactNode | string) {
+  notification.info({ message: msg })
+}
