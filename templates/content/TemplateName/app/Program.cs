@@ -16,38 +16,6 @@ namespace TemplateName
 {
     public class Program
     {
-        private static string EnvironmentName
-        {
-            get
-            {
-                return Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production";
-            }
-        }
-
-        public static IConfiguration Configuration
-        {
-            get
-            {
-                return new ConfigurationBuilder()
-                    .SetBasePath(Directory.GetCurrentDirectory())
-                    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                    .AddJsonFile($"appsettings.{EnvironmentName}.json", optional: true, reloadOnChange: true)
-                    .AddEnvironmentVariables()
-                    .Build();
-            }
-        }
-
-        private static Logger GetPreStartLogger()
-        {
-            return EnvironmentName == "Production"
-                ? new LoggerConfiguration()
-                    .WriteTo.RollingFile("logs/log-start-{Date}.txt")
-                    .CreateLogger()
-                : new LoggerConfiguration()
-                    .WriteTo.Console()
-                    .CreateLogger();
-        }
-
         public static int Main(string[] args)
         {
             Log.Logger = GetPreStartLogger();
@@ -81,7 +49,6 @@ namespace TemplateName
 
                 host.Run();
                 return 0;
-
             }
             catch (Exception e)
             {
@@ -98,26 +65,40 @@ namespace TemplateName
         {
             return WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>()
-                .ConfigureAppConfiguration((context, config) =>
-                {
-                    IConfigurationRoot cfg = config.Build();
-                    var name = cfg.GetValue<string>("KeyVaultName");
-
-                    if (context.HostingEnvironment.IsProduction() && !string.IsNullOrEmpty(name))
-                    {
-                        var keyvaultDns = $"https://{name}.vault.azure.net/";
-                        Log.Information("Using KeyVault {KeyVault}", keyvaultDns);
-                        var azureServiceTokenProvider = new AzureServiceTokenProvider();
-                        var keyVaultClient = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(azureServiceTokenProvider.KeyVaultTokenCallback));
-                        config.AddAzureKeyVault(keyvaultDns, keyVaultClient, new DefaultKeyVaultSecretManager());
-                    }
-                    else
-                    {
-                        Log.Information("No KeyVault configured");
-                    }
-                })
                 .UseConfiguration(Configuration)
                 .UseSerilog();
+        }
+
+        private static string EnvironmentName
+        {
+            get
+            {
+                return Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production";
+            }
+        }
+
+        public static IConfiguration Configuration
+        {
+            get
+            {
+                return new ConfigurationBuilder()
+                    .SetBasePath(Directory.GetCurrentDirectory())
+                    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                    .AddJsonFile($"appsettings.{EnvironmentName}.json", optional: true, reloadOnChange: true)
+                    .AddEnvironmentVariables()
+                    .Build();
+            }
+        }
+
+        private static Logger GetPreStartLogger()
+        {
+            return EnvironmentName == "Production"
+                ? new LoggerConfiguration()
+                    .WriteTo.RollingFile("logs/log-start-{Date}.txt")
+                    .CreateLogger()
+                : new LoggerConfiguration()
+                    .WriteTo.Console()
+                    .CreateLogger();
         }
     }
 }
