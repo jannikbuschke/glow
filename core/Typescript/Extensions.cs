@@ -14,6 +14,7 @@ namespace Glow.TypeScript
     {
         public string Path { get; set; }
         public bool GenerateApi { get; set; }
+        public ApiOptions ApiOptions { get; set; }
         public Assembly[] Assemblies { get; set; }
         public Action<OneOf<TsType, TsEnum>> Update { get; set; }
 
@@ -27,6 +28,20 @@ namespace Glow.TypeScript
 
             return configuredPath;
         }
+    }
+
+    public class ApiOptions
+    {
+        public List<string> ApiFileFirstLines = new List<string>()
+        {
+            @"/* eslint-disable prettier/prettier */"
+        };
+
+        public void AddFirstLine(string line)
+        {
+            ApiFileFirstLines.Add(line);
+        }
+
     }
 
     public static class Extensions

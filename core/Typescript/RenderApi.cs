@@ -32,7 +32,11 @@ namespace Glow.Core.Typescript
 
             var imports = new StringBuilder();
 
-            imports.AppendLine(@"/* eslint-disable prettier/prettier */");
+            foreach (var v in options.ApiOptions?.ApiFileFirstLines)
+            {
+                imports.AppendLine(v);
+            }
+
             imports.AppendLine(@"import * as React from ""react""");
             imports.AppendLine(@"import { QueryOptions } from ""react-query""");
             // allow adjusting?
