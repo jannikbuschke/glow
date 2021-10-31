@@ -39,6 +39,7 @@ export function MasterDetailView({
 const MasterDetailContainer = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
-  grid-gap: 10;
+  gap: 10px;
+  grid-gap: 10xp;
   flex: 1;
 `
