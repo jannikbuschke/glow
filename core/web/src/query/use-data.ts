@@ -84,7 +84,7 @@ export function useApi<Result = any, Request = any>({
   const inputKey = rest.method === "POST" ? rest.payload : {}
 
   const { data, ...queryRest } = useQuery<Result, any>(
-    url + " " + JSON.stringify(inputKey),
+    [url, inputKey],
     () =>
       rest.method === "POST" || rest.method === undefined
         ? fetchJson(url, {
