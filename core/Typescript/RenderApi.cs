@@ -32,9 +32,12 @@ namespace Glow.Core.Typescript
 
             var imports = new StringBuilder();
 
-            foreach (var v in options.ApiOptions?.ApiFileFirstLines)
+            if(options.ApiOptions!=null)
             {
-                imports.AppendLine(v);
+                foreach (var v in options.ApiOptions?.ApiFileFirstLines)
+                {
+                    imports.AppendLine(v);
+                }
             }
 
             imports.AppendLine(@"import * as React from ""react""");
