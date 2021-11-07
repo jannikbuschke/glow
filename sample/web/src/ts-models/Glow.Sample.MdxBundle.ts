@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 export interface CreateMdx {
   path: string | null
   content: string | null

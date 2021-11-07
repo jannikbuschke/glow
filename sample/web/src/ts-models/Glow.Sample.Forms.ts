@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 export interface CreateUser {
   displayName: string | null
   email: string | null

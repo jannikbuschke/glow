@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 export interface Portfolio {
   id: string
   displayName: string | null

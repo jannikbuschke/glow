@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 export interface Profile {
   displayName: string | null
   id: string | null

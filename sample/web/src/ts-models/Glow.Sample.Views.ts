@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 export interface ListViewItem {
   id: string
   displayName: string | null

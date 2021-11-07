@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 export type Enum = "EnumVal1" | "EnumVal2"
 export const defaultEnum = "EnumVal1"
 export const EnumValues: { [key in Enum]: Enum } = {
@@ -19,7 +20,7 @@ export interface SampleConfiguration {
   prop2: number
   nested: Nested
   enum: Enum
-  nullableEnum: Enum
+  nullableEnum: Enum | null
 }
 
 export const defaultSampleConfiguration: SampleConfiguration = {

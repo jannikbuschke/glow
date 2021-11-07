@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 export interface IConfigurationMeta {
   route: string | null
   title: string | null
