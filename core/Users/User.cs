@@ -24,6 +24,9 @@ namespace Gertrud.Users
 
         public string Id { get; set; }
         public string TenantId { get; set; }
+
+        public string Salutation { get; set; }
+        public string Abbreviation { get; set; }
         public string DisplayName { get; set; }
         public string Email { get; set; }
         public string FirstName { get; set; }
