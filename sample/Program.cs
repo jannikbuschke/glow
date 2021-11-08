@@ -67,6 +67,7 @@ namespace Glow.Sample
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseIISIntegration()
                 .UseStartup<Startup>()
+                .UseConfiguration(Configuration)
                 .ConfigureAppConfiguration((ctx, config) =>
                 {
                     IConfigurationRoot cfg = config.Build();

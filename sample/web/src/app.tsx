@@ -22,6 +22,7 @@ import { ListViewExample } from "./examples/list-view"
 import { FormExample } from "./examples/form"
 import { QueryClient, QueryClientProvider } from "react-query"
 import { MdxBundleExample } from "./examples/mdx-bundle"
+import { AzureDevopsExample } from "./examples/azdo/variable-group"
 
 function App() {
   return (
@@ -32,6 +33,11 @@ function App() {
             key: "portfolios",
             icon: <FolderOpenOutlined />,
             content: "Files",
+          },
+          {
+            key: "azdo",
+            icon: <FolderOpenOutlined />,
+            content: "Azure devops",
           },
           {
             key: "configurations",
@@ -78,6 +84,7 @@ function App() {
       <Content>
         <FilesExample />
         <ConfigurationsExample />
+        <AzureDevopsExample />
         <NavigationExample />
         <DetailviewExample />
         <ListViewExample />

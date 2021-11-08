@@ -25,7 +25,8 @@
     "moment": "^2.25.3",
     "moment-duration-format": "2.2.2",
     "react-scripts": "4.0.3",
-    "mdx-bundler": "5.1.2"
+    "mdx-bundler": "5.1.2",
+    "eslint-plugin-prettier": "4.0.0"
   },
   "scripts": {
     "start": "set PORT=3001 && react-scripts start",
@@ -44,10 +45,16 @@
     "prettier": "2.2.1"
   },
   "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
+    "extends": "react-app",
+    "plugins": [
+      "eslint-plugin-prettier"
+    ],
+    "rules": {
+      "prettier/prettier": "off",
+      "react-hooks/exhaustive-deps": "off",
+      "@typescript-eslint/no-unused-vars": "off",
+      "no-redeclare": "off"
+    }
   },
   "browserslist": [
     ">0.2%",
