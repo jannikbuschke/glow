@@ -5,10 +5,11 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Web;
+using Glow.AzdoAuthentication;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Glow.AzdoAuthentication
+namespace Glow.Azdo.Authentication
 {
     /// <summary>
     /// Allows to get access tokens

@@ -3,27 +3,31 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.Services.Common;
 using Microsoft.VisualStudio.Services.OAuth;
 using Microsoft.VisualStudio.Services.WebApi;
 
-namespace Glow.AzdoAuthentication
+namespace Glow.Azdo.Authentication
 {
     public class AzdoClients
     {
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly ActiveUsersCache activeUsers;
         private readonly AzdoConfig config;
+        private readonly ILogger logger;
 
         public AzdoClients(
             IHttpContextAccessor httpContextAccessor,
             ActiveUsersCache activeUsers,
-            AzdoConfig config
+            AzdoConfig config,
+            ILogger<AzdoClients> logger
         )
         {
             this.httpContextAccessor = httpContextAccessor;
             this.activeUsers = activeUsers;
             this.config = config;
+            this.logger = logger;
         }
 
         [Obsolete("use GetUserClient")]

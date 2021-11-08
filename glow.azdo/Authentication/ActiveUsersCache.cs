@@ -1,14 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Glow.Azdo.AzdoAuthentication;
 using Glow.Glue.AspNetCore;
 using Glow.Invoices.Api.Test;
 using Glow.TokenCache;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Glow.AzdoAuthentication
+namespace Glow.Azdo.Authentication
 {
     public class ActiveUsersCache
     {

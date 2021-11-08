@@ -1,4 +1,4 @@
-namespace Glow.AzdoAuthentication
+namespace Glow.Azdo.Authentication
 {
     public class AzdoConfig
     {
@@ -14,5 +14,7 @@ namespace Glow.AzdoAuthentication
 
         public string OrganizationBaseUrl { get; set; } = "https://dev.azure.com/jannikb";
         public string Pat { get; set; }
+
+
     }
 }

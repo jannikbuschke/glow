@@ -31,32 +31,32 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="MediatR" Version="8.1.0"/>
-    <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="8.0.0"/>
-    <PackageReference Include="AutoMapper" Version="10.0.0"/>
-    <PackageReference Include="AutoMapper.Collection" Version="7.0.0"/>
-    <PackageReference Include="AutoMapper.Extensions.ExpressionMapping" Version="3.0.2"/>
-    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="7.0.0"/>
+    <PackageReference Include="MediatR" Version="8.1.0" />
+    <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="8.0.0" />
+    <PackageReference Include="AutoMapper" Version="10.0.0" />
+    <PackageReference Include="AutoMapper.Collection" Version="7.0.0" />
+    <PackageReference Include="AutoMapper.Extensions.ExpressionMapping" Version="3.0.2" />
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="7.0.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="FluentValidation" Version="9.0.1"/>
-    <PackageReference Include="Bogus" Version="29.0.2"/>
-    <PackageReference Include="OneOf" Version="3.0.163"/>
-    <PackageReference Include="HtmlSanitizer" Version="6.0.441"/>
+    <PackageReference Include="FluentValidation" Version="9.0.1" />
+    <PackageReference Include="Bogus" Version="29.0.2" />
+    <PackageReference Include="OneOf" Version="3.0.163" />
+    <PackageReference Include="HtmlSanitizer" Version="6.0.441" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Serilog" Version="2.9.0"/>
-    <PackageReference Include="Serilog.Settings.Configuration" Version="2.6.1"/>
-    <PackageReference Include="Serilog.Extensions.Logging" Version="2.0.2"/>
+    <PackageReference Include="Serilog" Version="2.9.0" />
+    <PackageReference Include="Serilog.Settings.Configuration" Version="2.6.1" />
+    <PackageReference Include="Serilog.Extensions.Logging" Version="2.0.2" />
   </ItemGroup>
 
   <ItemGroup>
     <!-- Don't publish the SPA source files, but do show them in the project files list -->
-    <Content Remove="$(SpaRoot)**"/>
-    <None Remove="$(SpaRoot)**"/>
-    <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**"/>
+    <Content Remove="$(SpaRoot)**" />
+    <None Remove="$(SpaRoot)**" />
+    <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
   </ItemGroup>
 
 </Project>
