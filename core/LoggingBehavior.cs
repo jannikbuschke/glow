@@ -27,7 +27,7 @@ namespace Glow.Glue.AspNetCore
             stopWatch.Stop();
             TimeSpan ts = stopWatch.Elapsed;
             logger.LogInformation("[Handled Request]: {requestName} ({timeMs} ms)", typeof(TRequest).Name,
-                ts.TotalMilliseconds);
+                (long)ts.TotalMilliseconds);
             logger.LogTrace("Response payload {@values}", response);
             return response;
         }
