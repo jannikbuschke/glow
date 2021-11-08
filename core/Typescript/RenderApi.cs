@@ -41,7 +41,7 @@ namespace Glow.Core.Typescript
             }
 
             imports.AppendLine(@"import * as React from ""react""");
-            imports.AppendLine(@"import { QueryOptions } from ""react-query""");
+            imports.AppendLine(@"import { QueryOptions, UseQueryOptions } from ""react-query""");
             // allow adjusting?
             imports.AppendLine($@"import {{ useApi, ApiResult, notifySuccess, notifyError }} from ""{glowPath}""");
             imports.AppendLine(
@@ -170,7 +170,7 @@ export function useTypedQuery<ActionName extends keyof QueryTable>(key: ActionNa
   }: {
     placeholder: QueryOutputs[ActionName],
     input:  QueryInputs[ActionName]
-    queryOptions?: QueryOptions<QueryOutputs[ActionName]>
+    queryOptions?: UseQueryOptions<QueryOutputs[ActionName]>
   }): ApiResult<QueryOutputs[ActionName]> {
 
   const { data, ...rest} = useApi({
