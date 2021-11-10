@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.Services.Common;
 
 namespace Glow.Core.Typescript
 {
@@ -65,11 +64,12 @@ namespace Glow.Core.Typescript
 
             var builder = new TypeCollectionBuilder();
             // duplication?
-            profileTypes.Select(v => Activator.CreateInstance(v) as TypeScriptProfile)
-                .ForEach(type =>
-                {
-                    builder.AddRange(type.Types);
-                });
+            var profiles = profileTypes.Select(v => Activator.CreateInstance(v) as TypeScriptProfile).ToList();
+            foreach (var type in profiles)
+            {
+                builder.AddRange(type.Types);
+
+            }
 
             IEnumerable<Type> additionalTypes = option.Assemblies
                 .SelectMany(v => v.GetExportedTypes()

@@ -15,8 +15,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Graph;
 using Serilog;
+using Microsoft.Graph;
 
 namespace Glow.Core
 {
@@ -85,13 +85,13 @@ namespace Glow.Core
             });
         }
 
-        public static void AddGlowErrorHandler(this IApplicationBuilder app, IWebHostEnvironment env,
-            IConfiguration configuration)
+        public static void AddGlowErrorHandler(this IApplicationBuilder app, IWebHostEnvironment env, IConfiguration configuration)
         {
             app.UseExceptionHandler(CreateErrorHandler(env, configuration));
         }
 
-        public static Action<IApplicationBuilder> CreateErrorHandler(IWebHostEnvironment env,
+        public static Action<IApplicationBuilder> CreateErrorHandler(
+            IWebHostEnvironment env,
             IConfiguration configuration)
         {
             var withDetails = env.IsDevelopment() || "true".Equals(configuration["EnableExceptionDetails"],
@@ -177,6 +177,7 @@ namespace Glow.Core
                                 Type = "not_found"
                             };
                         }
+                        // need to be injected somehow
                         else if (ex is ServiceException se && se.StatusCode == HttpStatusCode.Forbidden)
                         {
                             return new ProblemDetails

@@ -1,4 +1,5 @@
 using System.Net.Http;
+using System.Net.Http.Json;
 using System.Threading.Tasks;
 
 namespace Glow.Tests
@@ -9,7 +10,9 @@ namespace Glow.Tests
         {
             if (response.IsSuccessStatusCode)
             {
-                T responsePayload = await response.Content.ReadAsAsync<T>();
+
+                // T responsePayload = await response.Content.ReadAsAsync<T>();
+                T responsePayload = await response.Content.ReadFromJsonAsync<T>();
                 return responsePayload;
             }
             else

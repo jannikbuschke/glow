@@ -1,4 +1,3 @@
-using System;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Glow.Core.Queries;
@@ -7,14 +6,6 @@ using Microsoft.AspNetCore.Mvc.Testing;
 
 namespace Glow.Glue.AspNetCore.Tests
 {
-    [Obsolete("Use QueryBuilder<T> instead")]
-    public class OdataQueryBuilder<T> : QueryBuilder<T> where T : class
-    {
-        public OdataQueryBuilder(WebApplicationFactory<T> factory, string url) : base(factory, url)
-        {
-        }
-    }
-
     public class QueryBuilder<T> : BaseRequestBuilder<T> where T : class
     {
         private Query query;

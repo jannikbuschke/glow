@@ -1,8 +1,6 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure.Identity;
-using Azure.Security.KeyVault.Secrets;
 using Glow.Core.Actions;
 using Glow.Core.Authentication;
 using Glow.Core.StringExtensions;

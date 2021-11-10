@@ -13,7 +13,6 @@ using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Microsoft.Graph;
 using Microsoft.Identity.Client;
-using Microsoft.VisualStudio.Services.Common;
 
 namespace Glow.Core.Authentication
 {

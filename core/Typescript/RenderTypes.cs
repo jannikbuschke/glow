@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Microsoft.Graph;
-using Microsoft.VisualStudio.Services.Common;
 using OneOf;
 using Directory = System.IO.Directory;
 using File = System.IO.File;

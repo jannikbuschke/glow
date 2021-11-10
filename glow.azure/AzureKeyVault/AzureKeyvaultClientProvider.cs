@@ -1,6 +1,7 @@
 using System;
 using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
+using Glow.Azure;
 using Glow.Core.StringExtensions;
 using Glow.Glue.AspNetCore;
 using Microsoft.Extensions.Configuration;

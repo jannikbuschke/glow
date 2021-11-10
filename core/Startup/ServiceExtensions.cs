@@ -3,16 +3,11 @@ using System.Reflection;
 using AutoMapper;
 using AutoMapper.EquivalencyExpression;
 using AutoMapper.Extensions.ExpressionMapping;
-using Glow.Authentication.Aad;
 using Glow.Clocks;
 using Glow.Configurations;
 using Glow.Core.Actions;
 using Glow.Core.Authentication;
-using Glow.Core.AzureKeyVault;
-using Glow.Core.EfMsalTokenStore;
-using Glow.Core.EfTicketStore;
 using Glow.Files;
-using Glow.MsGraph.Mails;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Hosting;
@@ -92,40 +87,6 @@ namespace Glow.Core
 
             }, assembliesToScan);
 
-            services.AddScoped<MailService>();
-
-            return services;
-        }
-
-        public static IServiceCollection AddGlowAadIntegration(
-            this IServiceCollection services,
-            IWebHostEnvironment env,
-            IConfiguration configuration
-        )
-        {
-            services.AddScoped<IGraphTokenService, GraphTokenService>();
-
-            services.AddSingleton<TokenService>();
-            if (env.IsDevelopment())
-            {
-                var connectionString = configuration.ConnectionString();
-                services.AddEfMsalTokenCache(options =>
-                {
-                    options.UseSqlServer(connectionString);
-                });
-
-                services.AddEfTicketStore(options =>
-                {
-                    options.UseSqlServer(connectionString);
-                });
-            }
-            else
-            {
-                services.AddSingleton<ITokenCacheProvider, TokenCacheProvider>();
-                services.AddSingleton<ITicketStore, InmemoryTicketStore>();
-            }
-
-            services.AddMemoryCache();
 
             return services;
         }
@@ -140,7 +101,6 @@ namespace Glow.Core
             services.AddSingleton<FileService>();
             services.AddSingleton<MockExternalSystems>();
             services.AddSingleton<IClock, Clock>();
-            services.AddAzureKeyvaultClientProvider();
 
             return services;
         }

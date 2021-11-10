@@ -6,7 +6,6 @@ using System.Text.RegularExpressions;
 using Glow.Core.Authentication;
 using Glow.Core.Linq;
 using Glow.TypeScript;
-using Microsoft.VisualStudio.Services.Common;
 using OneOf;
 
 namespace Glow.Core.Typescript

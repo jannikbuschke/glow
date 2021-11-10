@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Microsoft.VisualStudio.Services.OAuth;
 using Newtonsoft.Json;
 
 namespace Glow.Core.Authentication

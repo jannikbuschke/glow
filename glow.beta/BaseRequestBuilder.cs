@@ -1,5 +1,6 @@
 using System;
 using System.Net.Http;
+using System.Net.Http.Json;
 using System.Threading.Tasks;
 using Glow.Core.Queries;
 using Glow.Tests;
@@ -60,7 +61,8 @@ namespace Glow.Glue.AspNetCore.Tests
         {
             if (response.IsSuccessStatusCode)
             {
-                R responsePayload = await response.Content.ReadAsAsync<R>();
+                // R responsePayload = await response.Content.ReadAsAsync<R>();
+                R responsePayload = await response.Content.ReadFromJsonAsync<R>();
                 return responsePayload;
             }
             else if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)

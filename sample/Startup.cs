@@ -1,10 +1,6 @@
 using System;
 using System.IO;
-using System.Net;
-using System.Reflection;
 using System.Security.Claims;
-using AutoMapper;
-using AutoMapper.EquivalencyExpression;
 using EFCoreSecondLevelCacheInterceptor;
 using Glow.Configurations;
 using Glow.Core;
@@ -14,16 +10,11 @@ using Glow.Tests;
 using Glow.TypeScript;
 using Glow.Users;
 using Jering.Javascript.NodeJS;
-using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 
 namespace Glow.Sample
 {
@@ -114,7 +105,7 @@ namespace Glow.Sample
                 {
                     Assemblies = new[] {this.GetType().Assembly},
                     Path = "./web/src/ts-models/",
-                    GenerateApi = true
+                    GenerateApi = true,
                 }
             });
 
