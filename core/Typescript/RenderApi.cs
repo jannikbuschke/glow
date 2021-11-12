@@ -46,7 +46,7 @@ namespace Glow.Core.Typescript
             imports.AppendLine($@"import {{ useApi, ApiResult, notifySuccess, notifyError }} from ""{glowPath}""");
             imports.AppendLine(
                 $@"import {{ useAction, useSubmit, UseSubmit, ProblemDetails }} from ""{useSubmitPath}/Forms/use-submit""");
-            imports.AppendLine(@"import { Formik, FormikFormProps } from ""formik""");
+            imports.AppendLine(@"import { Formik, FormikConfig, FormikFormProps } from ""formik""");
             imports.AppendLine(@"import { Form } from ""formik-antd""");
 
             var modules = types.Modules;
@@ -130,11 +130,6 @@ type TagWithKey<TagName extends string, T> = {
   [K in keyof T]: { [_ in TagName]: K } & T[K]
 };
 
-//export function useTypedAction<ActionName extends keyof ActionTable>(key: ActionName): UseSubmit<Actions[ActionName], Outputs[ActionName]>{
-//  const s = useAction<Actions[ActionName], Outputs[ActionName]>(key)
-//  return s
-//}
-
 export type ActionTable = TagWithKey<""url"", Actions>
 
 export type TypedActionHookResult<
@@ -153,13 +148,6 @@ export const useTypedAction: TypedActionHook = <
   const s = useAction<Actions[ActionName], Outputs[ActionName]>(key)
   return s
 }
-
-// export function useTypedAction<ActionName extends keyof ActionTable>(
-//   key: ActionName,
-// ): UseSubmit<Actions[ActionName], Outputs[ActionName]> {
-//   const s = useAction<Actions[ActionName], Outputs[ActionName]>(key)
-//   return s
-// }
 
 type QueryTable = TagWithKey<""url"", QueryInputs>;
 
@@ -194,13 +182,12 @@ export function TypedForm<ActionName extends keyof ActionTable>({
   children,
   onSuccess,
   onError,
-}: React.PropsWithChildren<{
+}: Omit<FormikConfig<Actions[ActionName]>, ""onSubmit""> & {
   actionName: ActionName
-  initialValues: Actions[ActionName]
   formProps?: FormikFormProps
   onSuccess?: (payload: Outputs[ActionName]) => void
   onError?: (error: ProblemDetails) => void
-}>) {
+}) {
   const [submit, validate] = useTypedAction<ActionName>(actionName)
   return (
     <Formik
