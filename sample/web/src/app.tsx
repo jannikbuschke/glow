@@ -23,6 +23,7 @@ import { FormExample } from "./examples/form"
 import { QueryClient, QueryClientProvider } from "react-query"
 import { MdxBundleExample } from "./examples/mdx-bundle"
 import { AzureDevopsExample } from "./examples/azdo/variable-group"
+import { ChakraProvider } from "@chakra-ui/react"
 
 function App() {
   return (
@@ -117,12 +118,14 @@ const client = new QueryClient({
   },
 })
 
-export default function () {
+export function Root() {
   return (
-    <QueryClientProvider client={client}>
-      <Router>
-        <App />
-      </Router>
-    </QueryClientProvider>
+    <ChakraProvider>
+      <QueryClientProvider client={client}>
+        <Router>
+          <App />
+        </Router>
+      </QueryClientProvider>
+    </ChakraProvider>
   )
 }
