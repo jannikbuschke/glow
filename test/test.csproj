@@ -24,7 +24,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\core\glow.core.csproj" />
-    <ProjectReference Include="..\sample\sample.csproj" />
+    <ProjectReference Include="..\sample.cs\sample.cs.csproj" />
   </ItemGroup>
 
 </Project>

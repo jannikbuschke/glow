@@ -16,7 +16,7 @@ import {
 import { useData } from "glow-react/es/query/use-data"
 import { HighlightableRow } from "glow-react/es/antd/highlightable-row"
 import { ActionButton } from "glow-react/es/antd/action-button"
-import { ActionBar } from "./layout"
+import { ActionBar } from "../examples/layout"
 
 export function FilesExample() {
   return (

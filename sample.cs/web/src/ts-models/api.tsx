@@ -8,18 +8,18 @@ import * as Glow_Sample_Files from "./Glow.Sample.Files"
 import * as Glow_Configurations from "./Glow.Configurations"
 import * as Glow_Core_Profiles from "./Glow.Core.Profiles"
 import * as Glow_Sample_Configurations from "./Glow.Sample.Configurations"
+import * as Glow_Sample_Actions from "./Glow.Sample.Actions"
+import * as Glow_Sample_Forms from "./Glow.Sample.Forms"
 import * as Glow_Sample_MdxBundle from "./Glow.Sample.MdxBundle"
 import * as Glow_Sample_Azdo from "./Glow.Sample.Azdo"
-import * as Glow_Sample_Actions from "./Glow.Sample.Actions"
+import * as MediatR from "./MediatR"
 import * as Microsoft_TeamFoundation_DistributedTask_WebApi from "./Microsoft.TeamFoundation.DistributedTask.WebApi"
 import * as Microsoft_VisualStudio_Services_WebApi from "./Microsoft.VisualStudio.Services.WebApi"
 import * as Microsoft_VisualStudio_Services_Common from "./Microsoft.VisualStudio.Services.Common"
 import * as Microsoft_TeamFoundation_SourceControl_WebApi from "./Microsoft.TeamFoundation.SourceControl.WebApi"
 import * as Microsoft_TeamFoundation_Core_WebApi from "./Microsoft.TeamFoundation.Core.WebApi"
-import * as MediatR from "./MediatR"
 import * as Glow_Sample_Views from "./Glow.Sample.Views"
 import * as Glow_Sample_Users from "./Glow.Sample.Users"
-import * as Glow_Sample_Forms from "./Glow.Sample.Forms"
 
 type QueryInputs = {
   "/api/mdx/get-list": Glow_Sample_MdxBundle.GetMdxList,
@@ -38,21 +38,23 @@ type QueryOutputs = {
   "/azdo/get-projects": Microsoft_TeamFoundation_Core_WebApi.TeamProjectReference[],
 }
 export type Outputs = {
+  "/api/actions/sample": MediatR.Unit,
+  "/api/actions/sample-2": Glow_Sample_Actions.Response,
+  "/api/form/create-user": MediatR.Unit,
   "/api/mdx/create": Glow_Sample_MdxBundle.Mdx,
   "/api/mdx/update": Glow_Sample_MdxBundle.Mdx,
   "/azdo/create-library": Microsoft_TeamFoundation_DistributedTask_WebApi.VariableGroup,
   "/azdo/create-commit": Microsoft_TeamFoundation_SourceControl_WebApi.GitPush,
-  "/api/actions/sample": MediatR.Unit,
-  "/api/actions/sample-2": Glow_Sample_Actions.Response,
   "/api/mdx/transpile": Glow_Sample_MdxBundle.TranspileResult,
 }
 export type Actions = {
+  "/api/actions/sample": Glow_Sample_Actions.SampleAction,
+  "/api/actions/sample-2": Glow_Sample_Actions.SampleAction2,
+  "/api/form/create-user": Glow_Sample_Forms.CreateUser,
   "/api/mdx/create": Glow_Sample_MdxBundle.CreateMdx,
   "/api/mdx/update": Glow_Sample_MdxBundle.UpdateMdx,
   "/azdo/create-library": Glow_Sample_Azdo.CreateLibrary,
   "/azdo/create-commit": Glow_Sample_Azdo.CreatePullRequest,
-  "/api/actions/sample": Glow_Sample_Actions.SampleAction,
-  "/api/actions/sample-2": Glow_Sample_Actions.SampleAction2,
   "/api/mdx/transpile": Glow_Sample_MdxBundle.Transpile,
 }
 

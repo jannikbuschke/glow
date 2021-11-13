@@ -1,10 +1,10 @@
 import React from "react"
 import "antd/dist/antd.css"
-import { FilesExample } from "./examples/files"
+import { FilesExample } from "./experiments/files"
 import { BrowserRouter as Router } from "react-router-dom"
 import { ConfigurationsExample } from "./examples/configuration"
 import styled from "styled-components"
-import { NavigationExample } from "./examples/navigation"
+import { NavigationExample } from "./experiments/navigation/navigation"
 import { LeftNavigation } from "glow-react"
 import {
   BorderOutlined,
@@ -15,14 +15,14 @@ import {
   UnorderedListOutlined,
   EditOutlined,
 } from "@ant-design/icons"
-import { MasterDetailViewExample } from "./examples/maste-detail-view"
-import { SelectAsyncExample } from "./examples/select-async"
-import { DetailviewExample } from "./examples/detail-view"
-import { ListViewExample } from "./examples/list-view"
+import { MasterDetailViewExample } from "./experiments/maste-detail-view"
+import { SelectAsyncExample } from "./experiments/select-async"
+import { DetailviewExample } from "./experiments/detail-view"
+import { ListViewExample } from "./experiments/list-view"
 import { FormExample } from "./examples/form"
 import { QueryClient, QueryClientProvider } from "react-query"
-import { MdxBundleExample } from "./examples/mdx-bundle"
-import { AzureDevopsExample } from "./examples/azdo/variable-group"
+import { MdxBundleExample } from "./experiments/mdx-bundle"
+import { AzureDevopsExample } from "./experiments/azdo/variable-group"
 import { ChakraProvider } from "@chakra-ui/react"
 
 function App() {
@@ -30,6 +30,22 @@ function App() {
     <Container>
       <LeftNavigation
         items={[
+          {
+            key: "configurations",
+            icon: <SettingOutlined />,
+            content: "Configurations",
+          },
+          {
+            key: "forms",
+            icon: <FormOutlined />,
+            content: "Form",
+          },
+          {
+            key: "master-detail",
+            icon: <FormOutlined />,
+            content: "Masterdetail",
+          },
+
           {
             key: "portfolios",
             icon: <FolderOpenOutlined />,
@@ -40,11 +56,7 @@ function App() {
             icon: <FolderOpenOutlined />,
             content: "Azure devops",
           },
-          {
-            key: "configurations",
-            icon: <SettingOutlined />,
-            content: "Configurations",
-          },
+
           {
             key: "navigation",
             icon: <ClusterOutlined />,
@@ -60,16 +72,7 @@ function App() {
             icon: <UnorderedListOutlined />,
             content: "Listview",
           },
-          {
-            key: "forms",
-            icon: <FormOutlined />,
-            content: "Form",
-          },
-          {
-            key: "master-detail",
-            icon: <FormOutlined />,
-            content: "Masterdetail",
-          },
+
           {
             key: "select-async",
             icon: <EditOutlined />,

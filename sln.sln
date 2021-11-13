@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "test", "test\test.csproj", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "glow.core", "core\glow.core.csproj", "{263C679A-8797-43F0-8EC3-0EB4AD0242B3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "sample", "sample\sample.csproj", "{0A454D6E-C8C0-4046-ADFC-B13D9750C936}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "sample.cs", "sample.cs\sample.cs.csproj", "{0A454D6E-C8C0-4046-ADFC-B13D9750C936}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "glow.azdo", "glow.azdo\glow.azdo.csproj", "{D9028C3E-626B-40D6-B84C-3B22774BC4EB}"
 EndProject

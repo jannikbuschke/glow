@@ -6,16 +6,10 @@ using AutoMapper.Extensions.ExpressionMapping;
 using Glow.Clocks;
 using Glow.Configurations;
 using Glow.Core.Actions;
-using Glow.Core.Authentication;
 using Glow.Files;
 using MediatR;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 

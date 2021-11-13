@@ -52,7 +52,6 @@ public class Startup
 
         services.AddTestAuthentication(testUser.Id, testUser.DisplayName, testUser.Email);
 
-
         services.Configure<SampleConfiguration>(configuration.GetSection("sample-configuration"));
 
         services.AddEfConfiguration(options =>
@@ -88,23 +87,9 @@ public class Startup
                             .EnableRetryOnFailure();
                     })
                 .AddInterceptors(serviceProvider.GetRequiredService<SecondLevelCacheInterceptor>()));
-        services.AddOptions();
-
-        // services.AddTypescriptGeneration(new[]
-        // {
-        //     new TsGenerationOptions
-        //     {
-        //         Assemblies = new[] {Assembly.GetAssembly(typeof(GlowCoreModule))},
-        //         Path = "../core/web/src/ts-models-core/",
-        //         GenerateApi = false
-        //     },
-        //     new TsGenerationOptions
-        //     {
-        //         Assemblies = new[] {this.GetType().Assembly},
-        //         Path = "./web/src/ts-models/",
-        //         GenerateApi = true
-        //     }
-        // });
+        services.AddEFSecondLevelCache(options =>
+            options.UseMemoryCacheProvider().DisableLogging(false).UseCacheKeyPrefix("EF_")
+        );
 
         services.AddTypescriptGeneration(new[]
         {
@@ -115,12 +100,8 @@ public class Startup
         // services.Configure<NodeJSProcessOptions>(options => options.ProjectPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "NodeRuntime","js")); // AppDomain.CurrentDomain.BaseDirectory is your bin/<configuration>/<targetframework> directory
         services.Configure<NodeJSProcessOptions>(options =>
             options.ProjectPath =
-                Path.Combine(env.ContentRootPath, "MdxBundle",
-                    "js")); // AppDomain.CurrentDomain.BaseDirectory is your bin/<configuration>/<targetframework> directory
-
-        services.AddEFSecondLevelCache(options =>
-            options.UseMemoryCacheProvider().DisableLogging(false).UseCacheKeyPrefix("EF_")
-        );
+                Path.Combine(env.ContentRootPath, "MdxBundle", "js"));
+        // AppDomain.CurrentDomain.BaseDirectory is your bin/<configuration>/<targetframework> directory
     }
 
     public void Configure(
