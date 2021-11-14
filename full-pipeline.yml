@@ -24,11 +24,11 @@ stages:
           - checkout: self
             submodules: true
 
-        - script: |
-            cd core/web
-            npm version $(buildNumber)
-            npm install \
-            npm run build
+          - script: |
+              cd core/web
+              npm version $(buildNumber)
+              npm install \
+              npm run build
 
           - task: Npm@1
             displayName: "npm publish beta (refs/heads/beta)"
