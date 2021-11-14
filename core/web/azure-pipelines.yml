@@ -1,13 +1,13 @@
 trigger:
   - master
   - beta/*
+  - chore/full-pipeline
 
 pool:
   vmImage: "ubuntu-latest"
 
 variables:
   workingDir: "core/web"
-
 
 jobs:
   - job: "Check_for_changes"
@@ -39,36 +39,41 @@ jobs:
         name: check_changes
         displayName: "Check changed files"
   - job: Publish
-    dependsOn: "Check_for_changes"
-    condition: eq(dependencies.Check_for_changes.outputs['check_changes.SOURCE_CODE_CHANGED'], 'true') #map doThing and check the value
+    # dependsOn: "Check_for_changes"
+    # condition: eq(dependencies.Check_for_changes.outputs['check_changes.SOURCE_CODE_CHANGED'], 'true')
     steps:
-      - task: Npm@1
-        displayName: "npm install"
-        continueOnError: true
-        inputs:
-          verbose: false
-          workingDir: $(workingDir)
-
       - script: |
-          dd /home/vsts/.npm/
-          ls
+          cd core/web
+          npm install \
+          npm run build
 
-      - task: Npm@1
-        displayName: "npm run test"
-        continueOnError: true
-        inputs:
-          command: custom
-          verbose: false
-          customCommand: "run test"
-          workingDir: $(workingDir)
+      # - task: Npm@1
+      #   displayName: "npm install"
+      #   continueOnError: true
+      #   inputs:
+      #     verbose: false
+      #     workingDir: $(workingDir)
 
-      - task: Npm@1
-        displayName: "npm run build"
-        inputs:
-          command: custom
-          verbose: false
-          customCommand: "run build"
-          workingDir: $(workingDir)
+      # - script: |
+      #     dd /home/vsts/.npm/
+      #     ls
+
+      # - task: Npm@1
+      #   displayName: "npm run test"
+      #   continueOnError: true
+      #   inputs:
+      #     command: custom
+      #     verbose: false
+      #     customCommand: "run test"
+      #     workingDir: $(workingDir)
+
+      # - task: Npm@1
+      #   displayName: "npm run build"
+      #   inputs:
+      #     command: custom
+      #     verbose: false
+      #     customCommand: "run build"
+      #     workingDir: $(workingDir)
 
       - task: Npm@1
         displayName: "npm publish beta (refs/heads/beta)"
@@ -80,7 +85,7 @@ jobs:
           customEndpoint: npm
           workingDir: $(workingDir)
         continueOnError: true
-        condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/heads/beta'))
+        condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/heads/chore/full-pipeline'))
 
       - task: Npm@1
         displayName: "npm publish release (refs/heads/master)"
