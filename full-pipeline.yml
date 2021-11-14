@@ -14,19 +14,19 @@ variables:
 stages:
   - stage: Checks
     jobs:
-      - job: "Check_for_changes"
-        steps:
-          - script: echo $(name)
-          - checkout: self
-            submodules: "recursive"
+      # - job: "Check_for_changes"
+      #   steps:
+      #     - script: echo $(name)
+      #     - checkout: self
+      #       submodules: "recursive"
       - job: "Publish_nuget"
         steps:
           - checkout: self
             submodules: true
 
           - script: |
-              npm install core/web \
-              npm run build core/web \
+              npm install core/web
+              npm run build core/web
 
           - task: Npm@1
             displayName: "npm publish beta (refs/heads/beta)"
