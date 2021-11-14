@@ -72,6 +72,7 @@ namespace Glow.Core
             services.AddSignalR();
             services.AddHttpClient();
             services.AddHttpContextAccessor();
+            services.AddOptions();
 
             services.AddMediatR(assembliesToScan);
             services.AddAutoMapper(cfg =>
