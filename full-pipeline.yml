@@ -10,6 +10,7 @@ variables:
   buildConfiguration: "Release"
   system.debug: false
   buildNumber: 0.24.0-$(Rev:.r)
+  workingDir: "core/web"
 
 stages:
   - stage: Checks
@@ -52,7 +53,7 @@ stages:
 
           - task: NuGetToolInstaller@1
             inputs:
-              versionSpec: 6.0.100
+              versionSpec: 6.0
 
           - task: DotNetCoreCLI@2
             displayName: "dotnet restore"
