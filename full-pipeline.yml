@@ -25,9 +25,8 @@ stages:
             submodules: true
 
           - script: |
-              cd core/web \
-              npm install \
-              npm run build \
+              npm install core/web \
+              npm run build core/web \
 
           - task: Npm@1
             displayName: "npm publish beta (refs/heads/beta)"
