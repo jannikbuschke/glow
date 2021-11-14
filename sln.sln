@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "glow.azure", "glow.azure\gl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "glow.beta", "glow.beta\glow.beta.csproj", "{0AEF6E74-C4CF-4230-AD58-4805AB2C684D}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "sample.fs", "sample.fs\sample.fs.fsproj", "{6B0EF368-ACDE-4754-A7B1-0597FA73F622}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +47,10 @@ Global
 		{0AEF6E74-C4CF-4230-AD58-4805AB2C684D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0AEF6E74-C4CF-4230-AD58-4805AB2C684D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0AEF6E74-C4CF-4230-AD58-4805AB2C684D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6B0EF368-ACDE-4754-A7B1-0597FA73F622}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6B0EF368-ACDE-4754-A7B1-0597FA73F622}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6B0EF368-ACDE-4754-A7B1-0597FA73F622}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6B0EF368-ACDE-4754-A7B1-0597FA73F622}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

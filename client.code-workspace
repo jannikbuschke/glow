@@ -1,8 +1,12 @@
 {
   "folders": [
     {
-      "name": "sample-client",
+      "name": "sample-client-cs",
       "path": "sample.cs\\web"
+    },
+    {
+      "name": "sample-client-fs",
+      "path": "sample.fs\\web"
     },
     {
       "name": "glow-react",
