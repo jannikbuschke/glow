@@ -23,8 +23,15 @@ namespace Glow.Core.StringExtensions
         /// <param name="date">The datetime value that should be inserted</param>
         /// <param name="identifier">The identifier of the template value</param>
         /// <returns></returns>
-        public static string ReplaceDatetimes(this string self, DateTime date, string identifier = "DateTime")
+        public static string ReplaceDatetimes(this string self, DateTime? date, string identifier = "DateTime")
         {
+            if (date == null)
+            {
+                return self;
+            }
+
+            DateTime dateValue;
+            dateValue = date.Value;
             var globalSearchPattern = @$"{{{identifier}:.*?}}";
             var getFormatPattern = @$"(?<={{{identifier}:).*?(?=}})";
 
@@ -37,7 +44,7 @@ namespace Glow.Core.StringExtensions
                 var val = v.Value;
                 Match innerMatch = Regex.Match(val, getFormatPattern);
                 var innerValue = innerMatch.Value;
-                result = result.Replace(v.Value, date.ToString(innerValue));
+                result = result.Replace(v.Value, dateValue.ToString(innerValue));
             }
 
             return result;
