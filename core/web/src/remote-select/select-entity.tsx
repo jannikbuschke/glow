@@ -12,6 +12,7 @@ export type SelectEntityProps<T> = {
   map: (v: T) => LabeledValue
   customItems?: LabeledValue[]
   initialParameters?: Partial<QueryParameter>
+  onSelectEntity?: (v: T | null) => void
 } & Omit<SelectProps<LabeledValue>, "fetcher">
 
 export function SelectEntity<T>({
@@ -22,6 +23,7 @@ export function SelectEntity<T>({
   customItems,
   initialParameters,
   onSelect,
+  onSelectEntity,
   ...restProps
 }: SelectEntityProps<T>) {
   const [{ result, setSearch, setWhere, sendQuery }, {}] = useGlowQuery<T>(
@@ -33,6 +35,18 @@ export function SelectEntity<T>({
     undefined,
     initialParameters,
   )
+
+  const [entities, setEntities] = React.useState<{ [id: string]: T }>({})
+  React.useEffect(() => {
+    const newEntities = result.value.reduce(
+      (prev, curr: any) => ({ ...prev, [curr.id]: curr }),
+      {},
+    )
+    setEntities((v) => ({
+      ...v,
+      ...newEntities,
+    }))
+  }, [result])
 
   const searchOptions = React.useMemo(() => result.value.map(map), [result])
   const [fieldValue, setFieldValue] = React.useState<LabeledValue | null>(null)
@@ -108,8 +122,20 @@ export function SelectEntity<T>({
           }
         }
       }}
+      onClear={() => {
+        onSelectEntity && onSelectEntity(null)
+      }}
       onSelect={(v, o) => {
         onSelect && onSelect(v, o)
+        if (onSelectEntity) {
+          if (v === undefined || v === null) {
+            onSelectEntity(null)
+          } else {
+            const id = v as any
+            const entity = entities[id]
+            onSelectEntity(entity || null)
+          }
+        }
         if (v === undefined) {
           //
           return
