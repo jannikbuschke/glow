@@ -104,8 +104,6 @@ namespace Glow.Core
                     IExceptionHandlerFeature errorFeature = context.Features.Get<IExceptionHandlerFeature>();
                     Exception exception = errorFeature.Error;
 
-                    var errorDetail = exception.ToString();
-
                     ProblemDetails toProblemDetails(Exception ex)
                     {
                         var instance = $"urn:glow:error:{Guid.NewGuid()}";
@@ -201,11 +199,15 @@ namespace Glow.Core
                     ProblemDetails problemDetails = toProblemDetails(exception);
                     if (problemDetails.Type != "bad_request")
                     {
+                        var request = context.Items.ContainsKey(GlowLoggingConstants.HttpContextRequestItemName)
+                            ? context.Items[GlowLoggingConstants.HttpContextRequestItemName]
+                            : null;
+
                         ClaimsPrincipal user = context.User;
                         var id = user?.GetObjectId();
                         var name = user?.Name();
-                        Log.Logger.Information("User is encountering an error {id} {user} {exception}", id, name,
-                            problemDetails.Title);
+                        var requestName = request != null ? request.GetType().FullName : "";
+                        Log.Logger.Information("Request {request} failed {exception} (User = {id} {user})", requestName, id, name, problemDetails.Title);
                         // Log.Logger.Information("Problem details = {@details}", problemDetails);
                     }
 
