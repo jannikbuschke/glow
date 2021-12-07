@@ -26,4 +26,9 @@ namespace Glow.Glue.AspNetCore
     {
         public NotFoundException(string msg) : base(msg) { }
     }
+
+    public class BadConfigurationException : Exception
+    {
+        public BadConfigurationException(string msg) : base(msg) { }
+    }
 }
