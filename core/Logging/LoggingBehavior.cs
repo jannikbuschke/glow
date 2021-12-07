@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
@@ -30,7 +31,7 @@ namespace Glow.Glue.AspNetCore
         {
             if (httpContextAccessor.HttpContext != null)
             {
-                httpContextAccessor.HttpContext.Items.Add(GlowLoggingConstants.HttpContextRequestItemName, request);
+                httpContextAccessor.HttpContext.Items.TryAdd(GlowLoggingConstants.HttpContextRequestItemName, request);
             }
             stopWatch.Start();
             logger.LogDebug($"[Handling Request]: {typeof(TRequest).Name}");
