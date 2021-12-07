@@ -4,8 +4,10 @@ using System.Configuration;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Glow.Glue.AspNetCore;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Glow.Configurations
@@ -20,15 +22,22 @@ namespace Glow.Configurations
     public class ConfigurationUpdateHandler : IRequestHandler<ConfigurationUpdate>
     {
         private readonly Configurations partialConfigurations;
+        private readonly ILogger<ConfigurationUpdateHandler> logger;
 
-        public ConfigurationUpdateHandler(Configurations partialConfigurations)
+        public ConfigurationUpdateHandler(Configurations partialConfigurations, ILogger<ConfigurationUpdateHandler> logger)
         {
             this.partialConfigurations = partialConfigurations;
+            this.logger = logger;
         }
 
         public async Task<Unit> Handle(ConfigurationUpdate request, CancellationToken cancellationToken)
         {
-            Meta partialConfiguration = partialConfigurations.Get().Single(v => v.Id == request.ConfigurationId);
+            Meta partialConfiguration = partialConfigurations.Get().SingleOrDefault(v => v.Id == request.ConfigurationId);
+            if (partialConfiguration == null)
+            {
+                throw new BadConfigurationException(
+                    $"Could not find configuration for '{request.ConfigurationId}'. Maybe you forgot to register the configuration in your service container?");
+            }
 
             var builder = new DbContextOptionsBuilder<ConfigurationDataContext>();
             StartupExtensions.optionsAction?.Invoke(builder);
