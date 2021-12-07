@@ -51,10 +51,10 @@ namespace Glow.Configurations
 
         private void AddAllValues(JToken token, Dictionary<string, object> result)
         {
-            if (token.Path.Contains("['"))
-            {
-                var split = token.Path.Split("['");
-            }
+            // if (token.Path.Contains("['"))
+            // {
+            //     var split = token.Path.Split("['");
+            // }
 
             var path = ParsePath(token.Path);
 
