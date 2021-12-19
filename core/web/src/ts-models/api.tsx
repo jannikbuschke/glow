@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 import * as React from "react"
-import { QueryOptions } from "react-query"
+import { QueryOptions, UseQueryOptions } from "react-query"
 import { useApi, ApiResult, notifySuccess, notifyError } from ".."
 import { useAction, useSubmit, UseSubmit, ProblemDetails } from "../Forms/use-submit"
 import { Formik, FormikFormProps } from "formik"
@@ -75,7 +75,7 @@ export function useTypedQuery<ActionName extends keyof QueryTable>(key: ActionNa
   }: {
     placeholder: QueryOutputs[ActionName],
     input:  QueryInputs[ActionName]
-    queryOptions?: QueryOptions<QueryOutputs[ActionName]>
+    queryOptions?: UseQueryOptions<QueryOutputs[ActionName]>
   }): ApiResult<QueryOutputs[ActionName]> {
 
   const { data, ...rest} = useApi({
