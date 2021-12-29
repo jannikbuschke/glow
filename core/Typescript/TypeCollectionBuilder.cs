@@ -320,6 +320,7 @@ namespace Glow.Core.Typescript
         private void PopuplateProperties(TsType type)
         {
             type.Properties = type.PropertyInfos?
+                .DistinctBy(v => v.Name)
                 .Select(v =>
                 {
                     // problem, current type does not yet exist on dependency
