@@ -9,11 +9,9 @@ namespace Glow.Azdo.Authentication
 {
     public static class StartupExtension
     {
-        public static AuthenticationBuilder AddAzdo(
+        public static AuthenticationBuilder AddAzdoClientServices(
             this AuthenticationBuilder builder,
-            Action<AzdoConfig> configure,
-            DatabaseProvider dbProvider,
-            string connectionString
+            Action<AzdoConfig> configure
         )
         {
             IServiceCollection services = builder.Services;
@@ -24,6 +22,25 @@ namespace Glow.Azdo.Authentication
             var config = new AzdoConfig();
             configure(config);
             services.AddSingleton(config);
+            return builder;
+        }
+
+        public static AuthenticationBuilder AddAzdo(
+            this AuthenticationBuilder builder,
+            Action<AzdoConfig> configure,
+            DatabaseProvider dbProvider,
+            string connectionString
+        )
+        {
+            builder.AddAzdoClientServices(configure);
+            IServiceCollection services = builder.Services;
+
+            // services.AddSingleton<AzdoAuthenticationService>();
+            // services.AddSingleton<AzdoClients>();
+            // services.AddSingleton<ActiveUsersCache>();
+            // var config = new AzdoConfig();
+            // configure(config);
+            // services.AddSingleton(config);
             builder.AddCookie(AzdoDefaults.CookieAuthenticationScheme);
 
             switch (dbProvider)
