@@ -13,13 +13,13 @@ using Microsoft.TeamFoundation.SourceControl.WebApi;
 
 namespace Glow.Sample.Azdo;
 
-[Action(Route = "azdo/get-commits", AllowAnoymous = true)]
+[Action(Route = "azdo/get-commits", AllowAnonymous = true)]
 public record GetCommits(string ProjectName) : IRequest<IEnumerable<Commit>>;
 
-[Action(Route = "azdo/get-items", AllowAnoymous = true)]
+[Action(Route = "azdo/get-items", AllowAnonymous = true)]
 public record GetItems(string ProjectId) : IRequest<List<GitItem>>;
 
-[Action(Route = "azdo/get-item", AllowAnoymous = true)]
+[Action(Route = "azdo/get-item", AllowAnonymous = true)]
 public record GetItem(string ProjectId, string Path) : IRequest<StringWrapper>;
 
 public record StringWrapper(string Value);

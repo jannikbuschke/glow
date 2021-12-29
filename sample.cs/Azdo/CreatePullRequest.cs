@@ -11,7 +11,7 @@ using Microsoft.TeamFoundation.Core.WebApi;
 
 namespace Glow.Sample.Azdo;
 
-[Action(Route = "azdo/create-commit", AllowAnoymous = true)]
+[Action(Route = "azdo/create-commit", AllowAnonymous = true)]
 public record CreatePullRequest(
     string ProjectId,
     string Path,

@@ -13,7 +13,7 @@ using Microsoft.TeamFoundation.SourceControl.WebApi;
 
 namespace Glow.Sample.Azdo;
 
-[Action(Route = "azdo/create-library", AllowAnoymous = true)]
+[Action(Route = "azdo/create-library", AllowAnonymous = true)]
 public record CreateLibrary(string ProjectName) : IRequest<VariableGroup>;
 
 public class CreateLibraryResult

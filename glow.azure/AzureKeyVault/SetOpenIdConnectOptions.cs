@@ -13,7 +13,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Glow.Core.OpenIdConnect
 {
-    [Action(Route = "api/glow/set-openid-connect-options", AllowAnoymous = true)]
+    [Action(Route = "api/glow/set-openid-connect-options", AllowAnonymous = true)]
     public class SetOpenIdConnectOptions : IRequest
     {
         public string TenantId { get; set; }

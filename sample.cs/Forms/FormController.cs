@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Glow.Sample.Forms
 {
     [GenerateTsInterface]
-    [Action(Route="api/form/create-user", AllowAnoymous = true)]
+    [Action(Route="api/form/create-user", AllowAnonymous = true)]
     public class CreateUser : IRequest<Unit>
     {
         [Required, MinLength(3)]
