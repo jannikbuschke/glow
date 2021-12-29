@@ -62,8 +62,11 @@
     "@types/file-saver": "2.0.1",
     "@microsoft/teams-js": "1.8.0",
     "@ant-design/icons": "4.6.2",
-    "@dnd-kit/core": "3.0.1",
-    "@dnd-kit/sortable": "3.0.1",
-    "@types/lodash.debounce": "4.0.6"
+    "@dnd-kit/core": "4.0.3",
+    "@dnd-kit/sortable": "5.1.0",
+    "@types/lodash.debounce": "4.0.6",
+    "@tiptap/react": "2.0.0-beta.98",
+    "@tiptap/starter-kit": "2.0.0-beta.153",
+    "@tiptap/extension-highlight": "2.0.0-beta.31"
   }
 }
