@@ -1,8 +1,6 @@
 using System;
 using System.Threading.Tasks;
-using Glow.Core.Actions;
 using Glow.Glue.AspNetCore;
-using Glow.TypeScript;
 using MediatR;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -57,41 +55,6 @@ namespace Glow.Core.EfCore
                 return migrator.MigrateAsync(migration);
             }
         }
-
-        public static async Task ResetDatabase(this DbContext v, ResetDatabase request)
-        {
-            try
-            {
-                if (!request.IKnowWhatIAmDoing)
-                {
-                    throw new BadRequestException("");
-                }
-
-                if (request.DeleteDatabase)
-                {
-                    await v.Database.EnsureDeletedAsync();
-                }
-
-                await v.Database.MigrateAsync();
-                if (request.AfterCreated != null)
-                {
-                    await request.AfterCreated.Invoke();
-                }
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-    }
-
-    [Action(Policy = "Admin", Route = "api/glow/db/reset-database")]
-    [GenerateTsInterface]
-    public class ResetDatabase : IRequest
-    {
-        public bool DeleteDatabase { get; set; }
-        public bool IKnowWhatIAmDoing { get; set; }
-        public Func<Task> AfterCreated { get; set; }
     }
 
     public enum DatabaseProvider

@@ -1,7 +1,4 @@
-using System.Threading.Tasks;
-using Glow.Core.Actions;
 using Glow.Users;
-using Microsoft.EntityFrameworkCore;
 
 namespace Gertrud.Users
 {

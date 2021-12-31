@@ -5,7 +5,7 @@
     <LangVersion>9.0</LangVersion>
     <PackageId>Glow.Core</PackageId>
     <AssemblyName>Glow.Core</AssemblyName>
-    <RootNamespace>Glow.Core</RootNamespace>
+    <RootNamespace>Glow</RootNamespace>
     <Version>0.24.0</Version>
     <Authors>Jannik Buschke</Authors>
     <SpaRoot>web\</SpaRoot>
@@ -15,19 +15,19 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <FrameworkReference Include="Microsoft.AspNetCore.App"/>
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.0"/>
-    <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="6.0.0"/>
-    <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.2.0"/>
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="6.0.0"/>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.9"/>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="6.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="6.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.9" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.9">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="5.0.9"/>
+    <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="5.0.9" />
     <!--    todo: remove-->
-    <PackageReference Include="Microsoft.Graph" Version="3.5.0"/>
+    <PackageReference Include="Microsoft.Graph" Version="3.5.0" />
   </ItemGroup>
 
   <ItemGroup>

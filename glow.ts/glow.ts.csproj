@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>10.0</LangVersion>
+    <PackageId>Glow.Ts</PackageId>
+    <AssemblyName>Glow.Ts</AssemblyName>
+    <RootNamespace>Glow</RootNamespace>
+    <Version>0.24.0</Version>
+    <Authors>Jannik Buschke</Authors>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+
+    <ProjectReference Include="..\core\glow.core.csproj" />
+  </ItemGroup>
+</Project>

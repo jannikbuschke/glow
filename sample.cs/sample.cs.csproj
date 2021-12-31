@@ -26,10 +26,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\core\glow.core.csproj"/>
-    <ProjectReference Include="..\glow.azdo\glow.azdo.csproj"/>
-    <ProjectReference Include="..\glow.azure\glow.azure.csproj"/>
-    <ProjectReference Include="..\glow.beta\glow.beta.csproj"/>
+    <ProjectReference Include="..\glow.meta\glow.meta.csproj"/>
+
+<!--    <ProjectReference Include="..\core\glow.core.csproj"/>-->
+<!--    <ProjectReference Include="..\glow.azdo\glow.azdo.csproj"/>-->
+<!--    <ProjectReference Include="..\glow.azure\glow.azure.csproj"/>-->
+<!--    <ProjectReference Include="..\glow.beta\glow.beta.csproj"/>-->
   </ItemGroup>
 
   <Target Name="PublishRunWebpack" AfterTargets="ComputeFilesToPublish">

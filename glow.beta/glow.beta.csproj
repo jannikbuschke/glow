@@ -18,5 +18,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\core\glow.core.csproj" />
+    <ProjectReference Include="..\glow.ts\glow.ts.csproj" />
   </ItemGroup>
 </Project>
