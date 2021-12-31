@@ -4,58 +4,55 @@ import { useApi, ApiResult, notifySuccess, notifyError } from "glow-react"
 import { useAction, useSubmit, UseSubmit, ProblemDetails } from "glow-react/es/Forms/use-submit"
 import { Formik, FormikConfig, FormikFormProps } from "formik"
 import { Form } from "formik-antd"
-import * as Glow_Sample_Files from "./Glow.Sample.Files"
-import * as Glow_Configurations from "./Glow.Configurations"
-import * as Glow_Core_Profiles from "./Glow.Core.Profiles"
-import * as Glow_Sample_Configurations from "./Glow.Sample.Configurations"
-import * as Glow_Sample_Actions from "./Glow.Sample.Actions"
-import * as Glow_Sample_Forms from "./Glow.Sample.Forms"
-import * as Glow_Sample_MdxBundle from "./Glow.Sample.MdxBundle"
-import * as Glow_Sample_Azdo from "./Glow.Sample.Azdo"
-import * as MediatR from "./MediatR"
-import * as Microsoft_TeamFoundation_DistributedTask_WebApi from "./Microsoft.TeamFoundation.DistributedTask.WebApi"
+import * as AzdoTasks from "./AzdoTasks"
+import * as Sample_Fs_Agenda from "./Sample.Fs.Agenda"
+import * as Microsoft_TeamFoundation_WorkItemTracking_WebApi_Models from "./Microsoft.TeamFoundation.WorkItemTracking.WebApi.Models"
 import * as Microsoft_VisualStudio_Services_WebApi from "./Microsoft.VisualStudio.Services.WebApi"
-import * as Microsoft_VisualStudio_Services_Common from "./Microsoft.VisualStudio.Services.Common"
-import * as Microsoft_TeamFoundation_SourceControl_WebApi from "./Microsoft.TeamFoundation.SourceControl.WebApi"
 import * as Microsoft_TeamFoundation_Core_WebApi from "./Microsoft.TeamFoundation.Core.WebApi"
-import * as Glow_Sample_Views from "./Glow.Sample.Views"
-import * as Glow_Sample_Users from "./Glow.Sample.Users"
+import * as Microsoft_VisualStudio_Services_Common from "./Microsoft.VisualStudio.Services.Common"
+import * as MediatR from "./MediatR"
 
 type QueryInputs = {
-  "/api/mdx/get-list": Glow_Sample_MdxBundle.GetMdxList,
-  "/api/mdx/get-single": Glow_Sample_MdxBundle.GetEntityViewmodel,
-  "/azdo/get-commits": Glow_Sample_Azdo.GetCommits,
-  "/azdo/get-items": Glow_Sample_Azdo.GetItems,
-  "/azdo/get-item": Glow_Sample_Azdo.GetItem,
-  "/azdo/get-projects": Glow_Sample_Azdo.GetProjects,
+  "/api/get-area-paths": AzdoTasks.GetAreaPaths,
+  "/api/get-workspaces": AzdoTasks.GetAreas,
+  "/api/get-workspace": AzdoTasks.GetArea,
+  "/api/get-projects": AzdoTasks.GetProjects,
+  "/api/get-task": AzdoTasks.GetTask,
+  "/api/get-create-task-viewmodel": AzdoTasks.GetCreateTaskViewmodel,
+  "/api/get-comments": AzdoTasks.GetComments,
+  "/api/get-tasks": AzdoTasks.GetTasks,
+  "/api/get-workspace-viewmodel": AzdoTasks.GetWorkspaceViewmodel,
+  "/api/get-meeting": Sample_Fs_Agenda.GetMeeting,
 }
 type QueryOutputs = {
-  "/api/mdx/get-list": Glow_Sample_MdxBundle.Mdx[],
-  "/api/mdx/get-single": Glow_Sample_MdxBundle.MdxViewmodel,
-  "/azdo/get-commits": Glow_Sample_Azdo.Commit[],
-  "/azdo/get-items": Microsoft_TeamFoundation_SourceControl_WebApi.GitItem[],
-  "/azdo/get-item": Glow_Sample_Azdo.StringWrapper,
-  "/azdo/get-projects": Microsoft_TeamFoundation_Core_WebApi.TeamProjectReference[],
+  "/api/get-area-paths": Microsoft_TeamFoundation_WorkItemTracking_WebApi_Models.WorkItemClassificationNode,
+  "/api/get-workspaces": AzdoTasks.Workspace[],
+  "/api/get-workspace": AzdoTasks.Workspace,
+  "/api/get-projects": Microsoft_TeamFoundation_Core_WebApi.TeamProjectReference[],
+  "/api/get-task": Microsoft_TeamFoundation_WorkItemTracking_WebApi_Models.WorkItem,
+  "/api/get-create-task-viewmodel": AzdoTasks.CreateTaskViewmodel,
+  "/api/get-comments": Microsoft_TeamFoundation_WorkItemTracking_WebApi_Models.WorkItemComments,
+  "/api/get-tasks": Microsoft_TeamFoundation_WorkItemTracking_WebApi_Models.WorkItem[],
+  "/api/get-workspace-viewmodel": AzdoTasks.WorkspaceViewmodel,
+  "/api/get-meeting": Sample_Fs_Agenda.Meeting,
 }
 export type Outputs = {
-  "/api/actions/sample": MediatR.Unit,
-  "/api/actions/sample-2": Glow_Sample_Actions.Response,
-  "/api/form/create-user": MediatR.Unit,
-  "/api/mdx/create": Glow_Sample_MdxBundle.Mdx,
-  "/api/mdx/update": Glow_Sample_MdxBundle.Mdx,
-  "/azdo/create-library": Microsoft_TeamFoundation_DistributedTask_WebApi.VariableGroup,
-  "/azdo/create-commit": Microsoft_TeamFoundation_SourceControl_WebApi.GitPush,
-  "/api/mdx/transpile": Glow_Sample_MdxBundle.TranspileResult,
+  "/api/delete-workspace": AzdoTasks.Workspace,
+  "/api/upsert-workspace": AzdoTasks.Workspace,
+  "/api/create-task": Microsoft_TeamFoundation_WorkItemTracking_WebApi_Models.WorkItem,
+  "/api/update-task": Microsoft_TeamFoundation_WorkItemTracking_WebApi_Models.WorkItem,
+  "/api/meeting/create": Sample_Fs_Agenda.Meeting,
+  "/api/reorder-agenda-items": MediatR.Unit,
+  "/api/upsert-meeting-item": MediatR.Unit,
 }
 export type Actions = {
-  "/api/actions/sample": Glow_Sample_Actions.SampleAction,
-  "/api/actions/sample-2": Glow_Sample_Actions.SampleAction2,
-  "/api/form/create-user": Glow_Sample_Forms.CreateUser,
-  "/api/mdx/create": Glow_Sample_MdxBundle.CreateMdx,
-  "/api/mdx/update": Glow_Sample_MdxBundle.UpdateMdx,
-  "/azdo/create-library": Glow_Sample_Azdo.CreateLibrary,
-  "/azdo/create-commit": Glow_Sample_Azdo.CreatePullRequest,
-  "/api/mdx/transpile": Glow_Sample_MdxBundle.Transpile,
+  "/api/delete-workspace": AzdoTasks.DeleteWorkspace,
+  "/api/upsert-workspace": AzdoTasks.UpsertWorkspace,
+  "/api/create-task": AzdoTasks.CreateTask,
+  "/api/update-task": AzdoTasks.UpdateTask,
+  "/api/meeting/create": Sample_Fs_Agenda.CreateMeeting,
+  "/api/reorder-agenda-items": Sample_Fs_Agenda.ReorderAgendaItems,
+  "/api/upsert-meeting-item": Sample_Fs_Agenda.UpsertMeetingItem,
 }
 
 type TagWithKey<TagName extends string, T> = {

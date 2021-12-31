@@ -2,12 +2,13 @@
 
 open  Microsoft.EntityFrameworkCore;
 
+[<CLIMutable>]
 type Person =
     { PersonId : int
       FirstName : string
       LastName : string
       Address : string
-      City : string}
+      City : string }
 
 type DataContext(options: DbContextOptions<DataContext>) =
     inherit DbContext(options)

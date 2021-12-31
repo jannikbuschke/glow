@@ -1,29 +1,37 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
-    <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
-    </PropertyGroup>
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+  </PropertyGroup>
 
-    <ItemGroup>
-        <Compile Include="DataContext.fs" />
-        <Compile Include="Program.fs" />
-    </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Agenda.fs" />
+    <Compile Include="MartenTest.cs.fs" />
+    <Compile Include="AzdoTasks.fs" />
+    <Compile Include="DataContext.fs" />
+    <Compile Include="Program.fs" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="EFCoreSecondLevelCacheInterceptor" Version="3.2.0" />
     <PackageReference Include="Jering.Javascript.NodeJS" Version="6.0.1" />
+    <PackageReference Include="Giraffe" Version="6.0.0-alpha-2" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="6.0.0"/>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="6.0.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.2" />
   </ItemGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\core\glow.core.csproj" />
-      <ProjectReference Include="..\glow.azdo\glow.azdo.csproj" />
-      <ProjectReference Include="..\glow.azure\glow.azure.csproj" />
-      <ProjectReference Include="..\glow.beta\glow.beta.csproj" />
-    </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Marten" Version="4.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\core\glow.core.csproj" />
+    <ProjectReference Include="..\glow.azdo\glow.azdo.csproj" />
+    <ProjectReference Include="..\glow.azure\glow.azure.csproj" />
+    <ProjectReference Include="..\glow.beta\glow.beta.csproj" />
+  </ItemGroup>
 
 </Project>

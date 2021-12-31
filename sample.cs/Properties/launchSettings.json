@@ -6,7 +6,7 @@
       "applicationUrl": "https://localhost:5002;",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "azdo:Pat":"jkqxb5xzk6l22j7dq7w63qw4gpzsy42tbzfhl5ir7dbb4a5qqnca"
+        "azdo:Pat": "jkqxb5xzk6l22j7dq7w63qw4gpzsy42tbzfhl5ir7dbb4a5qqnca"
       }
     }
   }

@@ -8,38 +8,33 @@
     <DefaultItemExcludes>$(DefaultItemExcludes);$(SpaRoot)node_modules\**</DefaultItemExcludes>
     <LangVersion>10.0</LangVersion>
   </PropertyGroup>
+  
+  <!--  <ItemGroup>-->
+  <!--    <PackageReference Include="Serilog" Version="2.9.0" />-->
+  <!--    <PackageReference Include="Serilog.AspNetCore" Version="3.2.0" />-->
+  <!--    <PackageReference Include="Serilog.Extensions.Logging" Version="3.0.1" />-->
+  <!--    <PackageReference Include="Serilog.Settings.Configuration" Version="3.1.0" />-->
+  <!--    <PackageReference Include="Serilog.Sinks.Async" Version="1.4.0" />-->
+  <!--    <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1" />-->
+  <!--    <PackageReference Include="Serilog.Sinks.Seq" Version="4.0.0" />-->
+  <!--    <PackageReference Include="Serilog.Sinks.RollingFile" Version="3.3.0" />-->
+  <!--  </ItemGroup>-->
 
   <ItemGroup>
-    <PackageReference Include="EFCoreSecondLevelCacheInterceptor" Version="3.2.0" />
-    <PackageReference Include="Jering.Javascript.NodeJS" Version="6.0.1" />
+    <PackageReference Include="EFCoreSecondLevelCacheInterceptor" Version="3.2.0"/>
+    <PackageReference Include="Jering.Javascript.NodeJS" Version="6.0.1"/>
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.2" />
+    <ProjectReference Include="..\core\glow.core.csproj"/>
+    <ProjectReference Include="..\glow.azdo\glow.azdo.csproj"/>
+    <ProjectReference Include="..\glow.azure\glow.azure.csproj"/>
+    <ProjectReference Include="..\glow.beta\glow.beta.csproj"/>
   </ItemGroup>
-
-<!--  <ItemGroup>-->
-<!--    <PackageReference Include="Serilog" Version="2.9.0" />-->
-<!--    <PackageReference Include="Serilog.AspNetCore" Version="3.2.0" />-->
-<!--    <PackageReference Include="Serilog.Extensions.Logging" Version="3.0.1" />-->
-<!--    <PackageReference Include="Serilog.Settings.Configuration" Version="3.1.0" />-->
-<!--    <PackageReference Include="Serilog.Sinks.Async" Version="1.4.0" />-->
-<!--    <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1" />-->
-<!--    <PackageReference Include="Serilog.Sinks.Seq" Version="4.0.0" />-->
-<!--    <PackageReference Include="Serilog.Sinks.RollingFile" Version="3.3.0" />-->
-<!--  </ItemGroup>-->
-
-  <ItemGroup>
-    <ProjectReference Include="..\core\glow.core.csproj" />
-    <ProjectReference Include="..\glow.azdo\glow.azdo.csproj" />
-    <ProjectReference Include="..\glow.azure\glow.azure.csproj" />
-    <ProjectReference Include="..\glow.beta\glow.beta.csproj" />
-  </ItemGroup>
-
 
   <Target Name="PublishRunWebpack" AfterTargets="ComputeFilesToPublish">
     <ItemGroup>
-      <DistFiles Include="$(SpaRoot)build\**; $(SpaRoot)build-ssr\**" />
+      <DistFiles Include="$(SpaRoot)build\**; $(SpaRoot)build-ssr\**"/>
       <ResolvedFileToPublish Include="@(DistFiles->'%(FullPath)')" Exclude="@(ResolvedFileToPublish)">
         <RelativePath>%(DistFiles.Identity)</RelativePath>
         <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
@@ -49,18 +44,13 @@
 
   <ItemGroup>
     <!-- Don't publish the SPA source files, but do show them in the project files list -->
-    <Content Remove="$(SpaRoot)**" />
-    <None Remove="$(SpaRoot)**" />
-    <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
+    <Content Remove="$(SpaRoot)**"/>
+    <None Remove="$(SpaRoot)**"/>
+    <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**"/>
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="./NodeRuntime/js/**" CopyToOutputDirectory="PreserveNewest" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Actions" />
-    <Folder Include="Experiments" />
+    <None Include="./NodeRuntime/js/**" CopyToOutputDirectory="PreserveNewest"/>
   </ItemGroup>
 
 </Project>

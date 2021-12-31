@@ -1,5 +1,15 @@
 namespace sample.fs
 
+open System.Security.Claims
+open System.Threading
+open Microsoft.AspNetCore.Authentication.Cookies
+open Microsoft.AspNetCore.Http
+open Microsoft.AspNetCore.Http.Features
+open Weasel.Postgresql
+open Marten
+open MartenTest
+
+
 #nowarn "20"
 
 open System
@@ -9,11 +19,16 @@ open Microsoft.AspNetCore.Hosting
 open Microsoft.Extensions.Configuration
 open Microsoft.Extensions.DependencyInjection
 open Microsoft.Extensions.Hosting
+open Microsoft.Extensions.Logging
 open Serilog
 open Glow.Core
 open Microsoft.EntityFrameworkCore
 open EFCoreSecondLevelCacheInterceptor
 open Glow.Tests
+open Giraffe
+open Microsoft.AspNetCore.Authentication
+open Glow.Azdo.Authentication
+open Glow.TypeScript
 
 module Program =
 
@@ -41,26 +56,59 @@ module Program =
 
   [<EntryPoint>]
   let main args =
-    let logger: ILogger = upcast getPreStartLogger ()
+    let logger: Serilog.ILogger = upcast getPreStartLogger ()
     Log.Logger = logger
     let builder = WebApplication.CreateBuilder(args)
 
     let services = builder.Services
-    builder.Services.AddControllers()
-    builder.Services.AddGlowApplicationServices(null, null, [| Assembly.GetEntryAssembly() |])
+
+    services.AddControllers()
+    let assemblies = [| Assembly.GetEntryAssembly() |]
+    services.AddGlowApplicationServices(null, null, assemblies)
+
+    services.AddTypescriptGeneration [| TsGenerationOptions(Assemblies = assemblies, Path = "./web/src/ts-models/", GenerateApi = true) |]
+
+    let authScheme =
+      CookieAuthenticationDefaults.AuthenticationScheme
+
+    let cookieAuth (o: CookieAuthenticationOptions) =
+      do
+        o.Cookie.HttpOnly <- true
+        o.Cookie.SecurePolicy <- CookieSecurePolicy.SameAsRequest
+        o.SlidingExpiration <- true
+        o.ExpireTimeSpan <- TimeSpan.FromDays 7.0
+
+    services
+            .AddAuthentication(authScheme)
+            .AddCookie(cookieAuth)
+            .AddAzdoClientServices(fun options ->
+                options.Pat <- builder.Configuration.Item("azdo:Pat")
+                options.OrganizationBaseUrl <- builder.Configuration.Item("azdo:OrganizationBaseUrl"))
+        |> ignore
 
     services.AddTestAuthentication()
+    services.AddResponseCaching()
 
-//    let connectionString = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=glow-sample-fs;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False"
+    let connectionString =
+        builder.Configuration.Item("ConnectionString")
+
+
+    let options = StoreOptions()
+    options.Connection connectionString
+    //    options.AutoCreateSchemaObjects <- true // if is development
+    services
+      .AddMarten(options)
+      .UseLightweightSessions()
 
     services
       .AddDbContextPool<DataContext>(fun serviceProvider optionsBuilder ->
         optionsBuilder
           .UseInMemoryDatabase("inmemdb")
-//          .UseSqlServer(connectionString)
-          .AddInterceptors(serviceProvider.GetRequiredService<SecondLevelCacheInterceptor>())
-        |> ignore
-        )
+          //          .UseSqlServer(connectionString)
+          .AddInterceptors(
+            serviceProvider.GetRequiredService<SecondLevelCacheInterceptor>()
+          )
+        |> ignore)
       .AddEFSecondLevelCache(fun options ->
         options
           .UseMemoryCacheProvider()
@@ -72,11 +120,29 @@ module Program =
 
     let app = builder.Build()
 
+    let scope = app.Services.CreateScope()
+
+    let ctx =
+      scope.ServiceProvider.GetService<DataContext>()
+
+    ctx.Persons.Add(
+      { PersonId = 1
+        FirstName = "jbu"
+        LastName = "X"
+        Address = "X"
+        City = "Luebeck" }
+    )
+
+    ctx.SaveChanges()
+    scope.Dispose()
+
     let env =
       app.Services.GetService<IWebHostEnvironment>()
 
     let configuration =
       app.Services.GetService<IConfiguration>()
+
+    app.UseResponseCaching()
 
     app.UseGlow(env, configuration, (fun options -> options.SpaDevServerUri <- "http://localhost:3001"))
 

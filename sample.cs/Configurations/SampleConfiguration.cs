@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using Glow.Configurations;
 using Glow.TypeScript;
 
@@ -9,6 +11,7 @@ namespace Glow.Sample.Configurations
         public Ts()
         {
             Add<SampleConfiguration>();
+            var x = new List<string>().AsQueryable().ToList();
         }
     }
 

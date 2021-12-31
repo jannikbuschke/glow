@@ -49,15 +49,3 @@ export const defaultTeamProjectReference: TeamProjectReference = {
   lastUpdateTime: "1/1/0001 12:00:00 AM",
 }
 
-export interface TeamProjectCollectionReference {
-  id: string
-  name: string | null
-  url: string | null
-}
-
-export const defaultTeamProjectCollectionReference: TeamProjectCollectionReference = {
-  id: "00000000-0000-0000-0000-000000000000",
-  name: null,
-  url: null,
-}
-

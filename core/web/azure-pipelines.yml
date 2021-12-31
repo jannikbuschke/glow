@@ -43,7 +43,7 @@ jobs:
     # condition: eq(dependencies.Check_for_changes.outputs['check_changes.SOURCE_CODE_CHANGED'], 'true')
     steps:
       - script: |
-          cd core/web
+          cd core/web \
           npm install \
           npm run build
 

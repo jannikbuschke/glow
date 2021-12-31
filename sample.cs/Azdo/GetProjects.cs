@@ -8,7 +8,7 @@ using Microsoft.VisualStudio.Services.WebApi;
 
 namespace Glow.Sample.Azdo;
 
-[Action(Route = "azdo/get-projects", AllowAnoymous = true)]
+[Action(Route = "azdo/get-projects", AllowAnonymous = true)]
 public record GetProjects : IRequest<IPagedList<TeamProjectReference>>;
 
 public class GetProjectsHandler : BaseHandler,
