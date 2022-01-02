@@ -1,7 +1,7 @@
 name: $(BuildDefinitionName)_$(Year:yyyy).$(Month).$(DayOfMonth)$(Rev:.r)
 
 trigger:
-  - chore/full-pipeline
+  - vnext
 
 pool:
   vmImage: "windows-2019"
@@ -10,7 +10,7 @@ variables:
   buildConfiguration: "Release"
   system.debug: false
   buildNumber: 0.24.0-$(Rev:.r)
-  workingDir: "core/web"
+  workingDir: "core-web"
 
 stages:
   - stage: Checks
@@ -25,31 +25,58 @@ stages:
           - checkout: self
             submodules: true
 
-          - script: |
-              npm install core/web
-              npm run build core/web
+          # - task: NodeTool@0
+          #   inputs:
+          #     versionSpec: "14.17.5"
+
+          - powershell: |
+              npm i --legacy-peer-deps
+              npm run bootstrap
+              npm run tsc
+
+          # - script: |
+          #     echo "good"
+          #     echo "nice"
+          #     npm i --legacy-peer-deps
+          #     echo "zweidrei"
+          #     npm run bootstrap
+          #     npm run tsc
+          #     npm run build core-web
+          #     npm run publish core-web
+          #     npm run build glow.beta-web
+          #     npm run publish glow.beta-web
 
           - task: Npm@1
-            displayName: "npm publish beta (refs/heads/beta)"
+            displayName: "npm publish core-web beta (refs/heads/beta)"
             inputs:
               command: custom
               verbose: false
               customCommand: "publish --tag beta"
-              publishEndpoint: npm
               customEndpoint: npm
-              workingDir: $(workingDir)
+              workingDir: core-web
             continueOnError: true
-            condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/heads/chore/full-pipeline'))
+          # condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/heads/chore/full-pipeline'))
 
-          - task: Npm@1
-            displayName: "npm publish release (refs/heads/master)"
-            inputs:
-              command: publish
-              verbose: false
-              publishEndpoint: npm
-              customEndpoint: npm
-              workingDir: $(workingDir)
-            condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/heads/master'))
+          # - task: Npm@1
+          #   displayName: "npm publish beta (refs/heads/beta)"
+          #   inputs:
+          #     command: custom
+          #     verbose: false
+          #     customCommand: "publish --tag beta"
+          #     publishEndpoint: npm
+          #     customEndpoint: npm
+          #     workingDir: glow.beta-web
+          #   continueOnError: true
+
+          # - task: Npm@1
+          #   displayName: "npm publish release (refs/heads/master)"
+          #   inputs:
+          #     command: publish
+          #     verbose: false
+          #     publishEndpoint: npm
+          #     customEndpoint: npm
+          #     workingDir: $(workingDir)
+          #   condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/heads/master'))
 
           - task: NuGetToolInstaller@1
             inputs:
