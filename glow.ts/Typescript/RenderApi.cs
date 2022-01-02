@@ -25,10 +25,10 @@ namespace Glow.Core.Typescript
 
             var glowPath = options.Assemblies.FirstOrDefault()?.FullName.StartsWith("Glow.Core") == true
                 ? ".."
-                : "glow-react";
+                : "glow-core";
             var useSubmitPath = options.Assemblies.FirstOrDefault()?.FullName.StartsWith("Glow.Core") == true
                 ? ".."
-                : "glow-react/es";
+                : "glow-core/es";
 
             var imports = new StringBuilder();
 
@@ -45,7 +45,7 @@ namespace Glow.Core.Typescript
             // allow adjusting?
             imports.AppendLine($@"import {{ useApi, ApiResult, notifySuccess, notifyError }} from ""{glowPath}""");
             imports.AppendLine(
-                $@"import {{ useAction, useSubmit, UseSubmit, ProblemDetails }} from ""{useSubmitPath}/Forms/use-submit""");
+                $@"import {{ useAction, useSubmit, UseSubmit, ProblemDetails }} from ""{useSubmitPath}/actions/use-submit""");
             imports.AppendLine(@"import { Formik, FormikConfig, FormikFormProps } from ""formik""");
             imports.AppendLine(@"import { Form } from ""formik-antd""");
 

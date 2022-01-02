@@ -7,7 +7,6 @@ import { Handle, Remove } from "./components"
 
 import styles from "./Item.module.css"
 import styled from "styled-components"
-import { RenderObject } from "glow-react"
 
 export interface Props {
   dragOverlay?: boolean

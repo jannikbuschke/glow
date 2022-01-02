@@ -9,8 +9,12 @@
       "path": "sample.fs\\web"
     },
     {
-      "name": "glow-react",
-      "path": "core\\web"
+      "name": "glow-core",
+      "path": "core-web"
+    },
+	  {
+      "name": "glow-beta",
+      "path": "glow.beta-web"
     }
   ],
   "settings": {}

@@ -35,7 +35,6 @@ import { Container, ContainerProps } from "./container/index"
 import { Item } from "./item/index"
 import { MeetingItem } from "../../ts-models/Sample.Fs.Agenda"
 import { useToast } from "@chakra-ui/react"
-import { RenderObject } from "glow-react"
 import { useTypedAction } from "../../ts-models/api"
 
 const defaultInitializer = (index: number) => index

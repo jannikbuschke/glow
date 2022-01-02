@@ -5,7 +5,8 @@
   "dependencies": {
     "react": "17.0.2",
     "react-dom": "17.0.2",
-    "glow-react": "0.23.0",
+    "glow-core": "0.24.0-beta.0",
+    "glow-beta": "0.24.0-beta.0",
     "formik-antd": "2.1.0-beta.5",
     "antd": "4.16.9",
     "formik": "2.2.9",

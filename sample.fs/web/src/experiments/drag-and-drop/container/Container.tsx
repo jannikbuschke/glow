@@ -1,11 +1,8 @@
 import React, { forwardRef } from "react"
 import classNames from "classnames"
-
 import { Handle, Remove } from "../item/index"
-
 import styles from "./Container.module.css"
 import styled from "styled-components"
-import { RenderObject } from "glow-react"
 
 export interface Props {
   children: React.ReactNode
