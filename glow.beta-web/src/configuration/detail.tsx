@@ -8,7 +8,8 @@ import styled from "styled-components"
 
 export function AllConfigurationsDetailView() {
   const originalParams = useParams()
-  const { id, name, version } = JSON.parse(decodeURI(originalParams["id"]))
+  const paramId = originalParams["id"]!
+  const { id, name, version } = JSON.parse(decodeURI(paramId))
   const { data, status, error } = useData<AllConfigurationsDto>(
     constants.api.single(id, version, name),
     {

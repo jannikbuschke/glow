@@ -43,6 +43,9 @@ export function RoutedMenu({
   const params = useParams()
   const view = params[parameter]
 
+  if (!view) {
+    return <div>parameter not found</div>
+  }
   return (
     <div>
       view: {view}
