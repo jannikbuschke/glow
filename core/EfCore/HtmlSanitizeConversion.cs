@@ -15,6 +15,11 @@ namespace Glow.Core.EfCore
     {
         private static HtmlSanitizer sanitizer = new();
 
+        static HtmlSanitizeValueConverter()
+        {
+            sanitizer.AllowedAttributes.Add("class");
+        }
+
         private static Expression<Func<string, string>> convertToProviderExpression =
             x => sanitizer.Sanitize(x, null, null);
 
