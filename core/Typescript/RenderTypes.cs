@@ -31,10 +31,11 @@ namespace Glow.Core.Typescript
 
         private static void RenderModule(Module module, string path)
         {
-            if (module.Namespace.StartsWith("System"))
+            if (module.Namespace.StartsWith("System") || module.Namespace.StartsWith("Microsoft.FSharp.Core"))
             {
                 return;
             }
+
             IEnumerable<TsEnum> enumerables = module.TsEnums;
             var tsTypes = module.TsTypes;
             if (enumerables.Count() == 0 && tsTypes.Count() == 0)
