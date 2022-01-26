@@ -76,7 +76,6 @@ namespace Glow.Core.Typescript
 
         private OneOf<TsType, TsEnum> CreateOrGet(Type type, bool skipDependencies = false)
         {
-
             if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(KeyValuePair<,>))
             {
                 Type[] argTypes = type.GetGenericArguments();
@@ -147,6 +146,11 @@ namespace Glow.Core.Typescript
                 var id = type.GetTypeId();
                 if (!tsTypes.ContainsKey(id))
                 {
+                    if (IsFsharOption(type))
+                    {
+                        return AsFsharpOption(type);
+                    }
+
                     if (IsNullable(type))
                     {
                         OneOf<TsType, TsEnum> nullable = AsNullable(type);
@@ -183,6 +187,28 @@ namespace Glow.Core.Typescript
                 }
 
                 return tsTypes[id];
+            }
+        }
+
+        private OneOf<TsType, TsEnum> AsFsharpOption(Type type)
+        {
+            Type[] genericTypeArguments = type.GenericTypeArguments;
+            Type genericArgument = genericTypeArguments.First();
+            if (!genericArgument.IsEnum && !genericArgument.IsPrimitive())
+            {
+                return CreateOrGet(genericArgument);
+            }
+            else if (genericArgument.IsEnum)
+            {
+                throw new Exception("enum FS Option currently not supported");
+            }
+            else if (genericArgument.IsPrimitive())
+            {
+                return GetPrimitiveAsNullable(genericArgument);
+            }
+            else
+            {
+                throw new Exception("enum/primitive FS Option currently not supported");
             }
         }
 
@@ -282,6 +308,24 @@ namespace Glow.Core.Typescript
             }
         }
 
+        private TsType GetPrimitiveAsNullable(Type type)
+        {
+            if (!GetTypeExtension.primitives.ContainsKey(type))
+            {
+                throw new Exception($"Type '{type.FullName}' not a primitive");
+            }
+
+            (var name, var defaultValue) = GetTypeExtension.primitives[type];
+            return new TsType
+            {
+                Name = name.EndsWith("null") ? name : $"{name} | null",
+                DefaultValue = "null",
+                IsPrimitive = true,
+                Properties = new List<Property>(),
+                Type = type,
+            };
+        }
+
         private TsType GetPrimitive(Type type)
         {
             if (GetTypeExtension.primitives.ContainsKey(type))
@@ -344,6 +388,11 @@ namespace Glow.Core.Typescript
                 }).ToList();
         }
 
+        private bool IsFsharOption(Type type)
+        {
+            return type.Name.StartsWith("FSharpOption");
+        }
+
         private bool IsNullable(Type type)
         {
             return type.Name.StartsWith("Nullable");
@@ -371,7 +420,7 @@ namespace Glow.Core.Typescript
                 var t = new TsType
                 {
                     FullName = type.FullName,
-                    IsPrimitive = type.Name.StartsWith("Nullable"),
+                    IsPrimitive = type.Name.StartsWith("Nullable") || type.Name.StartsWith("FSharpOption"),
                     Name = name,
                     Namespace = type.Namespace,
                     DefaultValue = null,

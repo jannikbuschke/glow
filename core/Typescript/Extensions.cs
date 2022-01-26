@@ -41,7 +41,6 @@ namespace Glow.TypeScript
         {
             ApiFileFirstLines.Add(line);
         }
-
     }
 
     public static class Extensions
