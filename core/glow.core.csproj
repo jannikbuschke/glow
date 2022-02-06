@@ -27,6 +27,9 @@
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="5.0.9" />
     <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="2.2.0"/>
+    <PackageReference Include="NodaTime" Version="3.0.9"/>
+    <PackageReference Include="NodaTime.Serialization.JsonNet" Version="3.0.0"/>
+
   <ItemGroup>
     <PackageReference Include="MediatR" Version="8.1.0" />
     <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="8.0.0" />
