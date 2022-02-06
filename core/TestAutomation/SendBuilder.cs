@@ -1,8 +1,10 @@
 using System;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using Glow.Users;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Newtonsoft.Json.Linq;
 
 namespace Glow.Tests
 {
@@ -66,7 +68,9 @@ namespace Glow.Tests
                 throw new NullReferenceException(nameof(url));
             }
 
-            HttpResponseMessage response = await client.PostAsJsonAsync(url, request);
+            var data = JObject.FromObject(request).ToString();
+            HttpResponseMessage response = await client.PostAsync(url, new StringContent(data, Encoding.UTF8, "application/json"));
+
             return response;
         }
     }
