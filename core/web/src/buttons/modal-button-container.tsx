@@ -10,12 +10,9 @@ type PropsButton = Omit<ButtonProps, "onClick"> & Props
 
 type PropsMenuItem = Omit<MenuItemProps, "onClick"> & Props
 
-type PropsButtonV2 = { triggerType: "Button" } & Omit<ButtonProps, "onClick">
+type PropsButtonV2 = { triggerType: "Button" } & ButtonProps
 
-type PropsMenuItemV2 = { triggerType: "MenuItem" } & Omit<
-  MenuItemProps,
-  "onClick"
->
+type PropsMenuItemV2 = { triggerType: "MenuItem" } & MenuItemProps
 
 export type ModalTriggerType = "Button" | "MenuItem"
 
@@ -29,6 +26,7 @@ export function ModalContainer({
   modal,
   unmountModalOnAfterClose,
   triggerType,
+  onClick,
   ...props
 }: (PropsMenuItemV2 | PropsButtonV2) & Props) {
   const btnProps = props as PropsButtonV2
@@ -40,17 +38,19 @@ export function ModalContainer({
       {triggerType === "MenuItem" ? (
         <Menu.Item
           {...menuItemProps}
-          onClick={() => {
+          onClick={(e) => {
             setVisible(true)
             setMountModal(true)
+            onClick && onClick(e as any)
           }}
         />
       ) : (
         <Button
           {...btnProps}
-          onClick={() => {
+          onClick={(e) => {
             setVisible(true)
             setMountModal(true)
+            onClick && onClick(e as any)
           }}
         />
       )}
