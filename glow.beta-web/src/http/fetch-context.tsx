@@ -32,6 +32,20 @@ teamsInitialized.catch((e) => {
   console.log(`Teams could not be initialized (${e.toString()})`)
 })
 
+interface TeamsContext {
+  token: string | null
+}
+
+const TeamsContext = React.createContext<TeamsContext>({ token: null })
+
+export function useTeamsContext() {
+  const ctx = React.useContext(TeamsContext)
+  if (!ctx) {
+    throw Error("cannot use teams context outside context provider")
+  }
+  return ctx
+}
+
 export function TeamsFetchContextProvider({
   children,
   onError,
@@ -77,5 +91,11 @@ export function TeamsFetchContextProvider({
   if (loading) {
     return null
   }
-  return <FetchContext.Provider value={f}>{children}</FetchContext.Provider> // children// React.createElement(context.Provider, { value: f }, children);
+  return (
+    <FetchContext.Provider value={f}>
+      <TeamsContext.Provider value={{ token }}>
+        {children}
+      </TeamsContext.Provider>
+    </FetchContext.Provider>
+  )
 }
