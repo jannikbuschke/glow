@@ -14,6 +14,7 @@ export type SelectEntityPropsRadioGroup<T> = {
   name: string
   map: (v: T) => Option
   onSelectEntity?: (v: T | null) => void
+  allowClear?: boolean
 } & Omit<RadioProps, "value" | "name">
 
 export function SelectEntityRadioGroup<T>({
@@ -21,7 +22,7 @@ export function SelectEntityRadioGroup<T>({
   name,
   map,
   onSelectEntity,
-  // onChange,
+  allowClear,
   ...restProps
 }: SelectEntityPropsRadioGroup<T>) {
   const [{ result, setSearch }, {}] = useGlowQuery<T>(url, {
@@ -29,7 +30,7 @@ export function SelectEntityRadioGroup<T>({
     value: [],
   })
 
-  const [{ value }] = useField(name)
+  const [{ value }, , { setValue }] = useField(name)
 
   const options = React.useMemo(() => result.value.map(map), [result])
 
@@ -43,18 +44,18 @@ export function SelectEntityRadioGroup<T>({
   }, [options, value])
 
   return (
-    <Radio.Group
-      name={name}
-      // onChange={(v) => {
-      //   const id = v?.target?.value
-      //   const item = result?.value?.find((v: any) => v.id == id) || null
-      //   onSelectEntity && onSelectEntity(item)
-      //   onChange && onChange(v)
-      // }}
-      {...restProps}
-    >
+    <Radio.Group name={name} {...restProps}>
       {options.map((v) => (
-        <Radio.Button key={v.value} name={name} value={v.value}>
+        <Radio.Button
+          key={v.value}
+          name={name}
+          value={v.value}
+          onClick={() => {
+            if (allowClear && value === v.value) {
+              setValue(null)
+            }
+          }}
+        >
           {v.label}
         </Radio.Button>
       ))}
