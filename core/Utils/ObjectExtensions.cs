@@ -1,9 +1,26 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using Gertrud.Users;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Glow.Core.Utils
 {
+    public static class IScopeExtensions
+    {
+        public static T Get<T>(this IServiceScope scope)
+        {
+            return scope.ServiceProvider.GetRequiredService<T>();
+        }
+
+        public static string GetUserId(this IServiceScope scope)
+        {
+            HttpContext httpContext = scope.Get<IHttpContextAccessor>().HttpContext;
+            return httpContext?.GetUserObjectId();
+        }
+    }
+
     public static class GetMethodNameObjectExtension
     {
         public static string GetMethodName(this object type, [CallerMemberName] string caller = null,
