@@ -5,6 +5,40 @@ using System.Text.RegularExpressions;
 
 namespace Glow.Core.StringExtensions
 {
+    public static class StringCssRgbaHexExtensions
+    {
+        public static string ReplaceCssRgbWithHex(this string input)
+        {
+            var result = Regex.Replace(
+                input,
+                @"rgb\([ ]*(\d+)[ ]*,[ ]*(\d+)[ ]*,[ ]*(\d+)[ ]*\)",
+                m => {
+                    return "#" + Int32.Parse(m.Groups[1].Value).ToString("X2") +
+                           Int32.Parse(m.Groups[2].Value).ToString("X2") +
+                           Int32.Parse(m.Groups[3].Value).ToString("X2");
+                }
+            );
+
+            return result;
+        }
+
+        public static string ReplaceCssRgbaWithHex(this string input)
+        {
+
+            var result2 = Regex.Replace(
+                input,
+                @"rgba\([ ]*(\d+)[ ]*,[ ]*(\d+)[ ]*,[ ]*(\d+)[ ]*,[ ]*(\d+)[ ]*\)",
+                m =>
+                {
+                    return "#" + Int32.Parse(m.Groups[1].Value).ToString("X2") +
+                           Int32.Parse(m.Groups[2].Value).ToString("X2") +
+                           Int32.Parse(m.Groups[3].Value).ToString("X2");
+                }
+            );
+            return result2;
+        }
+    }
+
     public static class StringTemplatesExtensions
     {
         public static bool IsNullOrEmpty(this string self)
