@@ -115,7 +115,7 @@ namespace Glow.Core.Typescript
                     return tsType;
                 }
 
-                if (type.IsEnumerableType())
+                if (type.IsEnumerable())
                 {
                     Type elementType = type.GetCollectionElementType();
 
@@ -301,15 +301,24 @@ namespace Glow.Core.Typescript
             Type elementType = type.GetCollectionElementType();
             try
             {
-                Tuple<string, string> primitiveTuple = GetTypeExtension.primitiveCollection[elementType];
-                (var name, var defaultValue) = primitiveTuple;
-                TsType t = TupleAsPrimitive(primitiveTuple, type);
-                return t;
+                if (IsNullable(elementType))
+                {
+                    var t = GetPrimitiveAsNullable(elementType);
+                    return t;
+                }
+                else
+                {
+                    Tuple<string, string> primitiveTuple = GetTypeExtension.primitiveCollection[elementType];
+                    (var name, var defaultValue) = primitiveTuple;
+                    TsType t = TupleAsPrimitive(primitiveTuple, type);
+                    return t;
+
+                }
             }
             catch (Exception e)
             {
                 throw new Exception("Could not get primitive for " + type.FullName + " / element type = " +
-                                    elementType.FullName);
+                                    elementType.FullName+ " " + e.Message);
             }
         }
 
