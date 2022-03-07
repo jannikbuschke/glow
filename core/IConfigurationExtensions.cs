@@ -27,5 +27,31 @@ namespace Glow.Core
         {
             return cfg.GetValue<bool>("AllowConfiguration") == true;
         }
+
+        public static bool OpenIdConnectIsConfigured(this IConfiguration cfg)
+        {
+            var options = new AzureAdOptions();
+            cfg.Bind("OpenIdConnect", options);
+            if (string.IsNullOrEmpty(options.ClientSecret))
+            {
+                options.ClientSecret = cfg["ClientSecret"];
+            }
+
+            return !options.ClientSecret.IsNullOrEmpty();
+        }
+
+        public static void BindOpenIdConnect(this IConfiguration cfg, AzureAdOptions options)
+        {
+            cfg.Bind("OpenIdConnect", options);
+            if (string.IsNullOrEmpty(options.ClientSecret))
+            {
+                options.ClientSecret = cfg["ClientSecret"];
+            }
+        }
+
+        public static bool IsOldCodeEnabled(this IConfiguration cfg)
+        {
+            return cfg.GetValue<bool>("EnableOldCode");
+        }
     }
 }
