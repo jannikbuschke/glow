@@ -58,7 +58,7 @@ namespace Glow.Core.Typescript
                 return Task.CompletedTask;
             }
 
-            Console.WriteLine("Generate TS models");
+            Console.WriteLine("Generate TS models " + option.Path);
             IEnumerable<Type> profileTypes = option.Assemblies
                 .SelectMany(v => v.GetTypes())
                 .Where(v => v.IsSubclassOf(typeof(TypeScriptProfile)));

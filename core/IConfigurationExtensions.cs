@@ -57,5 +57,10 @@ namespace Glow.Core
                 options.ClientSecret = cfg["ClientSecret"];
             }
         }
+
+        public static bool IsOldCodeEnabled(this IConfiguration cfg)
+        {
+            return cfg.GetValue<bool>("EnableOldCode");
+        }
     }
 }
