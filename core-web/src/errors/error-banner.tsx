@@ -56,19 +56,23 @@ function render(
   ) : null
 }
 
-export function notifyError(r: ProblemDetails) {
-  if (r.title && r.detail) {
-    notification.error({
-      description: r.detail,
-      message: r.title,
-    })
+export function notifyError(r: ProblemDetails | string) {
+  if (typeof r === "string") {
+    notification.error({ message: r })
   } else {
-    notification.error({
-      message:
-        r.title && r.detail
-          ? r.title + ": " + r.detail
-          : r.title || r.detail || r.status,
-    })
+    if (r.title && r.detail) {
+      notification.error({
+        description: r.detail,
+        message: r.title,
+      })
+    } else {
+      notification.error({
+        message:
+          r.title && r.detail
+            ? r.title + ": " + r.detail
+            : r.title || r.detail || r.status,
+      })
+    }
   }
 }
 
