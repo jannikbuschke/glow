@@ -2,9 +2,11 @@ namespace sample.fs
 
 open System.Security.Claims
 open System.Threading
+open Marten.Events.Projections
 open Microsoft.AspNetCore.Authentication.Cookies
 open Microsoft.AspNetCore.Http
 open Microsoft.AspNetCore.Http.Features
+open Sample.Fs.Agenda.Agenda
 open Weasel.Postgresql
 open Marten
 open MartenTest
@@ -79,22 +81,26 @@ module Program =
         o.ExpireTimeSpan <- TimeSpan.FromDays 7.0
 
     services
-            .AddAuthentication(authScheme)
-            .AddCookie(cookieAuth)
-            .AddAzdoClientServices(fun options ->
-                options.Pat <- builder.Configuration.Item("azdo:Pat")
-                options.OrganizationBaseUrl <- builder.Configuration.Item("azdo:OrganizationBaseUrl"))
-        |> ignore
+      .AddAuthentication(authScheme)
+      .AddCookie(cookieAuth)
+      .AddAzdoClientServices(fun options ->
+        options.Pat <- builder.Configuration.Item("azdo:Pat")
+        options.OrganizationBaseUrl <- builder.Configuration.Item("azdo:OrganizationBaseUrl"))
+    |> ignore
 
     services.AddTestAuthentication()
     services.AddResponseCaching()
 
     let connectionString =
-        builder.Configuration.Item("ConnectionString")
-
+      builder.Configuration.Item("ConnectionString")
 
     let options = StoreOptions()
     options.Connection connectionString
+    options.Projections.Add( MonsterDefeatedTransform(), ProjectionLifecycle.Inline)
+    options.Projections.SelfAggregate<Meeting>(ProjectionLifecycle.Inline)
+//    options.Projections.Add( Meeting(), ProjectionLifecycle.Inline)
+//    options.Projections.Add<MeetingView>(ProjectionLifecycle.Inline)
+//    options.Projections.Add (MeetingView() , ProjectionLifecycle.Inline)
     //    options.AutoCreateSchemaObjects <- true // if is development
     services
       .AddMarten(options)

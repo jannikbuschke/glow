@@ -51,11 +51,13 @@ export const defaultUpsertMeetingItem: UpsertMeetingItem = {
 
 export interface Meeting {
   id: string
+  name: string | null
   items: MeetingItem[]
 }
 
 export const defaultMeeting: Meeting = {
   id: "00000000-0000-0000-0000-000000000000",
+  name: null,
   items: [],
 }
 

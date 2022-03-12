@@ -2,6 +2,7 @@
 
 open System.Collections.Generic
 open System.Threading.Tasks
+open Marten.Events.Projections
 open Microsoft.Extensions.Logging
 open Microsoft.TeamFoundation.Core.WebApi
 open Microsoft.TeamFoundation.WorkItemTracking.WebApi
@@ -57,18 +58,21 @@ module Agenda =
   type ReorderedAgenda = { OldIndex: int; NewIndex: int }
   type CreatedMeeting = unit
 
-  type MeetingCreated = { Id: Guid }
+  type MeetingCreated = { Id: Guid; Name: string }
 
   type Meeting() =
     member val Id = Guid.Empty with get, set
+    member val Name = String.Empty with get,set
     member val Items: List<MeetingItem> = List() with get, set
     member this.Apply(event: MeetingCreated) =
       this.Id <- event.Id
+      this.Name <- event.Name
 
-      //      let item = this.Items[event.OldIndex]
+    //      let item = this.Items[event.OldIndex]
 //      this.Items.Insert(event.NewIndex, item)
     member this.Apply(event: MeetingItemUpserted) =
       Console.WriteLine("meeting item upserted")
+
       this.Items.Add(
         { Id = event.Id
           DisplayName = event.DisplayName
@@ -92,13 +96,13 @@ module Agenda =
     member this.Apply(event: ReorderedAgenda) =
       let item = this.Items[event.OldIndex]
       this.Items.Insert(event.NewIndex, item)
-//      this.Items.RemoveAt(event.OldIndex)
+  //      this.Items.RemoveAt(event.OldIndex)
 
   [<Action(Route = "api/get-meeting", AllowAnonymous = true)>]
   type GetMeeting() =
     interface IRequest<Meeting>
     member val MeetingId: Guid = Guid.Empty with get, set
-    member val Version: int64 = 0 with get,set
+    member val Version: int64 = 0 with get, set
 
   [<Action(Route = "api/reorder-agenda-items", AllowAnonymous = true)>]
   type ReorderAgendaItems() =
@@ -120,19 +124,19 @@ module Agenda =
   type GetAreaPathsHandler(store: IDocumentStore, session: IQuerySession) =
     interface IRequestHandler<ReorderAgendaItems, Unit> with
       member this.Handle(request, token) =
-          task{
+        task {
+          let session = store.OpenSession()
 
-            let session = store.OpenSession()
+          let event: ReorderedAgenda =
+            { OldIndex = request.OldIndex
+              NewIndex = request.NewIndex }
 
-            let event: ReorderedAgenda =
-              { OldIndex = request.OldIndex; NewIndex = request.NewIndex }
+          let state1 =
+            session.Events.Append(request.MeetingId, event)
 
-            let state1 =
-              session.Events.Append(request.MeetingId, event)
-
-            let! result = session.SaveChangesAsync()
-            return Unit.Value
-          }
+          let! result = session.SaveChangesAsync()
+          return Unit.Value
+        }
 
     interface IRequestHandler<CreateMeeting, Meeting> with
       member this.Handle(request, token) =
@@ -140,8 +144,8 @@ module Agenda =
           let id = Guid.NewGuid()
           let session = store.OpenSession()
           // session.Events.StartStream(typeof(Quest), questId, started, joined1);
-          let meetingCreated: MeetingCreated = { Id = id }
-          let meetingCreatedEvent = ()
+          let meetingCreated: MeetingCreated = { Id = id; Name = "Meeting xy" }
+//          let meetingCreatedEvent = ()
           let objects: obj [] = [| meetingCreated |]
 
           let state1 =
@@ -157,12 +161,14 @@ module Agenda =
       member this.Handle(request, token) =
         task {
           let session = store.OpenSession()
+
           let event: MeetingItemUpserted =
             { Id = request.MeetingItem.Id
               DisplayName = request.MeetingItem.DisplayName
               Index = 0 }
 
-          session.Events.Append(request.MeetingId, event) |> ignore
+          session.Events.Append(request.MeetingId, event)
+          |> ignore
 
           let! result = session.SaveChangesAsync()
           return Unit.Value
@@ -175,3 +181,20 @@ module Agenda =
           let! meeting = session.Events.AggregateStreamAsync<Meeting>(request.MeetingId, request.Version)
           return meeting
         }
+
+  type MeetingView() =
+    member val Id: Guid = Guid.Empty with get, set
+    member val Name = String.Empty with get,set
+
+  type MeetingReorderedView() =
+    member val Id: Guid = Guid.Empty with get, set
+    member val Name = String.Empty with get,set
+
+  type MonsterDefeatedTransform() =
+    inherit EventProjection()
+    with
+      member this.Create(input: Marten.Events.IEvent<MeetingCreated>) =
+        MeetingView(Id = input.Id, Name = input.Data.Name)
+
+      member this.Create(input: Marten.Events.IEvent<ReorderedAgenda>) =
+        MeetingReorderedView(Id = input.Id, Name="Reordered")

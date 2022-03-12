@@ -16,6 +16,7 @@ import { defaultMeeting } from "../../ts-models/Sample.Fs.Agenda"
 import { Item } from "./item/Item"
 import { MultipleContainers } from "./multiple-containers"
 import { AgendaView } from "./agenda-view"
+import styled from "styled-components"
 
 export function DndRoutes() {
   return (
@@ -61,6 +62,16 @@ export function Example() {
 
   return (
     <div>
+      <div
+        style={{
+          background: "#ededed",
+          padding: 32,
+          height: 150,
+          margin: "16px 0",
+        }}
+      >
+        <Box />
+      </div>
       <Stack direction="row" spacing={2}>
         <Button
           size="md"
@@ -100,3 +111,35 @@ export function Example() {
     </div>
   )
 }
+
+const Box = styled.div`
+  position: relative;
+  display: inline-block;
+  width: 100px;
+  height: 100px;
+  border-radius: 5px;
+  background-color: #fff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease-in-out;
+  &:hover {
+    transform: scale(1.1, 1.1);
+
+    &:after {
+      // transform: scale(1.2);
+      opacity: 1;
+    }
+  }
+
+  &:after {
+    content: "asd";
+    position: absolute;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    border-radius: 5px;
+    background-color: green;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    transition: opacity 0.3s ease-in-out;
+  }
+`

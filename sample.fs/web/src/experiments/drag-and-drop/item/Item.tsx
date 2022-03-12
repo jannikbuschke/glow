@@ -224,7 +224,7 @@ const ItemDiv = styled.div<{
   transform: scale(var(--scale, 1));
   transition: box-shadow 200ms cubic-bezier(0.18, 0.67, 0.6, 1.22);
 
-  &:focus-visible {
+  &:focus-v isible {
     box-shadow: 0 0px 4px 1px var(--focused-outline-color), var(--box-shadow);
     background: red;
     color: red;
@@ -242,6 +242,7 @@ const ItemDiv = styled.div<{
     &:focus {
       box-shadow: var(--box-shadow);
     }
+    transform: scale(5.1, 5.1);
   }
 
   &.disabled {
@@ -262,6 +263,38 @@ const ItemDiv = styled.div<{
   transform: scale(var(--scale));
   box-shadow: var(--box-shadow-picked-up);
   opacity: 1;
+
+
+
+  position: relative;
+  display: inline-block;
+  width: 100px;
+  height: 100px;
+  border-radius: 5px;
+  background-color: #fff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease-in-out;
+  &:hover {
+    transform: scale(1.1, 1.1);
+
+    &:after {
+      opacity: 1;
+    }
+  }
+
+  &:after {
+    content: "asd";
+    position: absolute;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    border-radius: 5px;
+    background-color: green;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    transition: opacity 0.3s ease-in-out;
+  }
+
 `}
 
   // &.dragOverlay {
