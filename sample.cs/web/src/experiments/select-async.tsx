@@ -1,7 +1,7 @@
 import { notification } from "antd"
 import * as React from "react"
 import { Route, Routes } from "react-router"
-import { SelectAsync as RemoteSelect } from "glow-react"
+import { SelectAsync as RemoteSelect } from "glow-core"
 import { Form, FormikDebug } from "formik-antd"
 import { Formik } from "formik"
 import { User } from "../ts-models"

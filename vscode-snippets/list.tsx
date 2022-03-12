@@ -1,20 +1,20 @@
-import * as React from "react"
-import { useData, ErrorBanner } from "glow-react"
-import { Table } from "antd"
-import { HighlightableRow } from "gertrud-components"
-import { useTranslation } from "react-i18next"
-import { useNavigate } from "react-router"
-import styled from "styled-components"
+import * as React from "react";
+import { useData, ErrorBanner } from "glow-core";
+import { Table } from "antd";
+import { HighlightableRow } from "gertrud-components";
+import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router";
+import styled from "styled-components";
 
 interface $1ListDto {
-  id: string
+  id: string;
 }
 
 export function $1ListView() {
-  const url = "/api/$1"
-  const { data, loading, error } = useData<$1ListDto[]>(url)
-  const { t } = useTranslation()
-  const navigate = useNavigate()
+  const url = "/api/$1";
+  const { data, loading, error } = useData<$1ListDto[]>(url);
+  const { t } = useTranslation();
+  const navigate = useNavigate();
   return (
     <Container>
       <ErrorBanner error={error} />
@@ -48,7 +48,7 @@ export function $1ListView() {
         }
       />
     </Container>
-  )
+  );
 }
 
-const Container = styled.div``
+const Container = styled.div``;

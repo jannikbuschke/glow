@@ -1,7 +1,7 @@
 import dayjs from "dayjs"
 import { Formik } from "formik"
 import { Form, Input, SubmitButton } from "formik-antd"
-import { RenderObject, VerticalSpace } from "glow-react"
+import { RenderObject, VerticalSpace } from "glow-core"
 import * as React from "react"
 import { Route, Routes } from "react-router-dom"
 import { TypedForm, useTypedQuery } from "../../ts-models/api"

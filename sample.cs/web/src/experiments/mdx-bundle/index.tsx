@@ -7,14 +7,14 @@ import {
   notifyError,
   Space,
   VerticalSpace,
-} from "glow-react"
+} from "glow-core"
 import { Form, SubmitButton } from "formik-antd"
 import { Formik } from "formik"
 import { useTypedAction, useTypedQuery } from "../../ts-models/api"
-import { HighlightableRow } from "glow-react/es/antd/highlightable-row"
-import { PromiseButton } from "glow-react/es/buttons/promise-button"
+import { HighlightableRow } from "glow-core/es/antd/highlightable-row"
+import { PromiseButton } from "glow-core/es/buttons/promise-button"
 import { defaultMdxViewmodel } from "../../ts-models/Glow.Sample.MdxBundle"
-import { MasterDetailView } from "glow-react/es/layouts/master-detail-view"
+import { MasterDetailView } from "glow-core/es/layouts/master-detail-view"
 import { getMDXComponent } from "mdx-bundler/client"
 import dayjs from "dayjs"
 

@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Azure;
 using Azure.Security.KeyVault.Secrets;
+using Glow.Azure;
 using Glow.Core.Actions;
 using Glow.Core.AzureKeyVault;
 using Glow.Core.StringExtensions;

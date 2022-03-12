@@ -5,7 +5,7 @@ import { BrowserRouter as Router } from "react-router-dom"
 import { ConfigurationsExample } from "./examples/configuration"
 import styled from "styled-components"
 import { NavigationExample } from "./experiments/navigation/navigation"
-import { LeftNavigation } from "glow-react"
+import { LeftNavigation } from "glow-core"
 import {
   BorderOutlined,
   ClusterOutlined,

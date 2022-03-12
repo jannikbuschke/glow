@@ -10,7 +10,7 @@ import {
 } from "antd"
 import * as React from "react"
 import { Route, Routes, useNavigate } from "react-router"
-import { RoutedTabs } from "glow-react"
+import { RoutedTabs } from "glow-core"
 
 export function DetailviewExample() {
   return (
