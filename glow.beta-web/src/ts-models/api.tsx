@@ -1,49 +1,30 @@
 /* eslint-disable prettier/prettier */
+// Assembly: glow.beta, Version=0.23.0.0, Culture=neutral, PublicKeyToken=null
 import * as React from "react"
-import { QueryOptions } from "react-query"
+import { QueryOptions, UseQueryOptions } from "react-query"
 import { useApi, ApiResult, notifySuccess, notifyError } from "glow-core"
-import {
-  useAction,
-  useSubmit,
-  UseSubmit,
-  ProblemDetails,
-} from "glow-core/es/actions/use-submit"
-import { Formik, FormikFormProps } from "formik"
+import { useAction, useSubmit, UseSubmit, ProblemDetails } from "glow-core/es/actions/use-submit"
+import { Formik, FormikConfig, FormikFormProps } from "formik"
 import { Form } from "formik-antd"
-import * as Glow_TestAutomation from "./Glow.TestAutomation"
-import * as Glow_Core_EfCore from "./Glow.Core.EfCore"
-import * as Glow_Core_OpenIdConnect from "./Glow.Core.OpenIdConnect"
 import * as Glow_Core_Application from "./Glow.Core.Application"
 import * as MediatR from "./MediatR"
 import * as Glow_Core_Queries from "./Glow.Core.Queries"
-import * as Glow_Core_Profiles from "./Glow.Core.Profiles"
 import * as Serilog_Events from "./Serilog.Events"
 
 type QueryInputs = {
-  "/api/glow/test-automation/get-available-fake-users": Glow_TestAutomation.GetAvailableFakeUsers
 }
 type QueryOutputs = {
-  "/api/glow/test-automation/get-available-fake-users": Glow_TestAutomation.FakeUsers
 }
 export type Outputs = {
-  "/api/glow/db/reset-database": MediatR.Unit
-  "/api/glow/set-openid-connect-options": MediatR.Unit
-  "/api/glow/restart-application": MediatR.Unit
+  "/api/glow/restart-application": MediatR.Unit,
 }
 export type Actions = {
-  "/api/glow/db/reset-database": Glow_Core_EfCore.ResetDatabase
-  "/api/glow/set-openid-connect-options": Glow_Core_OpenIdConnect.SetOpenIdConnectOptions
-  "/api/glow/restart-application": Glow_Core_Application.RestartApplication
+  "/api/glow/restart-application": Glow_Core_Application.RestartApplication,
 }
 
 type TagWithKey<TagName extends string, T> = {
   [K in keyof T]: { [_ in TagName]: K } & T[K]
-}
-
-//export function useTypedAction<ActionName extends keyof ActionTable>(key: ActionName): UseSubmit<Actions[ActionName], Outputs[ActionName]>{
-//  const s = useAction<Actions[ActionName], Outputs[ActionName]>(key)
-//  return s
-//}
+};
 
 export type ActionTable = TagWithKey<"url", Actions>
 
@@ -64,39 +45,30 @@ export const useTypedAction: TypedActionHook = <
   return s
 }
 
-// export function useTypedAction<ActionName extends keyof ActionTable>(
-//   key: ActionName,
-// ): UseSubmit<Actions[ActionName], Outputs[ActionName]> {
-//   const s = useAction<Actions[ActionName], Outputs[ActionName]>(key)
-//   return s
-// }
+type QueryTable = TagWithKey<"url", QueryInputs>;
 
-type QueryTable = TagWithKey<"url", QueryInputs>
-
-export function useTypedQuery<ActionName extends keyof QueryTable>(
-  key: ActionName,
-  {
+export function useTypedQuery<ActionName extends keyof QueryTable>(key: ActionName, {
     placeholder,
     input,
-    queryOptions,
+    queryOptions
   }: {
-    placeholder: QueryOutputs[ActionName]
-    input: QueryInputs[ActionName]
-    queryOptions?: QueryOptions<QueryOutputs[ActionName]>
-  },
-): ApiResult<QueryOutputs[ActionName]> {
-  const { data, ...rest } = useApi({
+    placeholder: QueryOutputs[ActionName],
+    input:  QueryInputs[ActionName]
+    queryOptions?: UseQueryOptions<QueryOutputs[ActionName]>
+  }): ApiResult<QueryOutputs[ActionName]> {
+
+  const { data, ...rest} = useApi({
     url: key,
-    method: "POST",
+    method:"POST",
     payload: input,
     // todo: find defaultPlaceholder
     placeholder: placeholder,
-    queryOptions: queryOptions,
+    queryOptions: queryOptions
   })
 
   const result = data as QueryOutputs[ActionName]
 
-  return { data: result, ...rest } as any
+  return { data: result, ...rest} as any
 }
 
 export function TypedForm<ActionName extends keyof ActionTable>({
@@ -106,13 +78,12 @@ export function TypedForm<ActionName extends keyof ActionTable>({
   children,
   onSuccess,
   onError,
-}: React.PropsWithChildren<{
+}: Omit<FormikConfig<Actions[ActionName]>, "onSubmit"> & {
   actionName: ActionName
-  initialValues: Actions[ActionName]
   formProps?: FormikFormProps
   onSuccess?: (payload: Outputs[ActionName]) => void
   onError?: (error: ProblemDetails) => void
-}>) {
+}) {
   const [submit, validate] = useTypedAction<ActionName>(actionName)
   return (
     <Formik
@@ -136,6 +107,6 @@ export function TypedForm<ActionName extends keyof ActionTable>({
           {typeof children === "function" ? children(f) : children}
         </Form>
       )}
-    </Formik>
-  )
+    </Formik>)
 }
+
