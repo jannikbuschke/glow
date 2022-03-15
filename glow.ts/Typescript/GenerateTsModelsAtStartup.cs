@@ -84,7 +84,7 @@ namespace Glow.Core.Typescript
 
             if (builder.Count == 0)
             {
-                Console.WriteLine("Skipping Ts generation, as there are not types");
+                Console.WriteLine("Skipping Ts generation, as there are no types");
             }
             else
             {

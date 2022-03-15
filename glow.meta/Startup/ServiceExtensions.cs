@@ -69,7 +69,6 @@ namespace Glow.Core
             configureAdditionalMvcOptions?.Invoke(mvcBuilder);
 
             services.AddGlow();
-
             services.AddSpaStaticFiles(configuration =>
             {
                 configuration.RootPath = "web/build";

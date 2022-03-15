@@ -9,6 +9,9 @@ using Microsoft.Identity.Client;
 
 namespace Glow.MsGraph.Mails
 {
+    /// <summary>
+    /// Uses a microsoft graph mailbox and user delegated permission
+    /// </summary>
     public class MailService
     {
         private readonly IGraphTokenService tokenService;

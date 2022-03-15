@@ -1,5 +1,6 @@
 using System;
 
+
 namespace Glow.Glue.AspNetCore
 {
     public class BadRequestException : Exception

@@ -40,6 +40,8 @@ namespace Glow.Core.Typescript
                 }
             }
 
+            imports.AppendLine($"// Assembly: {options.Assemblies.FirstOrDefault()?.FullName}");
+
             imports.AppendLine(@"import * as React from ""react""");
             imports.AppendLine(@"import { QueryOptions, UseQueryOptions } from ""react-query""");
             // allow adjusting?

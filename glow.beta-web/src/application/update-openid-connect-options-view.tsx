@@ -5,24 +5,26 @@ import { VerticalSpace } from "../Layout"
 import { TypedForm } from "../ts-models/api"
 
 export function UpdateOpenidConnectOptionsView() {
-  return (
-    <Container>
-      <TypedForm
-        actionName="/api/glow/set-openid-connect-options"
-        initialValues={{ clientId: "", clientSecret: "", tenantId: "" }}
-        onSuccess={(payload) => {
-          console.log({ payload })
-        }}
-      >
-        <VerticalSpace>
-          <Input name="clientId" placeholder="ClientId" />
-          <Input name="tenantId" placeholder="TenantId" />
-          <Input.Password name="clientSecret" placeholder="ClientSecret" />
-          <SubmitButton>Submit</SubmitButton>
-        </VerticalSpace>
-      </TypedForm>
-    </Container>
-  )
+  // TODO: move to glow.azure
+  return null
+  // return (
+  //   <Container>
+  //     <TypedForm
+  //       actionName="/api/glow/set-openid-connect-options"
+  //       initialValues={{ clientId: "", clientSecret: "", tenantId: "" }}
+  //       onSuccess={(payload) => {
+  //         console.log({ payload })
+  //       }}
+  //     >
+  //       <VerticalSpace>
+  //         <Input name="clientId" placeholder="ClientId" />
+  //         <Input name="tenantId" placeholder="TenantId" />
+  //         <Input.Password name="clientSecret" placeholder="ClientSecret" />
+  //         <SubmitButton>Submit</SubmitButton>
+  //       </VerticalSpace>
+  //     </TypedForm>
+  //   </Container>
+  // )
 }
 
 const Container = styled.div`

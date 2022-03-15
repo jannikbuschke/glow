@@ -1,7 +1,6 @@
 import * as React from "react"
 import { ButtonProps } from "antd/lib/button"
 import { Button, message } from "antd"
-// import { postJson } from "../http/fetch"
 import { postJson } from "glow-core/es/actions/fetch"
 
 export function ActionButton<Request = any, Response = {}>({
