@@ -2,7 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <Nullable>enable</Nullable>
+<!--    Nullable effects model binding, do not enable yet, breaking change-->
+<!--    <Nullable>enable</Nullable>-->
     <RootNamespace>Glow.Beta</RootNamespace>
     <Version>0.23.0</Version>
     <Authors>Jannik Buschke</Authors>
