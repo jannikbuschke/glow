@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <Nullable>enable</Nullable>
+<!--    <Nullable>enable</Nullable>-->
     <RootNamespace>Glow.Azure</RootNamespace>
     <Version>0.23.0</Version>
     <Authors>Jannik Buschke</Authors>
