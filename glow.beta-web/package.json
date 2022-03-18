@@ -53,7 +53,7 @@
     "@storybook/addon-links": "6.3.12",
     "@storybook/addons": "6.3.12",
     "@storybook/react": "6.3.12",
-    "use-lodash-debounce": "1.1.0",
+    "use-lodash-debounce": "1.2.0",
     "babel-loader": "8.0.6",
     "semantic-release": "17.4.7",
     "immer": "8.0.1",
