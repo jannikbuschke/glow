@@ -55,9 +55,12 @@ namespace Glow.Azdo.Authentication
 
         public Task<T> GetAppClient<T>() where T : VssHttpClientBase
         {
-            var connection = new VssConnection(
-                new Uri(config.OrganizationBaseUrl),
-                new VssBasicCredential("pat", config.Pat));
+            return GetAppClient<T>(config.OrganizationBaseUrl, config.Pat);
+        }
+
+        public Task<T> GetAppClient<T>(string organizationUrl, string pat) where T : VssHttpClientBase
+        {
+            var connection = new VssConnection(new Uri(organizationUrl), new VssBasicCredential("pat", pat));
 
             return Task.FromResult(connection.GetClient<T>());
         }
