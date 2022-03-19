@@ -5,18 +5,30 @@ using OneOf;
 
 namespace Glow.Core.Typescript
 {
-    public class TsType
+    public abstract class BaseTsType
     {
-        public override string ToString()
-        {
-            return Id;
-        }
-
-        public string Id { get; set; }
-        public bool IsPrimitive { get; set; }
+        public virtual string Id { get; set; }
         public string FullName { get; set; }
         public string Name { get; set; }
         public string Namespace { get; set; }
+    }
+
+    public class TsDiscriminatedUnion : TsType
+    {
+        public IEnumerable<DuCase> Cases { get; set; }
+    }
+
+    public class DuCase
+    {
+        public string Name { get; set; }
+        public string CaseName { get; set; }
+        public TsType[] Fields { get; set; }
+    }
+
+    public class TsType: BaseTsType
+    {
+        public string Id { get; set; }
+        public bool IsPrimitive { get; set; }
         public Type Type { get; set; }
         public bool IsCollection { get; set; }
 

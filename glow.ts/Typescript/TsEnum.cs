@@ -2,21 +2,19 @@ using System.Collections.Generic;
 
 namespace Glow.Core.Typescript
 {
-    public class TsEnum
+    public class TsEnum: BaseTsType
     {
-        public string Id
+        public override string Id
         {
             get
             {
                 return FullName;
             }
+            set{}
         }
 
-        public string FullName { get; set; }
-        public string Name { get; set; }
         public IEnumerable<string> Values { get; set; }
         public string DefaultValue { get; set; }
-        public string Namespace { get; set; }
         public bool IsNullable { get; set; }
     }
 }

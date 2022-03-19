@@ -19,4 +19,8 @@
 
     <ProjectReference Include="..\core\glow.core.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FSharp.Core" Version="6.0.1"/>
+  </ItemGroup>
 </Project>

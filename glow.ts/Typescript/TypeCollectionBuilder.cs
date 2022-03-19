@@ -5,7 +5,10 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using Glow.Core.Authentication;
 using Glow.Core.Linq;
+using Glow.Core.Utils;
 using Glow.TypeScript;
+using Microsoft.FSharp.Core;
+using Microsoft.FSharp.Reflection;
 using OneOf;
 
 namespace Glow.Core.Typescript
@@ -91,6 +94,55 @@ namespace Glow.Core.Typescript
                 };
             }
 
+            if (type.Name.Contains("Workspace"))
+            {
+            }
+
+            if (FSharpType.IsUnion(type, FSharpOption<BindingFlags>.None))
+            {
+                var id = type.FullName;
+                if (tsTypes.ContainsKey(id))
+                {
+                    return tsTypes[id];
+                }
+                var cases = FSharpType.GetUnionCases(type, FSharpOption<BindingFlags>.None);
+
+                var genericArguments = type.GetGenericArguments();
+                var genericTypeArguments = type.GenericTypeArguments;
+                var duTypeName = type.Name;
+                if (genericArguments.Length > 0)
+                {
+                    var genericTsType = CreateOrGet(genericArguments.First());
+                    var genericTsTypeName = CreateOrGet(genericArguments.First()).Match(v => v.Name, v => v.Name).Replace(" | null","");
+                    duTypeName = duTypeName.Replace("`1", $"_{genericTsTypeName}");
+                }
+
+                var duCases = cases.Select(v => new DuCase()
+                {
+                    Name = @$"{duTypeName}_Case_{v.Name}",
+                    CaseName = v.Name,
+                    Fields = v.GetFields()
+                        .Select(v => CreateOrGet(v.PropertyType))
+                        .Select(v=>v.AsT0)
+                        .ToArray()
+                });
+
+                var tsType = new TsDiscriminatedUnion()
+                {
+                    Id = type.FullName,
+                    Name = duTypeName,
+                    FullName = type.FullName,
+                    Type = type,
+                    Cases = duCases,
+                    Namespace = type.Namespace,
+                    Properties = new List<Property>(),
+                    // DefaultValue = @"{ Case: ""None"" }",
+                };
+
+                tsTypes.Add(tsType.Id, tsType);
+                return tsType;
+            }
+
             if (type.IsEnum)
             {
                 TsEnum e = AsEnum(type);
@@ -145,9 +197,9 @@ namespace Glow.Core.Typescript
                 var id = type.GetTypeId();
                 if (!tsTypes.ContainsKey(id))
                 {
-                    if (IsFsharOption(type))
+                    // if (IsFsharOption(type))
                     {
-                        return AsFsharpOption(type);
+                        // return AsFsharpOption(type);
                     }
 
                     if (IsNullable(type))
@@ -195,27 +247,27 @@ namespace Glow.Core.Typescript
             }
         }
 
-        private OneOf<TsType, TsEnum> AsFsharpOption(Type type)
-        {
-            Type[] genericTypeArguments = type.GenericTypeArguments;
-            Type genericArgument = genericTypeArguments.First();
-            if (!genericArgument.IsEnum && !genericArgument.IsPrimitive())
-            {
-                return CreateOrGet(genericArgument);
-            }
-            else if (genericArgument.IsEnum)
-            {
-                throw new Exception("enum FS Option currently not supported");
-            }
-            else if (genericArgument.IsPrimitive())
-            {
-                return GetPrimitiveAsNullable(genericArgument);
-            }
-            else
-            {
-                throw new Exception("enum/primitive FS Option currently not supported");
-            }
-        }
+        // private OneOf<TsType, TsEnum> AsFsharpOption(Type type)
+        // {
+        //     Type[] genericTypeArguments = type.GenericTypeArguments;
+        //     Type genericArgument = genericTypeArguments.First();
+        //     if (!genericArgument.IsEnum && !genericArgument.IsPrimitive())
+        //     {
+        //         return CreateOrGet(genericArgument);
+        //     }
+        //     else if (genericArgument.IsEnum)
+        //     {
+        //         throw new Exception("enum FS Option currently not supported");
+        //     }
+        //     else if (genericArgument.IsPrimitive())
+        //     {
+        //         return GetPrimitiveAsNullable(genericArgument);
+        //     }
+        //     else
+        //     {
+        //         throw new Exception("enum/primitive FS Option currently not supported");
+        //     }
+        // }
 
         private TsType AsEnumerable(Type type)
         {
@@ -312,13 +364,12 @@ namespace Glow.Core.Typescript
                     (var name, var defaultValue) = primitiveTuple;
                     TsType t = TupleAsPrimitive(primitiveTuple, type);
                     return t;
-
                 }
             }
             catch (Exception e)
             {
                 throw new Exception("Could not get primitive for " + type.FullName + " / element type = " +
-                                    elementType.FullName+ " " + e.Message);
+                                    elementType.FullName + " " + e.Message);
             }
         }
 

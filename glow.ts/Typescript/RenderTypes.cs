@@ -29,7 +29,7 @@ namespace Glow.Core.Typescript
 
         private static void RenderModule(Module module, string path)
         {
-            if (module.Namespace.StartsWith("System") || module.Namespace.StartsWith("Microsoft.FSharp.Core"))
+            if (module.Namespace.StartsWith("System"))
             {
                 return;
             }
@@ -97,6 +97,12 @@ namespace Glow.Core.Typescript
 
         private static void RenderTsType(TsType type, StringBuilder builder)
         {
+            if (type.GetType() == typeof(TsDiscriminatedUnion))
+            {
+                RenderTsDiscriminatedUnion(type as TsDiscriminatedUnion, builder);
+                return;
+            }
+
             var name = type.Name;
             builder.AppendLine($"export interface {name} {{");
             if (type.Properties != null)
@@ -118,6 +124,34 @@ namespace Glow.Core.Typescript
             }
 
             builder.AppendLine("");
+        }
+
+        private static void RenderTsDiscriminatedUnion(TsDiscriminatedUnion type, StringBuilder builder)
+        {
+            foreach (var v in type.Cases)
+            {
+                builder.AppendLine(
+@$"export type {v.Name} = {{
+  case: ""{v.CaseName}"",
+  fields: [{string.Join(", ", v.Fields.Select(v => v.Name))}]
+}}");
+                builder.AppendLine();
+
+                builder.AppendLine(
+                    @$"export const default{v.Name}: {v.Name} = {{
+  case: ""{v.CaseName}"",
+  fields: [{string.Join(", ", v.Fields.Select(v=>v.DefaultValue))}]
+}}"
+                );
+            }
+
+            builder.AppendLine();
+            var duRoot = $"export type {type.Name} = " + string.Join(" | ", type.Cases.Select(v => v.Name));
+
+            builder.AppendLine(duRoot);
+            builder.AppendLine();
+
+            builder.AppendLine($@"export const default{type.Name}: {type.Name} = default{type.Cases.First().Name}");
         }
 
         private static void RenderProperties(List<Property> properties, StringBuilder builder, int depth, int maxDepth)
