@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Azure;
@@ -44,30 +45,51 @@ namespace Glow.Azure.AzureKeyVault
             {
                 try
                 {
-                    Response<KeyVaultSecret> currentTenantId = await client.GetSecretAsync(TenantId);
-                    Response<KeyVaultSecret> currentclientId = await client.GetSecretAsync(ClientId);
-                    Response<KeyVaultSecret> currentclientSecret = await client.GetSecretAsync(ClientSecret);
+                    Pageable<SecretProperties> properties = client.GetPropertiesOfSecrets();
+                    var secrets = properties.Select(v => v.Name).ToList();
+                    logger.LogInformation("Secrets= {@secrets}", secrets);
 
-                    if (string.IsNullOrEmpty(currentTenantId?.Value?.Value))
+                    async Task Set(string name, string value)
                     {
-                        logger.LogInformation("OpenIdConnect: Set tenant id");
-
-                        await client.SetSecretAsync(TenantId, request.TenantId);
+                        if (!secrets.Contains(name))
+                        {
+                            logger.LogInformation("Set " + name);
+                            await client.SetSecretAsync(name, value);
+                        }
+                        else
+                        {
+                            logger.LogInformation("Skip setting " + name + " (already set)");
+                        }
                     }
 
-                    if (string.IsNullOrEmpty(currentclientId?.Value?.Value))
-                    {
-                        logger.LogInformation("OpenIdConnect: Set client id");
-
-                        await client.SetSecretAsync(ClientId, request.ClientId);
-                    }
-
-                    if (string.IsNullOrEmpty(currentclientSecret?.Value?.Value))
-                    {
-                        logger.LogInformation("OpenIdConnect: Set client secret");
-
-                        await client.SetSecretAsync(ClientSecret, request.ClientSecret);
-                    }
+                    await Set(TenantId, request.TenantId);
+                    await Set(ClientId, request.ClientId);
+                    await Set(ClientSecret, request.ClientSecret);
+                    //
+                    // Response<KeyVaultSecret> currentTenantId = await client.GetSecretAsync(TenantId);
+                    // Response<KeyVaultSecret> currentclientId = await client.GetSecretAsync(ClientId);
+                    // Response<KeyVaultSecret> currentclientSecret = await client.GetSecretAsync(ClientSecret);
+                    //
+                    // if (string.IsNullOrEmpty(currentTenantId?.Value?.Value))
+                    // {
+                    //     logger.LogInformation("OpenIdConnect: Set tenant id");
+                    //
+                    //     await client.SetSecretAsync(TenantId, request.TenantId);
+                    // }
+                    //
+                    // if (string.IsNullOrEmpty(currentclientId?.Value?.Value))
+                    // {
+                    //     logger.LogInformation("OpenIdConnect: Set client id");
+                    //
+                    //     await client.SetSecretAsync(ClientId, request.ClientId);
+                    // }
+                    //
+                    // if (string.IsNullOrEmpty(currentclientSecret?.Value?.Value))
+                    // {
+                    //     logger.LogInformation("OpenIdConnect: Set client secret");
+                    //
+                    //     await client.SetSecretAsync(ClientSecret, request.ClientSecret);
+                    // }
                 }
                 catch (Exception e)
                 {
