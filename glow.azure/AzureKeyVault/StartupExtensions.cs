@@ -1,14 +1,6 @@
-using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Azure.Identity;
-using Azure.Security.KeyVault.Secrets;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Glow.Core.AzureKeyVault
+namespace Glow.Azure.AzureKeyVault
 {
     public static class StartupExtensions
     {

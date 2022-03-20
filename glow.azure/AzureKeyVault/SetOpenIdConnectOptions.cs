@@ -3,16 +3,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using Azure;
 using Azure.Security.KeyVault.Secrets;
-using Glow.Azure;
 using Glow.Core.Actions;
-using Glow.Core.AzureKeyVault;
-using Glow.Core.StringExtensions;
 using Glow.Glue.AspNetCore;
 using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
-namespace Glow.Core.OpenIdConnect
+namespace Glow.Azure.AzureKeyVault
 {
     [Action(Route = "api/glow/set-openid-connect-options", AllowAnonymous = true)]
     public class SetOpenIdConnectOptions : IRequest
@@ -53,16 +50,22 @@ namespace Glow.Core.OpenIdConnect
 
                     if (string.IsNullOrEmpty(currentTenantId?.Value?.Value))
                     {
+                        logger.LogInformation("OpenIdConnect: Set tenant id");
+
                         await client.SetSecretAsync(TenantId, request.TenantId);
                     }
 
                     if (string.IsNullOrEmpty(currentclientId?.Value?.Value))
                     {
+                        logger.LogInformation("OpenIdConnect: Set client id");
+
                         await client.SetSecretAsync(ClientId, request.ClientId);
                     }
 
                     if (string.IsNullOrEmpty(currentclientSecret?.Value?.Value))
                     {
+                        logger.LogInformation("OpenIdConnect: Set client secret");
+
                         await client.SetSecretAsync(ClientSecret, request.ClientSecret);
                     }
                 }
@@ -71,6 +74,10 @@ namespace Glow.Core.OpenIdConnect
                     logger.LogError(e, "Could not get or update client secrets");
                     throw new BadRequestException(e.Message);
                 }
+            }
+            else
+            {
+                logger.LogInformation("Skip setting openid connect values (AllowConfiguration = false)");
             }
 
             return Unit.Value;

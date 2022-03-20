@@ -4,6 +4,7 @@ using AutoMapper;
 using AutoMapper.EquivalencyExpression;
 using AutoMapper.Extensions.ExpressionMapping;
 using Glow.Authentication.Aad;
+using Glow.Azure.AzureKeyVault;
 using Glow.Clocks;
 using Glow.Configurations;
 using Glow.Core.Actions;
@@ -20,7 +21,6 @@ using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Glow.MsGraph.Mails;
-using Glow.Core.AzureKeyVault;
 using Glow.Core.EfMsalTokenStore;
 using Glow.Core.EfTicketStore;
 

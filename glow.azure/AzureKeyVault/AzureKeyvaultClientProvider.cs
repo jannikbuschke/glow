@@ -1,13 +1,15 @@
 using System;
 using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
-using Glow.Azure;
 using Glow.Core.StringExtensions;
 using Glow.Glue.AspNetCore;
 using Microsoft.Extensions.Configuration;
 
-namespace Glow.Core.AzureKeyVault
+namespace Glow.Azure.AzureKeyVault
 {
+    /// <summary>
+    // Provides an api client for Azure keyVault
+    /// </summary>
     public class AzureKeyvaultClientProvider
     {
         private readonly IConfiguration configuration;
