@@ -38,13 +38,14 @@ namespace Glow.Core
         public static IServiceCollection AddGlowAadIntegration(
             this IServiceCollection services,
             IWebHostEnvironment env,
-            IConfiguration configuration
+            IConfiguration configuration,
+            bool enableEfCoreTokenCache = false
         )
         {
             services.AddScoped<IGraphTokenService, GraphTokenService>();
 
             services.AddSingleton<TokenService>();
-            if (env.IsDevelopment())
+            if (enableEfCoreTokenCache)
             {
                 var connectionString = configuration.ConnectionString();
                 services.AddEfMsalTokenCache(options =>
