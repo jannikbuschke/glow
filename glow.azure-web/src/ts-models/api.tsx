@@ -7,7 +7,7 @@ import { useAction, useSubmit, UseSubmit, ProblemDetails } from "glow-core/es/ac
 import { Formik, FormikConfig, FormikFormProps } from "formik"
 import { Form } from "formik-antd"
 import * as Glow_TestAutomation from "./Glow.TestAutomation"
-import * as Glow_Core_OpenIdConnect from "./Glow.Core.OpenIdConnect"
+import * as Glow_Azure_AzureKeyVault from "./Glow.Azure.AzureKeyVault"
 import * as MediatR from "./MediatR"
 import * as Glow_Core_Profiles from "./Glow.Core.Profiles"
 
@@ -21,7 +21,7 @@ export type Outputs = {
   "/api/glow/set-openid-connect-options": MediatR.Unit,
 }
 export type Actions = {
-  "/api/glow/set-openid-connect-options": Glow_Core_OpenIdConnect.SetOpenIdConnectOptions,
+  "/api/glow/set-openid-connect-options": Glow_Azure_AzureKeyVault.SetOpenIdConnectOptions,
 }
 
 type TagWithKey<TagName extends string, T> = {
