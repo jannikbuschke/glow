@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Glow.Authentication.Aad;
 using Glow.Core.Authentication;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using Microsoft.Graph;
 using Microsoft.Identity.Client;
 
@@ -15,14 +16,17 @@ namespace Glow.MsGraph.Mails
     public class MailService
     {
         private readonly IGraphTokenService tokenService;
+        private readonly ILogger<MailService> logger;
         private readonly TokenService service;
 
         public MailService(
             IGraphTokenService tokenService,
-            IHttpContextAccessor httpContextAccessor
+            IHttpContextAccessor httpContextAccessor,
+            ILogger<MailService> logger
         )
         {
             this.tokenService = tokenService;
+            this.logger = logger;
             this.service = service;
         }
 
