@@ -16,6 +16,8 @@ using Microsoft.Identity.Client;
 
 namespace Glow.Core.Authentication
 {
+    extern alias GraphBeta;
+
     // glow/profile uses IGraphTokenService to get some scopes
     // in azdo apps we use this to mock it (workaround)
     public class MockedGraphTokenService : IGraphTokenService
@@ -61,6 +63,12 @@ namespace Glow.Core.Authentication
         {
             var token = await AccessTokenForCurrentUser(scopes);
             return CreateClient(token, useBetaEndpoint);
+        }
+
+        public override async Task<GraphBeta::Microsoft.Graph.GraphServiceClient> GetBetaClientForUser(string[] scopes)
+        {
+            var token = await AccessTokenForCurrentUser(scopes);
+            return CreateBetaClient(token);
         }
 
         public override Task ThrowIfCurrentUserNotConsentedToScope(string scope)

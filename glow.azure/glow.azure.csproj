@@ -25,6 +25,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Graph" Version="4.24.0" />
+    <PackageReference Include="Microsoft.Graph.Beta" Version="4.24.0-preview" />
   </ItemGroup>
 
   <ItemGroup>
@@ -32,5 +33,12 @@
     <ProjectReference Include="..\glow.beta\glow.beta.csproj" />
   </ItemGroup>
 
+  <Target Name="ChangeAliasesOfStrongNameAssemblies" BeforeTargets="FindReferenceAssembliesForReferences;ResolveReferences">
+    <ItemGroup>
+      <ReferencePath Condition="'%(FileName)' == 'Microsoft.Graph.Beta'">
+        <Aliases>GraphBeta</Aliases>
+      </ReferencePath>
+    </ItemGroup>
+  </Target>
 
 </Project>

@@ -1,3 +1,5 @@
+extern alias GraphBeta;
+using Beta = GraphBeta.Microsoft.Graph;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -121,6 +123,13 @@ namespace Glow.Core.Authentication
             var token = await AccessTokenForCurrentUser(scopes);
 
             return CreateClient(token, useBetaEndpoint);
+        }
+
+        public override async Task<GraphBeta::Microsoft.Graph.GraphServiceClient> GetBetaClientForUser(string[] scopes)
+        {
+            var token = await AccessTokenForCurrentUser(scopes);
+
+            return CreateBetaClient(token);
         }
 
         public override async Task ThrowIfCurrentUserNotConsentedToScope(string scope)
