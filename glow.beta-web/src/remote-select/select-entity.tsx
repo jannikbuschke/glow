@@ -1,7 +1,7 @@
 import * as React from "react"
 import { Select } from "antd"
 import { useField } from "formik"
-import debounce from "lodash.debounce"
+import { useDebouncedCallback } from "use-lodash-debounce"
 import { SelectProps } from "antd/lib/select"
 import { LabeledValue } from "antd/lib/tree-select"
 import { QueryParameter, useGlowQuery } from "../query/use-data"
@@ -36,39 +36,31 @@ export function SelectEntity<T>({
     initialParameters,
   )
 
-  const [entities, setEntities] = React.useState<{ [id: string]: T }>({})
-  React.useEffect(() => {
+  const entities = React.useMemo(() => {
     const newEntities = result.value.reduce(
       (prev, curr: any) => ({ ...prev, [curr.id]: curr }),
       {},
     )
-    setEntities((v) => ({
-      ...v,
-      ...newEntities,
-    }))
+    return newEntities
   }, [result])
 
-  const searchOptions = React.useMemo(() => result.value.map(map), [result])
   const [fieldValue, setFieldValue] = React.useState<LabeledValue | null>(null)
 
   const options = React.useMemo(() => {
-    return [
+    const searchOptions = result.value.map(map)
+    const optionsResult = [
       ...searchOptions,
       ...(fieldValue && !searchOptions.some((v) => v.key == fieldValue.key)
         ? [fieldValue]
         : []),
       ...(customItems !== null && customItems !== undefined ? customItems : []),
     ]
-  }, [searchOptions, fieldValue, customItems])
+    return optionsResult.filter(
+      (v, i, a) => a.findIndex((v2) => v2.key === v.key) === i,
+    )
+  }, [result, fieldValue, customItems])
 
-  const debouncedSearch = React.useCallback(
-    debounce((v: any) => {
-      ;(async () => {
-        setSearch(v)
-      })()
-    }, 150),
-    [],
-  )
+  const debouncedSearch = useDebouncedCallback(setSearch, 400)
 
   const [field, , form] = useField<any>(name)
   const value = field.value
@@ -155,7 +147,7 @@ export function SelectEntity<T>({
       id={name}
     >
       {options.map((v) => (
-        <Select.Option key={v.key || v.value} value={v.value}>
+        <Select.Option key={v.key} value={v.value}>
           {v.label}
         </Select.Option>
       ))}
