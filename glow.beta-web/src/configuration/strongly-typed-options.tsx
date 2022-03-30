@@ -11,6 +11,7 @@ import {
   AddRowButton,
   RemoveRowButton,
   FormikDebug,
+  ArrayButton,
 } from "formik-antd"
 import { useActions, badRequestResponseToFormikErrors } from "./validation"
 import { useData } from "../query/use-data"
@@ -42,30 +43,40 @@ function toType(
               Add
             </AddRowButton>
             <Table
+              size="small"
               name={name}
               columns={[
                 {
                   render: (text, record, i) => (
                     <Row>
                       <Input
+                        size="small"
                         fast={true}
                         name={`${name}[${i}]`}
                         disabled={disabled}
                         // style={{ flex: 1 }}
                       />
-                      <RemoveRowButton name={`${name}`} index={i}>
+                      <RemoveRowButton size="small" name={`${name}`} index={i}>
                         remove
                       </RemoveRowButton>
+                      <ArrayButton
+                        size="small"
+                        name={name}
+                        disabled={i === 0}
+                        onClick={(array) => array.move(i, i - 1)}
+                      >
+                        Up
+                      </ArrayButton>
                     </Row>
                   ),
                 },
               ]}
-              size="small"
               showHeader={false}
               pagination={false}
               bordered={false}
               style={{ width: 600 }}
             />
+            {/* <FormikDebug /> */}
           </div>
         )
       }
