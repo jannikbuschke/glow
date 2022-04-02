@@ -1,3 +1,4 @@
+// Assembly: sample.fs, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
 import * as React from "react"
 import { QueryOptions, UseQueryOptions } from "react-query"
 import { useApi, ApiResult, notifySuccess, notifyError } from "glow-core"

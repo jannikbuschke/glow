@@ -12,9 +12,12 @@
       "name": "glow-core",
       "path": "core-web"
     },
-	  {
+    {
       "name": "glow-beta",
       "path": "glow.beta-web"
+    },
+    {
+      "path": "glow.azure-web"
     }
   ],
   "settings": {}

@@ -33,10 +33,10 @@
     "@emotion/styled": "11.3.0",
     "framer-motion": "4.1.17",
     "react-icons": "4.3.1",
-    "@tiptap/react": "2.0.0-beta.98",
-    "@tiptap/starter-kit": "2.0.0-beta.153",
-    "@tiptap/extension-highlight": "2.0.0-beta.31",
-    "@tiptap/extension-image": "2.0.0-beta.24",
+    "@tiptap/react": "2.0.0-beta.108",
+    "@tiptap/starter-kit": "2.0.0-beta.183",
+    "@tiptap/extension-highlight": "2.0.0-beta.33",
+    "@tiptap/extension-image": "2.0.0-beta.27",
     "@craco/craco": "6.4.3",
     "postcss-simple-vars": "^5.0.0"
   },
@@ -52,8 +52,8 @@
     "typescript": "4.3.5",
     "@types/node": "14.0.1",
     "@types/styled-components": "5.1.11",
-    "@types/react": "17.0.15",
-    "@types/react-dom": "17.0.9",
+    "@types/react": "17.0.40",
+    "@types/react-dom": "17.0.13",
     "prettier": "2.2.1"
   },
   "eslintConfig": {

@@ -1,5 +1,11 @@
 {
-  "packages": ["core-web", "glow.beta-web", "sample.cs/web", "sample.fs/web"],
+  "packages": [
+    "core-web",
+    "glow.beta-web",
+    "glow.azure-web",
+    "sample.cs/web",
+    "sample.fs/web"
+  ],
   "version": "0.0.0",
   "command": {
     "bootstrap": {
