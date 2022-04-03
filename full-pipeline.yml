@@ -13,6 +13,34 @@ variables:
   workingDir: "core-web"
 
 stages:
+  - stage: Docs
+    jobs:
+      - job: run_build
+        displayName: Run Build
+        steps:
+          - checkout: self
+            submodules: true
+
+          - task: AzurePowerShell@5
+            name: build-docs
+            displayName: build docs
+            continueOnError: true
+            inputs:
+              azurePowerShellVersion: LatestVersion
+              pwsh: true
+              scriptType: inlineScript
+              inline: |
+                cd glow-docs
+                npm i
+                npm run build
+
+          - task: CopyFilesOverSSH@0
+            displayName: "Securely copy files to the remote machine"
+            inputs:
+              sshEndpoint: 212.227.10.50
+              sourceFolder: glow-docs/build
+              targetFolder: /var/www/glow
+
   - stage: Checks
     jobs:
       # - job: "Check_for_changes"
