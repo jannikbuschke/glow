@@ -21,18 +21,12 @@ stages:
           - checkout: self
             submodules: true
 
-          - task: AzurePowerShell@5
-            name: build_docs
+          - powershell: |
+              npm -v
+              cd glow-docs
+              npm i
+              npm run build
             displayName: build docs
-            continueOnError: true
-            inputs:
-              azurePowerShellVersion: LatestVersion
-              pwsh: true
-              scriptType: inlineScript
-              inline: |
-                cd glow-docs
-                npm i
-                npm run build
 
           - task: CopyFilesOverSSH@0
             displayName: "Securely copy files to the remote machine"

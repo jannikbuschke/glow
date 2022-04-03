@@ -18,6 +18,9 @@
     },
     {
       "path": "glow.azure-web"
+    },
+    {
+      "path": "glow-docs"
     }
   ],
   "settings": {}
