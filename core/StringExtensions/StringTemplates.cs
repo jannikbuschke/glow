@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -12,7 +13,8 @@ namespace Glow.Core.StringExtensions
             var result = Regex.Replace(
                 input,
                 @"rgb\([ ]*(\d+)[ ]*,[ ]*(\d+)[ ]*,[ ]*(\d+)[ ]*\)",
-                m => {
+                m =>
+                {
                     return "#" + Int32.Parse(m.Groups[1].Value).ToString("X2") +
                            Int32.Parse(m.Groups[2].Value).ToString("X2") +
                            Int32.Parse(m.Groups[3].Value).ToString("X2");
@@ -24,7 +26,6 @@ namespace Glow.Core.StringExtensions
 
         public static string ReplaceCssRgbaWithHex(this string input)
         {
-
             var result2 = Regex.Replace(
                 input,
                 @"rgba\([ ]*(\d+)[ ]*,[ ]*(\d+)[ ]*,[ ]*(\d+)[ ]*,[ ]*(\d+)[ ]*\)",
@@ -45,6 +46,7 @@ namespace Glow.Core.StringExtensions
         {
             return string.IsNullOrEmpty(self);
         }
+
         /// <summary>
         /// Replaces all occurences of the form {<identifier>:format} in the given string
         /// 'Identifier' is an argument that specifies the locations in the string where the given DateTime
@@ -64,24 +66,59 @@ namespace Glow.Core.StringExtensions
                 return self;
             }
 
-            DateTime dateValue;
-            dateValue = date.Value;
-            var globalSearchPattern = @$"{{{identifier}:.*?}}";
-            var getFormatPattern = @$"(?<={{{identifier}:).*?(?=}})";
-
+            DateTime dateValue = date.Value;
             var input = self;
-            var matches = Regex.Matches(input, globalSearchPattern).ToList();
 
-            var result = input;
-            foreach (Match v in matches)
+            var globalSearchPattern0 = @$"{{{identifier}::.*?}}";
+            var matches0 = Regex.Matches(input, globalSearchPattern0).ToList();
+
+            if (matches0.Count > 0)
             {
-                var val = v.Value;
-                Match innerMatch = Regex.Match(val, getFormatPattern);
-                var innerValue = innerMatch.Value;
-                result = result.Replace(v.Value, dateValue.ToString(innerValue));
-            }
+                var result = input;
 
-            return result;
+                foreach (Match match in matches0)
+                {
+                    var value = match.Value;
+                    var props = input.Split("::");
+                    if (props.Length <= 1)
+                    {
+                        continue;
+                    }
+                    else if (props.Length == 2)
+                    {
+                        var format = props[1].Substring(0, props[1].Length - 1);
+                        result = result.Replace(value, dateValue.ToString(format));
+                    }
+                    else
+                    {
+                        var culture = props[1];
+                        var format = props[2].Substring(0, props[2].Length - 1);
+                        result = result.Replace(value, dateValue.ToString(format, new CultureInfo(culture)));
+                    }
+                }
+
+                return result;
+                // use new format
+            }
+            else
+            {
+                var globalSearchPattern = @$"{{{identifier}:.*?}}";
+                var getFormatPattern = @$"(?<={{{identifier}:).*?(?=}})";
+
+                var matches = Regex.Matches(input, globalSearchPattern).ToList();
+
+                var result = input;
+                foreach (Match v in matches)
+                {
+                    var val = v.Value;
+                    Match innerMatch = Regex.Match(val, getFormatPattern);
+                    var innerValue = innerMatch.Value;
+                    // dateValue.ToString("",new CultureInfo())
+                    result = result.Replace(v.Value, dateValue.ToString(innerValue));
+                }
+
+                return result;
+            }
         }
 
         /// <summary>
