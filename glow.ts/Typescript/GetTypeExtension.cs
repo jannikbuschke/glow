@@ -31,6 +31,11 @@ namespace Glow.Core.Typescript
             return primitives.ContainsKey(type);
         }
 
+        public static bool IsStruct(this Type source)
+        {
+            return source.IsValueType && !source.IsPrimitive && !source.IsEnum;
+        }
+
         // public static IEnumerable<Type> BaseClasses(this Type type)
         // {
         //     if (type.BaseType == null)

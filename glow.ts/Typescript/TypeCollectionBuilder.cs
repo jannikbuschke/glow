@@ -143,6 +143,11 @@ namespace Glow.Core.Typescript
                 return tsType;
             }
 
+            if (type.IsStruct())
+            {
+                return TsType.Any();
+            }
+
             if (type.IsEnum)
             {
                 TsEnum e = AsEnum(type);
