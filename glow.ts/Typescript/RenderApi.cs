@@ -65,7 +65,7 @@ namespace Glow.Core.Typescript
                     continue;
                 }
 
-                if (!v.Namespace.StartsWith("System."))
+                if (!v.Namespace.StartsWith("System.") && v.Namespace != "System")
                 {
                     imports.AppendLine(
                         $"import * as {v.Namespace.Replace(".", "_")} from \"./{v.Namespace}\"");
