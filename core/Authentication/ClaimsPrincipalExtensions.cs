@@ -18,6 +18,11 @@ namespace Glow.Authentication.Aad
             return v?.Claims.FirstOrDefault(v => v.Type == ClaimTypes.Name || v.Type == "name")?.Value;
         }
 
+        public static string Upn(this ClaimsPrincipal v)
+        {
+            return v?.Claims.FirstOrDefault(v => v.Type == ClaimTypes.Upn || v.Type == "upn")?.Value;
+        }
+
         public static string NameIdentifier(this ClaimsPrincipal v)
         {
             return v?.Claims.FirstOrDefault(v => v.Type == ClaimTypes.NameIdentifier)?.Value;
