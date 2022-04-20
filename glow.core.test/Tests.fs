@@ -38,6 +38,29 @@ let ``simple test with custom culture`` () =
 
   result.Should().Be(@"2021-10-15 Freitag 12:00", null)
 
+[<Fact>]
+let ``more complex test with new format`` () =
+  let input = @"Tagesordnung für die VS am {MeetingDate:dddd dd.MM.yyyy}:
+
+LINK zu Dokument
+
+Mit freundlichen Grüßen,
+- {MeetingDate:yyyy-MM-dd dddd hh:mm}
+- {MeetingDate::de-DE::yyyy-MM-dd dddd hh:mm}"
+  let date = DateTime.Parse("2021/10/15")
+
+  let result =
+    input.ReplaceDatetimes(date, "MeetingDate")
+
+  let expectedResult = @"Tagesordnung für die VS am Friday 15.10.2021:
+
+LINK zu Dokument
+
+Mit freundlichen Grüßen,
+- 2021-10-15 Friday 12:00
+- 2021-10-15 Freitag 12:00"
+  result.Should().Be(expectedResult, null)
+
 
 [<Fact>]
 let ``test longer text`` () =
