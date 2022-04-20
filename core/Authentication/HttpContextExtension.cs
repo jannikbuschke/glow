@@ -10,5 +10,11 @@ namespace Glow.Authentication.Aad
             ClaimsPrincipal user = httpContext.User;
             return user.GetObjectId();
         }
+
+        public static string GetUpn(this HttpContext httpContext)
+        {
+            ClaimsPrincipal user = httpContext.User;
+            return user.Upn();
+        }
     }
 }
