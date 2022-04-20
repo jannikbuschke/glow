@@ -72,14 +72,13 @@ namespace Glow.Core.StringExtensions
             var globalSearchPattern0 = @$"{{{identifier}::.*?}}";
             var matches0 = Regex.Matches(input, globalSearchPattern0).ToList();
 
+            var result = input;
             if (matches0.Count > 0)
             {
-                var result = input;
-
                 foreach (Match match in matches0)
                 {
                     var value = match.Value;
-                    var props = input.Split("::");
+                    var props = value.Split("::");
                     if (props.Length <= 1)
                     {
                         continue;
@@ -93,21 +92,29 @@ namespace Glow.Core.StringExtensions
                     {
                         var culture = props[1];
                         var format = props[2].Substring(0, props[2].Length - 1);
+                        try
+                        {
+                            new CultureInfo(culture);
+                        }
+                        catch (CultureNotFoundException e)
+                        {
+                            throw new Exception($"Culture '{culture}' not supported");
+                        }
                         result = result.Replace(value, dateValue.ToString(format, new CultureInfo(culture)));
                     }
                 }
 
-                return result;
+                // return result;
                 // use new format
             }
-            else
+            // else
             {
                 var globalSearchPattern = @$"{{{identifier}:.*?}}";
                 var getFormatPattern = @$"(?<={{{identifier}:).*?(?=}})";
 
-                var matches = Regex.Matches(input, globalSearchPattern).ToList();
+                var matches = Regex.Matches(result, globalSearchPattern).ToList();
 
-                var result = input;
+                // var result = input;
                 foreach (Match v in matches)
                 {
                     var val = v.Value;
