@@ -84,6 +84,16 @@ namespace Glow.Tests
 
     public static class ClientExtensions
     {
+        public static async Task<Result> PostRequest<Action, Result>(this HttpClient client, Action request, SubmitIntent intent, UserDto user, string url)
+        {
+            client.SetIntent(intent);
+            client.SetUser(user);
+            var data = JObject.FromObject(request).ToString();
+            HttpResponseMessage response = await client.PostAsync(url, new StringContent(data, Encoding.UTF8, "application/json"));
+            var result = await response.ReadAsAsync<Result>();
+            return result;
+        }
+
         public static void SetIntent(this HttpClient client, SubmitIntent intent)
         {
             if (intent == SubmitIntent.Execute)
