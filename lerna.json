@@ -3,7 +3,8 @@
     "core-web",
     "glow.beta-web",
     "glow.azure-web",
-    "app/web"
+    "app/web",
+    "sample.fs/web"
   ],
   "version": "0.0.0",
   "command": {

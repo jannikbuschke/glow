@@ -37,11 +37,10 @@
     "@tiptap/starter-kit": "2.0.0-beta.183",
     "@tiptap/extension-highlight": "2.0.0-beta.33",
     "@tiptap/extension-image": "2.0.0-beta.27",
-    "@craco/craco": "6.4.3",
     "postcss-simple-vars": "^5.0.0"
   },
   "scripts": {
-    "start": "set PORT=3001 && craco start",
+    "start": "set PORT=3001 && react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
