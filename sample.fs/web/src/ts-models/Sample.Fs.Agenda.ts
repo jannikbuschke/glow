@@ -1,8 +1,16 @@
-/* eslint-disable prettier/prettier */
+import { FSharpOption } from "./Microsoft.FSharp.Core"
+import { defaultFSharpOption } from "./Microsoft.FSharp.Core"
+
 export interface CreateMeeting {
 }
 
 export const defaultCreateMeeting: CreateMeeting = {
+}
+
+export interface GetListOfOptions {
+}
+
+export const defaultGetListOfOptions: GetListOfOptions = {
 }
 
 export interface GetMeeting {
@@ -59,5 +67,23 @@ export const defaultMeeting: Meeting = {
   id: "00000000-0000-0000-0000-000000000000",
   name: null,
   items: [],
+}
+
+export interface WrappListOfOptions {
+  persons: FSharpOption<Person>[]
+}
+
+export const defaultWrappListOfOptions: WrappListOfOptions = {
+  persons: [],
+}
+
+export interface Person {
+  firstName: string | null
+  lastName: string | null
+}
+
+export const defaultPerson: Person = {
+  firstName: null,
+  lastName: null,
 }
 

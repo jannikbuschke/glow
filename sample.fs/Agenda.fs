@@ -3,20 +3,23 @@
 open System.Collections.Generic
 open System.Threading.Tasks
 open Marten.Events.Projections
+open Microsoft.AspNetCore.Mvc
 open Microsoft.Extensions.Logging
-open Microsoft.TeamFoundation.Core.WebApi
-open Microsoft.TeamFoundation.WorkItemTracking.WebApi
-open Microsoft.VisualStudio.Services.WebApi
 open System
-open Glow.Azdo.Authentication
 open Marten
-open System.Linq
 open MediatR
 open Glow.Core.Actions
-open Microsoft.VisualStudio.Services.WebApi.Patch
-open Microsoft.VisualStudio.Services.WebApi.Patch.Json
-open Microsoft.TeamFoundation.WorkItemTracking.WebApi.Models
 
+type Person = { FirstName: string; LastName: string }
+
+type WrappListOfOptions = { Persons: Person option list }
+
+type GetListController()=
+    inherit ControllerBase()
+
+    [<HttpGet("test")>]
+    member this.Get()=
+      { Persons = [ Some({ FirstName = ""; LastName = "" }); None;None;Some({FirstName="Hello";LastName="World"}) ] }
 module Agenda =
 
   [<CLIMutable>]
@@ -62,8 +65,9 @@ module Agenda =
 
   type Meeting() =
     member val Id = Guid.Empty with get, set
-    member val Name = String.Empty with get,set
+    member val Name = String.Empty with get, set
     member val Items: List<MeetingItem> = List() with get, set
+
     member this.Apply(event: MeetingCreated) =
       this.Id <- event.Id
       this.Name <- event.Name
@@ -97,6 +101,17 @@ module Agenda =
       let item = this.Items[event.OldIndex]
       this.Items.Insert(event.NewIndex, item)
   //      this.Items.RemoveAt(event.OldIndex)
+
+
+
+  [<Action(Route="get-wrapped-option-list", AllowAnonymous=true)>]
+  type GetListOfOptions() =
+    interface IRequest<WrappListOfOptions>
+
+  type GetListOfOptionsHandler() =
+    interface IRequestHandler<GetListOfOptions, WrappListOfOptions> with
+      member this.Handle(request, token) =
+        Task.FromResult { Persons = [ Some({ FirstName = ""; LastName = "" }); None;None;Some({FirstName="Hello";LastName="World"}) ] }
 
   [<Action(Route = "api/get-meeting", AllowAnonymous = true)>]
   type GetMeeting() =
@@ -145,7 +160,7 @@ module Agenda =
           let session = store.OpenSession()
           // session.Events.StartStream(typeof(Quest), questId, started, joined1);
           let meetingCreated: MeetingCreated = { Id = id; Name = "Meeting xy" }
-//          let meetingCreatedEvent = ()
+          //          let meetingCreatedEvent = ()
           let objects: obj [] = [| meetingCreated |]
 
           let state1 =
@@ -184,11 +199,11 @@ module Agenda =
 
   type MeetingView() =
     member val Id: Guid = Guid.Empty with get, set
-    member val Name = String.Empty with get,set
+    member val Name = String.Empty with get, set
 
   type MeetingReorderedView() =
     member val Id: Guid = Guid.Empty with get, set
-    member val Name = String.Empty with get,set
+    member val Name = String.Empty with get, set
 
   type MonsterDefeatedTransform() =
     inherit EventProjection()
@@ -197,4 +212,4 @@ module Agenda =
         MeetingView(Id = input.Id, Name = input.Data.Name)
 
       member this.Create(input: Marten.Events.IEvent<ReorderedAgenda>) =
-        MeetingReorderedView(Id = input.Id, Name="Reordered")
+        MeetingReorderedView(Id = input.Id, Name = "Reordered")

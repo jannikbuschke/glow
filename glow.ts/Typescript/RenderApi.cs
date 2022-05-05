@@ -1,12 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Text;
-using AutoMapper.Internal;
 using Glow.Core.Actions;
-using Glow.Core.Linq;
 using Glow.TypeScript;
+using OneOf;
 
 namespace Glow.Core.Typescript
 {
@@ -60,8 +55,9 @@ namespace Glow.Core.Typescript
                     {
                         Console.WriteLine(t.Name);
                     }
+                    Console.WriteLine($"Namespace is null {{types count = {v.TsTypes.Count}, enums count = {v.TsEnums.Count()}}}");
 
-                    throw new Exception("Namespace is null " + options.Path);
+                    // throw new Exception("Namespace is null " + options.Path);
                     continue;
                 }
 
@@ -97,11 +93,10 @@ namespace Glow.Core.Typescript
                     return "any";
                 }
 
-                var tsType = types.Find(type);
-                var name = tsType.Match(v1 => v1.Name, v2 => v2.Name);
-                var nameSpace = tsType.Match(v1 => v1.Namespace, v2 => v2.Namespace).Replace(".", "_");
-                // Console.WriteLine("name=" + name);
-                return nameSpace + "." + name;
+                OneOf<TsType, TsEnum> tsType = types.Find(type);
+
+                var fullName = tsType.Match(v1 => v1.GetFullName(), v2 => v2.GetFullName());
+                return fullName;
             }
 
             foreach (var v in actions)

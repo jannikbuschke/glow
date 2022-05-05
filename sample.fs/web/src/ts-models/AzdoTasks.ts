@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import { WorkItemType } from "./Microsoft.TeamFoundation.WorkItemTracking.WebApi.Models"
 import { defaultWorkItemType } from "./Microsoft.TeamFoundation.WorkItemTracking.WebApi.Models"
 

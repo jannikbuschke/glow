@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import { ReferenceLinks } from "./Microsoft.VisualStudio.Services.WebApi"
 import { defaultReferenceLinks } from "./Microsoft.VisualStudio.Services.WebApi"
 import { SubjectDescriptor } from "./Microsoft.VisualStudio.Services.Common"

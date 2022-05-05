@@ -11,6 +11,7 @@ import * as Microsoft_TeamFoundation_WorkItemTracking_WebApi_Models from "./Micr
 import * as Microsoft_VisualStudio_Services_WebApi from "./Microsoft.VisualStudio.Services.WebApi"
 import * as Microsoft_TeamFoundation_Core_WebApi from "./Microsoft.TeamFoundation.Core.WebApi"
 import * as Microsoft_VisualStudio_Services_Common from "./Microsoft.VisualStudio.Services.Common"
+import * as Microsoft_FSharp_Core from "./Microsoft.FSharp.Core"
 import * as MediatR from "./MediatR"
 
 type QueryInputs = {
@@ -23,18 +24,20 @@ type QueryInputs = {
   "/api/get-comments": AzdoTasks.GetComments,
   "/api/get-tasks": AzdoTasks.GetTasks,
   "/api/get-workspace-viewmodel": AzdoTasks.GetWorkspaceViewmodel,
+  "/get-wrapped-option-list": Sample_Fs_Agenda.GetListOfOptions,
   "/api/get-meeting": Sample_Fs_Agenda.GetMeeting,
 }
 type QueryOutputs = {
   "/api/get-area-paths": Microsoft_TeamFoundation_WorkItemTracking_WebApi_Models.WorkItemClassificationNode,
-  "/api/get-workspaces": AzdoTasks.Workspace[],
+  "/api/get-workspaces": Array<AzdoTasks.Workspace>,
   "/api/get-workspace": AzdoTasks.Workspace,
-  "/api/get-projects": Microsoft_TeamFoundation_Core_WebApi.TeamProjectReference[],
+  "/api/get-projects": Array<Microsoft_TeamFoundation_Core_WebApi.TeamProjectReference>,
   "/api/get-task": Microsoft_TeamFoundation_WorkItemTracking_WebApi_Models.WorkItem,
   "/api/get-create-task-viewmodel": AzdoTasks.CreateTaskViewmodel,
   "/api/get-comments": Microsoft_TeamFoundation_WorkItemTracking_WebApi_Models.WorkItemComments,
-  "/api/get-tasks": Microsoft_TeamFoundation_WorkItemTracking_WebApi_Models.WorkItem[],
+  "/api/get-tasks": Array<Microsoft_TeamFoundation_WorkItemTracking_WebApi_Models.WorkItem>,
   "/api/get-workspace-viewmodel": AzdoTasks.WorkspaceViewmodel,
+  "/get-wrapped-option-list": Sample_Fs_Agenda.WrappListOfOptions,
   "/api/get-meeting": Sample_Fs_Agenda.Meeting,
 }
 export type Outputs = {

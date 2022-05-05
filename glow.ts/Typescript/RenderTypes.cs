@@ -29,6 +29,11 @@ namespace Glow.Core.Typescript
 
         private static void RenderModule(Module module, string path)
         {
+            if (module.Namespace == null)
+            {
+                Console.WriteLine($"Namespace of module '{string.Join(", ", module.TsTypes.Select(v=>v.Id))}' is null");
+                return;
+            }
             if (module.Namespace.StartsWith("System"))
             {
                 return;
@@ -47,7 +52,7 @@ namespace Glow.Core.Typescript
 
             IEnumerable<IGrouping<string, Dependency>> dependencies = module.GetDependenciesGroupedByNamespace();
 
-            builder.AppendLine(@"/* eslint-disable prettier/prettier */");
+            // builder.AppendLine(@"/* eslint-disable prettier/prettier */");
 
             foreach (IGrouping<string, Dependency> group in dependencies)
             {
@@ -130,28 +135,46 @@ namespace Glow.Core.Typescript
         {
             foreach (var v in type.Cases)
             {
-                builder.AppendLine(
+                if (v.IsNull)
+                {
+                    builder.AppendLine(@$"export type {v.Name} = null");
+                }
+                else
+                {
+                    builder.AppendLine(
 @$"export type {v.Name} = {{
   case: ""{v.CaseName}"",
   fields: [{string.Join(", ", v.Fields.Select(v => v.Name))}]
 }}");
+                }
                 builder.AppendLine();
 
-                builder.AppendLine(
-                    @$"export const default{v.Name}: {v.Name} = {{
+                if (!type.IsGeneric)
+                {
+                    builder.AppendLine(
+@$"export const default{v.Name}: {v.Name} = {{
   case: ""{v.CaseName}"",
   fields: [{string.Join(", ", v.Fields.Select(v=>v.DefaultValue))}]
 }}"
-                );
+                    );
+                }
             }
 
             builder.AppendLine();
-            var duRoot = $"export type {type.Name} = " + string.Join(" | ", type.Cases.Select(v => v.Name));
+            var duRoot = $"export type {type.NameWithGenericArguments} = " + string.Join(" | ", type.Cases.Select(v => v.Name));
 
             builder.AppendLine(duRoot);
             builder.AppendLine();
 
-            builder.AppendLine($@"export const default{type.Name}: {type.Name} = default{type.Cases.First().Name}");
+            if (type.DefaultValue != null)
+            {
+                builder.AppendLine("");
+                builder.AppendLine($"export const default{type.Name} = {type.DefaultValue}");
+                builder.AppendLine("");
+            }
+
+            // builder.AppendLine($@"export const default{type.Name}: {type.Name} = default{type.Cases.First().Name}");
+
         }
 
         private static void RenderProperties(List<Property> properties, StringBuilder builder, int depth, int maxDepth)

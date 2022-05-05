@@ -52,26 +52,11 @@ namespace Glow.Core.Typescript
                 .Where(v => v.IsT0)
                 .Select(v => v.AsT0)
                 .Where(v => v.Properties != null)
-                .SelectMany(v => v.Properties)
-                .Select(v => v.TsType.Match(
-                    v => new Dependency
-                    {
-                        Id = v.Id?.Replace("[]", ""),
-                        Namespace = v.Namespace,
-                        Name = v.Name?.Replace("[]", ""),
-                        IsPrimitive = v.IsPrimitive,
-                        TsType = v
-                    },
-                    v => new Dependency
-                    {
-                        Id = v.Id.Replace("[]", ""),
-                        Namespace = v.Namespace,
-                        Name = v.Name.Replace("[]", ""),
-                        IsPrimitive = false
-                    }))
+                .SelectMany(v => v.GetDependencies())
                 .Where(v => !v.IsPrimitive)
                 .Where(v => v.Namespace != this.Namespace && v.Name != "any");
 
+            // what are sub dependencies?
             IEnumerable<Dependency> subDependencies = this.TsTypes
                 .SelectMany(v => v.Properties)
                 .Where(v => v.TsType.IsT0)
@@ -81,9 +66,9 @@ namespace Glow.Core.Typescript
                 .Select(v => v.TsType.Match(
                     v => new Dependency
                     {
-                        Id = v.Id?.Replace("[]", ""),
+                        Id = v.Id?.Replace("[]", "").Replace("<T>", ""),
                         Namespace = v.Namespace,
-                        Name = v.Name?.Replace("[]", ""),
+                        Name = v.Name?.Replace("[]", "").Replace("<T>", ""),
                         IsPrimitive = v.IsPrimitive,
                         TsType = v
                     },
@@ -91,9 +76,13 @@ namespace Glow.Core.Typescript
                 .Where(v => !v.IsPrimitive)
                 .Where(v => v.Namespace != this.Namespace && v.Name != "any");
 
+            IEnumerable<Dependency> additionalDependencies = this.Types
+                .SelectMany(v => v.Match((v0 => v0.AdditionalDependencies), v1 => v1.AdditionalDependencies));
             var all = new List<Dependency>();
             all.AddRange(directDependencies);
             all.AddRange(subDependencies);
+            Console.WriteLine($"deps {additionalDependencies.Count()}");
+            all.AddRange(additionalDependencies);
 
             IEnumerable<Dependency> result = all
                 .Where(v => !v.Namespace.StartsWith("System.Collections"))

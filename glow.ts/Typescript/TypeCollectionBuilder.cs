@@ -1,11 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using Glow.Core.Authentication;
-using Glow.Core.Linq;
-using Glow.Core.Utils;
 using Glow.TypeScript;
 using Microsoft.FSharp.Core;
 using Microsoft.FSharp.Reflection;
@@ -20,6 +14,18 @@ namespace Glow.Core.Typescript
         public string Namespace { get; init; }
         public bool IsPrimitive { get; init; }
         public TsType TsType { get; set; }
+
+        public static Dependency FromTsType(TsType value)
+        {
+            return new()
+            {
+                TsType = value,
+                Id = value.Id,
+                Name = value.Name,
+                Namespace = value.Namespace,
+                IsPrimitive = value.IsPrimitive
+            };
+        }
     }
 
     public class TypeCollectionBuilder
@@ -65,8 +71,8 @@ namespace Glow.Core.Typescript
             if (update != null)
             {
                 //var all = collection.All().Select(v => v.AsT0).Where(v => v != null).ToList();
-                var meeting = collection.All().Where(v => v.IsT0 && v.AsT0?.Name?.StartsWith("Meeting") == true)
-                    .ToList();
+                // var meeting = collection.All().Where(v => v.IsT0 && v.AsT0?.Name?.StartsWith("Meeting") == true)
+                //     .ToList();
                 foreach (OneOf<TsType, TsEnum> v in collection.All())
                 {
                     update(v);
@@ -94,58 +100,115 @@ namespace Glow.Core.Typescript
                 };
             }
 
-            if (type.Name.Contains("Workspace"))
+            TsType AddAsEnumerable(Type type)
             {
+                Type elementType = type.GetCollectionElementType();
+
+                if (elementType.IsPrimitive())
+                {
+                    TsType primitiveTsType = GetPrimitiveCollection(type);
+                    return primitiveTsType;
+                }
+
+                if (type.FullName == null)
+                {
+                    Console.WriteLine("Cannot generate type for " + type.Name + " ( element type = " +
+                                      elementType.Name + ") as Fullname is null (not yet supported)");
+                    return TsType.Any();
+                }
+
+                if (type.FullName.Contains("Newtonsoft"))
+                {
+                    return TsType.Any();
+                }
+
+                TsType enumerable = AsEnumerable(type);
+                tsTypes.TryAdd(enumerable.Id, enumerable);
+                return enumerable;
             }
 
-            if (FSharpType.IsUnion(type, FSharpOption<BindingFlags>.None))
+            if (FSharpType.IsUnion(type, null))
             {
+                if (type.IsEnumerable())
+                {
+                    return AddAsEnumerable(type);
+                }
+
                 var id = type.FullName;
                 if (tsTypes.ContainsKey(id))
                 {
                     return tsTypes[id];
                 }
-                var cases = FSharpType.GetUnionCases(type, FSharpOption<BindingFlags>.None);
+
+                TsType GetAsGenericTsDiscriminatedUnion(Type type, string duTypeName, List<string> genericArguments)
+                {
+                    var genericInfos = $"<{string.Join(",", genericArguments)}>";
+                    // generic stuff
+                    var cases = FSharpType.GetUnionCases(type, FSharpOption<BindingFlags>.None);
+                    var duCases = cases.Select(v => new DuCase()
+                    {
+                        Name = @$"{duTypeName}_Case_{v.Name}{genericInfos}",
+                        CaseName = v.Name,
+                        IsNull = v.Name == "None",
+                        Fields = v.GetFields()
+                            .Select(v => CreateOrGet(v.PropertyType))
+                            .Select(v => v.AsT0)
+                            .ToArray()
+                    });
+
+                    var tsType = new TsDiscriminatedUnion()
+                    {
+                        Id = type.FullName,
+                        IsGeneric = true,
+                        Name = $"{duTypeName}",
+                        NameWithGenericArguments = $"{duTypeName}{genericInfos}",
+                        FullName = type.FullName,
+                        Type = type,
+                        Cases = duCases,
+                        Namespace = type.Namespace,
+                        Properties = new List<Property>(),
+                        DefaultValue = duCases.Any(v => v.IsNull) ? "null" : null // @"{ Case: ""None"" }",
+                    };
+                    return tsType;
+                }
 
                 var genericArguments = type.GetGenericArguments();
-                var genericTypeArguments = type.GenericTypeArguments;
                 var duTypeName = type.Name;
                 if (genericArguments.Length > 0)
                 {
                     var genericTsType = CreateOrGet(genericArguments.First());
-                    var genericTsTypeName = CreateOrGet(genericArguments.First()).Match(v => v.Name, v => v.Name).Replace(" | null","");
+                    var genericTsTypeName = CreateOrGet(genericArguments.First()).Match(v => v.Name, v => v.Name).Replace(" | null", "");
                     duTypeName = duTypeName.Replace("`1", $"_{genericTsTypeName}");
                 }
 
-                var duCases = cases.Select(v => new DuCase()
+                var genericTypeDefinition = type.GetGenericTypeDefinition();
+
+                if (type.IsGenericType && genericTypeDefinition == typeof(FSharpOption<>))
                 {
-                    Name = @$"{duTypeName}_Case_{v.Name}",
-                    CaseName = v.Name,
-                    Fields = v.GetFields()
-                        .Select(v => CreateOrGet(v.PropertyType))
-                        .Select(v=>v.AsT0)
-                        .ToArray()
-                });
+                    //is generic
+                    var tsType = GetAsGenericTsDiscriminatedUnion(genericTypeDefinition, type.Name.Replace("`1", ""), new List<string>(new[] { "T" }));
 
-                var tsType = new TsDiscriminatedUnion()
+                    var args = type.GetGenericArguments();
+                    var argumentType = args.First();
+                    var argumentTsType = CreateOrGet(argumentType);
+
+                    if (argumentTsType.IsT1)
+                    {
+                        Console.WriteLine("Discriminated union with generic enum argument is not yet supported");
+                        return TsType.Any();
+                    }
+
+                    tsType.GenericArgumentsTsTypes.Add(argumentTsType.AsT0);
+
+                    tsTypes.TryAdd(tsType.Id, tsType);
+                    return tsType;
+                }
+                else
                 {
-                    Id = type.FullName,
-                    Name = duTypeName,
-                    FullName = type.FullName,
-                    Type = type,
-                    Cases = duCases,
-                    Namespace = type.Namespace,
-                    Properties = new List<Property>(),
-                    // DefaultValue = @"{ Case: ""None"" }",
-                };
-
-                tsTypes.Add(tsType.Id, tsType);
-                return tsType;
-            }
-
-            if (type.IsStruct())
-            {
-                return TsType.Any();
+                    var tsType = GetAsGenericTsDiscriminatedUnion(type, duTypeName, new List<string>());
+                    tsTypes.Add(tsType.Id, tsType);
+                    return tsType;
+                }
             }
 
             if (type.IsEnum)
@@ -174,39 +237,12 @@ namespace Glow.Core.Typescript
 
                 if (type.IsEnumerable())
                 {
-                    Type elementType = type.GetCollectionElementType();
-
-                    if (elementType.IsPrimitive())
-                    {
-                        TsType primitiveTsType = GetPrimitiveCollection(type);
-                        return primitiveTsType;
-                    }
-
-                    if (type.FullName == null)
-                    {
-                        Console.WriteLine("Cannot generate type for " + type.Name + " ( element type = " +
-                                          elementType.Name + ") as Fullname is null (not yet supported)");
-                        return TsType.Any();
-                    }
-
-                    if (type.FullName.Contains("Newtonsoft"))
-                    {
-                        return TsType.Any();
-                    }
-
-                    TsType enumerable = AsEnumerable(type);
-                    tsTypes.TryAdd(enumerable.Id, enumerable);
-                    return enumerable;
+                    return AddAsEnumerable(type);
                 }
 
                 var id = type.GetTypeId();
                 if (!tsTypes.ContainsKey(id))
                 {
-                    // if (IsFsharOption(type))
-                    {
-                        // return AsFsharpOption(type);
-                    }
-
                     if (IsNullable(type))
                     {
                         OneOf<TsType, TsEnum> nullable = AsNullable(type);
@@ -214,7 +250,7 @@ namespace Glow.Core.Typescript
                         nullable.Switch(tsType =>
                         {
                             tsType.Id = id;
-                            tsTypes.Add(id, tsType);
+                            tsTypes.TryAdd(id, tsType);
                             PopuplateProperties(tsType);
                         }, v1 =>
                         {
@@ -224,10 +260,13 @@ namespace Glow.Core.Typescript
                     }
                     else
                     {
+                        if (type.IsStruct())
+                        {
+                            return TsType.Any();
+                        }
+
                         if (type.Namespace == null)
                         {
-                            // type.Namespace = type.ReflectedType.FullName;
-                            var reflectedType = type.ReflectedType;
                             return TsType.Any();
                         }
                         else if (type.Namespace.StartsWith("System"))
@@ -252,28 +291,6 @@ namespace Glow.Core.Typescript
             }
         }
 
-        // private OneOf<TsType, TsEnum> AsFsharpOption(Type type)
-        // {
-        //     Type[] genericTypeArguments = type.GenericTypeArguments;
-        //     Type genericArgument = genericTypeArguments.First();
-        //     if (!genericArgument.IsEnum && !genericArgument.IsPrimitive())
-        //     {
-        //         return CreateOrGet(genericArgument);
-        //     }
-        //     else if (genericArgument.IsEnum)
-        //     {
-        //         throw new Exception("enum FS Option currently not supported");
-        //     }
-        //     else if (genericArgument.IsPrimitive())
-        //     {
-        //         return GetPrimitiveAsNullable(genericArgument);
-        //     }
-        //     else
-        //     {
-        //         throw new Exception("enum/primitive FS Option currently not supported");
-        //     }
-        // }
-
         private TsType AsEnumerable(Type type)
         {
             Type elementType = type.GetCollectionElementType();
@@ -281,19 +298,25 @@ namespace Glow.Core.Typescript
             OneOf<TsType, TsEnum> elementTsType =
                 elementType == null ? TsType.Any() : CreateOrGet(elementType, skipDependencies: false);
 
-            var name = elementTsType.Match(v1 => v1.Name, v2 => v2.Name);
-            var nameSpace = elementTsType.Match(v1 => v1.Namespace, v2 => v2.Namespace);
+            var elementTypeNamespace = elementTsType.Match(v1 => v1.Namespace, v2 => v2.Namespace);
             var id = type.GetTypeId();
+
+            var name = elementTsType.IsT0 && elementTsType.AsT0.IsGeneric && elementTsType.AsT0 is TsDiscriminatedUnion du
+                ? du.NameWithGenericArguments.Replace("<T>", $"<{du.GenericArgumentsTsTypes.First().Name}>")
+                : elementTsType.Match(v1 => v1.Name, v2 => v2.Name);
 
             return new TsType
             {
-                Id = id, //argsTsType.Namespace + "." + argsTsType.Name + "[]",
+                Id = id,
                 Name = name + "[]",
-                Namespace = nameSpace,
+                Namespace = elementTypeNamespace,
                 DefaultValue = "[]",
+                GenericArgumentsTsTypes = new[] { elementTsType.AsT0 }.ToList(),
                 Properties = new List<Property>(),
                 IsCollection = true,
-                IsPrimitive = elementTsType.Match(v1 => v1.IsPrimitive, v2 => true)
+                IsGeneric = true,
+                IsPrimitive = elementTsType.Match(v1 => v1.IsPrimitive, v2 => true),
+                AdditionalDependencies = new List<Dependency>()
             };
         }
 
@@ -433,7 +456,6 @@ namespace Glow.Core.Typescript
                 .DistinctBy(v => v.Name)
                 .Select(v =>
                 {
-                    // problem, current type does not yet exist on dependency
                     OneOf<TsType, TsEnum> tsType = CreateOrGet(v.PropertyType, skipDependencies: true);
 
                     var defaultValue = tsType.Match(v1 => v1.DefaultValue, v2 =>
@@ -444,7 +466,7 @@ namespace Glow.Core.Typescript
                     {
                         if (v1.Name == "any") { return "any"; }
 
-                        return v1.IsPrimitive ? v1.Name : v1.Name;
+                        return v1.Name;
                     }, v2 => v2.Name);
                     var isNullable = tsType.Match(v1 => false, v2 => v2.IsNullable);
                     return new Property
@@ -453,15 +475,10 @@ namespace Glow.Core.Typescript
                         DefaultValue = defaultValue,
                         TsType = tsType,
                         IsNullable = isNullable,
-                        TypeName = typeName,
-                        IsCyclic = tsType.IsT0 && visited.Contains(tsType.AsT0), // true, // if already visited
+                        TypeName = tsType.IsT0 && tsType.AsT0.Namespace == "System" ? "any" : typeName,
+                        IsCyclic = tsType.IsT0 && visited.Contains(tsType.AsT0),
                     };
                 }).ToList();
-        }
-
-        private bool IsFsharOption(Type type)
-        {
-            return type.Name.StartsWith("FSharpOption");
         }
 
         private bool IsNullable(Type type)
@@ -471,7 +488,6 @@ namespace Glow.Core.Typescript
 
         private OneOf<TsType, TsEnum> AsNullable(Type type)
         {
-            Type[] genericArguments = type.GetGenericArguments();
             Type[] genericTypeArguments = type.GenericTypeArguments;
 
             Type genericArgument = genericTypeArguments.First();
@@ -487,7 +503,6 @@ namespace Glow.Core.Typescript
             else
             {
                 var name = genericArgument.Name + " | null";
-                //var name = genericArgument.Namespace + "." + genericArgument.Name + " | null";
                 var t = new TsType
                 {
                     FullName = type.FullName,
@@ -495,7 +510,6 @@ namespace Glow.Core.Typescript
                     Name = name,
                     Namespace = type.Namespace,
                     DefaultValue = null,
-                    //DefaultValue = genericArguments.Length != 0 ? null : type.Namespace + ".default" + name,
                     Type = type,
                     PropertyInfos = null,
                 };
