@@ -260,10 +260,10 @@ namespace Glow.Core.Typescript
                     }
                     else
                     {
-                        if (type.IsStruct())
-                        {
-                            return TsType.Any();
-                        }
+                        // if (type.IsStruct())
+                        // {
+                        //     return TsType.Any();
+                        // }
 
                         if (type.Namespace == null)
                         {
