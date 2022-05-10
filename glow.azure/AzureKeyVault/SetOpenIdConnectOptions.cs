@@ -7,6 +7,8 @@ using Azure.Security.KeyVault.Secrets;
 using Glow.Core.Actions;
 using Glow.Glue.AspNetCore;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
@@ -18,6 +20,7 @@ namespace Glow.Azure.AzureKeyVault
         public string TenantId { get; set; }
         public string ClientId { get; set; }
         public string ClientSecret { get; set; }
+        public string Instance { get; set; }
     }
 
     public class SetOpenIdConnectOptionsHandler : IRequestHandler<SetOpenIdConnectOptions, Unit>
@@ -25,17 +28,26 @@ namespace Glow.Azure.AzureKeyVault
         private readonly AzureKeyvaultClientProvider azureKeyvaultClientProvider;
         private readonly IConfiguration configuration;
         private readonly ILogger<SetOpenIdConnectOptionsHandler> logger;
+        private readonly IAuthorizationService authorizationService;
+        private readonly IHttpContextAccessor httpContextAccessor;
 
         private const string TenantId = "OpenIdConnect--TenantId";
         private const string ClientId = "OpenIdConnect--ClientId";
         private const string ClientSecret = "OpenIdConnect--ClientSecret";
+        private const string Instance = "OpenIdConnect--Instance";
 
-        public SetOpenIdConnectOptionsHandler(AzureKeyvaultClientProvider azureKeyvaultClientProvider, IConfiguration configuration,
-            ILogger<SetOpenIdConnectOptionsHandler> logger)
+        public SetOpenIdConnectOptionsHandler(
+            AzureKeyvaultClientProvider azureKeyvaultClientProvider, IConfiguration configuration,
+            ILogger<SetOpenIdConnectOptionsHandler> logger,
+            IAuthorizationService authorizationService,
+            IHttpContextAccessor httpContextAccessor
+        )
         {
             this.azureKeyvaultClientProvider = azureKeyvaultClientProvider;
             this.configuration = configuration;
             this.logger = logger;
+            this.authorizationService = authorizationService;
+            this.httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<Unit> Handle(SetOpenIdConnectOptions request, CancellationToken cancellationToken)
@@ -45,51 +57,26 @@ namespace Glow.Azure.AzureKeyVault
             {
                 try
                 {
-                    Pageable<SecretProperties> properties = client.GetPropertiesOfSecrets();
-                    var secrets = properties.Select(v => v.Name).ToList();
-                    logger.LogInformation("Secrets= {@secrets}", secrets);
+                    // Pageable<SecretProperties> properties = client.GetPropertiesOfSecrets();
+                    // var secrets = properties.Select(v => v.Name).ToList();
 
                     async Task Set(string name, string value)
                     {
-                        if (!secrets.Contains(name))
+                        if (!string.IsNullOrEmpty(value))
                         {
                             logger.LogInformation("Set " + name);
                             await client.SetSecretAsync(name, value);
                         }
                         else
                         {
-                            logger.LogInformation("Skip setting " + name + " (already set)");
+                            logger.LogInformation($"Skip setting '{name}' (no value provided)");
                         }
                     }
 
                     await Set(TenantId, request.TenantId);
                     await Set(ClientId, request.ClientId);
                     await Set(ClientSecret, request.ClientSecret);
-                    //
-                    // Response<KeyVaultSecret> currentTenantId = await client.GetSecretAsync(TenantId);
-                    // Response<KeyVaultSecret> currentclientId = await client.GetSecretAsync(ClientId);
-                    // Response<KeyVaultSecret> currentclientSecret = await client.GetSecretAsync(ClientSecret);
-                    //
-                    // if (string.IsNullOrEmpty(currentTenantId?.Value?.Value))
-                    // {
-                    //     logger.LogInformation("OpenIdConnect: Set tenant id");
-                    //
-                    //     await client.SetSecretAsync(TenantId, request.TenantId);
-                    // }
-                    //
-                    // if (string.IsNullOrEmpty(currentclientId?.Value?.Value))
-                    // {
-                    //     logger.LogInformation("OpenIdConnect: Set client id");
-                    //
-                    //     await client.SetSecretAsync(ClientId, request.ClientId);
-                    // }
-                    //
-                    // if (string.IsNullOrEmpty(currentclientSecret?.Value?.Value))
-                    // {
-                    //     logger.LogInformation("OpenIdConnect: Set client secret");
-                    //
-                    //     await client.SetSecretAsync(ClientSecret, request.ClientSecret);
-                    // }
+                    await Set(Instance, request.Instance);
                 }
                 catch (Exception e)
                 {
@@ -99,7 +86,9 @@ namespace Glow.Azure.AzureKeyVault
             }
             else
             {
+
                 logger.LogInformation("Skip setting openid connect values (AllowConfiguration = false)");
+                throw new BadRequestException("Not possible, editing is not enabled");
             }
 
             return Unit.Value;
