@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Glow.TypeScript;
 using OneOf;
 using Directory = System.IO.Directory;
 using File = System.IO.File;
@@ -10,7 +11,7 @@ namespace Glow.Core.Typescript
 {
     public static class RenderTypes
     {
-        public static void ToDisk(TypeCollection types, string path)
+        public static void ToDisk(TypeCollection types, string path, TsGenerationOptions? options)
         {
             if (!path.EndsWith("/"))
             {
@@ -23,11 +24,11 @@ namespace Glow.Core.Typescript
 
             foreach (Module v in modules)
             {
-                RenderModule(v, path);
+                RenderModule(v, path, options?.ApiOptions);
             }
         }
 
-        private static void RenderModule(Module module, string path)
+        private static void RenderModule(Module module, string path, ApiOptions? options)
         {
             if (module.Namespace == null)
             {
@@ -52,7 +53,13 @@ namespace Glow.Core.Typescript
 
             IEnumerable<IGrouping<string, Dependency>> dependencies = module.GetDependenciesGroupedByNamespace();
 
-            // builder.AppendLine(@"/* eslint-disable prettier/prettier */");
+            if(options?.ApiFileFirstLines!=null)
+            {
+                foreach (var line in options.ApiFileFirstLines)
+                {
+                    builder.AppendLine(line);
+                }
+            }
 
             foreach (IGrouping<string, Dependency> group in dependencies)
             {

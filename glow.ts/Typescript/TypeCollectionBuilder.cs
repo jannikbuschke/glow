@@ -305,13 +305,14 @@ namespace Glow.Core.Typescript
                 ? du.NameWithGenericArguments.Replace("<T>", $"<{du.GenericArgumentsTsTypes.First().Name}>")
                 : elementTsType.Match(v1 => v1.Name, v2 => v2.Name);
 
+            List<TsType> genericArgumentTypes = elementTsType.IsT0 ? new[] { elementTsType.AsT0 }.ToList() : new();
             return new TsType
             {
                 Id = id,
                 Name = name + "[]",
                 Namespace = elementTypeNamespace,
                 DefaultValue = "[]",
-                GenericArgumentsTsTypes = new[] { elementTsType.AsT0 }.ToList(),
+                GenericArgumentsTsTypes = genericArgumentTypes,
                 Properties = new List<Property>(),
                 IsCollection = true,
                 IsGeneric = true,

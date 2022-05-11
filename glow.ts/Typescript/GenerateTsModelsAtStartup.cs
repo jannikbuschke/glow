@@ -94,7 +94,7 @@ namespace Glow.Core.Typescript
 
                 Console.WriteLine(path);
                 TypeCollection typeCollection = builder.Generate(option.Update);
-                RenderTypes.ToDisk(typeCollection, path);
+                RenderTypes.ToDisk(typeCollection, path, option);
                 RenderApi.Render(typeCollection, option);
             }
 
