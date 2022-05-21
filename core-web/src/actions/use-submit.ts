@@ -148,7 +148,7 @@ function camelize(str: string) {
     .map((v) => {
       if (v.endsWith("]") && v.includes("[")) {
         const split = v.split("[")
-        return `${_camelize(split[0])}[${split[1]}`
+        return `${_camelize(split[0]!)}[${split[1]}`
       } else {
         return _camelize(v)
       }

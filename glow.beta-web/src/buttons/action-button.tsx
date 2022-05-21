@@ -1,7 +1,7 @@
 import * as React from "react"
 import { Button, notification } from "antd"
 import { ButtonProps } from "antd/lib/button"
-import { Result, useAction } from "glow-core/es/actions/use-submit"
+import { Result, useAction } from "glow-core"
 import { notifyError } from "glow-core"
 
 export * from "./promise-button"

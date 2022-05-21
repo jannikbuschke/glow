@@ -5,7 +5,7 @@ import {
   UseQueryOptions,
   UseQueryResult,
 } from "react-query"
-import { useFetchJson } from "glow-core/es/actions/fetch"
+import { useFetchJson } from "glow-core"
 import { OrderBy, Query, QueryResult, Where } from "../ts-models"
 
 type GlowOptions<T> = GlowGetOptions | GlowPostOptions<T>

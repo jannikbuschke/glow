@@ -80,7 +80,10 @@ export function SelectEntity<T>({
       )
         .then((v) => {
           if (v.value.length === 1) {
-            setFieldValue(v.value.map(map)[0])
+            const x = v.value.map(map)[0]
+            if (x) {
+              setFieldValue(x)
+            }
           }
         })
         .catch((v) => {

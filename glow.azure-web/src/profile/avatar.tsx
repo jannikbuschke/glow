@@ -2,7 +2,7 @@ import * as React from "react"
 import { useProfile } from "./use-profile"
 import { Avatar as AntAvatar } from "antd"
 import styled from "styled-components"
-import { ErrorBanner } from "glow-core/es/errors/error-banner"
+import { ErrorBanner } from "glow-core"
 
 export function CurrentUserAvatar({
   showDisplayName,

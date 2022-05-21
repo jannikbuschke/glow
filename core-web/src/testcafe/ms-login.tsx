@@ -1,3 +1,4 @@
+export const doExportSomething = {}
 // import { t } from "testcafe"
 // import { Selector } from "testcafe"
 

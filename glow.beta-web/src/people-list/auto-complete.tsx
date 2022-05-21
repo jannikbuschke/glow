@@ -97,6 +97,9 @@ export function UserName({
           }}
           onSelect={(v) => {
             const u = users[v.toString()]
+            if (!u) {
+              return
+            }
             const value = u.surname + ", " + u.givenName
             form.setFieldValue(path + "name", value)
             form.setFieldValue(path + "email", u.mail)

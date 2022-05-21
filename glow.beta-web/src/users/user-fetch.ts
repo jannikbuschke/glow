@@ -1,4 +1,4 @@
-import { fetchJson, useFetchJson } from "glow-core/es/actions/fetch"
+import { fetchJson, useFetchJson } from "glow-core"
 import { User } from "./user-select"
 
 // async function fetchUsers(search: string, customUrl?: string) {

@@ -13,3 +13,9 @@ export * from "./Formik/sortable-table"
 export * from "./antd/highlightable-row"
 export * from "./antd/styled-components"
 export * from "./layouts/master-detail-view"
+export * from "./application/update-openid-connect-options-view"
+
+export * from "./i18n/use-locale"
+export * from "./http/fetch-context"
+// to be removed
+export * from "./query/use-data"

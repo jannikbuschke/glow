@@ -2,7 +2,7 @@ import { Field, FormikProps } from "formik"
 import * as React from "react"
 import { ButtonProps } from "antd/lib/button"
 import { Button, message } from "antd"
-import { useFetch } from "glow-core/es/actions/fetch-context"
+import { useFetch } from "glow-core"
 
 type Props = {
   payload: any

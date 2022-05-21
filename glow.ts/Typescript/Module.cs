@@ -81,7 +81,7 @@ namespace Glow.Core.Typescript
             var all = new List<Dependency>();
             all.AddRange(directDependencies);
             all.AddRange(subDependencies);
-            Console.WriteLine($"deps {additionalDependencies.Count()}");
+            // Console.WriteLine($"deps {additionalDependencies.Count()}");
             all.AddRange(additionalDependencies);
 
             IEnumerable<Dependency> result = all

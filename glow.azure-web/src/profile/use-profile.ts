@@ -1,5 +1,5 @@
 import * as React from "react"
-import { useFetch } from "glow-core/es/actions/fetch-context"
+import { useFetch } from "glow-core"
 
 export function useProfile(expandScopes: boolean = true) {
   const [error, setError] = React.useState("")

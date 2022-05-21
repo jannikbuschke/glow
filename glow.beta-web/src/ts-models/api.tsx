@@ -3,7 +3,7 @@
 import * as React from "react"
 import { QueryOptions, UseQueryOptions } from "react-query"
 import { useApi, ApiResult, notifySuccess, notifyError } from "glow-core"
-import { useAction, useSubmit, UseSubmit, ProblemDetails } from "glow-core/es/actions/use-submit"
+import { useAction, useSubmit, UseSubmit, ProblemDetails } from "glow-core"
 import { Formik, FormikConfig, FormikFormProps } from "formik"
 import { Form } from "formik-antd"
 import * as Glow_Core_Application from "./Glow.Core.Application"

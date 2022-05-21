@@ -1,6 +1,6 @@
 import { Button } from "antd"
 import * as React from "react"
-import { useData } from "glow-core/es/actions/use-data"
+import { useData } from "glow-core"
 import { CurrentUserAvatar } from "./avatar"
 
 export function GraphProfileView() {

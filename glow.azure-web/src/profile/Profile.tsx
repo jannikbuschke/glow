@@ -1,6 +1,6 @@
 import * as React from "react"
 import { defaultProfile, useProfile } from "./use-profile"
-import { ErrorBanner } from "glow-core/es/errors/error-banner"
+import { ErrorBanner } from "glow-core"
 
 export function ProfileName() {
   const { profile, error } = useProfile()

@@ -1,4 +1,4 @@
-import { Result } from "glow-core/es/actions/use-submit"
+import { Result } from "glow-core"
 
 export type ActionProps<Input, Output> = {
   url: string

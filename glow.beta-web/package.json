@@ -2,13 +2,22 @@
   "name": "glow-beta",
   "version": "0.24.0-beta.0",
   "private": false,
+  "sideEffects": false,
   "files": [
-    "lib",
-    "es"
+    "package.json",
+    "lib"
   ],
-  "module": "./es/index.js",
-  "types": "./es/types.d.ts",
+  "type": "module",
+  "main": "./lib/index.umd.js",
+  "module": "./lib/index.js",
+  "types": "./lib/index.d.ts",
+  "exports": {
+    ".": "./lib/index.js",
+    "./es": "./lib/index.js"
+  },
   "scripts": {
+    "build:types": "tsc --build",
+    "build:vite": "vite build",
     "tsc": "tsc",
     "watch": "tsc --watch",
     "build": "tsc && tsc -p tsconfig.es.json",
@@ -20,9 +29,9 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "glow-core": "0.24.0-beta.0",
-    "react": "17.0.2",
-    "react-dom": "17.0.2",
+    "": "*",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
     "@types/react": "17.0.40",
     "@types/react-dom": "17.0.13",
     "formik-antd": "2.1.0-beta.5",

@@ -1,7 +1,7 @@
 import * as React from "react"
 import * as microsoftTeams from "@microsoft/teams-js"
 import { notification } from "antd"
-import { FetchContext } from "glow-core/es/actions/fetch-context"
+import { FetchContext } from "glow-core"
 
 const teamsInitialized = new Promise<string>((resolve, reject) => {
   console.log("init teams...")

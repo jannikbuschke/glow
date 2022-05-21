@@ -3,7 +3,7 @@ import * as React from "react"
 import { Field, FieldProps } from "formik"
 import { debounce } from "lodash"
 import { SelectProps } from "antd/lib/select"
-import { useFetch } from "glow-core/es/actions/fetch-context"
+import { useFetch } from "glow-core"
 
 type Props = {
   name: string

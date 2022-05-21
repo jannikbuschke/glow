@@ -6,8 +6,8 @@
     "lib",
     "es"
   ],
-  "module": "./es/index.js",
-  "types": "./es/types.d.ts",
+  "module": "./lib/index.js",
+  "types": "./lib/types.d.ts",
   "scripts": {
     "tsc": "tsc",
     "watch": "tsc --watch",
@@ -20,8 +20,8 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "react": "17.0.2",
-    "react-dom": "17.0.2",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
     "@types/react": "17.0.40",
     "@types/react-dom": "17.0.13",
     "formik": "2.2.9",

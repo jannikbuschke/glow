@@ -5,7 +5,7 @@ import { useField, useFormikContext } from "formik"
 import debounce from "lodash.debounce"
 import { SelectProps } from "antd/lib/select"
 import styled from "styled-components"
-import { fetchJson } from "glow-core/es/actions/fetch"
+import { fetchJson } from "glow-core"
 
 export interface User {
   id: string | null
@@ -129,6 +129,9 @@ export function UserSelect<T = any>({
           })
         } else {
           const user = users[id]
+          if (!user) {
+            return
+          }
           if (setByReference) {
             form.setFieldValue(name, user.id)
           } else {

@@ -1,9 +1,9 @@
 import { Modal, Spin, Table, Timeline } from "antd"
 import * as React from "react"
-import { ErrorBanner } from "glow-core/es/errors/error-banner"
+import { ErrorBanner } from "glow-core"
 import { useData } from "../query/use-data"
 import dayjs from "dayjs"
-import { RenderObject } from "glow-core/es/debugging"
+import { RenderObject } from "glow-core"
 
 export type AuditItem = {
   id: string

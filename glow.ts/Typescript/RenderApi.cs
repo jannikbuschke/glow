@@ -42,7 +42,7 @@ namespace Glow.Core.Typescript
             // allow adjusting?
             imports.AppendLine($@"import {{ useApi, ApiResult, notifySuccess, notifyError }} from ""{glowPath}""");
             imports.AppendLine(
-                $@"import {{ useAction, useSubmit, UseSubmit, ProblemDetails }} from ""{useSubmitPath}/actions/use-submit""");
+                $@"import {{ useAction, useSubmit, UseSubmit, ProblemDetails }} from ""{useSubmitPath}""");
             imports.AppendLine(@"import { Formik, FormikConfig, FormikFormProps } from ""formik""");
             imports.AppendLine(@"import { Form } from ""formik-antd""");
 
