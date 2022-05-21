@@ -1,35 +1,33 @@
 {
   "compilerOptions": {
-    "outDir": "./es",
-    "module": "esnext",
-    "target": "es6",
-    "lib": ["es6", "dom"],
-    "sourceMap": true,
-    "jsx": "react",
-    "skipLibCheck": true,
-    "moduleResolution": "node",
-    "rootDir": "src",
-    "forceConsistentCasingInFileNames": true,
-    "noImplicitReturns": true,
-    "noImplicitThis": true,
-    "noImplicitAny": true,
-    "importHelpers": true,
-    "strict": true,
-    "suppressImplicitAnyIndexErrors": true,
-    "noUnusedLocals": false,
+    "composite": true,
     "declaration": true,
+    "declarationDir": "lib",
+
+    "emitDeclarationOnly": false,
+    "rootDir": "src",
+
     "declarationMap": true,
-    "allowSyntheticDefaultImports": true
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "Node",
+    "resolveJsonModule": false,
+    "noFallthroughCasesInSwitch": false,
+    "noImplicitOverride": true,
+    "noUncheckedIndexedAccess": false,
+    "skipLibCheck": true,
+    "sourceMap": true,
+    "strict": true,
+    "noImplicitAny": false,
+
+    "allowJs": true,
+    "allowSyntheticDefaultImports": true,
+    "isolatedModules": true,
+    "jsx": "react-jsx",
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "module": "ESNext",
+    "target": "ESNext",
+    "outDir": "./lib"
   },
-  "exclude": [
-    "lib",
-    "node_modules",
-    "build",
-    "scripts",
-    "acceptance-tests",
-    "webpack",
-    "jest",
-    "src/setupTests.ts",
-    "es"
-  ]
+  "include": ["src"]
 }
