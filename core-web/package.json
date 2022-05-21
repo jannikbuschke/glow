@@ -2,13 +2,22 @@
   "name": "glow-core",
   "version": "0.24.0-beta.0",
   "private": false,
+  "sideEffects": false,
   "files": [
-    "lib",
-    "es"
+    "package.json",
+    "lib"
   ],
-  "module": "./es/index.js",
-  "types": "./es/types.d.ts",
+  "type": "module",
+  "main": "./lib/index.umd.js",
+  "module": "./lib/index.js",
+  "types": "./lib/index.d.ts",
+  "exports": {
+    ".": "./lib/index.js",
+    "./es": "./lib/index.js"
+  },
   "scripts": {
+    "build:types": "tsc --build",
+    "build:vite": "vite build",
     "tsc": "tsc",
     "watch": "tsc --watch",
     "build": "tsc && tsc -p tsconfig.es.json",
