@@ -65,7 +65,7 @@
     "@storybook/react": "6.3.12",
     "babel-loader": "8.0.6",
     "semantic-release": "17.4.7",
-    "glow-core": "0.24.0-beta.0",
+    "glow-core": "*",
     "@storybook/addon-a11y": "6.3.2",
     "@storybook/addon-docs": "6.3.2",
     "@storybook/addon-essentials": "6.3.2",
