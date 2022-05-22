@@ -11,10 +11,6 @@
   "main": "./lib/index.umd.js",
   "module": "./lib/index.js",
   "types": "./lib/index.d.ts",
-  "exports": {
-    ".": "./lib/index.js",
-    "./es": "./lib/index.js"
-  },
   "scripts": {
     "build:types": "tsc --build",
     "build:vite": "vite build",
@@ -25,7 +21,8 @@
     "prettier": "prettier --write src/**/*.* package.json",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook",
-    "semantic-release": "semantic-release"
+    "semantic-release": "semantic-release",
+    "clean": "rimraf node_modules"
   },
   "dependencies": {},
   "devDependencies": {

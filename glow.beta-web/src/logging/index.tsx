@@ -3,7 +3,7 @@ import styled, { keyframes } from "styled-components"
 // import { useNotifications } from "../notifications"
 import { useNotifications } from "glow-core"
 import * as emitt from "mitt"
-import { useLocalFeatures } from "glow-core"
+import { useLocalFeatures } from "glow-core/lib/feature-flags"
 
 export function LoggingView(props: React.HTMLAttributes<HTMLDivElement>) {
   const [features] = useLocalFeatures<{

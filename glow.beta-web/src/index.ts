@@ -21,3 +21,4 @@ export * from "./i18n/use-locale"
 export * from "./http/fetch-context"
 // to be removed
 export * from "./query/use-data"
+export * from "./auto-save/simple-auto-save"

@@ -23,7 +23,7 @@ namespace Glow.Core.Typescript
                 : "glow-core";
             var useSubmitPath = options.Assemblies.FirstOrDefault()?.FullName.StartsWith("Glow.Core") == true
                 ? ".."
-                : "glow-core/es";
+                : "glow-core";
 
             var imports = new StringBuilder();
 

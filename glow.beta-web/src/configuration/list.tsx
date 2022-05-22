@@ -10,8 +10,8 @@ import { constants } from "./constants"
 // import "../utils"
 import dayjs from "dayjs"
 
-var localizedFormat = require("dayjs/plugin/localizedFormat")
-dayjs.extend(localizedFormat)
+// var localizedFormat = require("dayjs/plugin/localizedFormat")
+// dayjs.extend(localizedFormat)
 
 interface AllConfigurationsListDto {
   id: string
