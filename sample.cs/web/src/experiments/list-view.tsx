@@ -3,7 +3,7 @@ import * as React from "react"
 import { Route, Routes } from "react-router"
 import { RoutedTabs, List } from "glow-core"
 import { ListViewItem } from "../ts-models"
-import { ListContext } from "glow-core/es/list/list-context"
+import { ListContext } from "glow-core/lib/list/list-context"
 
 export function ListViewExample() {
   return (

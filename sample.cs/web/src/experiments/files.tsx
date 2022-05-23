@@ -1,8 +1,8 @@
 import * as React from "react"
 import { Formik } from "formik"
 import { HtmlText, ErrorBanner } from "glow-core"
-import { useSubmit } from "glow-core/es/actions/use-submit"
-import { StageFiles, Files } from "glow-core/es/files/upload-files"
+import { useSubmit } from "glow-core/lib/actions/use-submit"
+import { StageFiles, Files } from "glow-core/lib/files/upload-files"
 import { Form, Input, SubmitButton } from "formik-antd"
 import { notification, Button, Card, Col, Table } from "antd"
 import {
@@ -13,9 +13,9 @@ import {
   Outlet,
   useNavigate,
 } from "react-router-dom"
-import { useData } from "glow-core/es/query/use-data"
-import { HighlightableRow } from "glow-core/es/antd/highlightable-row"
-import { ActionButton } from "glow-core/es/antd/action-button"
+import { useData } from "glow-core/lib/query/use-data"
+import { HighlightableRow } from "glow-core/lib/antd/highlightable-row"
+import { ActionButton } from "glow-core/lib/antd/action-button"
 import { ActionBar } from "../examples/layout"
 
 export function FilesExample() {

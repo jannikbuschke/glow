@@ -6,7 +6,7 @@ import {} from "@ant-design/icons";
 import styled from "styled-components";
 import { Formik } from "formik";
 import { Form } from "formik-antd";
-import { useSubmit } from "glow-core/es/actions/use-submit";
+import { useSubmit } from "glow-core/lib/actions/use-submit";
 
 interface Create$1 {}
 

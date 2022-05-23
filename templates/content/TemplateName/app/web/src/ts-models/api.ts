@@ -1,6 +1,6 @@
 import { QueryOptions } from "react-query"
 import { useApi, ApiResult } from "glow-core"
-import { useAction, useSubmit, UseSubmit } from "glow-core/es/Forms/use-submit"
+import { useAction, useSubmit, UseSubmit } from "glow-core/lib/Forms/use-submit"
 import * as TemplateName_Example from "./TemplateName.Example"
 
 type QueryInputs = {

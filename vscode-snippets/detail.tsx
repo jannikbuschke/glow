@@ -3,8 +3,8 @@ import { useParams } from "react-router";
 import {} from "@ant-design/icons";
 import { Formik } from "formik";
 import { Form, Input, SubmitButton } from "formik-antd";
-import { useSubmit } from "glow-core/es/actions/use-submit";
-import { useData } from "glow-core/es/query/use-data";
+import { useSubmit } from "glow-core/lib/actions/use-submit";
+import { useData } from "glow-core/lib/query/use-data";
 import { Container, Header } from "../layout";
 import { $1, default$1, Update$1 } from "../ts-models";
 

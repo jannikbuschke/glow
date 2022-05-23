@@ -2,10 +2,10 @@ import * as React from "react"
 import { useParams } from "react-router-dom"
 import { PageHeader } from "antd"
 import {} from "@ant-design/icons"
-import { MasterDetailView } from "glow-beta/es/layouts/master-detail-view"
+import { MasterDetailView } from "glow-beta/lib/layouts/master-detail-view"
 import { List } from "glow-beta"
 import { createBrowserHistory } from "history"
-import { ListContext } from "glow-beta/es/list/list-context"
+import { ListContext } from "glow-beta/lib/list/list-context"
 
 export function MasterDetailViewExample() {
   return (
