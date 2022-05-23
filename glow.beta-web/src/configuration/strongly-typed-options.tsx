@@ -1,5 +1,5 @@
 import * as React from "react"
-import { Formik } from "formik"
+import { Formik, FormikProps } from "formik"
 import { message, PageHeader, Button, Card, Tooltip, ColProps } from "antd"
 import {
   Input,
@@ -107,8 +107,12 @@ type BaseProps = {
   formikDebug?: boolean
   subHeader?: React.ReactElement
 }
+type ChildrenFunction = (f: FormikProps<any>) => React.ReactNode
 
-type WithChildren = BaseProps & { type: "children"; children: React.ReactNode }
+type WithChildren = BaseProps & {
+  type: "children"
+  children: React.ReactNode | ChildrenFunction
+}
 type WithEditors = BaseProps & {
   type?: "editors"
   overrideEditors?: { [key: string]: React.ReactNode }
@@ -188,7 +192,9 @@ export function StronglyTypedOptions({
               <br />
               <div style={containerStyles ? containerStyles : undefined}>
                 {children
-                  ? children
+                  ? typeof children === "function"
+                    ? children(f)
+                    : children
                   : data &&
                     Object.keys(data).map((v) => (
                       <Form.Item
