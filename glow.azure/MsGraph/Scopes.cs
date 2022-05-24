@@ -13,5 +13,7 @@ namespace Glow.MsGraph
         public const string TeamReadBasicAll = "Team.ReadBasic.All";
         public const string  ChannelReadBasicAll = "Channel.ReadBasic.All";
         public const string ChannelMessageSend = "ChannelMessage.Send";
+
+        public const string GroupMemberReadAll = "groupmember.read.all";
     }
 }
