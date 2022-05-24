@@ -1,23 +1,44 @@
-import { ThemeIcon, UnstyledButton, Group, Text } from "@mantine/core"
+import {
+  ThemeIcon,
+  UnstyledButton,
+  Group,
+  Text,
+  MantineSize,
+} from "@mantine/core"
 import { useMatch, useNavigate } from "react-router-dom"
-
-export function NavSideBar() {
-  return <div>sidebar</div>
-}
 
 export type MainLinkProps = {
   icon?: React.ReactNode
   color: string
   label: string
   to: string
+  size: MantineSize
+  padding?: number
 }
 
-export function MainLinks({ data }: { data: MainLinkProps[] }) {
-  const links = data.map((link) => <MainLink {...link} key={link.label} />)
+export function MainLinks({
+  data,
+  size = "xs",
+  padding = 1,
+}: {
+  data: MainLinkProps[]
+  size?: MantineSize
+  padding?: number
+}) {
+  const links = data.map((link) => (
+    <MainLink {...link} key={link.label} size={size} padding={padding} />
+  ))
   return <div>{links}</div>
 }
 
-export function MainLink({ icon, color, label, to }: MainLinkProps) {
+export function MainLink({
+  icon,
+  color,
+  label,
+  to,
+  size,
+  padding,
+}: MainLinkProps) {
   const matchPattern = to.endsWith("*")
     ? to
     : to.endsWith("/")
@@ -31,7 +52,7 @@ export function MainLink({ icon, color, label, to }: MainLinkProps) {
       sx={(theme) => ({
         display: "block",
         width: "100%",
-        padding: 4,
+        padding: padding,
         borderRadius: theme.radius.xs,
         color:
           theme.colorScheme === "dark" ? theme.colors.dark[0] : theme.black,
@@ -53,10 +74,10 @@ export function MainLink({ icon, color, label, to }: MainLinkProps) {
       })}
     >
       <Group>
-        <ThemeIcon color={color} variant="light" size="xl">
+        <ThemeIcon color={color} variant="light" size={size}>
           {icon}
         </ThemeIcon>
-        <Text size="xl">{label}</Text>
+        <Text size={size}>{label}</Text>
       </Group>
     </UnstyledButton>
   )
