@@ -4,29 +4,43 @@ import {
   Group,
   Text,
   MantineSize,
+  DefaultMantineColor,
 } from "@mantine/core"
+import { useState } from "react"
 import { useMatch, useNavigate } from "react-router-dom"
 
 export type MainLinkProps = {
   icon?: React.ReactNode
-  color: string
+  color?: DefaultMantineColor
   label: string
   to: string
-  size: MantineSize
+  size?: MantineSize
   padding?: number
+  borderRightSize?: number
 }
 
 export function MainLinks({
   data,
   size = "xs",
   padding = 1,
+  iconColor,
+  borderRightSize = 4,
 }: {
   data: MainLinkProps[]
   size?: MantineSize
   padding?: number
+  iconColor?: DefaultMantineColor
+  borderRightSize?: number
 }) {
   const links = data.map((link) => (
-    <MainLink {...link} key={link.label} size={size} padding={padding} />
+    <MainLink
+      {...link}
+      color={iconColor}
+      size={size}
+      padding={padding}
+      key={link.label}
+      borderRightSize={borderRightSize}
+    />
   ))
   return <div>{links}</div>
 }
@@ -38,6 +52,7 @@ export function MainLink({
   to,
   size,
   padding,
+  borderRightSize,
 }: MainLinkProps) {
   const matchPattern = to.endsWith("*")
     ? to
@@ -56,11 +71,16 @@ export function MainLink({
         borderRadius: theme.radius.xs,
         color:
           theme.colorScheme === "dark" ? theme.colors.dark[0] : theme.black,
-        backgroundColor: match !== null ? theme.colors.blue[1] : undefined,
+        backgroundColor:
+          match !== null
+            ? theme.colorScheme === "dark"
+              ? theme.colors.dark[3]
+              : theme.colors.blue[1]
+            : undefined,
         borderRight:
           match !== null
-            ? `2px solid ${theme.colors.blue[5]}`
-            : `2px solid ${
+            ? `${borderRightSize}px solid ${theme.colors.blue[5]}`
+            : `${borderRightSize}px solid ${
                 theme.colorScheme === "dark"
                   ? theme.colors.dark[6]
                   : theme.colors.gray[2]
