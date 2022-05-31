@@ -2,7 +2,7 @@ import { Select, Alert, Spin } from "antd"
 import * as React from "react"
 import { Field, FieldProps } from "formik"
 import { debounce } from "lodash"
-import { SelectProps } from "antd/lib/select"
+import { SelectProps } from "antd/es/select"
 import { useFetch } from "glow-core"
 
 type Props = {

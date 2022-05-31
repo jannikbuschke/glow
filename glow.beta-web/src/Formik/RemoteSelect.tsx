@@ -3,7 +3,7 @@ import { Select as $Select } from "formik-antd"
 import { FormikFieldProps } from "formik-antd/lib/FieldProps"
 import { Select, Alert, Spin } from "antd"
 import { debounce } from "lodash"
-import { SelectProps } from "antd/lib/select"
+import { SelectProps } from "antd/es/select"
 
 export const RemoteSelect = ({
   name,

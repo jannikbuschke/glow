@@ -1,6 +1,6 @@
 import { Input, Table } from "antd"
-import { InputProps } from "antd/lib/input"
-import { ColumnType, TablePaginationConfig, TableProps } from "antd/lib/table"
+import { InputProps } from "antd/es/input"
+import { ColumnType, TablePaginationConfig, TableProps } from "antd/es/table"
 import * as React from "react"
 import { useNavigate } from "react-router"
 import { HighlightableRow } from "../antd/highlightable-row"

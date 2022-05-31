@@ -4,7 +4,7 @@ import { schema, normalize } from "normalizr"
 import { useField } from "formik"
 import debounce from "lodash.debounce"
 import styled from "styled-components"
-import { SelectProps, SelectValue } from "antd/lib/select"
+import { SelectProps, SelectValue } from "antd/es/select"
 
 const entitySchema = new schema.Entity(
   "values",

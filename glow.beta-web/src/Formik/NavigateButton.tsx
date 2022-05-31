@@ -1,7 +1,7 @@
 import { Button } from "antd"
 import * as React from "react"
 import { Link } from "react-router-dom"
-import { ButtonProps } from "antd/lib/button"
+import { ButtonProps } from "antd/es/button"
 
 type Props = { to: string } & ButtonProps
 

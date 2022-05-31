@@ -6,8 +6,8 @@ import { Field, FieldProps } from "formik"
 // import debounce from "lodash.debounce"
 import { useTranslation } from "react-i18next"
 // import useSWR from "swr"
-import { InputProps } from "antd/lib/input"
-import { AutoCompleteProps } from "antd/lib/auto-complete"
+import { InputProps } from "antd/es/input"
+import { AutoCompleteProps } from "antd/es/auto-complete"
 
 const user = new schema.Entity("users")
 

@@ -2,7 +2,7 @@ import * as React from "react"
 import { notification, Popconfirm } from "antd"
 import { useAction } from "glow-core"
 import { notifyError } from "glow-core"
-import { PopconfirmProps } from "antd/lib/popconfirm"
+import { PopconfirmProps } from "antd/es/popconfirm"
 import { ActionProps } from "./shared"
 
 export * from "./promise-button"

@@ -1,5 +1,5 @@
 import * as React from "react"
-import { ButtonProps } from "antd/lib/button"
+import { ButtonProps } from "antd/es/button"
 import { Button, message } from "antd"
 import { postJson } from "glow-core"
 

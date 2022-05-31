@@ -1,6 +1,6 @@
 import { Field, FormikProps } from "formik"
 import * as React from "react"
-import { ButtonProps } from "antd/lib/button"
+import { ButtonProps } from "antd/es/button"
 import { Button, message } from "antd"
 import { useFetch } from "glow-core"
 

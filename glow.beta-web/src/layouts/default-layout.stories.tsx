@@ -1,7 +1,7 @@
 import * as React from "react"
 import { Menu, PageHeader, Tabs } from "antd"
 import { ApplicationLayout, DefaultHeader } from "./default-layout"
-import MenuItem from "antd/lib/menu/MenuItem"
+import MenuItem from "antd/es/menu/MenuItem"
 import styled from "styled-components"
 
 export default {

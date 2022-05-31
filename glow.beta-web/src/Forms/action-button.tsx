@@ -1,4 +1,4 @@
-import Button, { ButtonProps } from "antd/lib/button"
+import Button, { ButtonProps } from "antd/es/button"
 import * as React from "react"
 import { notifyError } from "glow-core"
 import { Result, useSubmit } from "glow-core"

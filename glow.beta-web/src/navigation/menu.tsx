@@ -1,8 +1,8 @@
 import { Menu, Tabs } from "antd"
 import * as React from "react"
 import { useNavigate, useParams } from "react-router"
-import { TabsProps } from "antd/lib/tabs"
-import { MenuProps } from "antd/lib/menu"
+import { TabsProps } from "antd/es/tabs"
+import { MenuProps } from "antd/es/menu"
 
 export function RoutedTabs({
   baseUrl,

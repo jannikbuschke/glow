@@ -18,7 +18,7 @@ import {
 } from "@dnd-kit/sortable"
 import * as React from "react"
 import { useField } from "formik"
-import { TableProps } from "antd/lib/table/Table"
+import { TableProps } from "antd/es/table/Table"
 import styled from "styled-components"
 
 type Props<RecordType extends object = any> = TableProps<RecordType> & {

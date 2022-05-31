@@ -1,6 +1,6 @@
 import * as React from "react"
 import { Upload, Button, notification } from "antd"
-import { UploadProps } from "antd/lib/upload"
+import { UploadProps } from "antd/es/upload"
 import { saveAs } from "file-saver"
 import { useField } from "formik"
 import { DeleteOutlined } from "@ant-design/icons"

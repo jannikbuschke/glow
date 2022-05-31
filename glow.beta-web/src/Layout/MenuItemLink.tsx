@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom"
 import * as React from "react"
 import { Menu } from "antd"
-import { MenuItemProps } from "antd/lib/menu/MenuItem"
+import { MenuItemProps } from "antd/es/menu/MenuItem"
 
 export const MenuItemLink = ({
   to,

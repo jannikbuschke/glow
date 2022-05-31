@@ -1,6 +1,6 @@
 import * as React from "react"
 import { notification, Popconfirm } from "antd"
-import { PopconfirmProps } from "antd/lib/popconfirm"
+import { PopconfirmProps } from "antd/es/popconfirm"
 
 export type PromisePopconfirmProps = Omit<PopconfirmProps, "onConfirm"> & {
   onConfirm: () => Promise<void>

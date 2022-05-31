@@ -2,8 +2,8 @@ import * as React from "react"
 import { Select } from "antd"
 import { useField } from "formik"
 import { useDebouncedCallback } from "use-lodash-debounce"
-import { SelectProps } from "antd/lib/select"
-import { LabeledValue } from "antd/lib/tree-select"
+import { SelectProps } from "antd/es/select"
+import { LabeledValue } from "antd/es/tree-select"
 import { QueryParameter, useGlowQuery } from "../query/use-data"
 
 export type SelectEntityProps<T> = {

@@ -1,6 +1,6 @@
 import * as React from "react"
 import { Button, notification } from "antd"
-import { ButtonProps } from "antd/lib/button"
+import { ButtonProps } from "antd/es/button"
 import { Result, useAction } from "glow-core"
 import { notifyError } from "glow-core"
 

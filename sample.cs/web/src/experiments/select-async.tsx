@@ -6,7 +6,7 @@ import { Form, FormikDebug } from "formik-antd"
 import { Formik } from "formik"
 import { User } from "../ts-models"
 import styled from "styled-components"
-import { LabeledValue } from "antd/lib/select"
+import { LabeledValue } from "antd/es/select"
 
 function Sample() {
   return (

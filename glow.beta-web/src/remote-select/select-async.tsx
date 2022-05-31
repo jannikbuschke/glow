@@ -3,8 +3,8 @@ import { Select } from "antd"
 import { schema, normalize } from "normalizr"
 import { useField } from "formik"
 import debounce from "lodash.debounce"
-import { SelectProps, SelectValue } from "antd/lib/select"
-import { LabeledValue } from "antd/lib/tree-select"
+import { SelectProps, SelectValue } from "antd/es/select"
+import { LabeledValue } from "antd/es/tree-select"
 
 export type SelectAsyncProps<T> = {
   name: string

@@ -3,7 +3,7 @@ import { Select, notification, Avatar } from "antd"
 import { schema, normalize } from "normalizr"
 import { useField, useFormikContext } from "formik"
 import debounce from "lodash.debounce"
-import { SelectProps } from "antd/lib/select"
+import { SelectProps } from "antd/es/select"
 import styled from "styled-components"
 import { fetchJson } from "glow-core"
 
