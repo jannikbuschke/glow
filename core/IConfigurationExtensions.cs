@@ -23,6 +23,11 @@ namespace Glow.Core
             return configuration.GetValue<string>("Global:IsDemo") == "true";
         }
 
+        public static bool ExposeLogs(this IConfiguration configuration)
+        {
+            return true;
+        }
+
         public static bool IsOldCodeEnabled(this IConfiguration cfg)
         {
             return cfg.GetValue<bool>("EnableOldCode");
