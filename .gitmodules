@@ -1,3 +1,6 @@
 [submodule "docs"]
 	path = docs
 	url = https://github.com/jannikbuschke/glow-docs
+[submodule "react-hexgrid"]
+	path = react-hexgrid
+	url = git@github.com:Hellenic/react-hexgrid.git

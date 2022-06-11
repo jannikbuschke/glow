@@ -48,7 +48,12 @@ export function useNotification<T>(
 
 export function NotificationsProvider({
   children,
-}: React.PropsWithChildren<{}>) {
+  requireLoggedIn = true,
+  disableLegacy = false,
+}: React.PropsWithChildren<{
+  requireLoggedIn?: boolean
+  disableLegacy?: boolean
+}>) {
   const { status } = useAuthentication()
   const [connectionClosed, setConnectionClosed] = React.useState(Math.random())
   const value = React.useMemo(
@@ -59,13 +64,14 @@ export function NotificationsProvider({
   )
   const { emitter } = value
   const connection = React.useMemo(() => {
-    if (status === "loggedIn") {
+    if (status === "loggedIn" || !requireLoggedIn) {
       const connection = new signalR.HubConnectionBuilder()
         .withUrl("/notifications")
         .configureLogging(signalR.LogLevel.Information)
         .build()
       return connection
     } else {
+      console.log("skip configuring connection (not logged in)")
       return null
     }
   }, [connectionClosed, status])
@@ -92,8 +98,8 @@ export function NotificationsProvider({
 
       //remove
       connection.on("message", (messageType: string, payload: any) => {
-        console.log(`emitting [[message]] ${messageType}`, payload)
-        console.log(messageType)
+        // console.log(`emitting [[message]] ${messageType}`, payload)
+        // console.log(messageType)
         emitter.emit(messageType, payload)
       })
 
@@ -101,10 +107,10 @@ export function NotificationsProvider({
       connection.on(
         "notification",
         (notificationType: string, notification: any) => {
-          console.log(
-            `emitting [[notification]] ${notificationType}`,
-            notification,
-          )
+          // console.log(
+          //   `emitting [[notification]] ${notificationType}`,
+          //   notification,
+          // )
           emitter.emit(notificationType, notification)
         },
       )
