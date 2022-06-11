@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import { SubjectDescriptor } from "./Microsoft.VisualStudio.Services.Common"
 import { defaultSubjectDescriptor } from "./Microsoft.VisualStudio.Services.Common"
 

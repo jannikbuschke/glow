@@ -2,12 +2,10 @@ using System;
 using System.IO;
 using Glow.Configurations;
 using Glow.Core.EfCore;
-using Jering.Javascript.NodeJS;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Serilog;
 using Serilog.Core;
 
@@ -37,13 +35,7 @@ public class Program
 
             Log.Information("Reconfigured logger");
 
-            IWebHost host = CreateWebHostBuilder(args).Build();
-
-            host.MigrateDatabase<DataContext>();
-
-            DataContext ctx = host.Services.GetRequiredService<DataContext>();
-            ctx.Portfolios.Add(new Files.Portfolio { DisplayName = "JBU" });
-            ctx.SaveChanges();
+            var host = CreateWebHostBuilder(args).Build();
 
             host.Run();
             return 0;

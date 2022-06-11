@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import { IdentityRef } from "./Microsoft.VisualStudio.Services.WebApi"
 import { defaultIdentityRef } from "./Microsoft.VisualStudio.Services.WebApi"
 

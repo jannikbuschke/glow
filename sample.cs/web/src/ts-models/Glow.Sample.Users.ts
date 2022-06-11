@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 export interface User {
   id: string | null
   displayName: string | null

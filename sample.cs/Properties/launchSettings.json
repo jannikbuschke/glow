@@ -3,9 +3,10 @@
     "sample": {
       "commandName": "Project",
       "launchBrowser": true,
-      "applicationUrl": "https://localhost:5002;",
+      "applicationUrl": "https://localhost:5004;",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
+        "ConnectionString": "User ID=postgres;Password=postgreS123asd123;Host=localhost;Port=5432;Database=treasure-island-dev;Pooling=true;Connection Lifetime=0;",
         "azdo:Pat": "jkqxb5xzk6l22j7dq7w63qw4gpzsy42tbzfhl5ir7dbb4a5qqnca"
       }
     }

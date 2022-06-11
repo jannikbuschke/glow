@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 export type Enum = "EnumVal1" | "EnumVal2"
 export const defaultEnum = "EnumVal1"
 export const EnumValues: { [key in Enum]: Enum } = {

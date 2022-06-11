@@ -21,12 +21,16 @@
   <!--  </ItemGroup>-->
 
   <ItemGroup>
-    <PackageReference Include="EFCoreSecondLevelCacheInterceptor" Version="3.2.0"/>
-    <PackageReference Include="Jering.Javascript.NodeJS" Version="6.0.1"/>
+    <PackageReference Include="Marten" Version="5.5.2" />
+
+    <PackageReference Include="EFCoreSecondLevelCacheInterceptor" Version="3.2.0" />
+    <PackageReference Include="Jering.Javascript.NodeJS" Version="6.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
+    <PackageReference Include="Spectre.Console" Version="0.44.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\glow.meta\glow.meta.csproj"/>
+    <ProjectReference Include="..\glow.meta\glow.meta.csproj" />
 
 <!--    <ProjectReference Include="..\core\glow.core.csproj"/>-->
 <!--    <ProjectReference Include="..\glow.azdo\glow.azdo.csproj"/>-->
@@ -36,7 +40,7 @@
 
   <Target Name="PublishRunWebpack" AfterTargets="ComputeFilesToPublish">
     <ItemGroup>
-      <DistFiles Include="$(SpaRoot)build\**; $(SpaRoot)build-ssr\**"/>
+      <DistFiles Include="$(SpaRoot)build\**; $(SpaRoot)build-ssr\**" />
       <ResolvedFileToPublish Include="@(DistFiles->'%(FullPath)')" Exclude="@(ResolvedFileToPublish)">
         <RelativePath>%(DistFiles.Identity)</RelativePath>
         <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
@@ -46,13 +50,13 @@
 
   <ItemGroup>
     <!-- Don't publish the SPA source files, but do show them in the project files list -->
-    <Content Remove="$(SpaRoot)**"/>
-    <None Remove="$(SpaRoot)**"/>
-    <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**"/>
+    <Content Remove="$(SpaRoot)**" />
+    <None Remove="$(SpaRoot)**" />
+    <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="./NodeRuntime/js/**" CopyToOutputDirectory="PreserveNewest"/>
+    <None Include="./NodeRuntime/js/**" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>

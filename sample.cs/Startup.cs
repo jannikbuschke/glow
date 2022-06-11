@@ -1,23 +1,24 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Security.Claims;
-using EFCoreSecondLevelCacheInterceptor;
-using Glow.Azdo.Authentication;
-using Glow.Configurations;
+using System.Reflection;
 using Glow.Core;
-using Glow.Core.EfCore;
-using Glow.Sample.Configurations;
-using Glow.Sample.Users;
-using Glow.Tests;
+using Glow.Core.Notifications;
+using Glow.Sample.TreasureIsland.Api;
+using Glow.Sample.TreasureIsland.Projections;
 using Glow.TypeScript;
-using Glow.Users;
 using Jering.Javascript.NodeJS;
+using Marten;
+using Marten.Events.Daemon.Resiliency;
+using Marten.Events.Projections;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Weasel.Core;
+using Weasel.Postgresql;
 
 namespace Glow.Sample;
 
@@ -25,6 +26,10 @@ public class Startup
 {
     private readonly IConfiguration configuration;
     private readonly IWebHostEnvironment env;
+
+    public class NotificationsHub : Hub
+    {
+    }
 
     public Startup(IConfiguration config, IWebHostEnvironment env)
     {
@@ -34,76 +39,68 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
+        var assemblies = new[] { Assembly.GetEntryAssembly(), typeof(Clocks.Clock).Assembly };
         services.AddGlowApplicationServices(assembliesToScan: new[] { typeof(Startup).Assembly, typeof(Clocks.Clock).Assembly });
+        // services.AddTypescriptGeneration(new TsGenerationOptions(){ Assemblies = new[] { Assembly.GetEntryAssembly()}, Path = "./web/src/ts-models/", GenerateApi = true });
+        //
+        // UserDto testUser = TestUsers.TestUser();
+        //
+        // services.AddAuthorization(options =>
+        // {
+        //     options.AddPolicy(Policies.Authorized, v =>
+        //     {
+        //         v.RequireAuthenticatedUser();
+        //     });
+        //     options.AddPolicy(Policies.Privileged, v =>
+        //     {
+        //         v.RequireAuthenticatedUser();
+        //         v.RequireClaim(ClaimTypes.NameIdentifier, testUser.Id);
+        //     });
+        // });
+        //
+        // services.AddTestAuthentication(testUser.Id, testUser.DisplayName, testUser.Email);
+        //
+        // services.Configure<SampleConfiguration>(configuration.GetSection("sample-configuration"));
 
-        UserDto testUser = TestUsers.TestUser();
-
-        services.AddAuthorization(options =>
-        {
-            options.AddPolicy(Policies.Authorized, v =>
-            {
-                v.RequireAuthenticatedUser();
-            });
-            options.AddPolicy(Policies.Privileged, v =>
-            {
-                v.RequireAuthenticatedUser();
-                v.RequireClaim(ClaimTypes.NameIdentifier, testUser.Id);
-            });
-        });
-
-        services.AddTestAuthentication(testUser.Id, testUser.DisplayName, testUser.Email);
-
-        services.Configure<SampleConfiguration>(configuration.GetSection("sample-configuration"));
-
-        services.AddEfConfiguration(options =>
-        {
-            //options.SetPartialReadPolicy("sample-configuration", "test-policy");
-            //options.SetPartialWritePolicy("sample-configuration", "test-policy");
-        }, new[] { typeof(Startup).Assembly });
 
         // services.AddMediatR(typeof(Startup), typeof(Clocks.Clock));
         // services.AddAutoMapper(cfg => { cfg.AddCollectionMappers(); }, typeof(Startup));
 
-        // services.AddDbContext<DataContext>(options =>
-        // {
-        //     options.UseSqlServer(
-        //         "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=glow-sample;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
-        //     options.EnableSensitiveDataLogging(true);
-        // });
-        var connectionString =
-            "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=glow-sample;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
-        services.AddAuthentication().AddAzdo(options =>
-        {
-            configuration.Bind("azdo", options);
-        }, DatabaseProvider.SqlServer, connectionString);
-
-        services.AddDbContextPool<DataContext>((serviceProvider, optionsBuilder) =>
-            optionsBuilder
-                .UseSqlServer(
-                    connectionString,
-                    sqlServerOptionsBuilder =>
-                    {
-                        sqlServerOptionsBuilder
-                            .CommandTimeout((int) TimeSpan.FromMinutes(3).TotalSeconds)
-                            .EnableRetryOnFailure();
-                    })
-                .AddInterceptors(serviceProvider.GetRequiredService<SecondLevelCacheInterceptor>()));
-        services.AddEFSecondLevelCache(options =>
-            options.UseMemoryCacheProvider().DisableLogging(false).UseCacheKeyPrefix("EF_")
-        );
 
         ApiOptions apiOptions = new() { ApiFileFirstLines = new List<string>(new[] { "/* eslint-disable prettier/prettier */" }) };
         services.AddTypescriptGeneration(new[]
         {
-            new TsGenerationOptions { Assemblies = new[] { this.GetType().Assembly }, Path = "./web/src/ts-models/", GenerateApi = true, ApiOptions = apiOptions }
+            new TsGenerationOptions { Assemblies = new[] { this.GetType().Assembly }, Path = "./web/src/ts-models/", GenerateApi = true, GenerateSubscriptions = true, ApiOptions=apiOptions}
         });
 
+        services.AddHostedService<DungeonWorker>();
         services.AddNodeJS();
         // services.Configure<NodeJSProcessOptions>(options => options.ProjectPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "NodeRuntime","js")); // AppDomain.CurrentDomain.BaseDirectory is your bin/<configuration>/<targetframework> directory
         services.Configure<NodeJSProcessOptions>(options =>
             options.ProjectPath =
                 Path.Combine(env.ContentRootPath, "MdxBundle", "js"));
-        // AppDomain.CurrentDomain.BaseDirectory is your bin/<configuration>/<targetframework> directory
+
+        services
+            .AddMarten(sp =>
+            {
+                var v = new StoreOptions();
+                v.AutoCreateSchemaObjects = AutoCreate.All;
+                v.Connection(configuration.GetValue<string>("ConnectionString"));
+                v.Projections.SelfAggregate<Player>(ProjectionLifecycle.Inline);
+                v.Projections.SelfAggregate<Game>(ProjectionLifecycle.Inline);
+                var logger = sp.GetService<ILogger<MartenSubscription>>();
+                v.Projections.Add(
+                    new MartenSubscription(new[] { new MartenSignalrConsumer(sp) }, logger),
+                    ProjectionLifecycle.Async,
+                    "customConsumer"
+                );
+                return v;
+            })
+            .UseLightweightSessions()
+            // Run the asynchronous projections in this node
+            .AddAsyncDaemon(DaemonMode.Solo);
+
+        services.AddGlowNotifications<NotificationsHub>();
     }
 
     public void Configure(
@@ -111,13 +108,18 @@ public class Startup
         IWebHostEnvironment env
     )
     {
-        app.UseCors(options =>
-        {
-            options.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin();
-        });
+        // app.UseCors(options =>
+        // {
+        //     options.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin();
+        // });
         app.UseGlow(env, configuration, options =>
         {
-            options.SpaDevServerUri = "http://localhost:3001";
+            options.SpaDevServerUri = "http://localhost:3004";
+        });
+        app.UseEndpoints(routes =>
+        {
+            // routes.MapControllers();
+            routes.MapHub<NotificationsHub>("/notifications");
         });
     }
 }

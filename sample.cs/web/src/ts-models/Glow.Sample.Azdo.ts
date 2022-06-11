@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import { GitCommit, GitCommitRef, GitCommitChanges } from "./Microsoft.TeamFoundation.SourceControl.WebApi"
 import { defaultGitCommit, defaultGitCommitRef, defaultGitCommitChanges } from "./Microsoft.TeamFoundation.SourceControl.WebApi"
 
