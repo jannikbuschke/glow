@@ -43,7 +43,7 @@
     "react-query": "3.4.0",
     "react-use": "17.1.0",
     "normalizr": "3.6.1",
-    "mitt": "1.2.0",
+    "mitt": "3.0.0",
     "i18next": "19.0.0",
     "i18next-browser-languagedetector": "4.0.1",
     "react-i18next": "11.0.1",

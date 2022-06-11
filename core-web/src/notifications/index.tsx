@@ -6,7 +6,7 @@ import { useAuthentication } from "../authentication"
 import { notification } from "antd"
 
 interface INotificationsContext {
-  emitter: mitt.Emitter
+  emitter: emitt.Emitter<any>
 }
 
 const NotificationsContext = React.createContext<INotificationsContext>(
