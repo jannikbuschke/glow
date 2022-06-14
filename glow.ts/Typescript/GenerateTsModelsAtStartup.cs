@@ -44,7 +44,7 @@ namespace Glow.Core.Typescript
                 catch (Exception e)
                 {
                     Console.WriteLine("Error while generating types " + e.Message);
-                    logger.LogError(e, "Error while generating TS client code");
+                    logger.LogError(e, "Error while generating TS client code for module " + option.Path);
                 }
             }
         }
@@ -68,7 +68,6 @@ namespace Glow.Core.Typescript
             foreach (var type in profiles)
             {
                 builder.AddRange(type.Types);
-
             }
 
             IEnumerable<Type> additionalTypes = option.Assemblies
@@ -93,9 +92,33 @@ namespace Glow.Core.Typescript
                 var path = option.GetPath();
 
                 Console.WriteLine(path);
-                TypeCollection typeCollection = builder.Generate(option.Update);
-                RenderTypes.ToDisk(typeCollection, path, option);
-                RenderApi.Render(typeCollection, option);
+                try
+                {
+                    TypeCollection typeCollection = builder.Generate(option.Update);
+                    try
+                    {
+                        RenderTypes.ToDisk(typeCollection, path, option);
+                        try
+                        {
+                            RenderApi.Render(typeCollection, option);
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine("error while rendering api");
+                            throw;
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("error while rendering types");
+                        throw;
+                    }
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("error while generating types");
+                    throw;
+                }
             }
 
             return Task.CompletedTask;

@@ -64,7 +64,15 @@ namespace Glow.Core.Typescript
             foreach (Type type in types)
             {
                 visited.Clear();
-                OneOf<TsType, TsEnum> result = CreateOrGet(type);
+                try
+                {
+
+                    OneOf<TsType, TsEnum> result = CreateOrGet(type);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Could not generate ts type for " + type.FullName);
+                }
             }
 
             var collection = new TypeCollection { Types = tsTypes, Enums = tsEnums };
