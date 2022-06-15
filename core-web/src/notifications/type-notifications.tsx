@@ -3,50 +3,63 @@ import * as signalR from "@aspnet/signalr"
 import mitt from "mitt"
 import * as emitt from "mitt"
 import { useAuthentication } from "../authentication"
-import { notification } from "antd"
 
-interface INotificationsContext {
-  emitter: mitt.Emitter
+interface INotificationsContext<
+  Events extends Record<emitt.EventType, unknown>
+> {
+  emitter: emitt.Emitter<Events>
 }
 
-const NotificationsContext = React.createContext<INotificationsContext>(
+const NotificationsContext = React.createContext<INotificationsContext<any>>(
   null as any,
 )
 
-export interface Message {
-  kind: string
-  payload: { entityName: string; operation: string }
-}
-
-export function useNotifications() {
+export function useNotifications<
+  Events extends Record<emitt.EventType, unknown>
+>() {
   const ctx = React.useContext(NotificationsContext)
   if (!ctx) {
     throw new Error(
       "cannot use useNotifications outside of NotificationsProvider",
     )
   }
-  return ctx
+  return ctx as INotificationsContext<Events>
 }
 
 // use
-export function useNotification<T>(
-  name: string,
-  callback: (notification: T) => void,
-  deps?: any[],
-) {
-  const { emitter } = useNotifications()
+export function useNotification<
+  Key extends emitt.EventType,
+  Events extends Record<Key, unknown>
+>(name: Key, callback: emitt.Handler<Events[Key]>, deps?: any[]) {
+  const { emitter } = useNotifications<Events>()
 
   React.useEffect(() => {
-    const msgName = name
-    const on = callback
-    emitter.on(msgName, on)
+    console.log("register handler for " + name)
+    emitter.on(name, callback)
     return () => {
-      emitter.off(msgName, on)
+      emitter.off(name, callback)
     }
   }, deps)
 }
 
-export function NotificationsProvider({
+export function useWildcardNotification<
+  Events extends Record<emitt.EventType, unknown>
+>(callback: emitt.WildcardHandler<Events>, deps?: any[]) {
+  const { emitter } = useNotifications<Events>()
+
+  React.useEffect(() => {
+    // const msgName = name
+
+    emitter.on("*", callback)
+    return () => {
+      emitter.off("*", callback)
+    }
+  }, deps)
+}
+
+export function TypedNotificationsProvider<
+  Events extends Record<emitt.EventType, unknown>
+>({
   children,
   requireLoggedIn = true,
   disableLegacy = false,
@@ -58,7 +71,7 @@ export function NotificationsProvider({
   const [connectionClosed, setConnectionClosed] = React.useState(Math.random())
   const value = React.useMemo(
     () => ({
-      emitter: mitt(),
+      emitter: mitt<Events>(),
     }),
     [],
   )
@@ -76,11 +89,18 @@ export function NotificationsProvider({
     }
   }, [connectionClosed, status])
 
+  const ref = React.useRef(0)
   React.useEffect(() => {
+    console.log("running effect")
     ;(async function setup() {
       if (connection === null) {
         return
       }
+      if (ref.current === 5) {
+        return
+      }
+      ref.current = 5
+
       connection.onclose((error) => {
         console.log("[[notifications]] closed", error)
         setTimeout(() => setConnectionClosed(Math.random()), 3000)
@@ -100,13 +120,15 @@ export function NotificationsProvider({
       connection.on("message", (messageType: string, payload: any) => {
         // console.log(`emitting [[message]] ${messageType}`, payload)
         // console.log(messageType)
-        emitter.emit(messageType, payload)
+        // emitter.emit(messageType, payload)
       })
 
+      console.log("add mitt emitter!!!!!!!!")
       // this is the new one
       connection.on(
         "notification",
         (notificationType: string, notification: any) => {
+          // console.log("emmit " + notificationType)
           // console.log(
           //   `emitting [[notification]] ${notificationType}`,
           //   notification,
@@ -122,20 +144,4 @@ export function NotificationsProvider({
       {children}
     </NotificationsContext.Provider>
   )
-}
-
-function BackgroundNotifications() {
-  useNotification(
-    "Gertrud.Generic.BackgroundQueueNotification",
-    (v: any) => {
-      if (process.env.NODE_ENV === "development") {
-        notification.info({ message: v.title, description: v.message })
-      } else {
-        // production code
-      }
-    },
-    [],
-  )
-
-  return null
 }

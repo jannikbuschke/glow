@@ -95,6 +95,7 @@ namespace Glow.Core.Typescript
                 {typeof(int), new Tuple<string, string>("number[]", "[]")},
                 {typeof(double), new Tuple<string, string>("number[]", "[]")},
                 {typeof(bool), new Tuple<string, string>("boolean[]", "[]")},
+                {typeof(Guid), new Tuple<string, string>("string[]"," []")}
             };
 
         public static readonly Dictionary<Type, Tuple<string, string>> primitives =

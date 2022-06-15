@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Glow.Core.Actions;
+using Glow.Ts.Events;
 using Glow.TypeScript;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore.Internal;
@@ -75,6 +76,9 @@ namespace Glow.Core.Typescript
                 builder.AddRange(type.Types);
             }
 
+            var events = option.Assemblies.GetEvents();
+            builder.AddRange(events);
+
             IEnumerable<Type> additionalTypes = option.Assemblies
                 .SelectMany(v => v.GetExportedTypes()
                     .Where(x => x.GetCustomAttributes(typeof(GenerateTsInterface), true).Any()));
@@ -116,6 +120,16 @@ namespace Glow.Core.Typescript
                     catch (Exception e)
                     {
                         Console.WriteLine("error while rendering types");
+                        throw;
+                    }
+
+                    try
+                    {
+                        RenderSubscrptions.Render(typeCollection, option);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("error while rendering subscriptions");
                         throw;
                     }
                 }

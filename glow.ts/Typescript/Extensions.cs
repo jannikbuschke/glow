@@ -14,6 +14,7 @@ namespace Glow.TypeScript
     {
         public string Path { get; set; }
         public bool GenerateApi { get; set; }
+        public bool GenerateSubscriptions { get; set; }
         public ApiOptions ApiOptions { get; set; }
         public Assembly[] Assemblies { get; set; }
         public Action<OneOf<TsType, TsEnum>> Update { get; set; }
