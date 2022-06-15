@@ -1,7 +1,7 @@
 # rimraf core-web/node_modules
 # rimraf core-web/package-lock.json
 
-$paths = @("core-web", "glow.azure-web", "glow.beta-web", ".")
+$paths = @("core-web", "glow.azure-web","glow.beta-web","glow.mantine-web", "glow.beta-web", ".", "sample.cs/web")
 # $paths = @("core-web")
 
 foreach ($path in $paths){
@@ -15,5 +15,5 @@ foreach ($path in $paths){
 
 echo "npm i"
 npm i
-echo "npm run boostrap"
-npm run bootstrap
+echo "npm run tsc"
+npm run tsc
