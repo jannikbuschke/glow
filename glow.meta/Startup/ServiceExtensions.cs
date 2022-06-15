@@ -1,5 +1,6 @@
 using System;
 using System.Reflection;
+using System.Text.Json.Serialization;
 using AutoMapper;
 using AutoMapper.EquivalencyExpression;
 using AutoMapper.Extensions.ExpressionMapping;
@@ -74,7 +75,11 @@ namespace Glow.Core
                 configuration.RootPath = "web/build";
             });
 
-            services.AddSignalR();
+            services.AddSignalR().AddJsonProtocol(v =>
+            {
+                v.PayloadSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+            });
+
             services.AddHttpClient();
             services.AddHttpContextAccessor();
             services.AddOptions();
