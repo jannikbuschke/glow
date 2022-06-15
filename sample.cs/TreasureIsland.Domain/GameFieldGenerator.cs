@@ -76,7 +76,7 @@ public static class GameFieldGenerator
             {
                 var material = tiles[random.Next(tiles.Count)];
 
-                hexas.Add(new Field(new Position(q, r, -q - r), material));
+                hexas.Add(Field.New(new Position(q, r, -q - r), material));
             }
         }
 
@@ -98,7 +98,7 @@ public static class GameFieldGenerator
             {
                 var material = pickRandomMaterial ? tiles[random.Next(tiles.Count)] : tiles[(q + r) % tiles.Count];
 
-                hexas.Add(new Field(new Position(q, r, -q - r), material));
+                hexas.Add(Field.New(new Position(q, r, -q - r), material));
             }
         }
 

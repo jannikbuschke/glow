@@ -5,7 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Glow.Core.Notifications;
 using Glow.Invoices.Api.Test;
-using Glow.Sample.TreasureIsland.Projections;
+using Glow.NotificationsCore;
 using Marten;
 using Marten.Events;
 using Marten.Events.Projections;
@@ -76,29 +76,31 @@ public class MartenSignalrConsumer : IMartenEventsConsumer
 
         var games = await session.Query<Game>().ToListAsync();
         var current = games.FirstOrDefault();
+        var svc = scope.GetService<IClientNotificationService>();
+
         if (current != null)
         {
             var playerIds = current.Players;
             var players = session.LoadMany<Player>(playerIds);
-            var notification = new CurrentGameState(current.Id, current.Items, players, current);
+            var dict = players.ToDictionary(v => v.Id, v => v);
+            var notification = new CurrentGameState(current.Id, dict, current);
 
-            var svc = scope.GetService<IClientNotificationService>();
             await svc.PublishNotification(notification);
         }
 
-        // foreach (var actions in streamActions)
-        // {
-        //     logger.LogInformation("publish stream actions");
-        //     foreach (var e in actions.Events)
-        //     {
-        //         // logger.LogInformation("publish event {@event}", e);
-        //
-        //         if (e.Data is IClientNotification clientNotification)
-        //         {
-        //             await svc.PublishNotification(clientNotification);
-        //         }
-        //     }
-        // }
+        foreach (var actions in streamActions)
+        {
+            logger.LogInformation("publish stream actions");
+            foreach (var e in actions.Events)
+            {
+                // logger.LogInformation("publish event {@event}", e);
+
+                if (e.Data is IClientNotification clientNotification)
+                {
+                    await svc.PublishNotification(clientNotification);
+                }
+            }
+        }
     }
 }
 

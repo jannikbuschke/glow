@@ -1,3 +1,11 @@
-namespace Glow.Sample.TreasureIsland.Domain;
+using System.Collections.Generic;
 
-public record Field(Position Position, Tile Tile);
+namespace Glow.Sample;
+
+public record Field(Position Position, Tile Tile, List<Item> Items)
+{
+    public static Field New(Position position, Tile tile)
+    {
+        return new Field(position, tile, new List<Item>());
+    }
+}

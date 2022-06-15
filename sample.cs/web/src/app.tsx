@@ -12,6 +12,7 @@ import {
   Divider,
   DefaultMantineColor,
   Global,
+  Tabs,
 } from "@mantine/core"
 import { Text } from "@mantine/core"
 import { MainLinks } from "glow-mantine"
@@ -23,14 +24,17 @@ import { FiSettings, FiUsers } from "react-icons/fi"
 import { BsCalendar3Week, BsUiChecks } from "react-icons/bs"
 import { IoAppsSharp } from "react-icons/io5"
 import { useToggle } from "react-use"
+import { RoutedTabs } from "glow-mantine/lib/routed-tabs"
 
 import {
   AuthenticationProvider,
   NotificationsProvider as GlowNotificationsProvider,
-  TypedNotificationsProvider,
   useNotification,
 } from "glow-core"
+import { TypedNotificationsProvider } from "glow-core/lib/notifications/type-notifications"
 import { GameCreated } from "./ts-models/Glow.Sample.TreasureIsland.Domain"
+import { Events } from "./ts-models/subscriptions"
+import { ArchiveIcon, PlayIcon } from "@modulz/radix-icons"
 
 const iconColor: DefaultMantineColor = "blue"
 
@@ -57,13 +61,15 @@ function Planner1Providers({ children }: { children: React.ReactElement }) {
         })}
       />
       <AuthenticationProvider>
-        <TypedNotificationsProvider requireLoggedIn={false} disableLegacy={true} >
-
-        {/* <GlowNotificationsProvider requireLoggedIn={false} disableLegacy={true}> */}
+        <TypedNotificationsProvider<Events>
+          requireLoggedIn={false}
+          disableLegacy={true}
+        >
+          {/* <GlowNotificationsProvider requireLoggedIn={false} disableLegacy={true}> */}
           <BaseSettings>{children}</BaseSettings>
-        {/* </GlowNotificationsProvider> */}
-      </AuthenticationProvider>
+          {/* </GlowNotificationsProvider> */}
         </TypedNotificationsProvider>
+      </AuthenticationProvider>
     </>
   )
 }
@@ -89,7 +95,7 @@ function Logger() {
 }
 
 function App() {
-  const [darkMode, toggleTheme] = useToggle(false)
+  const [darkMode, toggleTheme] = useToggle(true)
 
   return (
     <Router>
@@ -106,97 +112,29 @@ function App() {
             // spacing: { xs: 15, sm: 20, md: 25, lg: 30, xl: 40 },
           }}
         >
-          <NotificationsProvider position="top-right">
+          <NotificationsProvider position="bottom-center">
+            <RoutedTabs
+              position="center"
+              tabs={[
+                { label: "Join", tabKey: "join" },
+                { label: "Game", tabKey: "game", icon: <PlayIcon /> },
+                {
+                  label: "Admin",
+                  tabKey: "admin",
+                  icon: <PlayIcon />,
+                },
+              ]}
+            />
+            {/* <Tabs position="center">
+              <Tabs.Tab label="Join" icon={<PlayIcon />}>
+                Gallery tab content
+              </Tabs.Tab>
+              <Tabs.Tab label="Game" icon={<FiSettings />}>
+                Gallery tab content
+              </Tabs.Tab>
+            </Tabs> */}
             <AppShell
-              padding="md"
-              navbar={
-                <Navbar width={{ base: 250, xs: 250 }}>
-                  {/* Navbar content */}
-                  {/* First section with normal height (depends on section content) */}
-                  <Navbar.Section p={16}>
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                      }}
-                    >
-                      {/* <img
-                            src={logo_lang}
-                            style={{
-                              height: "30px",
-                              width: "auto",
-                            }}
-                          /> */}
-
-                      {/* <Sun
-                          cursor={"pointer"}
-                          color={darkMode ? "white" : "black"}
-                          onClick={() => toggleTheme()}
-                        /> */}
-                    </div>
-                  </Navbar.Section>
-                  <Divider size="sm" style={{ marginTop: "0px" }} />
-
-                  {/* Grow section will take all available space that is not taken by first and last sections */}
-                  <Navbar.Section grow style={{}}>
-                    <MainLinks
-                      size="md"
-                      padding={12}
-                      borderRightSize={2}
-                      iconColor={iconColor}
-                      data={[
-                        {
-                          icon: <IoAppsSharp />,
-                          label: "Join",
-                          to: "/join",
-                        },
-                        // {
-                        //   icon: <BsCalendar3Week />,
-                        //   label: "Sitzungen",
-                        //   to: "/meetings",
-                        // },
-                        // {
-                        //   icon: <FaVoteYea />,
-                        //   label: "Umlaufbeschlüsse",
-                        //   to: "/circular-resolutions",
-                        // },
-                        // {
-                        //   icon: <FiUsers />,
-                        //   label: "Vorstände und Profile",
-                        //   to: "/committees",
-                        // },
-                        // {
-                        //   icon: <FaTasks />,
-                        //   color: "blue",
-                        //   size: "lg",
-                        //   label: "Tasks",
-                        //   to: "/tasks",
-                        // },
-                        {
-                          icon: <FiSettings />,
-                          label: "Einstellungen",
-                          to: "/settings",
-                        },
-                        // { icon: undefined, color: "violet", label: "Discussions" },
-                        // { icon: undefined, color: "grape", label: "Databases" },
-                      ]}
-                    />
-                  </Navbar.Section>
-                  <Divider
-                    size="sm"
-                    style={{ marginTop: "0px", marginBottom: "13px" }}
-                  />
-
-                  {/* Grow section will take all available space that is not taken by first and last sections */}
-                  {/* <Navbar.Section grow>
-                      <SidebarUserProfile />
-                    </Navbar.Section> */}
-
-                  {/* Last section with normal height (depends on section content) */}
-                  {/* <Navbar.Section>Last section</Navbar.Section> */}
-                </Navbar>
-              }
+              padding={0}
               // header={
               //   <Header height={60} p="xs">
               //     {/* Header content */}

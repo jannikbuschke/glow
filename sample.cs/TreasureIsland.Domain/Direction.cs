@@ -1,4 +1,4 @@
-namespace Glow.Sample.TreasureIsland.Domain;
+namespace Glow.Sample;
 
 public record Direction(int R, int Q, int S)
 {

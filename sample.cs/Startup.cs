@@ -5,7 +5,6 @@ using System.Reflection;
 using Glow.Core;
 using Glow.Core.Notifications;
 using Glow.Sample.TreasureIsland.Api;
-using Glow.Sample.TreasureIsland.Projections;
 using Glow.TypeScript;
 using Jering.Javascript.NodeJS;
 using Marten;
@@ -18,7 +17,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Weasel.Core;
-using Weasel.Postgresql;
 
 namespace Glow.Sample;
 

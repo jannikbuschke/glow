@@ -1,31 +1,26 @@
 ﻿using System;
 using Glow.NotificationsCore;
-using Glow.TypeScript;
 
-namespace Glow.Sample.TreasureIsland.Domain;
+namespace Glow.Sample;
 
+public record PlayerHealed(int Health);
 
+public record ItemPicked(Item Item) : IClientNotification;
+public record ItemRemoved(Item Item, Position Position) : IClientNotification;
 
-[GenerateTsInterface]
-public record ItemPicked(Item Item);
+public record ItemDropped(Position Position, Item Item) : IClientNotification;
 
-[GenerateTsInterface]
-public record PlayerPickedItem(Position Position, Item Item, Guid PlayerId);
-
-[GenerateTsInterface]
-public record ItemDropped(Position Position, Item Item);
-
-[GenerateTsInterface]
 public record PlayerJoined(Guid PlayerId) : IClientNotification;
 
-[GenerateTsInterface]
-public record PlayerInitialized(Position Position) : IClientNotification;
+public record PlayerInitialized(Guid PlayerId, Position Position) : IClientNotification;
 
-[GenerateTsInterface]
-public record PlayerCreated(Guid Id, string Name, string Icon, Position Position) : IClientNotification;
+public record PlayerCreated(Guid Id, Guid GameId, string Name, string Icon) : IClientNotification;
 
-[GenerateTsInterface]
-public record PlayerMoved(Guid Id, Position Position) : IClientNotification;
+public record PlayerMoved(Guid PlayerId, Position OldPosition, Position Position) : IClientNotification;
+
+public record PlayerAttacked(Guid AttackingPlayer, Guid TargetPlayer, int Damage) : IClientNotification;
+
+public record DamageTaken(Guid AttackingPlayer, Guid TargetPlayer, int Damage) : IClientNotification;
 
 public enum GameMode
 {
@@ -37,17 +32,12 @@ public enum GameStatus
     Initializing = 1, Running = 2, Paused = 3, Ended = 4
 }
 
-[GenerateTsInterface]
-public record PlayerEnabledForWalk(): IClientNotification;
+public record PlayerEnabledForWalk() : IClientNotification;
 
-[GenerateTsInterface]
 public record GameCreated(Guid Id, GameField Field, GameMode Mode = GameMode.RoundBased) : IClientNotification;
 
-[GenerateTsInterface]
 public record GameStarted() : IClientNotification;
 
-[GenerateTsInterface]
 public record GameRestarted(GameField Field) : IClientNotification;
 
-[GenerateTsInterface]
 public record GameEnded() : IClientNotification;

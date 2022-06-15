@@ -1,3 +1,3 @@
-namespace Glow.Sample.TreasureIsland.Domain;
+namespace Glow.Sample;
 
 public record Position(int R, int Q, int S);

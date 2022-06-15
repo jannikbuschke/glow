@@ -1,4 +1,4 @@
-namespace Glow.Sample.TreasureIsland.Domain;
+namespace Glow.Sample;
 
 
 public record Tile(string Color, TileName Name, bool Walkable);

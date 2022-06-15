@@ -1,12 +1,12 @@
-import { Direction } from "./Glow.Sample.TreasureIsland.Domain"
-import { defaultDirection } from "./Glow.Sample.TreasureIsland.Domain"
+import { Direction } from "./Glow.Sample"
+import { defaultDirection } from "./Glow.Sample"
 
-export interface MovePlayer {
+export interface MoveOrAttack {
   id: string
   direction: Direction
 }
 
-export const defaultMovePlayer: MovePlayer = {
+export const defaultMoveOrAttack: MoveOrAttack = {
   id: "00000000-0000-0000-0000-000000000000",
   direction: {} as any,
 }

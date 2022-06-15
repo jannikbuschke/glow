@@ -7,16 +7,14 @@ using Glow.Core.Actions;
 using Glow.Core.Notifications;
 using Glow.Glue.AspNetCore;
 using Glow.Sample.TreasureIsland.Domain;
-using Glow.Sample.TreasureIsland.Projections;
 using Glow.Validation;
 using Marten;
-using Marten.Linq;
 using MediatR;
 
 namespace Glow.Sample.TreasureIsland.Api;
 
 [Action(Route = "api/ti/move-player", AllowAnonymous = true)]
-public record MovePlayer([NotEmpty] Guid Id, Direction Direction) : IRequest<Unit>;
+public record MoveOrAttack([NotEmpty] Guid Id, Direction Direction) : IRequest<Unit>;
 
 [Action(Route = "api/ti/restart-game", AllowAnonymous = true)]
 public record RestartGame() : IRequest<Unit>;
@@ -32,7 +30,7 @@ public record Join(Guid PlayerId, Guid GameId) : IRequest<Unit>;
 [Action(Route = "api/ti/get-players", AllowAnonymous = true)]
 public record GetPlayers() : IRequest<IEnumerable<Player>>;
 
-public class Handler : IRequestHandler<MovePlayer>,
+public class Handler : IRequestHandler<MoveOrAttack>,
                        IRequestHandler<RestartGame>,
                        IRequestHandler<Join, Unit>,
                        IRequestHandler<CreatePlayer, CreatePlayerResult>,
@@ -47,14 +45,74 @@ public class Handler : IRequestHandler<MovePlayer>,
         // this.notificationService = notificationService;
     }
 
-    public async Task<Unit> Handle(MovePlayer request, CancellationToken cancellationToken)
+    private void GenerateGameTickEvents(IReadOnlyList<Player> players, Game current)
+    {
+        foreach (var player in players)
+        {
+            var regen = player.Items.Sum(v => v.Regeneration);
+            session.Events.Append(player.Id, new PlayerHealed(regen));
+        }
+        if (Utils.Chance(0.25))
+        {
+            var position = current.Field.GetRandomPosition();
+            var item = Utils.GetRandomItem();
+            var itemDropped = new ItemDropped(position, item);
+
+            session.Events.Append(current.Id, itemDropped);
+        }
+    }
+
+    public async Task<Unit> Handle(MoveOrAttack request, CancellationToken cancellationToken)
     {
         var player = await session.LoadAsync<Player>(request.Id);
+        if (player == null) { throw new BadRequestException("Player not found"); }
+
+        var game = await session.LoadAsync<Game>(player.GameId);
+        if (game == null) { throw new BadRequestException("Game not found"); }
+
+        var players = await session.LoadManyAsync<Player>(game.Players);
+
         var newPosition = request.Direction.AddTo(player.Position);
-        session.Events.Append(request.Id, new PlayerMoved(request.Id, newPosition));
+
+        var field = game.Field.Fields.FirstOrDefault(v => v.Position == newPosition);
+        if (field == null) { throw new BadRequestException("Field not found"); }
+
+        if (!field.Tile.Walkable) { throw new BadRequestException("Field not walkable"); }
+
+        var targetPlayer = players.FirstOrDefault(v => v.Position == newPosition);
+        if (targetPlayer == null)
+        {
+            var e = new PlayerMoved(request.Id, player.Position, newPosition);
+
+            session.Events.Append(request.Id, e);
+
+            var newField = game.Field.Fields.FirstOrDefault(v => v.Position == newPosition);
+            if (newField != null && newField.Items.Count > 0)
+            {
+                var item = newField.Items.First();
+                var e1 = new ItemPicked(item);
+                session.Events.Append(request.Id, e1);
+                var e2 = new ItemRemoved(item, newField.Position);
+                session.Events.Append(game.Id, e2);
+            }
+        }
+        else
+        {
+            var baseAttack = player.BaseAttack;
+            var baseProtection = targetPlayer.BaseProtection;
+
+            var damage = Math.Min(0, baseAttack - baseProtection);
+            var e0 = new PlayerAttacked(request.Id, targetPlayer.Id, damage);
+            var e1 = new DamageTaken(request.Id, targetPlayer.Id, damage);
+            session.Events.Append(request.Id, e0);
+            session.Events.Append(targetPlayer.Id, e1);
+        }
 
         var nextPlayerId = player.Id;
         session.Events.Append(nextPlayerId, new PlayerEnabledForWalk());
+
+        GenerateGameTickEvents(players, game);
+
         await session.SaveChangesAsync();
 
         return Unit.Value;
@@ -86,7 +144,7 @@ public class Handler : IRequestHandler<MovePlayer>,
             } while (blockedPositions.Contains(p));
 
             blockedPositions.Add(p);
-            session.Events.Append(player.Id, new PlayerInitialized(p));
+            session.Events.Append(player.Id, new PlayerInitialized(player.Id, p));
         }
 
         session.Events.Append(game.Id, new GameRestarted(gameField));
@@ -114,15 +172,11 @@ public class Handler : IRequestHandler<MovePlayer>,
 
         var id = Guid.NewGuid();
 
-        var position = game.Field.GetRandomPosition();
-
-        var e1 = new PlayerCreated(id, request.Name, request.Icon, position);
+        var e1 = new PlayerCreated(id, game.Id, request.Name, request.Icon);
         session.Events.StartStream(id, e1);
         var e2 = new PlayerJoined(id);
         session.Events.Append(game.Id, e2);
         await session.SaveChangesAsync();
-        // await notificationService.PublishNotification(e1);
-        // await notificationService.PublishNotification(e2);
         return new CreatePlayerResult(id, game.Id);
     }
 

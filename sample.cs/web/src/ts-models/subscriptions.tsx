@@ -1,13 +1,9 @@
 // Assembly: Glow.Sample, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
 import * as React from "react"
-import { QueryOptions, UseQueryOptions } from "react-query"
-import { useApi, ApiResult, notifySuccess, notifyError } from "glow-core"
-import { useAction, useSubmit, UseSubmit, ProblemDetails } from "glow-core"
-import { Formik, FormikConfig, FormikFormProps } from "formik"
 import { Form } from "formik-antd"
-import mitt from "mitt"
-import * as Glow_Sample_TreasureIsland_Projections from "./Glow.Sample.TreasureIsland.Projections"
-import * as Glow_Sample_TreasureIsland_Domain from "./Glow.Sample.TreasureIsland.Domain"
+import mitt, { Handler, WildcardHandler } from "mitt"
+import { useNotification, useWildcardNotification } from "glow-core/lib/notifications/type-notifications"
+import * as Glow_Sample from "./Glow.Sample"
 import * as Glow_Sample_TreasureIsland_Api from "./Glow.Sample.TreasureIsland.Api"
 import * as Glow_Sample_Azdo from "./Glow.Sample.Azdo"
 import * as MediatR from "./MediatR"
@@ -17,19 +13,48 @@ import * as Microsoft_VisualStudio_Services_Common from "./Microsoft.VisualStudi
 import * as Microsoft_TeamFoundation_SourceControl_WebApi from "./Microsoft.TeamFoundation.SourceControl.WebApi"
 import * as Microsoft_TeamFoundation_Core_WebApi from "./Microsoft.TeamFoundation.Core.WebApi"
 
-
 export type Events = {
-  'Glow.Sample.TreasureIsland.Projections.CurrentGameState': Glow_Sample_TreasureIsland_Projections.CurrentGameState,
-  'Glow.Sample.TreasureIsland.Domain.PlayerJoined': Glow_Sample_TreasureIsland_Domain.PlayerJoined,
-  'Glow.Sample.TreasureIsland.Domain.PlayerInitialized': Glow_Sample_TreasureIsland_Domain.PlayerInitialized,
-  'Glow.Sample.TreasureIsland.Domain.PlayerCreated': Glow_Sample_TreasureIsland_Domain.PlayerCreated,
-  'Glow.Sample.TreasureIsland.Domain.PlayerMoved': Glow_Sample_TreasureIsland_Domain.PlayerMoved,
-  'Glow.Sample.TreasureIsland.Domain.PlayerEnabledForWalk': Glow_Sample_TreasureIsland_Domain.PlayerEnabledForWalk,
-  'Glow.Sample.TreasureIsland.Domain.GameCreated': Glow_Sample_TreasureIsland_Domain.GameCreated,
-  'Glow.Sample.TreasureIsland.Domain.GameStarted': Glow_Sample_TreasureIsland_Domain.GameStarted,
-  'Glow.Sample.TreasureIsland.Domain.GameRestarted': Glow_Sample_TreasureIsland_Domain.GameRestarted,
-  'Glow.Sample.TreasureIsland.Domain.GameEnded': Glow_Sample_TreasureIsland_Domain.GameEnded,
+  'Glow.Sample.ItemPicked': Glow_Sample.ItemPicked,
+  'Glow.Sample.ItemRemoved': Glow_Sample.ItemRemoved,
+  'Glow.Sample.ItemDropped': Glow_Sample.ItemDropped,
+  'Glow.Sample.PlayerJoined': Glow_Sample.PlayerJoined,
+  'Glow.Sample.PlayerInitialized': Glow_Sample.PlayerInitialized,
+  'Glow.Sample.PlayerCreated': Glow_Sample.PlayerCreated,
+  'Glow.Sample.PlayerMoved': Glow_Sample.PlayerMoved,
+  'Glow.Sample.PlayerAttacked': Glow_Sample.PlayerAttacked,
+  'Glow.Sample.DamageTaken': Glow_Sample.DamageTaken,
+  'Glow.Sample.PlayerEnabledForWalk': Glow_Sample.PlayerEnabledForWalk,
+  'Glow.Sample.GameCreated': Glow_Sample.GameCreated,
+  'Glow.Sample.GameStarted': Glow_Sample.GameStarted,
+  'Glow.Sample.GameRestarted': Glow_Sample.GameRestarted,
+  'Glow.Sample.GameEnded': Glow_Sample.GameEnded,
+  'Glow.Sample.CurrentGameState': Glow_Sample.CurrentGameState,
 }
 
-export const emitter = mitt<Events>();
+// export const emitter = mitt<Events>();
+
+type TagWithKey<TagName extends string, T> = {
+  [K in keyof T]: { [_ in TagName]: K } & T[K]
+}
+
+export type EventTable = TagWithKey<"url", Events>
+
+export function useSubscription<EventName extends keyof EventTable>(
+    name: EventName,
+    callback: Handler<Events[EventName]>,
+    deps?: any[],
+    ) {
+    const ctx = useNotification<EventName, Events>(name, callback, deps)
+    return ctx
+}
+
+export function useSubscriptions(
+  callback: WildcardHandler<Events>,
+  deps?: any[],
+) {
+  const ctx = useWildcardNotification<Events>(callback, deps)
+  return ctx
+}
+
+
 

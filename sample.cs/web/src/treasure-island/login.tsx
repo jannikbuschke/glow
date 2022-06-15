@@ -74,7 +74,7 @@ export function LoginView() {
       <TypedForm
         actionName="/api/ti/create-player"
         initialValues={{
-          name: "",
+          name: `Jannik-${Math.floor(Math.random() * avatare.length)}`,
           icon: avatare[Math.floor(Math.random() * avatare.length)]!,
         }}
         onError={(v) => {

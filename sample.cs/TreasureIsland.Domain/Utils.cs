@@ -26,7 +26,26 @@ public static class Utils
     private static List<Item> items = new()
     {
         // new Item("Coin", "🍕🍔🍟🌭🍿🥓🍓🍅🥭🍎🍉🍄🌶🍀❤🧡💛💚💥💢💫⛏🔨🪓🗡⚔🔪🏹🛡💣"),
-        new Item("Sword", "🗡"), new Item("Axe", "🪓"), new Item("Shield", "🛡"), new Item("Food", "🍓"),
+        new Item("Sword", "🗡", 0, new AttackModifier(3), new Protection(0)),
+        new Item("Sword", "🗡", 0, new AttackModifier(3), new Protection(0)),
+        new Item("Sword", "🗡", 0, new AttackModifier(3), new Protection(0)),
+        new Item("Sword", "🗡", 0, new AttackModifier(3), new Protection(0)),
+        new Item("Axe", "🪓", 0, new AttackModifier(2), new Protection(0)),
+        new Item("Double Sword", "🔪", 0, new AttackModifier(2), new Protection(0)),
+        new Item("Bow", "🏹", 0, new AttackModifier(5), new Protection(0)),
+        new Item("Knife", "⚔", 0, new AttackModifier(5), new Protection(0)),
+        new Item("Axe", "🪓", 0, new AttackModifier(2), new Protection(0)),
+        new Item("Axe", "🪓", 0, new AttackModifier(2), new Protection(0)),
+        new Item("Axe", "🪓", 0, new AttackModifier(2), new Protection(0)),
+        new Item("Amulet", "🥇", 3, new AttackModifier(0), new Protection(0)),
+        new Item("Amulet", "🥈", 2, new AttackModifier(0), new Protection(0)),
+        new Item("Amulet", "🥉", 1, new AttackModifier(0), new Protection(0)),
+        new Item("Shield", "🛡", 0, new AttackModifier(0), new Protection(3)),
+        new Item("Shield", "⛓", 0, new AttackModifier(0), new Protection(3)),
+        new Item("Amulet", "🏅", 1, new AttackModifier(0), new Protection(0)),
+        new Item("Amulet", "🎖", 2, new AttackModifier(0), new Protection(0)),
+        new Item("Amulet", "💍", 3, new AttackModifier(0), new Protection(0)),
+        // new Item("Food", "🍓"),
     };
 
     public static IEnumerable<Item> Get()
