@@ -158,9 +158,7 @@ module Agenda =
         task {
           let id = Guid.NewGuid()
           let session = store.OpenSession()
-          // session.Events.StartStream(typeof(Quest), questId, started, joined1);
           let meetingCreated: MeetingCreated = { Id = id; Name = "Meeting xy" }
-          //          let meetingCreatedEvent = ()
           let objects: obj [] = [| meetingCreated |]
 
           let state1 =

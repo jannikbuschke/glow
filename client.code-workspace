@@ -21,6 +21,12 @@
     },
     {
       "path": "glow-docs"
+    },
+    {
+      "path": "glow.mantine-web"
+    },
+    {
+      "path": "react-hexgrid"
     }
   ],
   "settings": {}
