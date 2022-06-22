@@ -35,6 +35,11 @@ namespace Glow.Core.Typescript
             // https://github.com/dotnet/runtime/issues/36063#issuecomment-671110933
             await Task.Yield();
 
+            await RenderTsCodeToDisk();
+        }
+
+        public async Task RenderTsCodeToDisk()
+        {
             foreach (TsGenerationOptions option in options)
             {
                 try

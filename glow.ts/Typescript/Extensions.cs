@@ -62,6 +62,11 @@ namespace Glow.TypeScript
             params TsGenerationOptions[] options
         )
         {
+            services.AddTransient<GenerateTsModelsAtStartupV2>(provider => new GenerateTsModelsAtStartupV2(
+                provider.GetService<IWebHostEnvironment>(),
+                options,
+                provider.GetService<ILogger<GenerateTsModelsAtStartupV2>>()
+            ));
             services.AddHostedService(provider => new GenerateTsModelsAtStartupV2(
                 provider.GetService<IWebHostEnvironment>(),
                 options,
