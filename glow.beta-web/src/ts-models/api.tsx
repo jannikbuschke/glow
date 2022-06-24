@@ -2,7 +2,7 @@
 // Assembly: glow.beta, Version=0.23.0.0, Culture=neutral, PublicKeyToken=null
 import * as React from "react"
 import { QueryOptions, UseQueryOptions } from "react-query"
-import { useApi, ApiResult, notifySuccess, notifyError } from "glow-core"
+import { useApi, ApiResult, useNotify } from "glow-core"
 import { useAction, useSubmit, UseSubmit, ProblemDetails } from "glow-core"
 import { Formik, FormikConfig, FormikFormProps } from "formik"
 import { Form } from "formik-antd"
@@ -84,6 +84,7 @@ export function TypedForm<ActionName extends keyof ActionTable>({
   onSuccess?: (payload: Outputs[ActionName]) => void
   onError?: (error: ProblemDetails) => void
 }) {
+  const { messageSuccess, notifyError } = useNotify()
   const [submit, validate] = useTypedAction<ActionName>(actionName)
   return (
     <Formik

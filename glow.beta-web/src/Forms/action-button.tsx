@@ -1,6 +1,6 @@
 import Button, { ButtonProps } from "antd/es/button"
 import * as React from "react"
-import { notifyError } from "glow-core"
+import { useNotify } from "glow-core"
 import { Result, useSubmit } from "glow-core"
 
 export type ActionButtonProps<T> = {
@@ -12,7 +12,7 @@ export type ActionButtonProps<T> = {
 export function ActionButton<T = any>(props: ActionButtonProps<T>) {
   const { url, payload, onResponse, ...buttonProps } = props
   const [submit, validate, { error, submitting }] = useSubmit(url)
-
+  const { notifyError } = useNotify()
   return (
     <Button
       {...buttonProps}

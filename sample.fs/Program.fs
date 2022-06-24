@@ -57,7 +57,11 @@ module Program =
     let assemblies = [| Assembly.GetEntryAssembly() |]
     services.AddGlowApplicationServices(null, null, assemblies)
 
-    services.AddTypescriptGeneration [| TsGenerationOptions(Assemblies = assemblies, Path = "./web/src/ts-models/", GenerateApi = true) |]
+    let firstLine = ResizeArray()
+    firstLine.Add("/* eslint-disable prettier/prettier */")
+    let apiOptions = ApiOptions(ApiFileFirstLines = firstLine)
+
+    services.AddTypescriptGeneration [| TsGenerationOptions(Assemblies = assemblies, Path = "./web/src/ts-models/", GenerateApi = true, ApiOptions = apiOptions) |]
 
     let authScheme =
       CookieAuthenticationDefaults.AuthenticationScheme

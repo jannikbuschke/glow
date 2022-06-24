@@ -6,7 +6,6 @@ import {
   MantineSize,
   DefaultMantineColor,
 } from "@mantine/core"
-import { useState } from "react"
 import { useMatch, useNavigate } from "react-router-dom"
 
 export type MainLinkProps = {

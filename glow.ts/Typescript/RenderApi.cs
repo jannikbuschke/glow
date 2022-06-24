@@ -40,7 +40,7 @@ namespace Glow.Core.Typescript
             imports.AppendLine(@"import * as React from ""react""");
             imports.AppendLine(@"import { QueryOptions, UseQueryOptions } from ""react-query""");
             // allow adjusting?
-            imports.AppendLine($@"import {{ useApi, ApiResult, notifySuccess, notifyError }} from ""{glowPath}""");
+            imports.AppendLine($@"import {{ useApi, ApiResult, useNotify }} from ""{glowPath}""");
             imports.AppendLine(
                 $@"import {{ useAction, useSubmit, UseSubmit, ProblemDetails }} from ""{useSubmitPath}""");
             imports.AppendLine(@"import { Formik, FormikConfig, FormikFormProps } from ""formik""");
@@ -185,6 +185,7 @@ export function TypedForm<ActionName extends keyof ActionTable>({
   onSuccess?: (payload: Outputs[ActionName]) => void
   onError?: (error: ProblemDetails) => void
 }) {
+  const { messageSuccess, notifyError } = useNotify()
   const [submit, validate] = useTypedAction<ActionName>(actionName)
   return (
     <Formik

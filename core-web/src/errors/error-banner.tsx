@@ -1,10 +1,17 @@
 import * as React from "react"
-import { Alert, message, notification } from "antd"
-import { ProblemDetails } from "../actions/use-submit"
+import { Alert } from "antd"
 import { RenderObject } from "../debugging"
+import { Alert as MantineAlert } from "@mantine/core"
+import { useGlowContext } from "../glow-provider"
+import {
+  messageSuccess,
+  notifyError,
+  notifyInfo,
+  notifySuccess,
+} from "./antd-notifies"
 
 export function WarningBanner({ message }: { message: any }) {
-  return render("warning", message)
+  return <Render type="warning" message={message} />
 }
 export function ErrorBanner({
   error,
@@ -13,21 +20,40 @@ export function ErrorBanner({
   error?: any
   message?: any
 }) {
-  return render("error", message || error)
+  return <Render type="error" message={message || error} />
 }
 
 export function InfoBanner({ message }: { message: any }) {
-  return render("info", message)
+  return <Render type="info" message={message} />
 }
 export function SuccessBanner({ message }: { message: any }) {
-  return render("success", message)
+  return <Render type="success" message={message} />
 }
 
-function render(
-  type: "error" | "info" | "warning" | "success",
-  msg: string | null | undefined | any,
-) {
-  return msg ? (
+function Render({
+  type,
+  message: msg,
+}: {
+  type: "error" | "info" | "warning" | "success"
+  message: string | null | undefined | any
+}) {
+  const { componentLibrary } = useGlowContext()
+  if (!msg) {
+    return null
+  }
+  const message = React.isValidElement(msg) ? (
+    msg
+  ) : typeof msg === "object" ? (
+    msg instanceof Error ? (
+      msg.message
+    ) : (
+      <RenderObject msg={msg} />
+    )
+  ) : (
+    msg.toString()
+  )
+
+  return componentLibrary === "antd" ? (
     <Alert
       type={type}
       message={
@@ -53,39 +79,24 @@ function render(
         marginBottom: 5,
       }}
     />
-  ) : null
+  ) : (
+    <MantineAlert
+      variant="filled"
+      color={
+        type === "error"
+          ? "red"
+          : type === "info"
+          ? "blue"
+          : type === "success"
+          ? "green"
+          : type === "warning"
+          ? "yellow"
+          : undefined
+      }
+    >
+      {message}
+    </MantineAlert>
+  )
 }
 
-export function notifyError(r: ProblemDetails | string) {
-  if (typeof r === "string") {
-    notification.error({ message: r })
-  } else {
-    if (r.title && r.detail) {
-      notification.error({
-        description: r.detail,
-        message: r.title,
-      })
-    } else {
-      notification.error({
-        message:
-          r.title && r.detail
-            ? r.title + ": " + r.detail
-            : r.title || r.detail || r.status,
-      })
-    }
-  }
-}
-
-export function notifySuccess(message?: string) {
-  notification.success({
-    message: message || "success",
-  })
-}
-
-export function messageSuccess(msg: React.ReactNode | string) {
-  message.success(msg)
-}
-
-export function notifyInfo(msg: React.ReactNode | string) {
-  notification.info({ message: msg })
-}
+// export { notifyError, notifySuccess, messageSuccess, notifyInfo }

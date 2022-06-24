@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Security.Claims;
 using EFCoreSecondLevelCacheInterceptor;
@@ -91,9 +92,10 @@ public class Startup
             options.UseMemoryCacheProvider().DisableLogging(false).UseCacheKeyPrefix("EF_")
         );
 
+        ApiOptions apiOptions = new() { ApiFileFirstLines = new List<string>(new[] { "/* eslint-disable prettier/prettier */" }) };
         services.AddTypescriptGeneration(new[]
         {
-            new TsGenerationOptions { Assemblies = new[] { this.GetType().Assembly }, Path = "./web/src/ts-models/", GenerateApi = true, }
+            new TsGenerationOptions { Assemblies = new[] { this.GetType().Assembly }, Path = "./web/src/ts-models/", GenerateApi = true, ApiOptions = apiOptions }
         });
 
         services.AddNodeJS();

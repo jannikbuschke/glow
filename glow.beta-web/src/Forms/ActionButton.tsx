@@ -46,7 +46,7 @@ export const ActionButton = ({
                   onSuccess()
                 }
               }
-            } catch (E) {
+            } catch (E: any) {
               message.error(E.toString())
             } finally {
               setLoading(false)

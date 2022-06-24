@@ -1,7 +1,7 @@
 import * as React from "react"
 import { notification, Popconfirm } from "antd"
 import { useAction } from "glow-core"
-import { notifyError } from "glow-core"
+import { useNotify } from "glow-core"
 import { PopconfirmProps } from "antd/es/popconfirm"
 import { ActionProps } from "./shared"
 
@@ -23,6 +23,7 @@ export function ActionPopconfirm<Input, Output>({
   ...props
 }: ActionPopconfirmProps<Input, Output>) {
   const [submit, , { submitting }] = useAction<Input, Output>(props.url)
+  const { notifyError } = useNotify()
 
   return (
     <Popconfirm
@@ -37,7 +38,7 @@ export function ActionPopconfirm<Input, Output>({
             onErrorResult && onErrorResult(response.error)
             !onErrorResult && notifyError(response.error)
           }
-        } catch (E) {
+        } catch (E: any) {
           onErrorResult && onErrorResult(E)
           !onErrorResult &&
             notification.error({ message: "An error occured:" + E.toString() })

@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Person } from "./Sample.Fs.Agenda"
 import { defaultPerson } from "./Sample.Fs.Agenda"
 

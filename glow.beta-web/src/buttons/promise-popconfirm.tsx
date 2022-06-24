@@ -20,7 +20,7 @@ export function PromisePopconfirm({
         setLoading(true)
         try {
           await onConfirm()
-        } catch (E) {
+        } catch (E: any) {
           notification.error({ message: "An error occured:" + E.toString() })
         } finally {
           setLoading(false)

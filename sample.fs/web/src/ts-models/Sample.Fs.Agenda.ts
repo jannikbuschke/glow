@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { FSharpOption } from "./Microsoft.FSharp.Core"
 import { defaultFSharpOption } from "./Microsoft.FSharp.Core"
 
