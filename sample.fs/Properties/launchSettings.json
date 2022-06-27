@@ -3,7 +3,7 @@
     "sample-fs": {
       "commandName": "Project",
       "launchBrowser": true,
-      "applicationUrl": "https://localhost:5002;",
+      "applicationUrl": "https://localhost:5004;",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "ConnectionString": "User ID=postgres;Password=xxx;Host=localhost;Port=5432;Database=xxxx;Pooling=true;Connection Lifetime=0;",
