@@ -17,40 +17,34 @@ import * as Microsoft_TeamFoundation_SourceControl_WebApi from "./Microsoft.Team
 import * as Microsoft_TeamFoundation_Core_WebApi from "./Microsoft.TeamFoundation.Core.WebApi"
 
 type QueryInputs = {
-  "/api/mdx/get-list": Glow_Sample_MdxBundle.GetMdxList,
-  "/api/mdx/get-single": Glow_Sample_MdxBundle.GetEntityViewmodel,
+  "/api/ti/get-players": Glow_Sample_TreasureIsland_Api.GetPlayers,
   "/azdo/get-commits": Glow_Sample_Azdo.GetCommits,
   "/azdo/get-items": Glow_Sample_Azdo.GetItems,
   "/azdo/get-item": Glow_Sample_Azdo.GetItem,
   "/azdo/get-projects": Glow_Sample_Azdo.GetProjects,
 }
 type QueryOutputs = {
-  "/api/mdx/get-list": Array<Glow_Sample_MdxBundle.Mdx>,
-  "/api/mdx/get-single": Glow_Sample_MdxBundle.MdxViewmodel,
+  "/api/ti/get-players": Array<Glow_Sample.Player>,
   "/azdo/get-commits": Array<Glow_Sample_Azdo.Commit>,
   "/azdo/get-items": Array<Microsoft_TeamFoundation_SourceControl_WebApi.GitItem>,
   "/azdo/get-item": Glow_Sample_Azdo.StringWrapper,
   "/azdo/get-projects": Array<Microsoft_TeamFoundation_Core_WebApi.TeamProjectReference>,
 }
 export type Outputs = {
-  "/api/actions/sample": MediatR.Unit,
-  "/api/actions/sample-2": Glow_Sample_Actions.Response,
-  "/api/form/create-user": MediatR.Unit,
-  "/api/mdx/create": Glow_Sample_MdxBundle.Mdx,
-  "/api/mdx/update": Glow_Sample_MdxBundle.Mdx,
+  "/api/ti/move-player": MediatR.Unit,
+  "/api/ti/restart-game": MediatR.Unit,
+  "/api/ti/create-player": Glow_Sample_TreasureIsland_Api.CreatePlayerResult,
+  "/api/ti/join": MediatR.Unit,
   "/azdo/create-library": Microsoft_TeamFoundation_DistributedTask_WebApi.VariableGroup,
   "/azdo/create-commit": Microsoft_TeamFoundation_SourceControl_WebApi.GitPush,
-  "/api/mdx/transpile": Glow_Sample_MdxBundle.TranspileResult,
 }
 export type Actions = {
-  "/api/actions/sample": Glow_Sample_Actions.SampleAction,
-  "/api/actions/sample-2": Glow_Sample_Actions.SampleAction2,
-  "/api/form/create-user": Glow_Sample_Forms.CreateUser,
-  "/api/mdx/create": Glow_Sample_MdxBundle.CreateMdx,
-  "/api/mdx/update": Glow_Sample_MdxBundle.UpdateMdx,
+  "/api/ti/move-player": Glow_Sample_TreasureIsland_Api.MoveOrAttack,
+  "/api/ti/restart-game": Glow_Sample_TreasureIsland_Api.RestartGame,
+  "/api/ti/create-player": Glow_Sample_TreasureIsland_Api.CreatePlayer,
+  "/api/ti/join": Glow_Sample_TreasureIsland_Api.Join,
   "/azdo/create-library": Glow_Sample_Azdo.CreateLibrary,
   "/azdo/create-commit": Glow_Sample_Azdo.CreatePullRequest,
-  "/api/mdx/transpile": Glow_Sample_MdxBundle.Transpile,
 }
 
 type TagWithKey<TagName extends string, T> = {

@@ -1,4 +1,4 @@
-import { notifyError, RenderObject, useNotification } from "glow-core"
+import { useNotify, RenderObject, useNotification } from "glow-core"
 import React from "react"
 import {
   HexGrid,
@@ -164,7 +164,7 @@ export function GameView() {
   )
 
   const [selected, setSelected] = React.useState<null | Position>(null)
-
+  const { notifyError } = useNotify()
   const handleClick: HexagonMouseEventHandler<SVGGElement> | undefined =
     React.useCallback(
       (e, h) => {

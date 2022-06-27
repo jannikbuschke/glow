@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 export interface SubjectDescriptor {
   subjectType: string | null
   identifier: string | null

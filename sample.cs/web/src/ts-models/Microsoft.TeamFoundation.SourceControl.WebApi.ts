@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { IdentityRef, ReferenceLinks, ResourceRef } from "./Microsoft.VisualStudio.Services.WebApi"
 import { defaultIdentityRef, defaultReferenceLinks, defaultResourceRef } from "./Microsoft.VisualStudio.Services.WebApi"
 import { TeamProjectReference, TeamProjectCollectionReference } from "./Microsoft.TeamFoundation.Core.WebApi"

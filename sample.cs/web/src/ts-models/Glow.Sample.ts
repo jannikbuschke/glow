@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 export type TileName = "Grass" | "Water" | "Mountain" | "Wood" | "Corn"
 export const defaultTileName = "Grass"
 export const TileNameValues: { [key in TileName]: TileName } = {

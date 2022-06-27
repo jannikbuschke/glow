@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 // Assembly: Glow.Sample, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
 import * as React from "react"
 import { Form } from "formik-antd"

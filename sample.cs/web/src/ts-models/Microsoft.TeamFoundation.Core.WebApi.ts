@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 export type ProjectState = "New" | "WellFormed" | "Deleting" | "CreatePending" | "Deleted" | "Unchanged" | "All"
 export const defaultProjectState = "New"
 export const ProjectStateValues: { [key in ProjectState]: ProjectState } = {

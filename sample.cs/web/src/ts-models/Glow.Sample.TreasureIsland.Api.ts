@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Direction } from "./Glow.Sample"
 import { defaultDirection } from "./Glow.Sample"
 
