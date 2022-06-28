@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using Glow.Core;
+using Glow.Core.Marten;
 using Glow.Core.Notifications;
 using Glow.Sample.TreasureIsland.Api;
 using Glow.TypeScript;

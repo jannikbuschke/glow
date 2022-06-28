@@ -40,6 +40,7 @@ export function ListError() {
 // }
 
 export type ListProps<RecordType extends { id: string } = any> = {
+  dataSource?: RecordType[]
   path?: string | ((v: RecordType) => string)
   listPath?: string
   onSelect?: (v: RecordType) => void
@@ -48,8 +49,9 @@ export type ListProps<RecordType extends { id: string } = any> = {
     key: string
     render: (item: RecordType) => React.ReactNode
     sortable?: boolean
+    visible?: boolean
   })[]
-  paginate?: boolean
+  paginate?: boolean | undefined
 } & Omit<
   TableProps<RecordType>,
   | "columns"
@@ -62,12 +64,66 @@ export type ListProps<RecordType extends { id: string } = any> = {
   | "pagination"
 >
 
+export function NavigateableTable<RecordType extends { id: string } = any>({
+  path,
+  dataSource,
+  listPath,
+  columns,
+  paginate,
+  onSelect,
+  ...props
+}: ListProps<RecordType>) {
+  const navigate = useNavigate()
+
+  return (
+    <InternalTable<RecordType>
+      elevated={true}
+      rowKey={(row) => row.id}
+      components={{
+        body: {
+          row: (props: any) => (
+            <HighlightableRow
+              path={listPath || typeof path === "string" ? path : undefined}
+              {...props}
+            />
+          ),
+        },
+      }}
+      onRow={(record) => ({
+        onClick: () => {
+          if (typeof path === "function") {
+            navigate(path(record))
+          } else if (path !== null && path !== undefined) {
+            navigate(path + record.id)
+          } else {
+            // do nothing
+          }
+          onSelect && onSelect(record)
+        },
+      })}
+      dataSource={dataSource}
+      pagination={paginate === true ? undefined : paginate}
+      columns={columns
+        ?.filter((v) => v.visible === undefined || v.visible === true)
+        .map(({ title, key, sortable, render, ...rest }) => ({
+          ...rest,
+          title,
+          key,
+          sorter: sortable,
+          render: (item, record) => render(record),
+        }))}
+      {...props}
+    />
+  )
+}
+
 export function List<RecordType extends { id: string } = any>({
   path,
   listPath,
   columns,
   onSelect,
   paginate = true,
+  dataSource,
   ...props
 }: ListProps<RecordType>) {
   const navigate = useNavigate()
