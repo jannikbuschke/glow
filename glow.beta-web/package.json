@@ -7,7 +7,6 @@
     "package.json",
     "lib"
   ],
-  "type": "module",
   "main": "./lib/index.umd.js",
   "module": "./lib/index.js",
   "types": "./lib/index.d.ts",
