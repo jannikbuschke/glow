@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <LangVersion>9.0</LangVersion>
+    <LangVersion>10.0</LangVersion>
     <PackageId>Glow.Core</PackageId>
     <AssemblyName>Glow.Core</AssemblyName>
     <RootNamespace>Glow</RootNamespace>
@@ -32,6 +32,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Marten" Version="5.5.2" />
+    <PackageReference Include="Marten.NodaTime" Version="5.1.0" />
     <PackageReference Include="MediatR" Version="8.1.0" />
     <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="8.0.0" />
     <PackageReference Include="AutoMapper" Version="10.0.0" />

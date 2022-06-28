@@ -6,57 +6,13 @@ using System.Threading.Tasks;
 using Glow.Core.Notifications;
 using Glow.Invoices.Api.Test;
 using Glow.NotificationsCore;
+using Glow.Sample;
 using Marten;
 using Marten.Events;
-using Marten.Events.Projections;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace Glow.Sample.TreasureIsland.Api;
-
-public class MartenSubscription : IProjection
-{
-    private readonly IEnumerable<IMartenEventsConsumer> consumers;
-    private readonly ILogger<MartenSubscription> logger;
-
-    public MartenSubscription(
-        IEnumerable<IMartenEventsConsumer> consumers,
-        ILogger<MartenSubscription> logger
-    )
-    {
-        this.consumers = consumers;
-        this.logger = logger;
-    }
-
-    public void Apply(
-        IDocumentOperations operations,
-        IReadOnlyList<StreamAction> streams
-    )
-    {
-        throw new NotImplementedException("Subscriptions should work only in the async scope");
-    }
-
-    public async Task ApplyAsync(
-        IDocumentOperations operations,
-        IReadOnlyList<StreamAction> streams,
-        CancellationToken ct
-    )
-    {
-        // logger.LogInformation("apply events in custom projection async");
-        try
-        {
-            foreach (var consumer in consumers)
-            {
-                await consumer.ConsumeAsync(operations, streams, ct);
-            }
-        }
-        catch (Exception exc)
-        {
-            logger.LogError("Error while processing Marten Subscription: {ExceptionMessage}", exc.Message);
-            throw;
-        }
-    }
-}
+namespace Glow.Core.Marten;
 
 public class MartenSignalrConsumer : IMartenEventsConsumer
 {
@@ -102,13 +58,4 @@ public class MartenSignalrConsumer : IMartenEventsConsumer
             }
         }
     }
-}
-
-public interface IMartenEventsConsumer
-{
-    Task ConsumeAsync(
-        IDocumentOperations documentOperations,
-        IReadOnlyList<StreamAction> streamActions,
-        CancellationToken ct
-    );
 }
