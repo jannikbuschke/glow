@@ -21,13 +21,13 @@ namespace Glow.MsGraph.Mails
         private static Func<Beta.Recipient, Recipient> ToV1Recipient = (x)=>
          new Recipient()
             {
-                EmailAddress = new() { Address = x.EmailAddress.Address, Name = x.EmailAddress.Name }
+                EmailAddress = new() { Address = x.EmailAddress.Address, Name = x.EmailAddress?.Name }
             };
 
         private static Func<Recipient, Beta.Recipient> ToBetaRecipient = (x)=>
             new Beta.Recipient()
             {
-                EmailAddress = new() { Address = x.EmailAddress.Address, Name = x.EmailAddress.Name }
+                EmailAddress = new() { Address = x.EmailAddress.Address, Name = x.EmailAddress?.Name }
             };
 
         public static Beta.Message FromV1Message(Message message)
