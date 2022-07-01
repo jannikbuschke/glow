@@ -21,9 +21,6 @@ export function NavTable<RecordType extends { id: string } = any>(
   ) : (
     <>
       <MantineNavTable {...props} />
-      <br />
-      <br />
-      <AntdNavTable {...props} />
     </>
   )
 }
