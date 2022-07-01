@@ -1,7 +1,7 @@
 import * as React from "react"
 import { FieldArray, FieldArrayRenderProps, useField } from "formik"
 
-export function MyFieldArray({
+export function MyFieldArray<RecordType = any>({
   name,
   renderItem,
   renderNewPlaceholder,
@@ -13,9 +13,10 @@ export function MyFieldArray({
     isLast: boolean,
     array: FieldArrayRenderProps,
     path: string,
+    item?: RecordType,
   ) => React.ReactNode
 }) {
-  const [field] = useField(name)
+  const [field] = useField<RecordType[]>(name)
 
   return (
     <FieldArray name={name}>
@@ -35,8 +36,8 @@ export function MyFieldArray({
               ),
             ])
         } else {
-          return value.map((_: any, i: number) =>
-            renderItem(i, false, array, name + "." + i + "."),
+          return value.map((value: any, i: number) =>
+            renderItem(i, false, array, name + "." + i + ".", value),
           )
         }
       }}
