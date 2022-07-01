@@ -24,10 +24,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Marten" Version="4.2.0" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\glow.meta\glow.meta.csproj"/>
 
 <!--    <ProjectReference Include="..\core\glow.core.csproj" />-->
