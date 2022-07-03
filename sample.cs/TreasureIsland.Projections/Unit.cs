@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Glow.Sample;
 
-public class Player
+public class Unit
 {
     public Guid Id { get; set; }
     public Guid GameId { get; set; }
@@ -19,6 +19,7 @@ public class Player
     public int BaseProtection { get; set; }
 
     public int Health { get; set; }
+    public bool IsAlive { get; set; }
 
     public void Apply(DamageTaken e)
     {
@@ -29,7 +30,7 @@ public class Player
         }
     }
 
-    public void Apply(PlayerCreated e)
+    public void Apply(UnitCreated e)
     {
         Id = e.Id;
         Name = e.Name;
@@ -45,13 +46,13 @@ public class Player
         Position = e.Position;
     }
 
-    public void Apply(PlayerMoved e)
+    public void Apply(UnitMoved e)
     {
         IsEnabledToWalk = false;
         Position = e.Position;
     }
 
-    public void Apply(PlayerEnabledForWalk e)
+    public void Apply(UnitEnabledForWalk e)
     {
         IsEnabledToWalk = true;
     }
@@ -62,5 +63,10 @@ public class Player
         BaseAttack = 1 + Items.Sum(v => v.AttackModifier.BaseAttack);
         BaseProtection = Items.Sum(v => v.Protection.BaseDamageReduction);
         RegenRate = Items.Sum(v => v.Regeneration);
+    }
+
+    public void Apply(UnitDied e)
+    {
+        IsAlive = false;
     }
 }

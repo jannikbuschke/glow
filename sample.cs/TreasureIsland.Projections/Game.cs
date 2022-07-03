@@ -8,10 +8,9 @@ public class Game
 {
     public Guid Id { get; set; }
     public long Version { get; set; }
+    public int Tick { get; set; }
 
     public GameStatus Status { get; set; }
-
-    public List<Guid> Players { get; set; } = new();
 
     public List<ItemDropped> Items { get; set; } = new();
 
@@ -19,12 +18,25 @@ public class Game
 
     public GameMode Mode { get; set; }
 
+    public List<Guid> Units { get; set; } = new();
+    public Guid ActiveUnit { get; set; }
+
+    public void Apply(GameTick e)
+    {
+        Tick++;
+    }
+
     public void Apply(ItemDropped e)
     {
         var field = Field.Fields.FirstOrDefault(v => v.Position == e.Position);
         if (field != null) { field.Items.Add(e.Item); }
 
         Items.Add(e);
+    }
+
+    public void Apply(ActiveUnitChanged e)
+    {
+        ActiveUnit = e.UnitId;
     }
 
     public void Apply(ItemRemoved e)
@@ -58,13 +70,22 @@ public class Game
 
     public void Apply(PlayerJoined e)
     {
-        Players.Add(e.PlayerId);
+        Units.Add(e.PlayerId);
+    }
+
+    public void Apply(GameAborted e)
+    {
+        Status = GameStatus.Aborted;
+    }
+
+    public void Apply(GameDrawn e)
+    {
+        Status = GameStatus.Ended;
     }
 
     public bool ShouldDelete(GameEnded e)
     {
+        Status = GameStatus.Ended;
         return true;
     }
-
-
 }

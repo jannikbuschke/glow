@@ -4,9 +4,10 @@ import { TextInput, RadioGroup, Radio, Chips, Chip } from "mantine-formik"
 import {} from "glow-mantine"
 import { Center, Space, Button, Text, Container } from "@mantine/core"
 import { useId } from "@mantine/hooks"
-import { TypedForm } from "../ts-models/api"
+import { TypedForm, useTypedQuery } from "../ts-models/api"
 import { useNavigate } from "react-router"
 import { showNotification } from "@mantine/notifications"
+import { GameStatus, GameStatusValues } from "../ts-models/Glow.Sample"
 
 const avatare = [
   "⛄",
@@ -64,6 +65,8 @@ const avatare = [
   "🧙‍♀️",
 ]
 export function LoginView() {
+  const [status, setStatus] = React.useState<null | GameStatus>(null)
+  useTypedQuery("/api/ti/get-games", { input: { status }, placeholder: [] })
   const navigate = useNavigate()
   const id = useId()
   React.useEffect(() => {

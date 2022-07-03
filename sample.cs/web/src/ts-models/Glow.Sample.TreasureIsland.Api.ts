@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
-import { Direction } from "./Glow.Sample"
-import { defaultDirection } from "./Glow.Sample"
+import { Direction, GameStatus } from "./Glow.Sample"
+import { defaultDirection, defaultGameStatus } from "./Glow.Sample"
 
 export interface MoveOrAttack {
   id: string
@@ -42,6 +42,14 @@ export interface GetPlayers {
 }
 
 export const defaultGetPlayers: GetPlayers = {
+}
+
+export interface GetGames {
+  status: GameStatus | null
+}
+
+export const defaultGetGames: GetGames = {
+  status: {} as any,
 }
 
 export interface CreatePlayerResult {

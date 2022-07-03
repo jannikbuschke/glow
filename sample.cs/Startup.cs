@@ -85,7 +85,7 @@ public class Startup
                 var v = new StoreOptions();
                 v.AutoCreateSchemaObjects = AutoCreate.All;
                 v.Connection(configuration.GetValue<string>("ConnectionString"));
-                v.Projections.SelfAggregate<Player>(ProjectionLifecycle.Inline);
+                v.Projections.SelfAggregate<Unit>(ProjectionLifecycle.Inline);
                 v.Projections.SelfAggregate<Game>(ProjectionLifecycle.Inline);
                 var logger = sp.GetService<ILogger<MartenSubscription>>();
                 v.Projections.Add(

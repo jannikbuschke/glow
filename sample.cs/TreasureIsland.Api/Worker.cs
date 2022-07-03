@@ -27,11 +27,11 @@ public class DungeonWorker : BackgroundService
             {
                 if (game.Status == GameStatus.Running || game.Status == GameStatus.Initializing)
                 {
-                    session.Events.Append(game.Id, new GameEnded());
+                    session.Events.Append(game.Id, new GameDrawn());
                 }
             }
 
-            var gameField = GameFieldGenerator.Hexagon(15);
+            var gameField = GameFieldGenerator.Hexagon(55);
 
             var id = Guid.NewGuid();
             var gameCreated = new GameCreated(id, gameField);

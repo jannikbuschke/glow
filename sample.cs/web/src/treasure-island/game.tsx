@@ -38,11 +38,11 @@ import { showNotification } from "@mantine/notifications"
 import { useTypedAction } from "../ts-models/api"
 import { HexagonMouseEventHandler } from "react-hexgrid/lib/Hexagon/Hexagon"
 import { useSubscription, useSubscriptions } from "../ts-models/subscriptions"
-import { LayersIcon } from "@modulz/radix-icons"
+import { LayersIcon, ActivityLogIcon, LapTimerIcon } from "@modulz/radix-icons"
 import { Center, Container, NumberInput, Paper, Stack } from "@mantine/core"
 import {
   CurrentGameState,
-  Player,
+  Unit as Player,
   Position,
   Tile,
 } from "../ts-models/Glow.Sample"
@@ -96,23 +96,23 @@ export function GameView() {
   const [currentState, setCurrentState] =
     React.useState<CurrentGameState | null>(null)
 
+  useSubscriptions((name, e) => {
+    showNotification({
+      message: name,
+      color: "gray",
+    })
+  }, [])
   useSubscription("Glow.Sample.ItemPicked", (e) => {})
   useSubscription(
-    "Glow.Sample.PlayerAttacked",
+    "Glow.Sample.UnitAttacked",
     (e) => {
-      const src = currentState?.players[e.attackingPlayer]!
-      const target = currentState?.players[e.targetPlayer]!
+      const src = currentState?.units[e.attackingUnit]!
+      const target = currentState?.units[e.targetUnit]!
+
       showNotification({
         title: "Player attacked",
         color: "red",
-        message:
-          src.name +
-          " " +
-          src.icon +
-          " attacked " +
-          target.name +
-          " " +
-          target.icon,
+        message: `${src.name} ${src.icon} attacked ${target.name} ${target.icon} and placed ${e.damage} damage`,
       })
     },
     [currentState],
@@ -126,9 +126,9 @@ export function GameView() {
     [currentState],
   )
   useSubscription(
-    "Glow.Sample.PlayerMoved",
+    "Glow.Sample.UnitMoved",
     (e) => {
-      const player = currentState?.players[e.playerId]
+      const player = currentState?.units[e.unitId]
       if (player) {
         showNotification({
           title: "Player moved",
@@ -141,7 +141,7 @@ export function GameView() {
 
   const [userId, setUserId] = React.useState<string | null>(null)
   const user = React.useMemo(
-    () => (userId && currentState ? currentState?.players[userId] : null),
+    () => (userId && currentState ? currentState?.units[userId] : null),
     [userId, currentState],
   )
   React.useEffect(() => {
@@ -389,8 +389,8 @@ export function GameView() {
       >
         <Stack>
           {currentState &&
-            Object.keys(currentState.players)
-              .map((v) => currentState.players[v]!)
+            Object.keys(currentState.units)
+              .map((v) => currentState.units[v]!)
               .map((v) => <RenderPlayer player={v} />)}
         </Stack>
       </div>
@@ -509,8 +509,8 @@ export function GameView() {
                 ))}
             </>
             <>
-              {Object.keys(currentState.players)
-                .map((v) => currentState.players[v]!)
+              {Object.keys(currentState.units)
+                .map((v) => currentState.units[v]!)
                 .filter((v) => v.position !== null)
                 .map((v) => (
                   <TransparentTile
@@ -528,7 +528,7 @@ export function GameView() {
                 ))}
             </>
 
-            <Pattern
+            {/* <Pattern
               id="pat-1"
               link="http://lorempixel.com/400/400/cats/1/"
               size={hexagonSize}
@@ -537,7 +537,7 @@ export function GameView() {
               id="pat-2"
               link="http://lorempixel.com/400/400/cats/2/"
               size={hexagonSize}
-            />
+            /> */}
           </Layout>
         </HexGrid>
         {/* <RenderObject {...currentState.game?.field?.positions} /> */}
@@ -589,7 +589,6 @@ const TransparentTile = styled(Hexagon)`
 
 const BackgroundTile = styled(Hexagon)<{
   tile?: Tile
-  walkable: boolean
   fillColor: string
   inWalkingRange?: boolean
 }>`
@@ -605,7 +604,6 @@ const BackgroundTile = styled(Hexagon)<{
       // transform: scale(1.05);
       fill-opacity: 1;
       transition: fill-opacity 0.9s;
-      cursor: ${({ walkable }) => (walkable ? "pointer" : "curstor")};
     }
   }
 `

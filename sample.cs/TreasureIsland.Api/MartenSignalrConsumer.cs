@@ -36,8 +36,8 @@ public class MartenSignalrConsumer : IMartenEventsConsumer
 
         if (current != null)
         {
-            var playerIds = current.Players;
-            var players = session.LoadMany<Player>(playerIds);
+            var playerIds = current.Units;
+            var players = session.LoadMany<Unit>(playerIds);
             var dict = players.ToDictionary(v => v.Id, v => v);
             var notification = new CurrentGameState(current.Id, dict, current);
 
@@ -46,11 +46,12 @@ public class MartenSignalrConsumer : IMartenEventsConsumer
 
         foreach (var actions in streamActions)
         {
-            logger.LogInformation("publish stream actions");
+            // logger.LogInformation("publish stream actions");
             foreach (var e in actions.Events)
             {
                 // logger.LogInformation("publish event {@event}", e);
 
+                logger.LogInformation("Publish event " + e.Data.GetType().Name);
                 if (e.Data is IClientNotification clientNotification)
                 {
                     await svc.PublishNotification(clientNotification);

@@ -14,10 +14,10 @@ using MediatR;
 namespace Glow.Sample.TreasureIsland.Api;
 
 [Action(Route = "api/ti/move-player", AllowAnonymous = true)]
-public record MoveOrAttack([NotEmpty] Guid Id, Direction Direction) : IRequest<Unit>;
+public record MoveOrAttack([NotEmpty] Guid Id, Direction Direction) : IRequest<MediatR.Unit>;
 
 [Action(Route = "api/ti/restart-game", AllowAnonymous = true)]
-public record RestartGame() : IRequest<Unit>;
+public record RestartGame() : IRequest<MediatR.Unit>;
 
 [Action(Route = "api/ti/create-player", AllowAnonymous = true)]
 public record CreatePlayer(string Name, string Icon) : IRequest<CreatePlayerResult>;
@@ -25,33 +25,63 @@ public record CreatePlayer(string Name, string Icon) : IRequest<CreatePlayerResu
 public record CreatePlayerResult(Guid Id, Guid GameId);
 
 [Action(Route = "api/ti/join", AllowAnonymous = true)]
-public record Join(Guid PlayerId, Guid GameId) : IRequest<Unit>;
+public record Join(Guid PlayerId, Guid GameId) : IRequest<MediatR.Unit>;
 
 [Action(Route = "api/ti/get-players", AllowAnonymous = true)]
-public record GetPlayers() : IRequest<IEnumerable<Player>>;
+public record GetPlayers() : IRequest<IEnumerable<Unit>>;
+
+[Action(Route = "api/ti/get-games", AllowAnonymous = true)]
+public record GetGames(GameStatus? Status) : IRequest<IReadOnlyList<Game>>;
 
 public class Handler : IRequestHandler<MoveOrAttack>,
                        IRequestHandler<RestartGame>,
-                       IRequestHandler<Join, Unit>,
+                       IRequestHandler<Join, MediatR.Unit>,
                        IRequestHandler<CreatePlayer, CreatePlayerResult>,
-                       IRequestHandler<GetPlayers, IEnumerable<Player>>
+                       IRequestHandler<GetPlayers, IEnumerable<Unit>>,
+                       IRequestHandler<GetGames, IReadOnlyList<Game>>
 {
     private readonly IDocumentSession session;
+
+    private readonly IMediator mediator;
     // private readonly IClientNotificationService notificationService;
 
-    public Handler(IDocumentSession session, IClientNotificationService notificationService)
+    public Handler(IDocumentSession session, IMediator mediator, IClientNotificationService notificationService)
     {
         this.session = session;
+        this.mediator = mediator;
         // this.notificationService = notificationService;
     }
 
-    private void GenerateGameTickEvents(IReadOnlyList<Player> players, Game current)
+    private void GenerateGameTickEvents(IReadOnlyList<Unit> players, Game current)
     {
-        foreach (var player in players)
+        var alive = players.Where(v => v.IsAlive).ToList();
+        if (alive.Count == 0)
+        {
+            session.Events.Append(current.Id, new GameDrawn());
+
+            return;
+        }
+
+        if (alive.Count == 1)
+        {
+            if (alive.Count == players.Count)
+            {
+                // only one player
+                // return;
+            }
+            else
+            {
+                session.Events.Append(current.Id, new GameEnded(alive.First().Id));
+                return;
+            }
+        }
+
+        foreach (var player in alive)
         {
             var regen = player.Items.Sum(v => v.Regeneration);
-            session.Events.Append(player.Id, new PlayerHealed(regen));
+            session.Events.Append(player.Id, new UnitHealed(regen));
         }
+
         if (Utils.Chance(0.25))
         {
             var position = current.Field.GetRandomPosition();
@@ -60,17 +90,25 @@ public class Handler : IRequestHandler<MoveOrAttack>,
 
             session.Events.Append(current.Id, itemDropped);
         }
+
+        var nextActivePlayerIndex = (current.Tick + 1) % alive.Count;
+        var nextActivePlayer = alive[nextActivePlayerIndex];
+
+        // select player
+
+        session.Events.Append(current.Id, new ActiveUnitChanged(nextActivePlayer.Id));
+        session.Events.Append(current.Id, new GameTick());
     }
 
-    public async Task<Unit> Handle(MoveOrAttack request, CancellationToken cancellationToken)
+    public async Task<MediatR.Unit> Handle(MoveOrAttack request, CancellationToken cancellationToken)
     {
-        var player = await session.LoadAsync<Player>(request.Id);
+        var player = await session.LoadAsync<Unit>(request.Id);
         if (player == null) { throw new BadRequestException("Player not found"); }
 
         var game = await session.LoadAsync<Game>(player.GameId);
         if (game == null) { throw new BadRequestException("Game not found"); }
 
-        var players = await session.LoadManyAsync<Player>(game.Players);
+        var players = await session.LoadManyAsync<Unit>(game.Units);
 
         var newPosition = request.Direction.AddTo(player.Position);
 
@@ -82,7 +120,7 @@ public class Handler : IRequestHandler<MoveOrAttack>,
         var targetPlayer = players.FirstOrDefault(v => v.Position == newPosition);
         if (targetPlayer == null)
         {
-            var e = new PlayerMoved(request.Id, player.Position, newPosition);
+            var e = new UnitMoved(request.Id, player.Position, newPosition);
 
             session.Events.Append(request.Id, e);
 
@@ -101,24 +139,28 @@ public class Handler : IRequestHandler<MoveOrAttack>,
             var baseAttack = player.BaseAttack;
             var baseProtection = targetPlayer.BaseProtection;
 
-            var damage = Math.Min(0, baseAttack - baseProtection);
-            var e0 = new PlayerAttacked(request.Id, targetPlayer.Id, damage);
+            var damage = Math.Max(0, baseAttack - baseProtection);
+            var e0 = new UnitAttacked(request.Id, targetPlayer.Id, damage);
             var e1 = new DamageTaken(request.Id, targetPlayer.Id, damage);
             session.Events.Append(request.Id, e0);
             session.Events.Append(targetPlayer.Id, e1);
+            if (targetPlayer.Health - damage >= 0)
+            {
+                session.Events.Append(targetPlayer.Id, new UnitDied { });
+            }
         }
 
         var nextPlayerId = player.Id;
-        session.Events.Append(nextPlayerId, new PlayerEnabledForWalk());
+        session.Events.Append(nextPlayerId, new UnitEnabledForWalk());
 
         GenerateGameTickEvents(players, game);
 
         await session.SaveChangesAsync();
 
-        return Unit.Value;
+        return MediatR.Unit.Value;
     }
 
-    public async Task<Unit> Handle(RestartGame request, CancellationToken cancellationToken)
+    public async Task<MediatR.Unit> Handle(RestartGame request, CancellationToken cancellationToken)
     {
         var games = await session.Query<Game>().ToListAsync();
         var game = games.FirstOrDefault();
@@ -127,7 +169,7 @@ public class Handler : IRequestHandler<MoveOrAttack>,
             throw new BadRequestException("No active game");
         }
 
-        var players = await session.Query<Player>().ToListAsync();
+        var players = await session.Query<Unit>().ToListAsync();
 
         // var gameField = GameFieldGenerator.OrientedRectangle(18, 10);
         var gameField = GameFieldGenerator.Hexagon(5);
@@ -149,16 +191,24 @@ public class Handler : IRequestHandler<MoveOrAttack>,
 
         session.Events.Append(game.Id, new GameRestarted(gameField));
         await session.SaveChangesAsync();
-        return Unit.Value;
+        return MediatR.Unit.Value;
     }
 
-    public async Task<Unit> Handle(Join request, CancellationToken cancellationToken)
+    public async Task<MediatR.Unit> Handle(Join request, CancellationToken cancellationToken)
     {
         // var position = Utils.RandomPosition();
         session.Events.Append(request.GameId, new PlayerJoined(request.PlayerId));
         // session.Events.Append(request.PlayerId, new PlayerInitialized(position));
         await session.SaveChangesAsync();
-        return Unit.Value;
+
+        await Task.Delay(1000);
+        var game = await session.LoadAsync<Game>(request.GameId);
+        if (game?.Units.Count == 2)
+        {
+            await mediator.Send(new RestartGame());
+        }
+
+        return MediatR.Unit.Value;
     }
 
     public async Task<CreatePlayerResult> Handle(CreatePlayer request, CancellationToken cancellationToken)
@@ -172,7 +222,7 @@ public class Handler : IRequestHandler<MoveOrAttack>,
 
         var id = Guid.NewGuid();
 
-        var e1 = new PlayerCreated(id, game.Id, request.Name, request.Icon);
+        var e1 = new UnitCreated(id, game.Id, request.Name, request.Icon);
         session.Events.StartStream(id, e1);
         var e2 = new PlayerJoined(id);
         session.Events.Append(game.Id, e2);
@@ -180,9 +230,18 @@ public class Handler : IRequestHandler<MoveOrAttack>,
         return new CreatePlayerResult(id, game.Id);
     }
 
-    public async Task<IEnumerable<Player>> Handle(GetPlayers request, CancellationToken cancellationToken)
+    public async Task<IEnumerable<Unit>> Handle(GetPlayers request, CancellationToken cancellationToken)
     {
-        var players = await session.Query<Player>().ToListAsync();
+        var players = await session.Query<Unit>().ToListAsync();
         return players;
+    }
+
+    public async Task<IReadOnlyList<Game>> Handle(GetGames request, CancellationToken cancellationToken)
+    {
+        var games = await session
+            .Query<Game>()
+            .Where(v => request.Status == null || v.Status == GameStatus.Initializing)
+            .ToListAsync();
+        return games;
     }
 }

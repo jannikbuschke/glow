@@ -18,13 +18,15 @@ import * as Microsoft_TeamFoundation_Core_WebApi from "./Microsoft.TeamFoundatio
 
 type QueryInputs = {
   "/api/ti/get-players": Glow_Sample_TreasureIsland_Api.GetPlayers,
+  "/api/ti/get-games": Glow_Sample_TreasureIsland_Api.GetGames,
   "/azdo/get-commits": Glow_Sample_Azdo.GetCommits,
   "/azdo/get-items": Glow_Sample_Azdo.GetItems,
   "/azdo/get-item": Glow_Sample_Azdo.GetItem,
   "/azdo/get-projects": Glow_Sample_Azdo.GetProjects,
 }
 type QueryOutputs = {
-  "/api/ti/get-players": Array<Glow_Sample.Player>,
+  "/api/ti/get-players": Array<Glow_Sample.Unit>,
+  "/api/ti/get-games": Array<Glow_Sample.Game>,
   "/azdo/get-commits": Array<Glow_Sample_Azdo.Commit>,
   "/azdo/get-items": Array<Microsoft_TeamFoundation_SourceControl_WebApi.GitItem>,
   "/azdo/get-item": Glow_Sample_Azdo.StringWrapper,
