@@ -1,12 +1,14 @@
 import React from "react"
 import { Table, ActionIcon, Paper, Text, Group, Box } from "@mantine/core"
 import {
+  ColumnDef,
   createTable,
+  flexRender,
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
   PaginationState,
-  useTableInstance,
+  useReactTable,
 } from "@tanstack/react-table"
 import {
   ChevronLeftIcon,
@@ -17,8 +19,6 @@ import {
 import { NavtableProps, Pagination } from "./navbar-props"
 import { useMatch, useNavigate } from "react-router"
 import { useTranslation } from "react-i18next"
-
-const table = createTable().setRowType<any>()
 
 export function usePagination(): Pagination {
   const paginationState = React.useState<PaginationState>({
@@ -56,16 +56,19 @@ export function CustomTable<RecordType extends { id: string } = any>(
   const match = useMatch(
     matchPattern.endsWith("/") ? matchPattern + ":id" : matchPattern,
   )
-  const instance = useTableInstance(table, {
+  const instance = useReactTable({
     data: props.dataSource || [],
     columns: props.columns
       .filter((v) => v.visible === undefined || v.visible === true)
-      .map((v, i) =>
-        table.setRowType<RecordType>().createDisplayColumn({
-          id: "" + i,
-          header: (props) => v.title,
-          cell: (props) => v.render(props.row.original!),
-        }),
+      .map(
+        (v, i) =>
+          ({
+            //     cell: () => <div>hello</div>,
+            // accessorKey: v.key!,
+            id: "" + i,
+            header: (props) => "" + v.title,
+            cell: (props) => v.render(props.row.original!),
+          } as ColumnDef<any>),
       ),
     getCoreRowModel: getCoreRowModel(),
     state: {
@@ -87,7 +90,12 @@ export function CustomTable<RecordType extends { id: string } = any>(
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
                   <th key={header.id} colSpan={header.colSpan}>
-                    {header.isPlaceholder ? null : header.renderHeader()}
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext(),
+                        )}
                   </th>
                 ))}
               </tr>
@@ -114,7 +122,9 @@ export function CustomTable<RecordType extends { id: string } = any>(
                 })}
               >
                 {row.getVisibleCells().map((cell) => (
-                  <td key={cell.id}>{cell.renderCell()}</td>
+                  <td key={cell.id}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </td>
                 ))}
               </Box>
             ))}
