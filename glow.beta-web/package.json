@@ -87,7 +87,7 @@
     "@mantine/dates": "4.2.6",
     "@mantine/core": "4.2.6",
     "@mantine/next": "4.2.6",
-    "@tanstack/react-table": "8.0.0-beta.9",
+    "@tanstack/react-table": "^8.1.3",
     "@radix-ui/react-icons": "1.1.1"
   }
 }
