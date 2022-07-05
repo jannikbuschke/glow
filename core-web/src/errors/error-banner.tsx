@@ -81,7 +81,7 @@ function Render({
     />
   ) : (
     <MantineAlert
-      variant="filled"
+      variant="outline"
       color={
         type === "error"
           ? "red"
@@ -93,6 +93,11 @@ function Render({
           ? "yellow"
           : undefined
       }
+      style={{
+        borderLeftWidth: 4,
+        marginTop: 5,
+        marginBottom: 5,
+      }}
     >
       {message}
     </MantineAlert>
