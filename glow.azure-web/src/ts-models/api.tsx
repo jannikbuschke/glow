@@ -11,10 +11,10 @@ import * as Glow_Azure_AzureKeyVault from "./Glow.Azure.AzureKeyVault"
 import * as MediatR from "./MediatR"
 import * as Glow_Core_Profiles from "./Glow.Core.Profiles"
 
-type QueryInputs = {
+export type QueryInputs = {
   "/api/glow/test-automation/get-available-fake-users": Glow_TestAutomation.GetAvailableFakeUsers,
 }
-type QueryOutputs = {
+export type QueryOutputs = {
   "/api/glow/test-automation/get-available-fake-users": Glow_TestAutomation.FakeUsers,
 }
 export type Outputs = {

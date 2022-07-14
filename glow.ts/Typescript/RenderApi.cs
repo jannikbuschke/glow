@@ -80,8 +80,8 @@ namespace Glow.Core.Typescript
             var actionInputs = new StringBuilder();
             var actionOutputs = new StringBuilder();
 
-            queryInputs.AppendLine("type QueryInputs = {");
-            queryOutputs.AppendLine("type QueryOutputs = {");
+            queryInputs.AppendLine("export type QueryInputs = {");
+            queryOutputs.AppendLine("export type QueryOutputs = {");
             actionInputs.AppendLine("export type Actions = {");
             actionOutputs.AppendLine("export type Outputs = {");
 

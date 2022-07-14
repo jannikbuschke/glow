@@ -11,9 +11,9 @@ import * as MediatR from "./MediatR"
 import * as Glow_Core_Queries from "./Glow.Core.Queries"
 import * as Serilog_Events from "./Serilog.Events"
 
-type QueryInputs = {
+export type QueryInputs = {
 }
-type QueryOutputs = {
+export type QueryOutputs = {
 }
 export type Outputs = {
   "/api/glow/restart-application": MediatR.Unit,
