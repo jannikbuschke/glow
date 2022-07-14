@@ -6,7 +6,7 @@ import {
   MantineSize,
   DefaultMantineColor,
 } from "@mantine/core"
-import { useMatch, useNavigate } from "react-router-dom"
+import { Link, useMatch, useNavigate } from "react-router-dom"
 
 export type MainLinkProps = {
   icon?: React.ReactNode
@@ -59,10 +59,10 @@ export function MainLink({
     ? `${to}*`
     : `${to}/*`
   const match = useMatch(matchPattern)
-  const navigate = useNavigate()
   return (
     <UnstyledButton
-      onClick={() => navigate(to)}
+      component={Link}
+      to={to}
       sx={(theme) => ({
         display: "block",
         width: "100%",
