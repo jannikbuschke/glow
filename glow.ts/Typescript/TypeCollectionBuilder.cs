@@ -66,12 +66,13 @@ namespace Glow.Core.Typescript
                 visited.Clear();
                 try
                 {
-
                     OneOf<TsType, TsEnum> result = CreateOrGet(type);
                 }
                 catch (Exception e)
                 {
                     Console.WriteLine("Could not generate ts type for " + type.FullName);
+                    Console.WriteLine(e.Message);
+                    Console.WriteLine(e.StackTrace);
                 }
             }
 
@@ -189,33 +190,43 @@ namespace Glow.Core.Typescript
                     duTypeName = duTypeName.Replace("`1", $"_{genericTsTypeName}");
                 }
 
-                var genericTypeDefinition = type.GetGenericTypeDefinition();
 
-                if (type.IsGenericType && genericTypeDefinition == typeof(FSharpOption<>))
+                var isGenericType = type.IsGenericType;
+                if (!isGenericType)
                 {
-                    //is generic
-                    var tsType = GetAsGenericTsDiscriminatedUnion(genericTypeDefinition, type.Name.Replace("`1", ""), new List<string>(new[] { "T" }));
-
-                    var args = type.GetGenericArguments();
-                    var argumentType = args.First();
-                    var argumentTsType = CreateOrGet(argumentType);
-
-                    if (argumentTsType.IsT1)
-                    {
-                        Console.WriteLine("Discriminated union with generic enum argument is not yet supported");
-                        return TsType.Any();
-                    }
-
-                    tsType.GenericArgumentsTsTypes.Add(argumentTsType.AsT0);
-
-                    tsTypes.TryAdd(tsType.Id, tsType);
-                    return tsType;
+                    //not yet supported
+                    return TsType.Any();
                 }
-                else
+                if (isGenericType)
                 {
-                    var tsType = GetAsGenericTsDiscriminatedUnion(type, duTypeName, new List<string>());
-                    tsTypes.Add(tsType.Id, tsType);
-                    return tsType;
+                    var genericTypeDefinition = type.GetGenericTypeDefinition();
+
+                    if (type.IsGenericType && genericTypeDefinition == typeof(FSharpOption<>))
+                    {
+                        //is generic
+                        var tsType = GetAsGenericTsDiscriminatedUnion(genericTypeDefinition, type.Name.Replace("`1", ""), new List<string>(new[] { "T" }));
+
+                        var args = type.GetGenericArguments();
+                        var argumentType = args.First();
+                        var argumentTsType = CreateOrGet(argumentType);
+
+                        if (argumentTsType.IsT1)
+                        {
+                            Console.WriteLine("Discriminated union with generic enum argument is not yet supported");
+                            return TsType.Any();
+                        }
+
+                        tsType.GenericArgumentsTsTypes.Add(argumentTsType.AsT0);
+
+                        tsTypes.TryAdd(tsType.Id, tsType);
+                        return tsType;
+                    }
+                    else
+                    {
+                        var tsType = GetAsGenericTsDiscriminatedUnion(type, duTypeName, new List<string>());
+                        tsTypes.Add(tsType.Id, tsType);
+                        return tsType;
+                    }
                 }
             }
 

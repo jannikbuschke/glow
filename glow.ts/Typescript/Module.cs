@@ -48,41 +48,64 @@ namespace Glow.Core.Typescript
 
         public IEnumerable<Dependency> GetDependencies()
         {
-            IEnumerable<Dependency> directDependencies = this.Types
-                .Where(v => v.IsT0)
-                .Select(v => v.AsT0)
-                .Where(v => v.Properties != null)
-                .SelectMany(v => v.GetDependencies())
-                .Where(v => !v.IsPrimitive)
-                .Where(v => v.Namespace != this.Namespace && v.Name != "any");
-
-            // what are sub dependencies?
-            IEnumerable<Dependency> subDependencies = this.TsTypes
-                .SelectMany(v => v.Properties)
-                .Where(v => v.TsType.IsT0)
-                .Select(v => v.TsType.AsT0)
-                .Where(v => v.HasCyclicDependency)
-                .SelectMany(v => v.Properties)
-                .Select(v => v.TsType.Match(
-                    v => new Dependency
-                    {
-                        Id = v.Id?.Replace("[]", "").Replace("<T>", ""),
-                        Namespace = v.Namespace,
-                        Name = v.Name?.Replace("[]", "").Replace("<T>", ""),
-                        IsPrimitive = v.IsPrimitive,
-                        TsType = v
-                    },
-                    v => new Dependency { Id = v.Id, Namespace = v.Namespace, Name = v.Name, IsPrimitive = false }))
-                .Where(v => !v.IsPrimitive)
-                .Where(v => v.Namespace != this.Namespace && v.Name != "any");
-
-            IEnumerable<Dependency> additionalDependencies = this.Types
-                .SelectMany(v => v.Match((v0 => v0.AdditionalDependencies), v1 => v1.AdditionalDependencies));
             var all = new List<Dependency>();
-            all.AddRange(directDependencies);
-            all.AddRange(subDependencies);
-            // Console.WriteLine($"deps {additionalDependencies.Count()}");
-            all.AddRange(additionalDependencies);
+            try
+            {
+
+                var directDependencies = this.Types
+                    .Where(v => v.IsT0)
+                    .Select(v => v.AsT0)
+                    .Where(v => v.Properties != null)
+                    .SelectMany(v => v.GetDependencies())
+                    .Where(v => !v.IsPrimitive)
+                    .Where(v => v.Namespace != this.Namespace && v.Name != "any")
+                    .ToList();
+                all.AddRange(directDependencies);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Could not create direct dependencies for module {Namespace}");
+            }
+
+            try
+            {
+                // what are sub dependencies?
+                var subDependencies = this.TsTypes
+                    .SelectMany(v => v.Properties)
+                    .Where(v => v.TsType.IsT0)
+                    .Select(v => v.TsType.AsT0)
+                    .Where(v => v.HasCyclicDependency)
+                    .SelectMany(v => v.Properties)
+                    .Select(v => v.TsType.Match(
+                        v => new Dependency
+                        {
+                            Id = v.Id?.Replace("[]", "").Replace("<T>", ""),
+                            Namespace = v.Namespace,
+                            Name = v.Name?.Replace("[]", "").Replace("<T>", ""),
+                            IsPrimitive = v.IsPrimitive,
+                            TsType = v
+                        },
+                        v => new Dependency { Id = v.Id, Namespace = v.Namespace, Name = v.Name, IsPrimitive = false }))
+                    .Where(v => !v.IsPrimitive)
+                    .Where(v => v.Namespace != this.Namespace && v.Name != "any")
+                    .ToList();
+                all.AddRange(subDependencies);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Could not create sub dependencies for module {Namespace}");
+            }
+
+            try
+            {
+                IEnumerable<Dependency> additionalDependencies = this.Types
+                    .SelectMany(v => v.Match((v0 => v0.AdditionalDependencies), v1 => v1.AdditionalDependencies));
+                all.AddRange(additionalDependencies);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Could not create additional dependencies for module {Namespace}");
+            }
 
             IEnumerable<Dependency> result = all
                 .Where(v => !v.Namespace.StartsWith("System.Collections"))
