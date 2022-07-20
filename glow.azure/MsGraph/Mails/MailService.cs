@@ -9,6 +9,7 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Glow.Authentication.Aad;
 using Glow.Core.Authentication;
+using Glow.Glue.AspNetCore;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Graph;
@@ -18,17 +19,24 @@ namespace Glow.MsGraph.Mails
 {
     public static class BetaExtensions
     {
-        private static Func<Beta.Recipient, Recipient> ToV1Recipient = (x)=>
-         new Recipient()
+        private static Func<Beta.Recipient, Recipient> ToV1Recipient = (x) =>
+        {
+            if (x == null)
             {
-                EmailAddress = new() { Address = x.EmailAddress.Address, Name = x.EmailAddress?.Name }
-            };
+                return null;
+            }
 
-        private static Func<Recipient, Beta.Recipient> ToBetaRecipient = (x)=>
-            new Beta.Recipient()
+            return new Recipient() { EmailAddress = new() { Address = x.EmailAddress.Address, Name = x.EmailAddress?.Name } };
+        };
+
+        private static Func<Recipient, Beta.Recipient> ToBetaRecipient = (x) =>
+        {
+            if (x == null)
             {
-                EmailAddress = new() { Address = x.EmailAddress.Address, Name = x.EmailAddress?.Name }
-            };
+                return null;
+            }
+            return new Beta.Recipient() { EmailAddress = new() { Address = x.EmailAddress.Address, Name = x.EmailAddress.Name } };
+        };
 
         public static Beta.Message FromV1Message(Message message)
         {
@@ -37,6 +45,18 @@ namespace Glow.MsGraph.Mails
             IEnumerable<FileAttachment> fileAttachments = message.Attachments != null ? message.Attachments.Cast<FileAttachment>():new List<FileAttachment>();
             IEnumerable<Beta.FileAttachment> betaFileAttachments = fileAttachments.Select(v => new Beta.FileAttachment() { Id = v.Id, ContentBytes = v.ContentBytes });
             var betaAttachments = new Beta.MessageAttachmentsCollectionPage();
+            if (message.ToRecipients.Any(v => v.EmailAddress == null))
+            {
+                throw new BadRequestException("All recipients need to have an email address");
+            }
+
+            foreach (Recipient v in message.ToRecipients)
+            {
+                Console.WriteLine("address: " + v.EmailAddress?.Address);
+            }
+            Console.WriteLine("to recipients: " + message.ToRecipients.Count());
+            Console.WriteLine("cc recipients: " + message.CcRecipients.Count());
+            Console.WriteLine("bcc recipients: " + message.BccRecipients.Count());
             return new()
             {
                 Id = message.Id,
