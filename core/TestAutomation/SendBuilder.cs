@@ -28,12 +28,6 @@ namespace Glow.Tests
             return this;
         }
 
-        // public SendBuilder<TRequest, TStartup> As(string userId)
-        // {
-        //     user = new UserDto { Id = userId };
-        //     return this;
-        // }
-
         public SendBuilder<TRequest, TStartup> As(UserDto user)
         {
             this.user = user;
@@ -43,7 +37,9 @@ namespace Glow.Tests
         public async Task<TRequest> ExecuteAndRead()
         {
             HttpResponseMessage response = await Execute();
-            return await response.ReadAsAsync<TRequest>();
+            var content = await response.Content.ReadAsStringAsync();
+            TRequest result = JToken.Parse(content).ToObject<TRequest>();
+            return result;
         }
 
         public async Task<HttpResponseMessage> Execute()

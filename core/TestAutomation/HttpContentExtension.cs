@@ -1,6 +1,7 @@
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 
 namespace Glow.Tests
 {
@@ -10,10 +11,9 @@ namespace Glow.Tests
         {
             if (response.IsSuccessStatusCode)
             {
-
-                // T responsePayload = await response.Content.ReadAsAsync<T>();
-                T responsePayload = await response.Content.ReadFromJsonAsync<T>();
-                return responsePayload;
+                var content = await response.Content.ReadAsStringAsync();
+                T result = JToken.Parse(content).ToObject<T>();
+                return result;
             }
             else
             {

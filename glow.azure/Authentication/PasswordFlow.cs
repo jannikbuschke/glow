@@ -36,8 +36,6 @@ namespace Glow.Core.Authentication
                 new FormUrlEncodedContent(dict)
             );
 
-
-
             var responseMessage = await response.Content.ReadAsStringAsync();
 
             var accessTokenResponse = new AccessTokenResponse();
