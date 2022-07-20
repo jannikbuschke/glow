@@ -98,7 +98,7 @@ namespace Glow.Configurations
                 m.Invoke(value.Value, new object[] { serviceProvider });
             }
 
-            return Ok();
+            return Ok(Unit.Value);
         }
     }
 }
