@@ -107,7 +107,9 @@ export function CustomTable<RecordType extends { id: string } = any>(
                   cursor: props.navigateOnClickTo ? "pointer" : undefined,
                   backgroundColor:
                     row.original?.id === match?.params.id
-                      ? theme.colors.gray[3]
+                      ? theme.colorScheme === "dark"
+                        ? theme.colors.dark[3]
+                        : theme.colors.gray[3]
                       : undefined,
                 })}
               >
