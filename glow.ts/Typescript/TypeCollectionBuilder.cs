@@ -143,6 +143,35 @@ namespace Glow.Core.Typescript
                     return AddAsEnumerable(type);
                 }
 
+                var isGenericType = type.IsGenericType;
+
+                if (isGenericType)
+                {
+                    var genericTypeDefinition = type.GetGenericTypeDefinition();
+
+                    if (genericTypeDefinition == typeof(FSharpOption<>))
+                    {
+                        //as FSharpOption
+                        var args = type.GetGenericArguments().First();
+                        var tsType = CreateOrGet(args);
+                        // var asNullable = AsNullable(args);
+                        if (tsType.IsT0 && tsType.AsT0.IsPrimitive)
+                        {
+                            var t0 = tsType.AsT0;
+                            if (t0.IsPrimitive)
+                            {
+                                t0.DefaultValue = "null";
+                                t0.Name = t0.Name + " | null";
+                            }
+                        }
+
+                        return tsType;
+
+                        // return asNullable;
+
+                    }
+                }
+
                 var id = type.FullName;
                 if (tsTypes.ContainsKey(id))
                 {
@@ -191,7 +220,6 @@ namespace Glow.Core.Typescript
                 }
 
 
-                var isGenericType = type.IsGenericType;
                 if (!isGenericType)
                 {
                     //not yet supported
