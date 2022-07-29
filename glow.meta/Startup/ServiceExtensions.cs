@@ -66,11 +66,6 @@ namespace Glow.Core
             Action<MvcOptions> options = null
         )
         {
-            // let options = JsonSerializerOptions()
-            // options.Converters.Add(JsonFSharpConverter())
-            //
-            // JsonSerializer.Serialize({| x = "Hello"; y = "world!" |}, options)
-
             var mvcBuilder = services.AddControllers(o =>
                 {
                     o.EnableEndpointRouting = true;
@@ -80,35 +75,11 @@ namespace Glow.Core
                 {
                     options.JsonSerializerOptions.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
                     options.JsonSerializerOptions.WriteIndented = true;
-                    // options.JsonSerializerOptions.Form = Formatting.Indented;
-                    // options.JsonSerializerOptions.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
-                    // options.JsonSerializerOptions.Converters.Add(new StringEnumConverter());
-                    // options.JsonSerializerOptions.Date = DateTimeZoneHandling.Utc;
-
-                    // unionEncoding = (
-                    //     // Base encoding:
-                    //     JsonUnionEncoding.InternalTag
-                    //     // Additional options:
-                    //     ||| JsonUnionEncoding.UnwrapOption
-                    //     ||| JsonUnionEncoding.UnwrapRecordCases
-                    //     )
-
-                    // default: JsonUnionEncoding.AdjacentTag
-                    //     ||| JsonUnionEncoding.UnwrapOption
-                    //     ||| JsonUnionEncoding.UnwrapSingleCaseUnions
-                    //     ||| JsonUnionEncoding.AllowUnorderedTag
-
+                    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+                    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
                     options.JsonSerializerOptions.Converters.Add(new JsonFSharpConverter(
                         unionEncoding: DefaultFsharpJsonSerializationOptions.UnionEncoding));
                 })
-                // .AddNewtonsoftJson(options =>
-                // {
-                //     options.SerializerSettings.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
-                //     options.SerializerSettings.Formatting = Formatting.Indented;
-                //     options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
-                //     options.SerializerSettings.Converters.Add(new StringEnumConverter());
-                //     options.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
-                // })
                 .ConfigureApiBehaviorOptions(v =>
                 {
                     v.SuppressModelStateInvalidFilter = true;
