@@ -2,7 +2,7 @@
 namespace Glow.Core.Actions
 {
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
-    public class ActionAttribute : Attribute
+    public class ActionAttribute : Attribute, Glow.Core.Actions.IAction
     {
         public string Route { get; set; }
         public string Policy { get; set; }

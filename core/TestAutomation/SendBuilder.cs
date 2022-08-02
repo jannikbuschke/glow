@@ -60,9 +60,16 @@ namespace Glow.Tests
                 }
             }
 
-            if (string.IsNullOrEmpty(url))
+            string GetUrlFromRequestActionAttribute()
             {
-                throw new NullReferenceException(nameof(url));
+                var type = request.GetType();
+                var attributes = type.Attributes;
+                var customAttributes = type.CustomAttributes;
+                var action = customAttributes.FirstOrDefault(v =>
+                    v.AttributeType.GetInterface("Glow.Core.Actions.IAction") != null);
+                var routePreoprty = action?.NamedArguments.FirstOrDefault(v => v.MemberName == "Route");
+                var routeValue = routePreoprty?.TypedValue.Value as string;
+                return routeValue;
             }
 
             var data = JObject.FromObject(request).ToString();
