@@ -61,6 +61,16 @@ namespace Glow.Core
             return mvcBuilder;
         }
 
+        public static void ConfigureStjSerializerDefaults(System.Text.Json.JsonSerializerOptions options)
+        {
+            options.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
+            options.WriteIndented = true;
+            options.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+            options.Converters.Add(new JsonStringEnumConverter());
+            options.Converters.Add(new JsonFSharpConverter(
+                unionEncoding: DefaultFsharpJsonSerializationOptions.UnionEncoding));
+        }
+
         public static IMvcBuilder AddGlowSystemTextJsonControllers(
             this IServiceCollection services,
             Action<MvcOptions> options = null
@@ -73,12 +83,7 @@ namespace Glow.Core
                 })
                 .AddJsonOptions(options =>
                 {
-                    options.JsonSerializerOptions.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
-                    options.JsonSerializerOptions.WriteIndented = true;
-                    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
-                    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-                    options.JsonSerializerOptions.Converters.Add(new JsonFSharpConverter(
-                        unionEncoding: DefaultFsharpJsonSerializationOptions.UnionEncoding));
+                    JsonSerializationSettings.ConfigureStjSerializerDefaults(options.JsonSerializerOptions);
                 })
                 .ConfigureApiBehaviorOptions(v =>
                 {

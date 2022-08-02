@@ -1,7 +1,8 @@
 using System;
+using System.Linq;
 using System.Net.Http;
-using System.Net.Http.Json;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Glow.Users;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -15,6 +16,7 @@ namespace Glow.Tests
         private readonly object request;
         private string url;
         private UserDto user;
+        private bool useStj = false;
 
         public SendBuilder(WebApplicationFactory<TStartup> factory, object request)
         {
@@ -38,8 +40,24 @@ namespace Glow.Tests
         {
             HttpResponseMessage response = await Execute();
             var content = await response.Content.ReadAsStringAsync();
-            TRequest result = JToken.Parse(content).ToObject<TRequest>();
-            return result;
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception("Response is not successfull");
+            }
+            if (useStj)
+            {
+                var options = new JsonSerializerOptions();
+                JsonSerializationSettings.ConfigureStjSerializerDefaults(options);
+                options.PropertyNameCaseInsensitive = true;
+                TRequest result00 = System.Text.Json.JsonSerializer.Deserialize<TRequest>(content, options);
+                return result00;
+            }
+            else
+            {
+                TRequest result = JToken.Parse(content).ToObject<TRequest>();
+                return result;
+            }
         }
 
         public async Task<HttpResponseMessage> Execute()
@@ -72,8 +90,17 @@ namespace Glow.Tests
                 return routeValue;
             }
 
-            var data = JObject.FromObject(request).ToString();
-            HttpResponseMessage response = await client.PostAsync(url, new StringContent(data, Encoding.UTF8, "application/json"));
+            var route = string.IsNullOrEmpty(url) ? GetUrlFromRequestActionAttribute() : url;
+
+            if (string.IsNullOrEmpty(route))
+            {
+                throw new NullReferenceException(nameof(route));
+            }
+
+            var options = new JsonSerializerOptions();
+            JsonSerializationSettings.ConfigureStjSerializerDefaults(options);
+            var data = useStj ? System.Text.Json.JsonSerializer.Serialize(request, options) : JObject.FromObject(request).ToString();
+            HttpResponseMessage response = await client.PostAsync(route, new StringContent(data, Encoding.UTF8, "application/json"));
 
             return response;
         }
