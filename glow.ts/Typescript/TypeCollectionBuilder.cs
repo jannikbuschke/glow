@@ -161,7 +161,7 @@ namespace Glow.Core.Typescript
                             if (t0.IsPrimitive)
                             {
                                 t0.DefaultValue = "null";
-                                t0.Name = t0.Name + " | null";
+                                t0.Name = t0.Name.EndsWith("null") ? t0.Name : t0.Name + " | null";
                             }
                         }
 
