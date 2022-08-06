@@ -28,60 +28,7 @@ export function NavTable<RecordType extends { id: string } = any>(
 export function MantineNavTable<RecordType extends { id: string } = any>(
   props: NavtableProps<RecordType>,
 ) {
-  const { path, dataSource, listPath, columns, paginate, onSelect } = props
-  const navigate = useNavigate()
-
   return <CustomTable {...props} />
-  // return (
-  //   <MantineTable>
-  //     <thead>
-  //       <tr>
-  //         {columns.map((v) => (
-  //           <th>{v.title}</th>
-  //         ))}
-  //       </tr>
-  //     </thead>
-  //     <tbody>{rows}</tbody>
-  //   </MantineTable>
-  // <ElevatableAntdTable<RecordType>
-  //   elevated={true}
-  //   rowKey={(row) => row.id}
-  //   components={{
-  //     body: {
-  //       row: (props: any) => (
-  //         <HighlightableRow
-  //           path={listPath || typeof path === "string" ? path : undefined}
-  //           {...props}
-  //         />
-  //       ),
-  //     },
-  //   }}
-  //   onRow={(record) => ({
-  //     onClick: () => {
-  //       if (typeof path === "function") {
-  //         navigate(path(record))
-  //       } else if (path !== null && path !== undefined) {
-  //         navigate(path + record.id)
-  //       } else {
-  //         // do nothing
-  //       }
-  //       onSelect && onSelect(record)
-  //     },
-  //   })}
-  //   dataSource={dataSource}
-  //   pagination={paginate === true ? undefined : paginate}
-  //   columns={columns
-  //     ?.filter((v) => v.visible === undefined || v.visible === true)
-  //     .map(({ title, key, sortable, render, ...rest }) => ({
-  //       ...rest,
-  //       title,
-  //       key,
-  //       sorter: sortable,
-  //       render: (item, record) => render(record),
-  //     }))}
-  //   {...props}
-  // />
-  // )
 }
 
 export function AntdNavTable<RecordType extends { id: string } = any>({
