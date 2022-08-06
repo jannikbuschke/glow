@@ -39,7 +39,7 @@ export function CustomTable<RecordType extends { id: string } = any>(
     pageSize: 10,
   })
   const itemCount = props.dataSource?.length || 0
-  const pageCount = Math.floor(itemCount / pageSize)
+  const pageCount = Math.floor(itemCount / pageSize) + 1
   const canPreviousPage = pageIndex > 0
   const canNextPage = pageIndex < pageCount - 1
   function previousPage() {
