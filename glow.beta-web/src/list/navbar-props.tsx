@@ -25,6 +25,7 @@ export type NavtableProps<RecordType extends { id: string } = any> = {
   })[]
   usePagination?: Pagination
   paginate?: boolean | undefined
+  responsive?: boolean
 } & Omit<
   TableProps<RecordType>,
   | "columns"

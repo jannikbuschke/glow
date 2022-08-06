@@ -63,12 +63,11 @@ export function CustomTable<RecordType extends { id: string } = any>(
       .map(
         (v, i) =>
           ({
-            //     cell: () => <div>hello</div>,
-            // accessorKey: v.key!,
             id: "" + i,
             header: (props) => "" + v.title,
             cell: (props) => v.render(props.row.original!),
-          } as ColumnDef<any>),
+            meta: { width: v.width },
+          } as ColumnDef<any, { width: string | null }>),
       ),
     getCoreRowModel: getCoreRowModel(),
     state: {
@@ -81,25 +80,41 @@ export function CustomTable<RecordType extends { id: string } = any>(
   const navigate = useNavigate()
   const { navigateOnClickTo } = props
   const { t } = useTranslation()
+  console.log({ groups: instance.getHeaderGroups().map((v) => v.headers) })
   return (
     <Box>
-      <Paper withBorder shadow="xs">
+      <Paper withBorder={false} shadow="xs">
         <Table>
           <thead>
-            {instance.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <th key={header.id} colSpan={header.colSpan}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext(),
-                        )}
-                  </th>
-                ))}
-              </tr>
-            ))}
+            {instance.getHeaderGroups().map((headerGroup) => {
+              return (
+                <tr
+                  key={headerGroup.id}
+                  style={props.responsive ? { display: "flex" } : undefined}
+                >
+                  {headerGroup.headers.map((header) => {
+                    const meta = header.column.columnDef.meta as any
+                    const { width } = meta
+                    return (
+                      <th
+                        key={header.id}
+                        colSpan={header.colSpan}
+                        style={{ width }}
+                        // width={width}
+                      >
+                        {/* <RenderObject meta={header.column.columnDef.meta} /> */}
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext(),
+                            )}
+                      </th>
+                    )
+                  })}
+                </tr>
+              )
+            })}
           </thead>
           <tbody>
             {instance.getRowModel().rows.map((row) => (
@@ -113,6 +128,7 @@ export function CustomTable<RecordType extends { id: string } = any>(
                 }
                 sx={(theme) => ({
                   cursor: props.navigateOnClickTo ? "pointer" : undefined,
+                  display: props.responsive ? "flex" : undefined,
                   backgroundColor:
                     row.original?.id === match?.params.id
                       ? theme.colorScheme === "dark"
@@ -121,11 +137,21 @@ export function CustomTable<RecordType extends { id: string } = any>(
                       : undefined,
                 })}
               >
-                {row.getVisibleCells().map((cell) => (
-                  <td key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
-                ))}
+                {row.getVisibleCells().map((cell) => {
+                  const meta = cell.column.columnDef.meta as any
+                  const { width } = meta
+                  return (
+                    <td key={cell.id} width={width}>
+                      {/* <RenderObject
+                        column={cell.column}
+                      /> */}
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext(),
+                      )}
+                    </td>
+                  )
+                })}
               </Box>
             ))}
           </tbody>
@@ -147,47 +173,52 @@ export function CustomTable<RecordType extends { id: string } = any>(
         Rerender
       </button> */}
       </Paper>
-      <Group
-        spacing="xs"
-        m="xs"
-        style={{
-          display: "flex",
-          flex: 1,
-          justifyContent: "flex-end",
-        }}
-      >
-        <ActionIcon
-          onClick={() => setPagination((v) => ({ ...v, pageIndex: 0 }))}
-          disabled={!canPreviousPage}
+      {props.paginate === false ? null : (
+        <Group
+          spacing="xs"
+          m="xs"
+          style={{
+            display: "flex",
+            flex: 1,
+            justifyContent: "flex-end",
+          }}
         >
-          <DoubleArrowLeftIcon />
-        </ActionIcon>
-        <ActionIcon onClick={() => previousPage()} disabled={!canPreviousPage}>
-          <ChevronLeftIcon />
-        </ActionIcon>
-        <ActionIcon onClick={() => nextPage()} disabled={!canNextPage}>
-          <ChevronRightIcon />
-        </ActionIcon>
-        <ActionIcon
-          onClick={() =>
-            setPagination((v) => ({
-              ...v,
-              pageIndex: pageCount - 1,
-            }))
-          }
-          disabled={!canNextPage}
-        >
-          <DoubleArrowRightIcon />
-        </ActionIcon>
-        <div>
-          <Text>
-            {t("Page")}{" "}
-            <strong>
-              {pageIndex + 1} {t("of")} {pageCount}
-            </strong>
-          </Text>
-        </div>
-      </Group>
+          <ActionIcon
+            onClick={() => setPagination((v) => ({ ...v, pageIndex: 0 }))}
+            disabled={!canPreviousPage}
+          >
+            <DoubleArrowLeftIcon />
+          </ActionIcon>
+          <ActionIcon
+            onClick={() => previousPage()}
+            disabled={!canPreviousPage}
+          >
+            <ChevronLeftIcon />
+          </ActionIcon>
+          <ActionIcon onClick={() => nextPage()} disabled={!canNextPage}>
+            <ChevronRightIcon />
+          </ActionIcon>
+          <ActionIcon
+            onClick={() =>
+              setPagination((v) => ({
+                ...v,
+                pageIndex: pageCount - 1,
+              }))
+            }
+            disabled={!canNextPage}
+          >
+            <DoubleArrowRightIcon />
+          </ActionIcon>
+          <div>
+            <Text>
+              {t("Page")}{" "}
+              <b>
+                {pageIndex + 1} {t("of")} {pageCount}
+              </b>
+            </Text>
+          </div>
+        </Group>
+      )}
     </Box>
   )
 }
