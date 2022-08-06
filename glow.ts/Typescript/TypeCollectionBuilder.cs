@@ -93,6 +93,10 @@ namespace Glow.Core.Typescript
 
         private OneOf<TsType, TsEnum> CreateOrGet(Type type, bool skipDependencies = false)
         {
+            if (type == typeof(Object))
+            {
+                return TsType.Any();
+            }
             if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(KeyValuePair<,>))
             {
                 Type[] argTypes = type.GetGenericArguments();

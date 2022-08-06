@@ -186,6 +186,13 @@ namespace Glow.Core.Typescript
 
         private static void RenderProperties(List<Property> properties, StringBuilder builder, int depth, int maxDepth)
         {
+            if (properties == null)
+            {
+                builder.Append(" // skipped rendering properties (null)");
+                builder.AppendLine("");
+                Console.WriteLine("skip rendering properties (is null)");
+                return;
+            }
             foreach (Property property in properties)
             {
                 TsType tsType = property.TsType.IsT0 ? property.TsType.AsT0 : null;
