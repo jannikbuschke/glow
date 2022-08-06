@@ -43,7 +43,7 @@ namespace Glow.Tests
 
             if (!response.IsSuccessStatusCode)
             {
-                throw new Exception("Response is not successfull");
+                throw new Exception("Response is not successfull: " + content);
             }
             if (useStj)
             {
