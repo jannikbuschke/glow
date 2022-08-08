@@ -1,7 +1,6 @@
 import * as React from "react"
 import { Tabs, TabsProps, TabsValue } from "@mantine/core"
 import { useNavigate, useMatch } from "react-router"
-import { TabControlProps } from "@mantine/core/lib/components/Tabs/TabControl/TabControl"
 
 export type Keys = string[]
 
@@ -34,9 +33,7 @@ export function RoutedTabs({
       <pre>
         {JSON.stringify({ rootMatch, matchExpression, paramName }, null, 4)}
       </pre>
-      <Tabs {...props} value={activeTab} onTabChange={onChange}>
-        {props.children}
-      </Tabs>
+      <Tabs {...props} value={activeTab} onTabChange={onChange} />
     </>
   )
 }
