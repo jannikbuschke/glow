@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Glow.TypeScript;
-using OneOf;
 using Directory = System.IO.Directory;
 using File = System.IO.File;
 
@@ -13,6 +12,9 @@ namespace Glow.Core.Typescript
     {
         public static void ToDisk(TypeCollection types, string path, TsGenerationOptions? options)
         {
+            Console.WriteLine("");
+            Console.WriteLine("Render to path " + path);
+
             if (!path.EndsWith("/"))
             {
                 throw new ArgumentException("path must end with /");
@@ -28,32 +30,42 @@ namespace Glow.Core.Typescript
             }
         }
 
-        private static void RenderModule(Module module, string path, ApiOptions? options)
+        public static void RenderModule(Module module, string path, ApiOptions? options)
         {
+            var content = RenderModule(module, options);
+            if (content != null)
+            {
+                File.WriteAllText(path + module.Namespace + ".ts", content);
+            }
+        }
+
+        public static string RenderModule(Module module, ApiOptions? options)
+        {
+            Console.WriteLine("Render " + module.Namespace);
+
             if (module.Namespace == null)
             {
-                Console.WriteLine($"Namespace of module '{string.Join(", ", module.TsTypes.Select(v=>v.Id))}' is null");
-                return;
+                Console.WriteLine($"Namespace of module '{string.Join(", ", module.TsTypes.Select(v => v.Id))}' is null");
+                return null;
             }
+
             if (module.Namespace.StartsWith("System"))
             {
-                return;
+                return null;
             }
 
             IEnumerable<TsEnum> enumerables = module.TsEnums;
             var tsTypes = module.TsTypes;
             if (enumerables.Count() == 0 && tsTypes.Count() == 0)
             {
-                File.WriteAllText(path + module.Namespace + ".ts", @"export type NeedToExportSomething = {}");
-
-                return;
+                return @"export type NeedToExportSomething = {}";
             }
 
             var builder = new StringBuilder();
 
             IEnumerable<IGrouping<string, Dependency>> dependencies = module.GetDependenciesGroupedByNamespace();
 
-            if(options?.ApiFileFirstLines!=null)
+            if (options?.ApiFileFirstLines != null)
             {
                 foreach (var line in options.ApiFileFirstLines)
                 {
@@ -81,13 +93,32 @@ namespace Glow.Core.Typescript
 
             foreach (TsType tsType in tsTypes)
             {
+                if (tsType.GetType() == typeof(TsDiscriminatedUnion))
+                {
+                    continue;
+                }
                 if (!tsType.IsCollection)
                 {
                     RenderTsType(tsType, builder);
                 }
             }
 
-            File.WriteAllText(path + module.Namespace + ".ts", builder.ToString());
+            foreach (TsType tsType in tsTypes)
+            {
+                if (tsType.Name.Contains("CircularStatus"))
+                {
+
+                }
+                if (tsType.GetType() == typeof(TsDiscriminatedUnion))
+                {
+                    if (!tsType.IsCollection)
+                    {
+                        RenderTsType(tsType, builder);
+                    }
+                }
+            }
+
+            return builder.ToString();
         }
 
         private static void RenderTsEnum(TsEnum type, StringBuilder builder)
@@ -142,35 +173,90 @@ namespace Glow.Core.Typescript
         {
             foreach (var v in type.Cases)
             {
-                if (v.IsNull)
+                var caseTypeName = $"{type.Name}_Case_{v.Name}";
+                Console.WriteLine("Handle DU " + type.Namespace + " " + type.Name);
+                if (v.Fields.Length > 1)
                 {
+                    Console.WriteLine("Field length > 1, append");
+
+                    builder.AppendLine(
+                        @$"export type {caseTypeName} = {{
+  Case: ""{v.CaseName}"",
+  fields: {{ {string.Join(", ", v.Fields.Select((v, i) => $"Item{i}: {v.Name}"))} }}
+}}");
+
+                    builder.AppendLine(
+                        @$"export const default{caseTypeName}: {caseTypeName} = {{
+  Case: ""{v.CaseName}"",
+  fields: {{ {string.Join(", ", v.Fields.Select((v, i) => $"Item{i}: {v.DefaultValue}"))} }}
+}}");
+                }
+                else if (v.IsNull)
+                {
+                    Console.WriteLine("v.IsNull");
+
                     builder.AppendLine(@$"export type {v.Name} = null");
+                }
+                else if (v.Fields.Length == 0)
+                {
+                    Console.WriteLine("Field length = 0, append");
+
+                    builder.AppendLine(
+                            @$"export type {caseTypeName} = {{
+  Case: ""{v.CaseName}""
+}}");
+
+                }
+                else if (v.Fields.Length == 1)
+                {
+                    Console.WriteLine("Field length = 1, append");
+
+                    var field = v.Fields.First();
+                    builder.AppendLine(
+                        @$"export type {caseTypeName} = {{
+  Case: ""{v.CaseName}"",
+  fields: {field.Name}
+}}");
+                    builder.AppendLine(
+                        @$"export const default{caseTypeName}: {caseTypeName} = {{
+  Case: ""{v.CaseName}"",
+  fields: {field.DefaultValue}
+}}");
                 }
                 else
                 {
-                    builder.AppendLine(
-@$"export type {v.Name} = {{
-  case: ""{v.CaseName}"",
-  fields: [{string.Join(", ", v.Fields.Select(v => v.Name))}]
-}}");
+                    Console.WriteLine("SKIPP°!!!");
                 }
+
                 builder.AppendLine();
 
-                if (!type.IsGeneric)
-                {
-                    builder.AppendLine(
-@$"export const default{v.Name}: {v.Name} = {{
-  case: ""{v.CaseName}"",
-  fields: [{string.Join(", ", v.Fields.Select(v=>v.DefaultValue))}]
-}}"
-                    );
-                }
+
+//                 if (!type.IsGeneric)
+//                 {
+//                     var fields = v.Fields.FirstOrDefault()?.DefaultValue;
+//                     builder.AppendLine(
+//                         @$"export const default{caseTypeName}: {caseTypeName} = {{
+//   case: ""{v.CaseName}"",
+// {(fields != null ? $"  fields: {fields}" : "")}
+// }}"
+//                     );
+//                 }
             }
 
             builder.AppendLine();
-            var duRoot = $"export type {type.NameWithGenericArguments} = " + string.Join(" | ", type.Cases.Select(v => v.Name));
+            if (type.IsGeneric)
+            {
+                var duRoot = $"export type {type.NameWithGenericArguments} = " + string.Join(" | ", type.Cases.Select(v => v.Name));
 
-            builder.AppendLine(duRoot);
+                builder.AppendLine(duRoot);
+            }
+            else
+            {
+                var duRoot = $"export type {type.Name} = " + string.Join(" | ", type.Cases.Select(v => $"{type.Name}_Case_{v.Name}"));
+
+                builder.AppendLine(duRoot);
+            }
+
             builder.AppendLine();
 
             if (type.DefaultValue != null)
@@ -181,7 +267,6 @@ namespace Glow.Core.Typescript
             }
 
             // builder.AppendLine($@"export const default{type.Name}: {type.Name} = default{type.Cases.First().Name}");
-
         }
 
         private static void RenderProperties(List<Property> properties, StringBuilder builder, int depth, int maxDepth)
@@ -193,6 +278,7 @@ namespace Glow.Core.Typescript
                 Console.WriteLine("skip rendering properties (is null)");
                 return;
             }
+
             foreach (Property property in properties)
             {
                 TsType tsType = property.TsType.IsT0 ? property.TsType.AsT0 : null;
@@ -202,7 +288,14 @@ namespace Glow.Core.Typescript
                 }
                 else if (tsType?.IsPrimitive != true)
                 {
-                    builder.AppendLine($"  {property.PropertyName}: {{}} as any,");
+                    if(tsType?.GetType()==typeof(TsDiscriminatedUnion) && tsType?.DefaultValue != null)
+                    {
+                        builder.AppendLine($"  {property.PropertyName}: {property.DefaultValue},");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"  {property.PropertyName}: {{}} as any,");
+                    }
                 }
                 else if (tsType != null && !tsType.IsPrimitive && tsType.HasCyclicDependency && !tsType.IsCollection)
                 {

@@ -53,10 +53,31 @@ namespace Glow.Core.Typescript
         {
             get
             {
+                var all = All().ToList();
+
+                var t0  = all.Where(v => v.IsT0).Select(v => v.AsT0).ToList();
+
+                var status = all.FirstOrDefault(v => v.IsT0 && v.AsT0.Name.Contains("CircularStatus"));
+
                 IEnumerable<IGrouping<string, OneOf<TsType, TsEnum>>> byNamespace =
-                    All().GroupBy(v => v.Match(v1 => v1.Namespace, v2 => v2.Namespace));
+                    all.GroupBy(v => v.Match(v1 => v1.Namespace, v2 => v2.Namespace));
 
                 var modules = byNamespace.Select(v => new Module(v.Key, v)).ToList();
+                var tsTypes = modules.SelectMany(v => v.TsTypes).ToList();
+
+                foreach (TsType v in tsTypes)
+                {
+                    t0.Remove(v);
+                }
+
+                if (t0.Count > 0)
+                {
+                    foreach (TsType v in t0)
+                    {
+                        Console.WriteLine("Typ went missing:  " + v.FullName);
+                    }
+                }
+
                 return modules;
             }
         }

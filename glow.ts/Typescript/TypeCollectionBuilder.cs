@@ -142,6 +142,77 @@ namespace Glow.Core.Typescript
 
             if (FSharpType.IsUnion(type, null))
             {
+                if (type.Name.Contains("CircularStatus"))
+                {
+                    Console.WriteLine("BUILLDDD CIRCULAR STATUS");
+                    Console.WriteLine("BUILLDDD CIRCULAR STATUS");
+
+                }
+                var cases = FSharpType.GetUnionCases(type, FSharpOption<BindingFlags>.Some(BindingFlags.Public));
+
+                if (cases.Length == 1)
+                {
+                    var case0 = cases.First();
+                    var name = cases.First().Name;
+                    var fields = case0.GetFields();
+                    if (fields.Length == 1)
+                    {
+                        // single case DU will be inlined
+                        var fieldType = CreateOrGet(fields.First().PropertyType);
+                        if (fieldType.IsT0 && fieldType.AsT0.IsPrimitive)
+                        {
+                            return fieldType;
+                        }
+                        else
+                        {
+                            throw new NotSupportedException("Single case DU with non-primitive field not yet supported Name = " + type.FullName);
+                        }
+
+                    }
+                    else
+                    {
+                        throw new NotSupportedException("Single case DU with multiple fields not yet supported Name= "  + type.FullName);
+                    }
+                }
+                else if(!type.IsGenericType)
+                {
+                    if (type.Name.Contains("CircularStatus"))
+                    {
+                        Console.WriteLine("BUILLDDD CIRCULAR STATUS!!!");
+                        Console.WriteLine("BUILLDDD CIRCULAR STATUS");
+
+                    }
+
+                    var fullName = type.FullName;
+                    if (tsTypes.ContainsKey(fullName))
+                    {
+                        return tsTypes[fullName];
+                    }
+                    var tsCases = cases.Select(v =>
+                    {
+                        var fields = v.GetFields()
+                            .Select(v => CreateOrGet(v.PropertyType))
+                            .Select(v => v.AsT0)
+                            .ToArray();
+                        return new DuCase() { CaseName = v.Name, Name = v.Name, Fields = fields };
+                    }).ToList();
+                    var du = new TsDiscriminatedUnion()
+                    {
+                        Name = type.Name,
+                        FullName = fullName,
+                        Properties = tsCases.SelectMany(v=>v.Fields)
+                            .Select(v=> OneOf<TsType, TsEnum>.FromT0(v))
+                            .Select(v=>new Property(){TsType=v})
+                            .ToList(),
+                        DefaultValue = $"null as any as {type.Name}",
+                        Namespace = type.Namespace,
+                        Nullable = false,
+                        Cases = tsCases
+                    };
+                    tsTypes.Add(du.FullName,du);
+                    return du;
+                }
+
                 if (type.IsEnumerable())
                 {
                     return AddAsEnumerable(type);
@@ -222,7 +293,6 @@ namespace Glow.Core.Typescript
                     var genericTsTypeName = CreateOrGet(genericArguments.First()).Match(v => v.Name, v => v.Name).Replace(" | null", "");
                     duTypeName = duTypeName.Replace("`1", $"_{genericTsTypeName}");
                 }
-
 
                 if (!isGenericType)
                 {

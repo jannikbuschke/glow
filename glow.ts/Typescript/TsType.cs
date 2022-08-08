@@ -51,6 +51,7 @@ namespace Glow.Core.Typescript
     {
         public string Name { get; set; }
         public string CaseName { get; set; }
+        public TsType TsType { get; set; }
         public TsType[] Fields { get; set; }
         public bool IsNull { get; set; }
     }
@@ -63,7 +64,19 @@ namespace Glow.Core.Typescript
 
     public class TsType : BaseTsType
     {
-        public string Id { get; set; }
+        private string id;
+        public override string Id
+        {
+            get
+            {
+                if (id == null)
+                {
+                    return FullName;
+                }
+                return id;
+            }
+            set { this.id = value; }
+        }
         public bool IsPrimitive { get; set; }
         public Type Type { get; set; }
 
