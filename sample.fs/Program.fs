@@ -53,7 +53,7 @@ module Program =
 
         services.AddControllers()
         let assemblies = [| Assembly.GetEntryAssembly() |]
-        services.AddGlowApplicationServices(null, null, assemblies)
+        services.AddGlowApplicationServices(null, null, JsonSerializationStrategy.SystemTextJson ,assemblies)
 
         let firstLine = ResizeArray()
         firstLine.Add("/* eslint-disable prettier/prettier */")
