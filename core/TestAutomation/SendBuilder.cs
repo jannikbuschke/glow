@@ -16,12 +16,13 @@ namespace Glow.Tests
         private readonly object request;
         private string url;
         private UserDto user;
-        private bool useStj = false;
+        private readonly bool useSystemTextJson;
 
-        public SendBuilder(WebApplicationFactory<TStartup> factory, object request)
+        public SendBuilder(WebApplicationFactory<TStartup> factory, object request, bool useSystemTextJson = false)
         {
             this.factory = factory;
             this.request = request;
+            this.useSystemTextJson = useSystemTextJson;
         }
 
         public SendBuilder<TRequest, TStartup> To(string url)
@@ -45,7 +46,7 @@ namespace Glow.Tests
             {
                 throw new Exception("Response is not successfull: " + content);
             }
-            if (useStj)
+            if (useSystemTextJson)
             {
                 var options = new JsonSerializerOptions();
                 JsonSerializationSettings.ConfigureStjSerializerDefaults(options);
@@ -99,7 +100,7 @@ namespace Glow.Tests
 
             var options = new JsonSerializerOptions();
             JsonSerializationSettings.ConfigureStjSerializerDefaults(options);
-            var data = useStj ? System.Text.Json.JsonSerializer.Serialize(request, options) : JObject.FromObject(request).ToString();
+            var data = useSystemTextJson ? System.Text.Json.JsonSerializer.Serialize(request, options) : JObject.FromObject(request).ToString();
             HttpResponseMessage response = await client.PostAsync(route, new StringContent(data, Encoding.UTF8, "application/json"));
 
             return response;
