@@ -54,8 +54,6 @@
     "react-i18next": "11.0.1",
     "file-saver": "2.0.2",
     "@types/file-saver": "2.0.1",
-    "@dnd-kit/core": "4.0.3",
-    "@dnd-kit/sortable": "5.1.0",
     "@tiptap/react": "2.0.0-beta.108",
     "@tiptap/starter-kit": "2.0.0-beta.183",
     "@tiptap/extension-highlight": "2.0.0-beta.33",
