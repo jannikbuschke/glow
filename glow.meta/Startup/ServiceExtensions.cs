@@ -15,11 +15,13 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using NodaTime;
 using NodaTime.Serialization.JsonNet;
-using IClock = Glow.Clocks.IClock;
 using NodaTime.Serialization.SystemTextJson;
+using IClock = Glow.Clocks.IClock;
 
 namespace Glow.Core
 {
+
+
     public static class DefaultFsharpJsonSerializationOptions
     {
         public const JsonUnionEncoding UnionEncoding = JsonUnionEncoding.AdjacentTag
@@ -41,7 +43,7 @@ namespace Glow.Core
             Action<MvcOptions> options = null
         )
         {
-            var mvcBuilder = services.AddControllers(o =>
+            IMvcBuilder mvcBuilder = services.AddControllers(o =>
                 {
                     o.EnableEndpointRouting = true;
                     if (options != null) { options(o); }
@@ -62,14 +64,14 @@ namespace Glow.Core
             return mvcBuilder;
         }
 
-        public static void ConfigureStjSerializerDefaults(System.Text.Json.JsonSerializerOptions options)
+        public static void ConfigureStjSerializerDefaults(JsonSerializerOptions options)
         {
             options.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
             options.WriteIndented = true;
             options.ReferenceHandler = ReferenceHandler.IgnoreCycles;
             options.Converters.Add(new JsonStringEnumConverter());
             options.Converters.Add(new JsonFSharpConverter(
-                unionEncoding: DefaultFsharpJsonSerializationOptions.UnionEncoding));
+                DefaultFsharpJsonSerializationOptions.UnionEncoding));
         }
 
         public static IMvcBuilder AddGlowSystemTextJsonControllers(
@@ -77,7 +79,7 @@ namespace Glow.Core
             Action<MvcOptions> options = null
         )
         {
-            var mvcBuilder = services.AddControllers(o =>
+            IMvcBuilder mvcBuilder = services.AddControllers(o =>
                 {
                     o.EnableEndpointRouting = true;
                     if (options != null) { options(o); }
@@ -94,8 +96,8 @@ namespace Glow.Core
         }
 
         /// <summary>
-        /// Adds Mvc (with Netwonsoft), FileService, Clock, MockExternalSystems, SpaStaticFiles,
-        /// SignalR, HttpClient, HttpContextAccessor,
+        ///     Adds Mvc (with Netwonsoft), FileService, Clock, MockExternalSystems, SpaStaticFiles,
+        ///     SignalR, HttpClient, HttpContextAccessor,
         /// </summary>
         /// <param name="services"></param>
         /// <returns></returns>
@@ -103,11 +105,11 @@ namespace Glow.Core
             this IServiceCollection services,
             Action<MvcOptions> options = null,
             Action<IMvcBuilder> configureAdditionalMvcOptions = null,
-            JsonSerializationStrategy? useSystemTextJson = JsonSerializationStrategy.NewtonSoft,
+            JsonSerializationStrategy? serializationStrategy = JsonSerializationStrategy.NewtonSoft,
             params Assembly[] assembliesToScan
         )
         {
-            var mvcBuilder = useSystemTextJson == JsonSerializationStrategy.NewtonSoft
+            IMvcBuilder mvcBuilder = serializationStrategy == JsonSerializationStrategy.NewtonSoft
                 ? services.AddGlowNewtonsoftControllers(options)
                 : services.AddGlowSystemTextJsonControllers(options);
             configureAdditionalMvcOptions?.Invoke(mvcBuilder);
@@ -141,7 +143,6 @@ namespace Glow.Core
             {
                 cfg.AddCollectionMappers();
                 cfg.AddExpressionMapping();
-
             }, assembliesToScan);
 
 

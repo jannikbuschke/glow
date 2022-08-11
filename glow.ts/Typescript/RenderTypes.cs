@@ -50,7 +50,7 @@ namespace Glow.Core.Typescript
             }
 
             IEnumerable<TsEnum> enumerables = module.TsEnums;
-            var tsTypes = module.TsTypes;
+            List<TsType> tsTypes = module.TsTypes;
             if (enumerables.Count() == 0 && tsTypes.Count() == 0)
             {
                 return @"export type NeedToExportSomething = {}";
@@ -92,6 +92,7 @@ namespace Glow.Core.Typescript
                 {
                     continue;
                 }
+
                 if (!tsType.IsCollection)
                 {
                     RenderTsType(tsType, builder);
@@ -102,8 +103,8 @@ namespace Glow.Core.Typescript
             {
                 if (tsType.Name.Contains("CircularStatus"))
                 {
-
                 }
+
                 if (tsType.GetType() == typeof(TsDiscriminatedUnion))
                 {
                     if (!tsType.IsCollection)
@@ -166,7 +167,7 @@ namespace Glow.Core.Typescript
 
         private static void RenderTsDiscriminatedUnion(TsDiscriminatedUnion type, StringBuilder builder)
         {
-            foreach (var v in type.Cases)
+            foreach (DuCase v in type.Cases)
             {
                 var caseTypeName = $"{type.Name}_Case_{v.Name}";
                 Console.WriteLine("Handle DU " + type.Namespace + " " + type.Name);
@@ -282,7 +283,7 @@ namespace Glow.Core.Typescript
                 }
                 else if (tsType?.IsPrimitive != true)
                 {
-                    if(tsType?.GetType()==typeof(TsDiscriminatedUnion) && tsType?.DefaultValue != null)
+                    if (tsType?.GetType() == typeof(TsDiscriminatedUnion) && tsType?.DefaultValue != null)
                     {
                         builder.AppendLine($"  {property.PropertyName}: {property.DefaultValue},");
                     }
