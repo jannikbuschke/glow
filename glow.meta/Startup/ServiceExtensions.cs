@@ -1,5 +1,6 @@
 using System;
 using System.Reflection;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using AutoMapper;
 using AutoMapper.EquivalencyExpression;
@@ -119,10 +120,17 @@ namespace Glow.Core
                 configuration.RootPath = "web/build";
             });
 
-            services.AddSignalR().AddJsonProtocol(v =>
-            {
-                v.PayloadSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-            });
+            services
+                .AddSignalR()
+                .AddJsonProtocol(options =>
+                {
+                    options.PayloadSerializerOptions.Converters.Add(new JsonFSharpConverter(JsonUnionEncoding.AdjacentTag
+                                                                                            | JsonUnionEncoding.UnwrapRecordCases
+                                                                                            | JsonUnionEncoding.UnwrapOption
+                                                                                            | JsonUnionEncoding.UnwrapSingleCaseUnions
+                                                                                            | JsonUnionEncoding.AllowUnorderedTag));
+                    options.PayloadSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                });
 
             services.AddHttpClient();
             services.AddHttpContextAccessor();
