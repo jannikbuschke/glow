@@ -1,10 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using Glow.TypeScript;
-using Directory = System.IO.Directory;
-using File = System.IO.File;
 
 namespace Glow.Core.Typescript
 {
@@ -182,13 +177,13 @@ namespace Glow.Core.Typescript
                     builder.AppendLine(
                         @$"export type {caseTypeName} = {{
   Case: ""{v.CaseName}"",
-  fields: {{ {string.Join(", ", v.Fields.Select((v, i) => $"Item{i}: {v.Name}"))} }}
+  Fields: {{ {string.Join(", ", v.Fields.Select((v, i) => $"Item{i}: {v.Name}"))} }}
 }}");
 
                     builder.AppendLine(
                         @$"export const default{caseTypeName}: {caseTypeName} = {{
   Case: ""{v.CaseName}"",
-  fields: {{ {string.Join(", ", v.Fields.Select((v, i) => $"Item{i}: {v.DefaultValue}"))} }}
+  Fields: {{ {string.Join(", ", v.Fields.Select((v, i) => $"Item{i}: {v.DefaultValue}"))} }}
 }}");
                 }
                 else if (v.IsNull)
@@ -202,25 +197,24 @@ namespace Glow.Core.Typescript
                     Console.WriteLine("Field length = 0, append");
 
                     builder.AppendLine(
-                            @$"export type {caseTypeName} = {{
+                        @$"export type {caseTypeName} = {{
   Case: ""{v.CaseName}""
 }}");
-
                 }
                 else if (v.Fields.Length == 1)
                 {
                     Console.WriteLine("Field length = 1, append");
 
-                    var field = v.Fields.First();
+                    TsType field = v.Fields.First();
                     builder.AppendLine(
                         @$"export type {caseTypeName} = {{
   Case: ""{v.CaseName}"",
-  fields: {field.Name}
+  Fields: {field.Name}
 }}");
                     builder.AppendLine(
                         @$"export const default{caseTypeName}: {caseTypeName} = {{
   Case: ""{v.CaseName}"",
-  fields: {field.DefaultValue}
+  Fields: {field.DefaultValue}
 }}");
                 }
                 else
