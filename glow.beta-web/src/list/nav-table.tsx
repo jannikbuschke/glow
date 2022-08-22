@@ -1,32 +1,27 @@
-import { Input, Table } from "antd"
-import { InputProps } from "antd/es/input"
-import { ColumnType, TablePaginationConfig, TableProps } from "antd/es/table"
+import { Table } from "antd"
+import { TableProps } from "antd/es/table"
 import * as React from "react"
 import { useNavigate } from "react-router"
 import { HighlightableRow } from "../antd/highlightable-row"
-import { ErrorBanner, useGlowContext } from "glow-core"
-import { useListContext } from "./list-context"
+import { useGlowContext } from "glow-core"
 import styled from "styled-components"
-import { Table as MantineTable } from "@mantine/core"
 import { NavtableProps } from "./navbar-props"
 import { CustomTable } from "./mantine-nav-table"
 
 export function NavTable<RecordType extends { id: string } = any>(
-  props: NavtableProps<RecordType>,
+  props: NavtableProps<RecordType> & { loading?: boolean },
 ) {
   const { componentLibrary } = useGlowContext()
 
   return componentLibrary === "antd" ? (
     <AntdNavTable {...props} />
   ) : (
-    <>
-      <MantineNavTable {...props} />
-    </>
+    <MantineNavTable {...props} />
   )
 }
 
 export function MantineNavTable<RecordType extends { id: string } = any>(
-  props: NavtableProps<RecordType>,
+  props: NavtableProps<RecordType> & { loading?: boolean },
 ) {
   return <CustomTable {...props} />
 }

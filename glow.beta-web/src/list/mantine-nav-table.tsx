@@ -1,5 +1,13 @@
 import React from "react"
-import { Table, ActionIcon, Paper, Text, Group, Box } from "@mantine/core"
+import {
+  Table,
+  ActionIcon,
+  Paper,
+  Text,
+  Group,
+  Box,
+  LoadingOverlay,
+} from "@mantine/core"
 import {
   ColumnDef,
   createTable,
@@ -29,7 +37,7 @@ export function usePagination(): Pagination {
 }
 
 export function CustomTable<RecordType extends { id: string } = any>(
-  props: NavtableProps<RecordType>,
+  props: NavtableProps<RecordType> & { loading?: boolean },
 ) {
   const [
     { pageIndex, pageSize },
@@ -82,7 +90,8 @@ export function CustomTable<RecordType extends { id: string } = any>(
   const { t } = useTranslation()
   console.log({ groups: instance.getHeaderGroups().map((v) => v.headers) })
   return (
-    <Box>
+    <Box sx={(theme) => ({ position: "relative" })}>
+      <LoadingOverlay visible={props.loading || false} />
       <Paper withBorder={false} shadow="xs">
         <Table>
           <thead>
