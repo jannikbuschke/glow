@@ -9,9 +9,9 @@ export type HeaderProps = {
 export function Header({ title, actions }: HeaderProps) {
   const t =
     typeof title === "string" ? (
-      <Text size="xl" color="dimmed" weight={700}>
-        {title}
-      </Text>
+      <Title order={3}>
+        <Text>{title}</Text>
+      </Title>
     ) : (
       title
     )
@@ -24,15 +24,15 @@ export function Header({ title, actions }: HeaderProps) {
       )
     ) : null
   return (
-    <Box sx={() => ({ display: "flex", flexDirection: "row" })}>
+    <Box
+      sx={() => ({
+        display: "flex",
+        flexDirection: "row",
+        gap: 4,
+      })}
+    >
       <Box sx={() => ({ flex: 1 })}>{t}</Box>
       {a ? <Box>{a}</Box> : null}
     </Box>
   )
 }
-// export const Header = styled(PageHeader)`
-//   padding: 0px;
-//   .ant-page-header-heading {
-//     justify-items: flex-start;
-//   }
-// `
