@@ -47,7 +47,7 @@ export function CustomTable<RecordType extends { id: string } = any>(
     pageSize: 10,
   })
   const itemCount = props.dataSource?.length || 0
-  const pageCount = Math.floor(itemCount / pageSize) + 1
+  const pageCount = Math.floor((itemCount + 10) / pageSize)
   const canPreviousPage = pageIndex > 0
   const canNextPage = pageIndex < pageCount - 1
   function previousPage() {
@@ -78,9 +78,12 @@ export function CustomTable<RecordType extends { id: string } = any>(
           } as ColumnDef<any, { width: string | null }>),
       ),
     getCoreRowModel: getCoreRowModel(),
-    state: {
-      pagination: { pageIndex, pageSize },
-    },
+    state:
+      props.paginate === false
+        ? undefined
+        : {
+            pagination: { pageIndex, pageSize },
+          },
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     onPaginationChange: setPagination,
@@ -88,7 +91,6 @@ export function CustomTable<RecordType extends { id: string } = any>(
   const navigate = useNavigate()
   const { navigateOnClickTo } = props
   const { t } = useTranslation()
-  console.log({ groups: instance.getHeaderGroups().map((v) => v.headers) })
   return (
     <Box sx={(theme) => ({ position: "relative" })}>
       <LoadingOverlay visible={props.loading || false} />
