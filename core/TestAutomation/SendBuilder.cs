@@ -10,13 +10,21 @@ using Newtonsoft.Json.Linq;
 
 namespace Glow.Tests
 {
-    public class SendBuilder<TRequest, TStartup> where TStartup : class
+    public class SendBuilder<TResponse, TStartup> where TStartup : class
     {
         private readonly WebApplicationFactory<TStartup> factory;
+        private readonly Func<HttpClient> clientFactory;
         private readonly object request;
         private string url;
         private UserDto user;
         private readonly bool useSystemTextJson;
+
+        public SendBuilder(Func<HttpClient> clientFactory, object request, bool useSystemTextJson = false)
+        {
+            this.clientFactory = clientFactory;
+            this.request = request;
+            this.useSystemTextJson = useSystemTextJson;
+        }
 
         public SendBuilder(WebApplicationFactory<TStartup> factory, object request, bool useSystemTextJson = false)
         {
@@ -25,19 +33,19 @@ namespace Glow.Tests
             this.useSystemTextJson = useSystemTextJson;
         }
 
-        public SendBuilder<TRequest, TStartup> To(string url)
+        public SendBuilder<TResponse, TStartup> To(string url)
         {
             this.url = url;
             return this;
         }
 
-        public SendBuilder<TRequest, TStartup> As(UserDto user)
+        public SendBuilder<TResponse, TStartup> As(UserDto user)
         {
             this.user = user;
             return this;
         }
 
-        public async Task<TRequest> ExecuteAndRead()
+        public async Task<TResponse> ExecuteAndRead()
         {
             HttpResponseMessage response = await Execute();
             var content = await response.Content.ReadAsStringAsync();
@@ -51,19 +59,19 @@ namespace Glow.Tests
                 var options = new JsonSerializerOptions();
                 JsonSerializationSettings.ConfigureStjSerializerDefaults(options);
                 options.PropertyNameCaseInsensitive = true;
-                TRequest result00 = System.Text.Json.JsonSerializer.Deserialize<TRequest>(content, options);
+                TResponse result00 = System.Text.Json.JsonSerializer.Deserialize<TResponse>(content, options);
                 return result00;
             }
             else
             {
-                TRequest result = JToken.Parse(content).ToObject<TRequest>();
+                TResponse result = JToken.Parse(content).ToObject<TResponse>();
                 return result;
             }
         }
 
         public async Task<HttpResponseMessage> Execute()
         {
-            using HttpClient client = factory.CreateClient();
+            using HttpClient client = clientFactory != null ? clientFactory.Invoke() : factory.CreateClient();
 
             client.SetIntent(SubmitIntent.Execute);
             if (user != null)
