@@ -88,11 +88,16 @@ namespace Glow.Core.Authentication
             StringValues? usernames = httpContextAccessor?.HttpContext?.Request?.Headers["x-username"];
             var username = usernames?.FirstOrDefault() ?? fakeAuthOptions.Value.DefaultUserName;
 
-            FakeUser? user = id != null
+            FakeUser user = id != null
                 ? fakeAuthOptions.Value.Users?.FirstOrDefault(v => v.UserName == id)
                 : username == null
                     ? null //fakeAuthOptions.Value.Users?.FirstOrDefault(v => v.UserName == fakeAuthOptions.Value.DefaultUserName)
                     : fakeAuthOptions.Value.Users?.FirstOrDefault(v => v.UserName == username);
+
+            if (user == null && username != null)
+            {
+                user = fakeAuthOptions.Value.Users?.FirstOrDefault(v => v.UserName == username);
+            }
 
             if (user == null)
             {
