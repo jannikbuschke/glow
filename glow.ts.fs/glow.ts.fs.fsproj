@@ -9,7 +9,7 @@
 
     <ItemGroup>
         <Compile Include="Library.fs" />
-        <Compile Include="CustomFields.fs" />
+        <Compile Include="GenerateModules.fs" />
     </ItemGroup>
 
 </Project>
