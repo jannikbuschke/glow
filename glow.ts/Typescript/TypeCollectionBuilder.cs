@@ -1,6 +1,7 @@
 using System.Reflection;
 using System.Text.RegularExpressions;
 using Glow.TypeScript;
+using Microsoft.CodeAnalysis.Options;
 using Microsoft.FSharp.Core;
 using Microsoft.FSharp.Reflection;
 using OneOf;
@@ -93,7 +94,29 @@ namespace Glow.Core.Typescript
 
         private OneOf<TsType, TsEnum> CreateOrGet(Type type, bool skipDependencies = false)
         {
-            if (type == typeof(Object))
+            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(FSharpOption<>))
+            {
+                var args = type.GetGenericArguments().First();
+                var tsType = CreateOrGet(args);
+                if (tsType.IsT0)
+                {
+                    var t0 = tsType.AsT0;
+                    if (t0.IsPrimitive)
+                    {
+                        t0.DefaultValue = "null";
+                        t0.Name = t0.Name.EndsWith("null") ? t0.Name : t0.Name + " | null";
+                    }
+                    else
+                    {
+                        t0.IsNullable = true;
+                        t0.DefaultValue = "null";
+                    }
+                }
+
+                return tsType;
+            }
+
+            if (type == typeof(object))
             {
                 return TsType.Any();
             }
@@ -142,12 +165,7 @@ namespace Glow.Core.Typescript
 
             if (FSharpType.IsUnion(type, null))
             {
-                if (type.Name.Contains("CircularStatus"))
-                {
-                    Console.WriteLine("BUILLDDD CIRCULAR STATUS");
-                    Console.WriteLine("BUILLDDD CIRCULAR STATUS");
 
-                }
                 var cases = FSharpType.GetUnionCases(type, FSharpOption<BindingFlags>.Some(BindingFlags.Public));
 
                 if (cases.Length == 1)
@@ -176,13 +194,6 @@ namespace Glow.Core.Typescript
                 }
                 else if(!type.IsGenericType)
                 {
-                    if (type.Name.Contains("CircularStatus"))
-                    {
-                        Console.WriteLine("BUILLDDD CIRCULAR STATUS!!!");
-                        Console.WriteLine("BUILLDDD CIRCULAR STATUS");
-
-                    }
-
                     var fullName = type.FullName;
                     if (tsTypes.ContainsKey(fullName))
                     {
@@ -590,7 +601,7 @@ namespace Glow.Core.Typescript
 
                         return v1.Name;
                     }, v2 => v2.Name);
-                    var isNullable = tsType.Match(v1 => false, v2 => v2.IsNullable);
+                    var isNullable = tsType.Match(v1 =>v1.IsNullable /*v1.DefaultValue == "null"*/, v2 => v2.IsNullable);
                     return new Property
                     {
                         PropertyName = v.Name.CamelCase(),
