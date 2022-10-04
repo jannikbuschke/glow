@@ -1,5 +1,6 @@
 using System.Reflection;
 using System.Text.RegularExpressions;
+using Glow.Ts;
 using Glow.TypeScript;
 using Microsoft.CodeAnalysis.Options;
 using Microsoft.FSharp.Core;
@@ -68,6 +69,12 @@ namespace Glow.Core.Typescript
                 try
                 {
                     OneOf<TsType, TsEnum> result = CreateOrGet(type);
+                }
+                catch (CodeGenerationNotSupported e)
+                {
+                    Console.WriteLine(e.Message);
+                    Console.WriteLine("Could not generate ts type for " + type.FullName);
+                    throw;
                 }
                 catch (Exception e)
                 {
@@ -183,13 +190,13 @@ namespace Glow.Core.Typescript
                         }
                         else
                         {
-                            throw new NotSupportedException("Single case DU with non-primitive field not yet supported Name = " + type.FullName);
+                            throw new CodeGenerationNotSupported("Single case DU with non-primitive field not yet supported Name = " + type.FullName);
                         }
 
                     }
                     else
                     {
-                        throw new NotSupportedException("Single case DU with multiple fields not yet supported Name= "  + type.FullName);
+                        throw new CodeGenerationNotSupported("Single case DU with multiple fields not yet supported Name= "  + type.FullName);
                     }
                 }
                 else if(!type.IsGenericType)
@@ -529,8 +536,10 @@ namespace Glow.Core.Typescript
             }
             catch (Exception e)
             {
-                throw new Exception("Could not get primitive for " + type.FullName + " / element type = " +
-                                    elementType.FullName + " " + e.Message);
+                throw new CodeGenerationNotSupported("Could not get primitive for " + type.FullName + " / element type = " +
+                                                     elementType.FullName + " " + e.Message);
+                // throw new Exception("Could not get primitive for " + type.FullName + " / element type = " +
+                //                     elementType.FullName + " " + e.Message);
             }
         }
 
@@ -538,7 +547,8 @@ namespace Glow.Core.Typescript
         {
             if (!GetTypeExtension.primitives.ContainsKey(type))
             {
-                throw new Exception($"Type '{type.FullName}' not a primitive");
+                throw new CodeGenerationNotSupported($"Type '{type.FullName}' not a primitive");
+                // throw new Exception($"Type '{type.FullName}' not a primitive");
             }
 
             (var name, var defaultValue) = GetTypeExtension.primitives[type];
@@ -585,33 +595,40 @@ namespace Glow.Core.Typescript
 
         private void PopuplateProperties(TsType type)
         {
-            type.Properties = type.PropertyInfos?
-                .DistinctBy(v => v.Name)
-                .Select(v =>
-                {
-                    OneOf<TsType, TsEnum> tsType = CreateOrGet(v.PropertyType, skipDependencies: true);
+            try
+            {
+                type.Properties = type.PropertyInfos?
+                    .DistinctBy(v => v.Name)
+                    .Select(v =>
+                    {
+                        OneOf<TsType, TsEnum> tsType = CreateOrGet(v.PropertyType, skipDependencies: true);
 
-                    var defaultValue = tsType.Match(v1 => v1.DefaultValue, v2 =>
-                    {
-                        return "default" + v2.Name;
-                    });
-                    var typeName = tsType.Match(v1 =>
-                    {
-                        if (v1.Name == "any") { return "any"; }
+                        var defaultValue = tsType.Match(v1 => v1.DefaultValue, v2 =>
+                        {
+                            return "default" + v2.Name;
+                        });
+                        var typeName = tsType.Match(v1 =>
+                        {
+                            if (v1.Name == "any") { return "any"; }
 
-                        return v1.Name;
-                    }, v2 => v2.Name);
-                    var isNullable = tsType.Match(v1 =>v1.IsNullable /*v1.DefaultValue == "null"*/, v2 => v2.IsNullable);
-                    return new Property
-                    {
-                        PropertyName = v.Name.CamelCase(),
-                        DefaultValue = defaultValue,
-                        TsType = tsType,
-                        IsNullable = isNullable,
-                        TypeName = tsType.IsT0 && tsType.AsT0.Namespace == "System" ? "any" : typeName,
-                        IsCyclic = tsType.IsT0 && visited.Contains(tsType.AsT0),
-                    };
-                }).ToList();
+                            return v1.Name;
+                        }, v2 => v2.Name);
+                        var isNullable = tsType.Match(v1 => v1.IsNullable /*v1.DefaultValue == "null"*/, v2 => v2.IsNullable);
+                        return new Property
+                        {
+                            PropertyName = v.Name.CamelCase(),
+                            DefaultValue = defaultValue,
+                            TsType = tsType,
+                            IsNullable = isNullable,
+                            TypeName = tsType.IsT0 && tsType.AsT0.Namespace == "System" ? "any" : typeName,
+                            IsCyclic = tsType.IsT0 && visited.Contains(tsType.AsT0),
+                        };
+                    }).ToList();
+            }
+            catch (Exception e)
+            {
+                throw new CodeGenerationNotSupported(e.Message);
+            }
         }
 
         private bool IsNullable(Type type)

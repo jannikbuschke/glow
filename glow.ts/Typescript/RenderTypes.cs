@@ -158,7 +158,7 @@ namespace Glow.Core.Typescript
             if (type.DefaultValue != null)
             {
                 builder.AppendLine($"export const default{name}: {name} = {{");
-                RenderProperties(type.Properties, builder, 0, 1);
+                RenderProperties(type.Properties, builder, 0, 1, type.Name);
                 builder.AppendLine("}");
             }
 
@@ -170,10 +170,10 @@ namespace Glow.Core.Typescript
             foreach (DuCase v in type.Cases)
             {
                 var caseTypeName = $"{type.Name}_Case_{v.Name}";
-                Console.WriteLine("Handle DU " + type.Namespace + " " + type.Name);
+                // Console.WriteLine("Handle DU " + type.Namespace + " " + type.Name);
                 if (v.Fields.Length > 1)
                 {
-                    Console.WriteLine("Field length > 1, append");
+                    // Console.WriteLine("Field length > 1, append");
 
                     builder.AppendLine(
                         @$"export type {caseTypeName} = {{
@@ -189,13 +189,13 @@ namespace Glow.Core.Typescript
                 }
                 else if (v.IsNull)
                 {
-                    Console.WriteLine("v.IsNull");
+                    // Console.WriteLine("v.IsNull");
 
                     builder.AppendLine(@$"export type {v.Name} = null");
                 }
                 else if (v.Fields.Length == 0)
                 {
-                    Console.WriteLine("Field length = 0, append");
+                    // Console.WriteLine("Field length = 0, append");
 
                     builder.AppendLine(
                         @$"export type {caseTypeName} = {{
@@ -204,7 +204,7 @@ namespace Glow.Core.Typescript
                 }
                 else if (v.Fields.Length == 1)
                 {
-                    Console.WriteLine("Field length = 1, append");
+                    // Console.WriteLine("Field length = 1, append");
 
                     TsType field = v.Fields.First();
                     builder.AppendLine(
@@ -220,7 +220,7 @@ namespace Glow.Core.Typescript
                 }
                 else
                 {
-                    Console.WriteLine("SKIPP°!!!");
+                    // Console.WriteLine("SKIP°!!!");
                 }
 
                 builder.AppendLine();
@@ -264,13 +264,14 @@ namespace Glow.Core.Typescript
             // builder.AppendLine($@"export const default{type.Name}: {type.Name} = default{type.Cases.First().Name}");
         }
 
-        private static void RenderProperties(List<Property> properties, StringBuilder builder, int depth, int maxDepth)
+        private static void RenderProperties(List<Property> properties, StringBuilder builder, int depth, int maxDepth, string typeName)
         {
             if (properties == null)
             {
+
                 builder.Append(" // skipped rendering properties (null)");
                 builder.AppendLine("");
-                Console.WriteLine("skip rendering properties (is null)");
+                Console.WriteLine($"skip rendering properties (is null). This should usually not happen. Type = {typeName}");
                 return;
             }
 
@@ -306,7 +307,7 @@ namespace Glow.Core.Typescript
 
                         builder.AppendLine($"  {property.PropertyName}: {{");
 
-                        RenderProperties(property.TsType.AsT0.Properties, builder, depth + 1, maxDepth);
+                        RenderProperties(property.TsType.AsT0.Properties, builder, depth + 1, maxDepth, typeName);
 
                         builder.Append("  ".PadRight(depth));
 

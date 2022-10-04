@@ -57,8 +57,6 @@ namespace Glow.Core.Typescript
 
                 var t0  = all.Where(v => v.IsT0).Select(v => v.AsT0).ToList();
 
-                var status = all.FirstOrDefault(v => v.IsT0 && v.AsT0.Name.Contains("CircularStatus"));
-
                 IEnumerable<IGrouping<string, OneOf<TsType, TsEnum>>> byNamespace =
                     all.GroupBy(v => v.Match(v1 => v1.Namespace, v2 => v2.Namespace));
 
@@ -74,7 +72,14 @@ namespace Glow.Core.Typescript
                 {
                     foreach (TsType v in t0)
                     {
-                        Console.WriteLine("Typ went missing:  " + v.FullName);
+                        if (v.IsCollection)
+                        {
+
+                        }
+                        else
+                        {
+                        Console.WriteLine("Type went missing:  " + v.FullName + " " + v.Id);
+                        }
                     }
                 }
 

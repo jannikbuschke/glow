@@ -5,6 +5,11 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Glow.Ts;
 
+public class CodeGenerationNotSupported : System.Exception
+{
+    public CodeGenerationNotSupported(string msg):base(msg) { }
+}
+
 public static class ServiceExtensions
 {
     public static IServiceCollection AddGlowActions(

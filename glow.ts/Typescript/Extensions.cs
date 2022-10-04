@@ -18,6 +18,7 @@ namespace Glow.TypeScript
         public ApiOptions ApiOptions { get; set; }
         public Assembly[] Assemblies { get; set; }
         public Action<OneOf<TsType, TsEnum>> Update { get; set; }
+        public bool WithPathProxy { get; set; }
 
         public string GetPath()
         {

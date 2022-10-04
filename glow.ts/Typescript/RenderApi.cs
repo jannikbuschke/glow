@@ -43,7 +43,7 @@ namespace Glow.Core.Typescript
             imports.AppendLine($@"import {{ useApi, ApiResult, useNotify }} from ""{glowPath}""");
             imports.AppendLine(
                 $@"import {{ useAction, useSubmit, UseSubmit, ProblemDetails }} from ""{useSubmitPath}""");
-            imports.AppendLine(@"import { Formik, FormikConfig, FormikFormProps } from ""formik""");
+            imports.AppendLine(@"import { Formik, FormikConfig, FormikFormProps, FormikProps } from ""formik""");
             imports.AppendLine(@"import { Form } from ""formik-antd""");
 
             var modules = types.Modules;
@@ -122,10 +122,10 @@ namespace Glow.Core.Typescript
             actionOutputs.AppendLine("}");
             actionInputs.AppendLine("}");
 
-            actionInputs.AppendLine(@"
-type TagWithKey<TagName extends string, T> = {
-  [K in keyof T]: { [_ in TagName]: K } & T[K]
-};
+            actionInputs.AppendLine($@"
+type TagWithKey<TagName extends string, T> = {{
+  [K in keyof T]: {{ [_ in TagName]: K }} & T[K]
+}};
 
 export type ActionTable = TagWithKey<""url"", Actions>
 
@@ -141,76 +141,106 @@ export const useTypedAction: TypedActionHook = <
   ActionName extends keyof ActionTable
 >(
   key: ActionName,
-) => {
+) => {{
   const s = useAction<Actions[ActionName], Outputs[ActionName]>(key)
   return s
-}
+}}
 
 type QueryTable = TagWithKey<""url"", QueryInputs>;
 
-export function useTypedQuery<ActionName extends keyof QueryTable>(key: ActionName, {
+export function useTypedQuery<ActionName extends keyof QueryTable>(key: ActionName, {{
     placeholder,
     input,
     queryOptions
-  }: {
+  }}: {{
     placeholder: QueryOutputs[ActionName],
     input:  QueryInputs[ActionName]
     queryOptions?: UseQueryOptions<QueryOutputs[ActionName]>
-  }): ApiResult<QueryOutputs[ActionName]> {
+  }}): ApiResult<QueryOutputs[ActionName]> {{
 
-  const { data, ...rest} = useApi({
+  const {{ data, ...rest}} = useApi({{
     url: key,
     method:""POST"",
     payload: input,
     // todo: find defaultPlaceholder
     placeholder: placeholder,
     queryOptions: queryOptions
-  })
+  }})
 
   const result = data as QueryOutputs[ActionName]
 
-  return { data: result, ...rest} as any
-}
+  return {{ data: result, ...rest}} as any
+}}
 
-export function TypedForm<ActionName extends keyof ActionTable>({
+export type FieldPath<P, S> = {{
+  _PATH_: string & {{ _BRAND_: P & S }}
+}}
+
+export type PathProxy<P, S> = FieldPath<P, S> &
+  {{ [K in keyof S]: PathProxy<P, S[K]> }}
+
+const IdPath = {{ _PATH_: """" }} as FieldPath<any, any>
+
+export function pathProxy<S, P = S>(
+  parent: FieldPath<P, S> = IdPath as any,
+): PathProxy<P, S> {{
+  return new Proxy(parent as any, {{
+    get(target: any, key: any) {{
+      if (key in target) return target[key]
+      return pathProxy<any, any>({{
+        _PATH_: `${{parent._PATH_ && parent._PATH_ + "".""}}${{key}}`,
+        }} as any)
+    }},
+}})
+}}
+
+export function TypedForm<ActionName extends keyof ActionTable>({{
   initialValues,
   actionName,
   formProps,
   children,
   onSuccess,
   onError,
-}: Omit<FormikConfig<Actions[ActionName]>, ""onSubmit""> & {
+}}: Omit<FormikConfig<Actions[ActionName]>, ""onSubmit""{(options.WithPathProxy ?@"|""children""":"")}> & {{
+{(options.WithPathProxy ? "  children: ((props: FormikProps<Actions[ActionName]>, pathProxy: PathProxy<Actions[ActionName], Actions[ActionName]>) => React.ReactNode) | React.ReactNode" : "")}
   actionName: ActionName
   formProps?: FormikFormProps
   onSuccess?: (payload: Outputs[ActionName]) => void
   onError?: (error: ProblemDetails) => void
-}) {
-  const { messageSuccess, notifyError } = useNotify()
+}}) {{
+  const _ = React.useMemo(()=> pathProxy<Actions[ActionName]>(),[])
+  const {{ messageSuccess, notifyError}} = useNotify()
   const [submit, validate] = useTypedAction<ActionName>(actionName)
   return (
     <Formik
-      validate={validate}
-      validateOnBlur={true}
-      enableReinitialize={true}
-      validateOnChange={false}
-      initialValues={initialValues}
-      onSubmit={async (values) => {
+      validate={{validate}}
+      validateOnBlur={{true}}
+      enableReinitialize={{true}}
+      validateOnChange={{false}}
+      initialValues={{initialValues}}
+      onSubmit={{async (values) => {{
         const response = await submit(values)
-        if (response.ok) {
+        if (response.ok) {{
           onSuccess && onSuccess(response.payload)
-        } else {
+        }} else {{
           onError && onError(response.error)
           !onError && notifyError(response.error)
-        }
+        }}
       }}
+    }}
     >
-      {(f) => (
-        <Form {...formProps}>
-          {typeof children === ""function"" ? children(f) : children}
-        </Form>
-      )}
+      {{(f) => (
+{(options.WithPathProxy?
+@$"       <form {{...formProps}}>
+        {{typeof children === ""function"" ? children(f,_) : children}}
+        </form>" :
+@$"        <Form {{...formProps}}>
+          {{typeof children === ""function"" ? children(f) : children}}
+        </Form>")}
+
+      )}}
     </Formik>)
-}
+}}
 ");
 
             File.WriteAllText(path + "api.tsx", imports.ToString());

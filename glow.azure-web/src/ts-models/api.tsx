@@ -4,7 +4,7 @@ import * as React from "react"
 import { QueryOptions, UseQueryOptions } from "react-query"
 import { useApi, ApiResult, useNotify } from "glow-core"
 import { useAction, useSubmit, UseSubmit, ProblemDetails } from "glow-core"
-import { Formik, FormikConfig, FormikFormProps } from "formik"
+import { Formik, FormikConfig, FormikFormProps, FormikProps } from "formik"
 import { Form } from "formik-antd"
 import * as Glow_TestAutomation from "./Glow.TestAutomation"
 import * as Glow_Azure_AzureKeyVault from "./Glow.Azure.AzureKeyVault"
@@ -73,6 +73,28 @@ export function useTypedQuery<ActionName extends keyof QueryTable>(key: ActionNa
   return { data: result, ...rest} as any
 }
 
+export type FieldPath<P, S> = {
+  _PATH_: string & { _BRAND_: P & S }
+}
+
+export type PathProxy<P, S> = FieldPath<P, S> &
+  { [K in keyof S]: PathProxy<P, S[K]> }
+
+const IdPath = { _PATH_: "" } as FieldPath<any, any>
+
+export function pathProxy<S, P = S>(
+  parent: FieldPath<P, S> = IdPath as any,
+): PathProxy<P, S> {
+  return new Proxy(parent as any, {
+    get(target: any, key: any) {
+      if (key in target) return target[key]
+      return pathProxy<any, any>({
+        _PATH_: `${parent._PATH_ && parent._PATH_ + "."}${key}`,
+        } as any)
+    },
+})
+}
+
 export function TypedForm<ActionName extends keyof ActionTable>({
   initialValues,
   actionName,
@@ -81,12 +103,14 @@ export function TypedForm<ActionName extends keyof ActionTable>({
   onSuccess,
   onError,
 }: Omit<FormikConfig<Actions[ActionName]>, "onSubmit"> & {
+
   actionName: ActionName
   formProps?: FormikFormProps
   onSuccess?: (payload: Outputs[ActionName]) => void
   onError?: (error: ProblemDetails) => void
 }) {
-  const { messageSuccess, notifyError } = useNotify()
+  const _ = React.useMemo(()=> pathProxy<Actions[ActionName]>(),[])
+  const { messageSuccess, notifyError} = useNotify()
   const [submit, validate] = useTypedAction<ActionName>(actionName)
   return (
     <Formik
@@ -103,12 +127,14 @@ export function TypedForm<ActionName extends keyof ActionTable>({
           onError && onError(response.error)
           !onError && notifyError(response.error)
         }
-      }}
+      }
+    }
     >
       {(f) => (
         <Form {...formProps}>
           {typeof children === "function" ? children(f) : children}
         </Form>
+
       )}
     </Formik>)
 }

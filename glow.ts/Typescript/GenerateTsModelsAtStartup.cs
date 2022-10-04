@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Glow.Core.Actions;
+using Glow.Ts;
 using Glow.Ts.Events;
 using Glow.TypeScript;
 using Microsoft.AspNetCore.Hosting;
@@ -46,6 +47,10 @@ namespace Glow.Core.Typescript
                 try
                 {
                     await GenerateTypes(option);
+                }
+                catch (CodeGenerationNotSupported e)
+                {
+                    throw;
                 }
                 catch (Exception e)
                 {
