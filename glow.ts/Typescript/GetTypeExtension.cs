@@ -138,6 +138,8 @@ namespace Glow.Core.Typescript
                 {typeof(ICollection<string>), new Tuple<string, string>("(string | null)[]", "[]")},
                 {typeof(TimeSpan), new Tuple<string, string>("string",  @"""00:00:00""") },
                 {typeof(TimeSpan?), new Tuple<string, string>("string | null", "null") },
+                {typeof(NodaTime.LocalTime), new Tuple<string, string>("string", @"""00:00:00""") },
+                {typeof(NodaTime.Offset), new Tuple<string, string>("string", @"""+00""") },
             };
     }
 }
