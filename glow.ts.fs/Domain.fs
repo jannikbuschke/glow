@@ -10,4 +10,4 @@ type GenericArguments = string list
 type DuCaseSignature = DuCaseSignature of string
 
 module DuCaseSignature =
-    let value (DuCaseSignature s) = s
+  let value (DuCaseSignature s) = s

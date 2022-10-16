@@ -13,40 +13,47 @@ module OldTests =
 
   type RecordWithPrimitiveOption = { Id: Guid; NumberOption: int option }
 
-  type RecordWithOption = {Id:Guid;Option: SimpleRecord option}
+  type RecordWithOption =
+    { Id: Guid
+      Option: SimpleRecord option }
 
-  type RecordWithResult = { Id:Guid;Result: Result<int,string> }
-  type RecordWithResult2 = { Id: Guid;Result: Result<SimpleRecord,string> }
+  type RecordWithResult =
+    { Id: Guid
+      Result: Result<int, string> }
+
+  type RecordWithResult2 =
+    { Id: Guid
+      Result: Result<SimpleRecord, string> }
 
   type RecordWithNodatimeInstant = { Id: Guid; Instant: NodaTime.Instant }
 
   type RecordWithPrimitiveList = { Id: Guid; StringList: string list }
 
   type RecordWithRecordList =
-      { Id: Guid
-        RecordList: SimpleRecord list }
+    { Id: Guid
+      RecordList: SimpleRecord list }
 
   type RecordWithOptionalRecordList =
-      { Id: Guid
-        OptionalRecordList: SimpleRecord option list }
+    { Id: Guid
+      OptionalRecordList: SimpleRecord option list }
 
   type SingleCaseUnion = Email of string
   type RecordWithSingleCaseDu = { SingleCaseUnion: SingleCaseUnion }
 
   type DuWithoutTypes =
-      | FirstCase
-      | SecondCase
-      | ThirdCase
+    | FirstCase
+    | SecondCase
+    | ThirdCase
 
   type ComplexDu =
-      | Record of SimpleRecord
-      | Record2 of RecordWithPrimitiveOption
+    | Record of SimpleRecord
+    | Record2 of RecordWithPrimitiveOption
 
   type MixedDu =
-      | FirstCase
-      | SecondCase of string
-      | Record of SimpleRecord
-      | Record2 of RecordWithPrimitiveOption
+    | FirstCase
+    | SecondCase of string
+    | Record of SimpleRecord
+    | Record2 of RecordWithPrimitiveOption
 
   type RecordWithDuWithoutFields = { Id: Guid; Du: DuWithoutTypes }
 
@@ -61,8 +68,8 @@ module OldTests =
     let collection = builder.Generate(null)
     let m = collection.Modules.First()
 
-    let renderedModule =
-      RenderTypes.RenderModule(m, null)
+    let renderedModule = RenderTypes.RenderModule(m, null)
+
     let expected =
       @"export interface RecordWithPrimitiveOption {
   id: string
@@ -77,7 +84,13 @@ export const defaultRecordWithPrimitiveOption: RecordWithPrimitiveOption = {
 
 "
 
-    let compareResult = String.Compare(renderedModule, expected, CultureInfo.InvariantCulture, CompareOptions.IgnoreCase ||| CompareOptions.IgnoreSymbols)
+    let compareResult =
+      String.Compare(
+        renderedModule,
+        expected,
+        CultureInfo.InvariantCulture,
+        CompareOptions.IgnoreCase ||| CompareOptions.IgnoreSymbols
+      )
 
     Expect.equal compareResult 0 "compare"
 
@@ -88,8 +101,8 @@ export const defaultRecordWithPrimitiveOption: RecordWithPrimitiveOption = {
     let collection = builder.Generate(null)
     let m = collection.Modules.First()
 
-    let renderedModule =
-      RenderTypes.RenderModule(m, null)
+    let renderedModule = RenderTypes.RenderModule(m, null)
+
     let expected =
       @"export interface RecordWithSingleCaseDu {
   singleCaseUnion: string | null
@@ -103,7 +116,13 @@ export const defaultRecordWithSingleCaseDu: RecordWithSingleCaseDu = {
 
 "
 
-    let compareResult = String.Compare(renderedModule, expected, CultureInfo.InvariantCulture, CompareOptions.IgnoreCase ||| CompareOptions.IgnoreSymbols)
+    let compareResult =
+      String.Compare(
+        renderedModule,
+        expected,
+        CultureInfo.InvariantCulture,
+        CompareOptions.IgnoreCase ||| CompareOptions.IgnoreSymbols
+      )
 
     Expect.equal compareResult 0 "compare"
 
@@ -115,8 +134,8 @@ export const defaultRecordWithSingleCaseDu: RecordWithSingleCaseDu = {
     let collection = builder.Generate(null)
     let m = collection.Modules.First()
 
-    let renderedModule =
-      RenderTypes.RenderModule(m, null)
+    let renderedModule = RenderTypes.RenderModule(m, null)
+
     let expected =
       @"export interface SimpleRecord {
 }
@@ -156,7 +175,13 @@ interface RecordWithComplexDu = {
 
 "
 
-    let compareResult = String.Compare(renderedModule, expected, CultureInfo.InvariantCulture, CompareOptions.IgnoreCase ||| CompareOptions.IgnoreSymbols)
+    let compareResult =
+      String.Compare(
+        renderedModule,
+        expected,
+        CultureInfo.InvariantCulture,
+        CompareOptions.IgnoreCase ||| CompareOptions.IgnoreSymbols
+      )
 
     Expect.equal compareResult 0 "compare"
 
@@ -168,8 +193,8 @@ interface RecordWithComplexDu = {
     let collection = builder.Generate(null)
     let m = collection.Modules.First()
 
-    let renderedModule =
-      RenderTypes.RenderModule(m, null)
+    let renderedModule = RenderTypes.RenderModule(m, null)
+
     let expected =
       @"export type DuWithoutTypes_Case_FirstCase = {
   case: ""FirstCase""
@@ -192,7 +217,13 @@ export const defaultDuWithoutTypes = null as any as DuWithoutTypes
 
 "
 
-    let compareResult = String.Compare(renderedModule, expected, CultureInfo.InvariantCulture, CompareOptions.IgnoreCase ||| CompareOptions.IgnoreSymbols)
+    let compareResult =
+      String.Compare(
+        renderedModule,
+        expected,
+        CultureInfo.InvariantCulture,
+        CompareOptions.IgnoreCase ||| CompareOptions.IgnoreSymbols
+      )
 
     Expect.equal compareResult 0 "compare"
 
@@ -204,8 +235,8 @@ export const defaultDuWithoutTypes = null as any as DuWithoutTypes
     let collection = builder.Generate(null)
     let m = collection.Modules.First()
 
-    let renderedModule =
-      RenderTypes.RenderModule(m, null)
+    let renderedModule = RenderTypes.RenderModule(m, null)
+
     let expected =
       @"export type DuWithoutTypes_Case_FirstCase = {
   case: ""FirstCase""
@@ -228,7 +259,13 @@ export const defaultDuWithoutTypes = null as any as DuWithoutTypes
 
 "
 
-    let compareResult = String.Compare(renderedModule, expected, CultureInfo.InvariantCulture, CompareOptions.IgnoreCase ||| CompareOptions.IgnoreSymbols)
+    let compareResult =
+      String.Compare(
+        renderedModule,
+        expected,
+        CultureInfo.InvariantCulture,
+        CompareOptions.IgnoreCase ||| CompareOptions.IgnoreSymbols
+      )
 
     Expect.equal compareResult 0 "compare"
 
@@ -240,11 +277,11 @@ export const defaultDuWithoutTypes = null as any as DuWithoutTypes
     let collection = builder.Generate(null)
     Expect.hasLength collection.Modules 2 "should be length 2"
 
-    let m = collection.Modules.First(fun v->v.Namespace="GlowTest")
-    let m = collection.Modules.First(fun v->v.Namespace="Fsharp.Core")
+    let m = collection.Modules.First(fun v -> v.Namespace = "GlowTest")
+    let m = collection.Modules.First(fun v -> v.Namespace = "Fsharp.Core")
 
-    let renderedModule =
-      RenderTypes.RenderModule(m, null)
+    let renderedModule = RenderTypes.RenderModule(m, null)
+
     let expected =
       @"export type DuWithoutTypes_Case_FirstCase = {
   case: ""FirstCase""
@@ -267,6 +304,12 @@ export const defaultDuWithoutTypes = null as any as DuWithoutTypes
 
 "
 
-    let compareResult = String.Compare(renderedModule, expected, CultureInfo.InvariantCulture, CompareOptions.IgnoreCase ||| CompareOptions.IgnoreSymbols)
+    let compareResult =
+      String.Compare(
+        renderedModule,
+        expected,
+        CultureInfo.InvariantCulture,
+        CompareOptions.IgnoreCase ||| CompareOptions.IgnoreSymbols
+      )
 
     Expect.equal compareResult 0 "compare"

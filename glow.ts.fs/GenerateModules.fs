@@ -4,276 +4,256 @@ open System
 open Domain
 
 type TsSignature =
-    { TsNamespace: TsNamespace
-      TsName: TsName
-      IsGenericParameter: bool
-      GenericArgumentTypes: TsSignature list
-      GenericArguments: GenericArguments }
-    member this.IsGeneric() = this.GenericArguments.Length > 0
+  { TsNamespace: TsNamespace
+    TsName: TsName
+    IsGenericParameter: bool
+    GenericArgumentTypes: TsSignature list
+    GenericArguments: GenericArguments }
 
-    member this.GetName() =
-        let (TsName name) = this.TsName
-        name
+  member this.IsGeneric() = this.GenericArguments.Length > 0
 
-    member this.NameWithGenericArguments() =
-        let args =
-            "<"
-            + (this.GenericArgumentTypes
-               |> Seq.map (fun v -> v.TsName)
-               |> Seq.map (fun (TsName name) -> name)
-               |> String.concat ",")
-            + ">"
+  member this.GetName() =
+    let (TsName name) = this.TsName
+    name
 
-        let empty = ""
-        $"{this.GetName()}{(if this.IsGeneric() then args else empty)}"
+  member this.NameWithGenericArguments() =
+    let args =
+      "<"
+      + (this.GenericArgumentTypes
+         |> Seq.map (fun v -> v.TsName)
+         |> Seq.map (fun (TsName name) -> name)
+         |> String.concat ",")
+      + ">"
+
+    let empty = ""
+    $"{this.GetName()}{(if this.IsGeneric() then args else empty)}"
 
 type FullTsTypeId =
-    { Id: TsTypeId
-      OriginalName: string
-      OriginalNamespace: NamespaceName
-      TsSignature: TsSignature
-      IsGenericParameter: bool }
+  { Id: TsTypeId
+    OriginalName: string
+    OriginalNamespace: NamespaceName
+    TsSignature: TsSignature
+    IsGenericParameter: bool }
 
 let rec getTsSignature (t: Type) : TsSignature =
 
-    let args0 = t.GetGenericArguments()
+  let args0 = t.GetGenericArguments()
 
-    let args =
-        t.GetGenericArguments()
-        |> Seq.toList
-        |> List.mapi (fun i v -> $"T{i}")
+  let args = t.GetGenericArguments() |> Seq.toList |> List.mapi (fun i v -> $"T{i}")
 
-    let name =
-        if args.Length > 0 then
-            t.Name.Substring(0, (t.Name.IndexOf "`"))
-        else
-            t.Name
+  let name =
+    if args.Length > 0 then
+      t.Name.Substring(0, (t.Name.IndexOf "`"))
+    else
+      t.Name
 
-    let genericArgumentTypes =
-        if args.Length > 0 then
-            args0
-            |> Seq.toList
-            |> List.map (fun v -> getTsSignature (v))
-        else
-            []
+  let genericArgumentTypes =
+    if args.Length > 0 then
+      args0 |> Seq.toList |> List.map (fun v -> getTsSignature (v))
+    else
+      []
 
-    match t.Namespace, t.Name with
-    | _ ->
-        { TsNamespace = TsNamespace t.Namespace
-          TsName = TsName name
-          IsGenericParameter = t.IsGenericParameter
-          GenericArgumentTypes = genericArgumentTypes
-          GenericArguments = args }
+  match t.Namespace, t.Name with
+  | _ ->
+    { TsNamespace = TsNamespace t.Namespace
+      TsName = TsName name
+      IsGenericParameter = t.IsGenericParameter
+      GenericArgumentTypes = genericArgumentTypes
+      GenericArguments = args }
 
 let getModuleNameAndId (arg: Type) : FullTsTypeId =
-    { Id = TsTypeId arg.FullName
-      TsSignature = getTsSignature arg
-      OriginalName = arg.Name
-      IsGenericParameter = arg.IsGenericParameter
-      OriginalNamespace = NamespaceName arg.Namespace }
+  { Id = TsTypeId arg.FullName
+    TsSignature = getTsSignature arg
+    OriginalName = arg.Name
+    IsGenericParameter = arg.IsGenericParameter
+    OriginalNamespace = NamespaceName arg.Namespace }
 
 type TsType =
-    { Id: FullTsTypeId
-      Type: Type
-      Dependencies: FullTsTypeId list }
+  { Id: FullTsTypeId
+    Type: Type
+    Dependencies: FullTsTypeId list }
 
 type Namespace =
-    { Name: TsNamespace
-      Items: TsType list }
+  { Name: TsNamespace
+    Items: TsType list }
 
 let rec toTsType (depth: int) (t: Type) : TsType list =
 
-    let duDependencies =
-        if FSharp.Reflection.FSharpType.IsUnion(t) then
-            let cases =
-                FSharp.Reflection.FSharpType.GetUnionCases(t)
+  let duDependencies =
+    if FSharp.Reflection.FSharpType.IsUnion(t) then
+      let cases = FSharp.Reflection.FSharpType.GetUnionCases(t)
 
-            let deps =
-                cases
-                |> Seq.collect (fun v -> v.GetFields())
-                |> Seq.map (fun v -> v.PropertyType)
-                |> Seq.collect (toTsType (depth + 1))
-                |> Seq.toList
-
-            deps
-        else
-            []
-
-    let properties =
-        t.GetProperties()
+      let deps =
+        cases
+        |> Seq.collect (fun v -> v.GetFields())
+        |> Seq.map (fun v -> v.PropertyType)
+        |> Seq.collect (toTsType (depth + 1))
         |> Seq.toList
-        |> List.collect
-            (fun v ->
-                if v.PropertyType.Equals(t) then
-                    []
-                else
-                    toTsType (depth + 1) v.PropertyType)
-        |> List.distinct
 
-    let result =
-        if t.IsGenericType then
-            let genericArgs = t.GetGenericArguments()
+      deps
+    else
+      []
 
-            let tsArgs =
-                genericArgs
-                |> Seq.toList
-                |> List.collect (toTsType (depth + 1))
+  let properties =
+    t.GetProperties()
+    |> Seq.toList
+    |> List.collect (fun v ->
+      if v.PropertyType.Equals(t) then
+        []
+      else
+        toTsType (depth + 1) v.PropertyType)
+    |> List.distinct
 
-            // use generic typedef
-//        let t = t.GetGenericTypeDefinition()
+  let result =
+    if t.IsGenericType then
+      let genericArgs = t.GetGenericArguments()
 
-            let fullId = getModuleNameAndId t
+      let tsArgs = genericArgs |> Seq.toList |> List.collect (toTsType (depth + 1))
 
-            ({ Id = fullId
-               Type = t
-               Dependencies = [] }
-             :: tsArgs)
-        else
-            let fullId = getModuleNameAndId t
+      // use generic typedef
+      //        let t = t.GetGenericTypeDefinition()
 
-            [ { Id = fullId
-                Type = t
-                Dependencies = [] } ]
+      let fullId = getModuleNameAndId t
 
-    result @ properties @ duDependencies
+      ({ Id = fullId
+         Type = t
+         Dependencies = [] }
+       :: tsArgs)
+    else
+      let fullId = getModuleNameAndId t
+
+      [ { Id = fullId
+          Type = t
+          Dependencies = [] } ]
+
+  result @ properties @ duDependencies
 
 let generateModules (types: Type list) : Namespace list =
-    let result = types |> List.collect (toTsType 0)
+  let result = types |> List.collect (toTsType 0)
 
-    let modules =
-        result
-        |> List.groupBy (fun v -> v.Id.TsSignature.TsNamespace)
-        |> List.map
-            (fun (namespaceName, types) ->
-                { Name = namespaceName
-                  Items = types |> Seq.distinct |> Seq.toList })
+  let modules =
+    result
+    |> List.groupBy (fun v -> v.Id.TsSignature.TsNamespace)
+    |> List.map (fun (namespaceName, types) ->
+      { Name = namespaceName
+        Items = types |> Seq.distinct |> Seq.toList })
 
-    modules
+  modules
 
 let camelize (arg: string) : string =
-    System.Text.Json.JsonNamingPolicy.CamelCase.ConvertName(arg)
+  System.Text.Json.JsonNamingPolicy.CamelCase.ConvertName(arg)
 
 let renderProperties (t: TsType) : string =
-    let props = t.Type.GetProperties()
+  let props = t.Type.GetProperties()
 
-    let result =
-        props
-        |> Seq.toList
-        |> List.map
-            (fun v ->
-                let tsType = toTsType 0 v.PropertyType |> List.head
-                let signature = tsType.Id.TsSignature
+  let result =
+    props
+    |> Seq.toList
+    |> List.map (fun v ->
+      let tsType = toTsType 0 v.PropertyType |> List.head
+      let signature = tsType.Id.TsSignature
 
-                if signature.IsGeneric() then
-                    let name = signature.NameWithGenericArguments()
+      if signature.IsGeneric() then
+        let name = signature.NameWithGenericArguments()
 
-                    $"{camelize v.Name}: {name}"
-                else
-                    $"{camelize v.Name}: {v.PropertyType.Name}")
-        |> String.concat (System.Environment.NewLine + "  ")
+        $"{camelize v.Name}: {name}"
+      else
+        $"{camelize v.Name}: {v.PropertyType.Name}")
+    |> String.concat (System.Environment.NewLine + "  ")
 
-    result
+  result
 
 let renderDuCases (t: TsType) : string =
-    let cases =
-        FSharp.Reflection.FSharpType.GetUnionCases(t.Type)
+  let cases = FSharp.Reflection.FSharpType.GetUnionCases(t.Type)
 
-    let (TsName duName) = t.Id.TsSignature.TsName
+  let (TsName duName) = t.Id.TsSignature.TsName
 
-    let cases =
-        match cases.Length with
-        | 1 -> failwith ("not yet supported")
-        | x ->
-            cases
-            |> Seq.toList
-            |> List.map
-                (fun v ->
-                    let declaringType = v.DeclaringType
+  let cases =
+    match cases.Length with
+    | 1 -> failwith ("not yet supported")
+    | x ->
+      cases
+      |> Seq.toList
+      |> List.map (fun v ->
+        let declaringType = v.DeclaringType
 
-                    let fieldSignature =
-                        v.GetFields()
-                        |> Seq.toList
-                        |> List.map (fun v -> getTsSignature (v.PropertyType))
-                        |> List.head
+        let fieldSignature =
+          v.GetFields()
+          |> Seq.toList
+          |> List.map (fun v -> getTsSignature (v.PropertyType))
+          |> List.head
 
-                    if fieldSignature.IsGenericParameter then
-                        let (TsName name) = fieldSignature.TsName
+        if fieldSignature.IsGenericParameter then
+          let (TsName name) = fieldSignature.TsName
 
-                        let caseSignature =
-                            DuCaseSignature $"""{duName}_Case_{v.Name}<{name}>"""
+          let caseSignature = DuCaseSignature $"""{duName}_Case_{v.Name}<{name}>"""
 
-                        caseSignature,
-                        $"""export type {(DuCaseSignature.value caseSignature)} = {{ Case: "{name}", Fields: {name} }}"""
-                    else
-                        let caseSignature =
-                            DuCaseSignature $"""{duName}_Case_{v.Name}"""
+          caseSignature,
+          $"""export type {(DuCaseSignature.value caseSignature)} = {{ Case: "{name}", Fields: {name} }}"""
+        else
+          let caseSignature = DuCaseSignature $"""{duName}_Case_{v.Name}"""
 
-                        caseSignature, $"export type {DuCaseSignature.value caseSignature}")
+          caseSignature, $"export type {DuCaseSignature.value caseSignature}")
 
-    let renderedCases =
-        cases
-        |> (List.map snd)
-        |> String.concat System.Environment.NewLine
+  let renderedCases =
+    cases |> (List.map snd) |> String.concat System.Environment.NewLine
 
-    let renderedDuCaseSignatures =
-        cases
-        |> List.map fst
-        |> List.map (fun (DuCaseSignature v) -> v)
-        |> String.concat " | "
+  let renderedDuCaseSignatures =
+    cases
+    |> List.map fst
+    |> List.map (fun (DuCaseSignature v) -> v)
+    |> String.concat " | "
 
-    let du = $"""export type {t.Id.TsSignature.NameWithGenericArguments()}"""
+  let du = $"""export type {t.Id.TsSignature.NameWithGenericArguments()}"""
 
-    renderedCases
-    + System.Environment.NewLine
-    + $"{du} = {renderedDuCaseSignatures}"
-    + System.Environment.NewLine
+  renderedCases
+  + System.Environment.NewLine
+  + $"{du} = {renderedDuCaseSignatures}"
+  + System.Environment.NewLine
 
 let renderDu (t: TsType) : string =
-    let cases = renderDuCases t
-    cases
+  let cases = renderDuCases t
+  cases
 
 let renderTypeInternal (t: TsType) : string =
-    match t.Type.Namespace, t.Type.Name, FSharp.Reflection.FSharpType.IsUnion(t.Type) with
-    | "Microsoft.FSharp.Core", "FSharpOption`1", _ ->
-        """
+  match t.Type.Namespace, t.Type.Name, FSharp.Reflection.FSharpType.IsUnion(t.Type) with
+  | "Microsoft.FSharp.Core", "FSharpOption`1", _ ->
+    """
 export type FSharpOption<T> = T | null
 """
-    | "System", "Guid", _ -> "export type Guid = string"
-    | "System", "Int32", _ -> "export type Int32 = number"
-    | "System", "Boolean", _ -> "export type Boolean = bool"
-    | _, _, true -> System.Environment.NewLine + renderDu t
-    | _ ->
-        $"""
+  | "System", "Guid", _ -> "export type Guid = string"
+  | "System", "Int32", _ -> "export type Int32 = number"
+  | "System", "Boolean", _ -> "export type Boolean = bool"
+  | _, _, true -> System.Environment.NewLine + renderDu t
+  | _ ->
+    $"""
 export type {t.Id.OriginalName} = {{
   {renderProperties t}
 }}"""
 
 let renderType t =
-    let result = renderTypeInternal t
+  let result = renderTypeInternal t
 
-    let result =
-        result.Replace("\r\n", System.Environment.NewLine)
+  let result = result.Replace("\r\n", System.Environment.NewLine)
 
-    result
+  result
 
 let renderModule (m: Namespace) : string =
-    // topological sort
-    let deps =
-        m.Items
-        |> List.collect (fun v -> v.Dependencies)
-        |> List.filter (fun v -> v.TsSignature.TsNamespace <> m.Name)
+  // topological sort
+  let deps =
+    m.Items
+    |> List.collect (fun v -> v.Dependencies)
+    |> List.filter (fun v -> v.TsSignature.TsNamespace <> m.Name)
 
-    ""
+  ""
 
 let findeTsTypeInModules modules t =
-    let id = (getModuleNameAndId t).Id
+  let id = (getModuleNameAndId t).Id
 
-    modules
-    |> List.collect (fun v -> v.Items)
-    |> List.find (fun v -> v.Id.Id = id)
+  modules |> List.collect (fun v -> v.Items) |> List.find (fun v -> v.Id.Id = id)
 
 let FsharpResult =
-    """
+  """
 
   type Ok<T> = {
     Case: "Ok"
@@ -290,7 +270,7 @@ let FsharpResult =
   """
 
 let FsharpOption =
-    """
+  """
 
   type Option<T> = T | null
 

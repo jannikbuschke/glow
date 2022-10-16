@@ -3,30 +3,30 @@ namespace Test
 open Expecto
 open Glow.TsGen.Gen
 open Glow.TsGen.Domain
+
 [<AutoOpen>]
 module Helpers =
 
-    let renderTypeAsString t =
-        let types = [ t ]
-        let modules = generateModules types
-        let item =findeTsTypeInModules modules t
-        let rendered = renderType item
-        rendered
+  let renderTypeAsString t =
+    let types = [ t ]
+    let modules = generateModules types
+    let item = findeTsTypeInModules modules t
+    let rendered = renderType item
+    rendered
 
-    let allItems (modules: Namespace list) =
-        modules |> List.collect (fun v -> v.Items)
+  let allItems (modules: Namespace list) =
+    modules |> List.collect (fun v -> v.Items)
 
-    let expectAllElementsExist modules elements =
-        let allItems = allItems modules
-        let expectTypeIdExists (items: TsType list) (typeId: FullTsTypeId) =
-            $"Item {typeId.OriginalName} should exists"
-            |> Expect.exists items (fun v -> v.Id = typeId)
+  let expectAllElementsExist modules elements =
+    let allItems = allItems modules
 
-        let expectExists = expectTypeIdExists allItems
+    let expectTypeIdExists (items: TsType list) (typeId: FullTsTypeId) =
+      $"Item {typeId.OriginalName} should exists"
+      |> Expect.exists items (fun v -> v.Id = typeId)
 
-        elements
-        |> List.map getModuleNameAndId
-        |> List.iter expectExists
+    let expectExists = expectTypeIdExists allItems
+
+    elements |> List.map getModuleNameAndId |> List.iter expectExists
 //
 open System
 //

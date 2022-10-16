@@ -1,4 +1,3 @@
-
 module Test.FSharpOption
 
 open Expecto
@@ -9,18 +8,17 @@ open Glow.TsGen.Domain
 
 [<Fact>]
 let ``Render FSharp Option`` () =
-    let types = [ typedefof<Option<string>> ]
+  let types = [ typedefof<Option<string>> ]
 
-    let modules = generateModules types
+  let modules = generateModules types
 
-    let item =
-        findeTsTypeInModules modules typedefof<Option<string>>
+  let item = findeTsTypeInModules modules typedefof<Option<string>>
 
-    let fsharpCoreRendered = renderType item
+  let fsharpCoreRendered = renderType item
 
-    "Rendered FSharpOption as expected"
-    |> Expect.equal
-        fsharpCoreRendered
-        """
+  "Rendered FSharpOption as expected"
+  |> Expect.equal
+       fsharpCoreRendered
+       """
 export type FSharpOption<T> = T | null
 """

@@ -1,4 +1,3 @@
-
 module Test.SimpleRecordTest
 
 open System
@@ -10,12 +9,12 @@ type SimpleRecord = { Id: Guid; Name: string; Number: int }
 
 [<Fact>]
 let ``Render simple record`` () =
-    let rendered = renderTypeAsString typedefof<SimpleRecord>
+  let rendered = renderTypeAsString typedefof<SimpleRecord>
 
-    "Rendered ts type as expected"
-    |> Expect.equal
-        rendered
-            """
+  "Rendered ts type as expected"
+  |> Expect.equal
+       rendered
+       """
 export type SimpleRecord = {
   id: Guid
   name: String
