@@ -6,7 +6,7 @@
     <RootNamespace>Glow</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Update="FSharp.Core" Version="6.0.1" />
+    <PackageReference Update="FSharp.Core" Version="6.0.3" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Domain.fs" />

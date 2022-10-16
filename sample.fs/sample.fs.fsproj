@@ -10,6 +10,9 @@
     <Compile Include="AzdoTasks.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Update="FSharp.Core" Version="6.0.3" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="EFCoreSecondLevelCacheInterceptor" Version="3.2.0" />

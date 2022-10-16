@@ -6,7 +6,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Update="FSharp.Core" Version="6.0.1" />
+        <PackageReference Update="FSharp.Core" Version="6.0.3" />
         <PackageReference Include="FsToolkit.ErrorHandling" Version="3.0.0" />
         <PackageReference Include="FsToolkit.ErrorHandling.AsyncSeq" Version="3.0.0" />
         <PackageReference Include="FsToolkit.ErrorHandling.TaskResult" Version="3.0.0" />
