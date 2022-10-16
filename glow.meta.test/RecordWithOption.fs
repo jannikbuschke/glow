@@ -2,38 +2,30 @@ module Test.RecordWithOption
 
 open System
 open Expecto
-open Glow.TsGen
 open Xunit
 open Glow.TsGen.Gen
-open Glow.TsGen.Domain
 
 type Record = { Id: string }
 
 type RecordWithOption =
-  { Id: Guid
-    NumberOption: Record option }
+    { Id: Guid
+      NumberOption: Record option }
 
 [<Fact>]
 let ``Render record with option`` () =
 
-  let types = [ typedefof<RecordWithOption> ]
+    let rendered =
+        renderTypeAndValue typedefof<RecordWithOption>
 
-  let modules = generateModules types
-
-  expectAllElementsExist
-    modules
-    [ typedefof<System.Guid>
-      typedefof<System.String>
-      typedefof<System.Int32>
-      typeof<Option<Record>> ]
-
-  let rendered = renderTypeAsString typedefof<RecordWithOption>
-
-  "Rendered glow type as expected"
-  |> Expect.equal
-       rendered
-       """
+    Expect.similar
+        rendered
+        """
 export type RecordWithOption = {
-  id: Guid
-  numberOption: FSharpOption<Record>
-}"""
+  id: System.Guid
+  numberOption: Microsoft_FSharp_Core.FSharpOption<Record>
+}
+export const defaultRecordWithOption: RecordWithOption = {
+ id: System.defaultGuid,
+ numberOption: Microsoft_FSharp_Core.defaultFSharpOption(defaultRecord),
+}
+"""

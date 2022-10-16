@@ -7,9 +7,14 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Update="FSharp.Core" Version="6.0.3" />
+    <PackageReference Include="FSharp.SystemTextJson" Version="1.0.5" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Utils.fs" />
+    <Compile Include="TypeCache.fs" />
     <Compile Include="Domain.fs" />
+    <Compile Include="GetTsSignature.fs" />
+    <Compile Include="TopologicalSort.fs" />
     <Compile Include="GenerateModules.fs" />
   </ItemGroup>
 </Project>

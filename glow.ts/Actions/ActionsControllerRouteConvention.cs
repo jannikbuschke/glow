@@ -22,14 +22,18 @@ namespace Glow.Core.Actions
                     {
                         controller.Filters.Add(new AuthorizeFilter(attribute.Policy));
                     }
-                    controller.Selectors.Add(new SelectorModel
+                    if (attribute.Authorize)
                     {
-                        AttributeRouteModel = new AttributeRouteModel(new RouteAttribute(attribute.Route)),
-                    });
+                        controller.Filters.Add(new AuthorizeFilter());
+                    }
                     if (attribute.AllowAnonymous)
                     {
                         controller.Filters.Add(new AllowAnonymousFilter());
                     }
+                    controller.Selectors.Add(new SelectorModel
+                    {
+                        AttributeRouteModel = new AttributeRouteModel(new RouteAttribute(attribute.Route)),
+                    });
                 }
             }
         }

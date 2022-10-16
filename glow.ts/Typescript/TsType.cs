@@ -176,6 +176,7 @@ namespace Glow.Core.Typescript
     {
         public string PropertyName { get; set; }
         public string TypeName { get; set; }
+        public string NameSpace { get; set; }
         public string DefaultValue { get; set; }
         public OneOf<TsType, TsEnum> TsType { get; set; }
         public bool IsCyclic { get; set; }

@@ -2,21 +2,24 @@ module Test.RecordWithPrimitiveOption
 
 open System
 open Expecto
-open Glow.TsGen
 open Xunit
 
 type RecordWithPrimitiveOption = { Id: Guid; numberOption: int option }
 
 [<Fact>]
 let ``Render record with primitive option`` () =
+    let rendered =
+        renderTypeAndValue typedefof<RecordWithPrimitiveOption>
 
-  let rendered = renderTypeAsString typedefof<RecordWithPrimitiveOption>
-
-  "Rendered glow type as expected"
-  |> Expect.equal
-       rendered
-       """
+    Expect.similar
+        rendered
+        """
 export type RecordWithPrimitiveOption = {
-  id: Guid
-  numberOption: FSharpOption<Int32>
-}"""
+  id: System.Guid
+  numberOption: Microsoft_FSharp_Core.FSharpOption<System.Int32>
+}
+export const defaultRecordWithPrimitiveOption: RecordWithPrimitiveOption = {
+ id: System.defaultGuid,
+ numberOption: Microsoft_FSharp_Core.defaultFSharpOption(System.defaultInt32),
+}
+"""

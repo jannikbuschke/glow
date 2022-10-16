@@ -7,6 +7,7 @@ namespace Glow.Core.Actions
         public string Route { get; set; }
         public string Policy { get; set; }
         public bool AllowAnonymous { get; set; }
+        public bool Authorize { get; set; }
     }
 
     public class ActionMeta

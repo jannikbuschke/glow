@@ -1,81 +1,50 @@
 namespace Test
 
+open System.Text.RegularExpressions
 open Expecto
-open Glow.TsGen.Gen
 open Glow.TsGen.Domain
+open Glow.TsGen.Gen
+
+module Regex =
+  let replace (pattern: string) (replacement: string) (input: string) =
+    Regex.Replace(input, pattern, replacement)
+
+module Expect =
+  let eq actual expected =
+    "Should be equal" |> Expect.equal actual expected
+
+  let private normalizeLineFeeds =
+    Regex.replace @"(\r\n|\r|\n)" "\n"
+
+  let private removeSuccessiveLineFeeds =
+    Regex.replace @"[\n]{2,}" "\n"
+
+  let private removeSuccessiveWhiteSpace =
+    Regex.replace @"[ ]{2,}" " "
+
+  let private trim (v: string) = v.Trim()
+
+  let private clean =
+    normalizeLineFeeds
+    >> removeSuccessiveLineFeeds
+    >> removeSuccessiveWhiteSpace
+    >> trim
+
+  let similar actual expected =
+    "Should be equal"
+    |> Expect.equal (actual |> clean) (expected |> clean)
 
 [<AutoOpen>]
 module Helpers =
 
-  let renderTypeAsString t =
+  let renderTypeAndValue t =
     let types = [ t ]
     let modules = generateModules types
     let item = findeTsTypeInModules modules t
-    let rendered = renderType item
-    rendered
 
-  let allItems (modules: Namespace list) =
-    modules |> List.collect (fun v -> v.Items)
+    let rendered =
+      renderTypeDefinitionAndValue item
 
-  let expectAllElementsExist modules elements =
-    let allItems = allItems modules
-
-    let expectTypeIdExists (items: TsType list) (typeId: FullTsTypeId) =
-      $"Item {typeId.OriginalName} should exists"
-      |> Expect.exists items (fun v -> v.Id = typeId)
-
-    let expectExists = expectTypeIdExists allItems
-
-    elements |> List.map getModuleNameAndId |> List.iter expectExists
-//
-open System
-//
-//module NewTests =
-//
-//  type RecordWithOption =
-//    { Id: Guid
-//      Option: SimpleRecord option }
-//
-//  type RecordWithResult =
-//    { Id: Guid
-//      Result: Result<int, string> }
-//
-//  type RecordWithResult2 =
-//    { Id: Guid
-//      Result: Result<SimpleRecord, string> }
-//
-//  type RecordWithNodatimeInstant = { Id: Guid; Instant: NodaTime.Instant }
-//
-//  type RecordWithPrimitiveList = { Id: Guid; StringList: string list }
-//
-//  type RecordWithRecordList =
-//    { Id: Guid
-//      RecordList: SimpleRecord list }
-//
-//  type RecordWithOptionalRecordList =
-//    { Id: Guid
-//      OptionalRecordList: SimpleRecord option list }
-//
-//  type SingleCaseUnion = Email of string
-//  type RecordWithSingleCaseDu = { SingleCaseUnion: SingleCaseUnion }
-//
-//  type DuWithoutTypes =
-//    | FirstCase
-//    | SecondCase
-//    | ThirdCase
-//
-//  type ComplexDu =
-//    | Record of SimpleRecord
-//    | Record2 of RecordWithPrimitiveOption
-//
-//  type MixedDu =
-//    | FirstCase
-//    | SecondCase of string
-//    | Record of SimpleRecord
-//    | Record2 of RecordWithPrimitiveOption
-//
-//  type RecordWithDuWithoutFields = { Id: Guid; Du: DuWithoutTypes }
-//
-//  type RecordWithComplexDu = { Id: Guid; Du: ComplexDu }
-//
-//  type RecordWithMixedDu = { Id: Guid; Du: MixedDu }
+    match rendered with
+    | Some rendered -> rendered
+    | None -> ""

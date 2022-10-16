@@ -1,9 +1,7 @@
 using System.Reflection;
-using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using Glow.Ts;
 using Glow.TypeScript;
-using Microsoft.CodeAnalysis.Options;
 using Microsoft.FSharp.Core;
 using Microsoft.FSharp.Reflection;
 using OneOf;
@@ -178,7 +176,6 @@ namespace Glow.Core.Typescript
 
             if (FSharpType.IsUnion(type, null))
             {
-
                 var cases = FSharpType.GetUnionCases(type, FSharpOption<BindingFlags>.Some(BindingFlags.Public));
 
                 if (cases.Length == 1)
@@ -186,8 +183,41 @@ namespace Glow.Core.Typescript
                     var case0 = cases.First();
                     var name = cases.First().Name;
                     var fields = case0.GetFields();
-                    if (fields.Length == 1)
+                    if (fields.Length == 0)
                     {
+                        var fullName = type.FullName;
+                        if (tsTypes.ContainsKey(fullName))
+                        {
+                            return tsTypes[fullName];
+                        }
+                        var tsCases = cases.Select(v =>
+                        {
+                            var fields = v.GetFields()
+                                .Select(v => CreateOrGet(v.PropertyType))
+                                .Select(v => v.AsT0)
+                                .ToArray();
+                            return new DuCase() { CaseName = v.Name, Name = v.Name, Fields = fields };
+                        }).ToList();
+                        var du = new TsDiscriminatedUnion()
+                        {
+                            Name = type.Name,
+                            FullName = fullName,
+                            Properties = tsCases.SelectMany(v=>v.Fields)
+                                .Select(v=> OneOf<TsType, TsEnum>.FromT0(v))
+                                .Select(v=>new Property(){TsType=v})
+                                .ToList(),
+                            DefaultValue = $"null as any as {type.Name}",
+                            Namespace = type.Namespace,
+                            Nullable = false,
+                            Cases = tsCases
+                        };
+                        tsTypes.Add(du.FullName,du);
+                        return du;
+                        // Single Case without fields
+                    }
+                    else if (fields.Length == 1)
+                    {
+                        // this could be wrong
                         // single case DU will be inlined
                         var fieldType = CreateOrGet(fields.First().PropertyType);
                         if (fieldType.IsT0 && fieldType.AsT0.IsPrimitive)

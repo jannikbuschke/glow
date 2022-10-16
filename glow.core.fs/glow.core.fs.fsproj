@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Include="PgsqlHelper.fs" />
+        <Compile Include="QueryEvents.fs" />
+        <Compile Include="IdentifyTypes.fs" />
+        <Compile Include="GenerateSubscriptions.fs" />
+        <Compile Include="GenerateApi.fs" />
+        <Compile Include="GenerateTsClient.fs" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\glow.meta\glow.meta.csproj" />
+    </ItemGroup>
+
+</Project>
