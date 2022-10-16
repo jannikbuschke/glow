@@ -9,6 +9,12 @@
 
     <ItemGroup>
         <Compile Include="Tests.fs" />
+        <Compile Include="FSharpResult.fs" />
+        <Compile Include="FSharpOption.fs" />
+        <Compile Include="RecordWithPrimitiveOption.fs" />
+        <Compile Include="RecordWithOption.fs" />
+        <Compile Include="RecordWithResult.fs" />
+        <Compile Include="SimpleRecord.fs" />
         <Compile Include="OldTests.fs" />
         <Compile Include="Program.fs" />
     </ItemGroup>

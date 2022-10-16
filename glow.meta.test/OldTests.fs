@@ -7,7 +7,7 @@ open System.Linq
 open Glow.Core.Typescript
 open Xunit
 
-module NewTests =
+module OldTests =
 
   type SimpleRecord = { Id: Guid; Name: string; Number: int }
 
@@ -80,8 +80,6 @@ export const defaultRecordWithPrimitiveOption: RecordWithPrimitiveOption = {
     let compareResult = String.Compare(renderedModule, expected, CultureInfo.InvariantCulture, CompareOptions.IgnoreCase ||| CompareOptions.IgnoreSymbols)
 
     Expect.equal compareResult 0 "compare"
-
-
 
   [<Fact>]
   let ``Render Single case union`` () =
@@ -233,8 +231,6 @@ export const defaultDuWithoutTypes = null as any as DuWithoutTypes
     let compareResult = String.Compare(renderedModule, expected, CultureInfo.InvariantCulture, CompareOptions.IgnoreCase ||| CompareOptions.IgnoreSymbols)
 
     Expect.equal compareResult 0 "compare"
-
-
 
 
   [<Fact>]

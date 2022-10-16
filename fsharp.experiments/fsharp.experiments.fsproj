@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Update="FSharp.Core" Version="6.0.1" />
+        <PackageReference Include="FsToolkit.ErrorHandling" Version="3.0.0" />
+        <PackageReference Include="FsToolkit.ErrorHandling.AsyncSeq" Version="3.0.0" />
+        <PackageReference Include="FsToolkit.ErrorHandling.TaskResult" Version="3.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Compile Include="Library.fs" />
+        <Compile Include="File2.fs" />
+        <Compile Include="Test.fs" />
+    </ItemGroup>
+
+</Project>
