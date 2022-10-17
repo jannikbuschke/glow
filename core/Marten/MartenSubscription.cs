@@ -7,7 +7,7 @@ using Marten.Events;
 using Marten.Events.Projections;
 using Microsoft.Extensions.Logging;
 
-namespace Glow.Core.Marten;
+namespace Glow.Core.MartenSubscriptions;
 
 public class MartenSubscription : IProjection
 {

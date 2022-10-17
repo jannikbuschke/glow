@@ -136,7 +136,7 @@ module Agenda =
         DisplayName = ""
         Duration = 0 } with get, set
 
-  type GetAreaPathsHandler(store: IDocumentStore, session: IQuerySession) =
+  type MeetingHandler(store: IDocumentStore, session: IQuerySession) =
     interface IRequestHandler<ReorderAgendaItems, Unit> with
       member this.Handle(request, token) =
         task {
