@@ -20,7 +20,7 @@ export function useNotifications<
   const ctx = React.useContext(NotificationsContext)
   if (!ctx) {
     throw new Error(
-      "cannot use useNotifications outside of NotificationsProvider",
+      "cannot use (typed) useNotifications outside of NotificationsProvider",
     )
   }
   return ctx as INotificationsContext<Events>
@@ -34,7 +34,7 @@ export function useNotification<
   const { emitter } = useNotifications<Events>()
 
   React.useEffect(() => {
-    console.log("register handler for " + name)
+    console.log("register handler for " + name.toString())
     emitter.on(name, callback)
     return () => {
       emitter.off(name, callback)
@@ -55,6 +55,17 @@ export function useWildcardNotification<
       emitter.off("*", callback)
     }
   }, deps)
+}
+
+const mockEmitter = mitt()
+export function MockTypedNotificationsProvider({
+  children,
+}: React.PropsWithChildren<{}>) {
+  return (
+    <NotificationsContext.Provider value={{ emitter: mockEmitter }}>
+      {children}
+    </NotificationsContext.Provider>
+  )
 }
 
 export function TypedNotificationsProvider<

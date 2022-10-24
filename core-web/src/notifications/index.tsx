@@ -46,6 +46,17 @@ export function useNotification<T>(
   }, deps)
 }
 
+const mockEmitter = mitt()
+export function MockNotificationsProvider({
+  children,
+}: React.PropsWithChildren<{}>) {
+  return (
+    <NotificationsContext.Provider value={{ emitter: mockEmitter }}>
+      {children}
+    </NotificationsContext.Provider>
+  )
+}
+
 export function NotificationsProvider({
   children,
   requireLoggedIn = true,
