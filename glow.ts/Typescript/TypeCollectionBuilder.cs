@@ -122,8 +122,7 @@ namespace Glow.Core.Typescript
                     }
                     else
                     {
-                        t0.IsNullable = true;
-                        t0.DefaultValue = "null";
+                        t0.IsOption = true;
                     }
                 }
 
@@ -620,7 +619,7 @@ namespace Glow.Core.Typescript
 
                             return v1.Name;
                         }, v2 => v2.Name);
-                        var isNullable = tsType.Match(v1 => v1.IsNullable /*v1.DefaultValue == "null"*/, v2 => v2.IsNullable);
+                        var isNullable = tsType.Match(v1 => v1.IsNullable||v1.IsOption /*v1.DefaultValue == "null"*/, v2 => v2.IsNullable);
                         return new Property
                         {
                             PropertyName = v.Name.CamelCase(),

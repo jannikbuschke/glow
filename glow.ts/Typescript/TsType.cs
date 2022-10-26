@@ -156,6 +156,7 @@ namespace Glow.Core.Typescript
 
         public bool HasCyclicDependency { get; set; }
         public bool IsNullable { get; set; }
+        public bool IsOption { get; set; }
 
         public static TsType Any()
         {

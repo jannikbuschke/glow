@@ -286,7 +286,7 @@ namespace Glow.Core.Typescript
                 {
                     if (tsType?.GetType() == typeof(TsDiscriminatedUnion) && tsType?.DefaultValue != null)
                     {
-                        builder.AppendLine($"  {property.PropertyName}: {property.DefaultValue},");
+                        builder.AppendLine($"  {property.PropertyName}: {(tsType.IsOption?"null": property.DefaultValue)},");
                     }
                     else
                     {
