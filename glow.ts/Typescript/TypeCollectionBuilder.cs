@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using Glow.Ts;
 using Glow.TypeScript;
@@ -101,6 +102,12 @@ namespace Glow.Core.Typescript
 
         private OneOf<TsType, TsEnum> CreateOrGet(Type type, bool skipDependencies = false)
         {
+            if (type.Namespace.Contains("System.Text.Json.Serialization")&&type.Name=="Skippable`1"
+            // type == typeof(Skippable<>) || type.GetGenericTypeDefinition() == typeof(Skippable<>)||type.Name.Contains("UpdateMeetingItemInvite")
+                )
+            {
+                return TsType.Any();
+            }
             if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(FSharpOption<>))
             {
                 var args = type.GetGenericArguments().First();
