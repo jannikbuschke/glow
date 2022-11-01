@@ -239,7 +239,7 @@ namespace Glow.Core.Typescript
             }
             var allCaseNames = $"{string.Join(" | ", type.Cases.Select(v => $@"""{v.Name}""" ))}";
 
-            builder.AppendLine($"type {type.Name}_All_Cases = {allCaseNames}");
+            builder.AppendLine($"export type {type.Name}_All_Cases = {allCaseNames}");
             builder.AppendLine();
             if (type.IsGeneric)
             {
