@@ -101,10 +101,6 @@ namespace Glow.Core.Typescript
 
             foreach (TsType tsType in tsTypes)
             {
-                if (tsType.Name.Contains("CircularStatus"))
-                {
-                }
-
                 if (tsType.GetType() == typeof(TsDiscriminatedUnion))
                 {
                     if (!tsType.IsCollection)

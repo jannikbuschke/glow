@@ -90,7 +90,7 @@ namespace Glow.Core.Typescript
         }
 
         public static readonly Dictionary<Type, Tuple<string, string>> primitiveCollection =
-            new Dictionary<Type, Tuple<string, string>>
+            new()
             {
                 {typeof(string), new Tuple<string, string>("(string | null)[]", "[]")},
                 {typeof(int), new Tuple<string, string>("number[]", "[]")},
@@ -100,7 +100,7 @@ namespace Glow.Core.Typescript
             };
 
         public static readonly Dictionary<Type, Tuple<string, string>> primitives =
-            new Dictionary<Type, Tuple<string, string>>
+            new()
             {
                 {typeof(string), new Tuple<string, string>("string | null", "null")},
                 {typeof(double), new Tuple<string, string>("number", "0")},

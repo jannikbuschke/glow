@@ -44,9 +44,12 @@ namespace Glow.Core.Actions
                         Type returnType = interfaces.Where(v =>
                                 v.IsGenericType && v.GetGenericTypeDefinition() == typeof(IRequest<>))
                             .FirstOrDefault()
-                            .GenericTypeArguments
-                            ?.FirstOrDefault();
-
+                            ?.GenericTypeArguments
+                            .FirstOrDefault();
+                        if (returnType == null)
+                        {
+                            throw new Exception($"Could not figure out returntype for Action '{candidate.FullName}'");
+                        }
                         feature.Controllers.Add(
                             typeof(ActionController<,>).MakeGenericType(candidate, returnType).GetTypeInfo()
                         );
