@@ -145,7 +145,9 @@ namespace Glow.Core.Typescript
                 {typeof(TimeSpan), new Tuple<string, string>("string",  @"""00:00:00""") },
                 {typeof(TimeSpan?), new Tuple<string, string>("string | null", "null") },
                 {typeof(Instant), new Tuple<string, string>("string", @"""1/1/0001 12:00:00 AM""")},
-                {typeof(Instant?), new Tuple<string, string>("string | null", @"null")}
+                {typeof(Instant?), new Tuple<string, string>("string | null", @"null")},
+                {typeof(LocalTime?), new Tuple<string, string>("string | null", @"null")},
+                {typeof(LocalTime), new Tuple<string, string>("string", @"")},
             };
     }
 }
