@@ -78,6 +78,7 @@ namespace Glow.Core.Typescript
             set { this.id = value; }
         }
         public bool IsPrimitive { get; set; }
+        public bool IsAnonymous { get; set; }
         public Type Type { get; set; }
 
         public string DefaultValue { get; set; }

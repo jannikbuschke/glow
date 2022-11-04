@@ -405,12 +405,19 @@ namespace Glow.Core.Typescript
                     }
                     else
                     {
-                        // if (type.IsStruct())
-                        // {
-                        //     return TsType.Any();
-                        // }
+                        if (type.Namespace == null && type.Name.StartsWith("<>f__AnonymousType"))
+                        {
+                            TsType result = Create(type, skipDependencies);
+                            result.Namespace = "AnonymousTypes";
+                            result.Name = result.Name.Substring(2).Replace("`","_");
+                            result.IsAnonymous = true;
+                            result.DefaultValue = "default" + result.Name;
+                            PopuplateProperties(result);
+                            tsTypes.Add(id, result);
 
-                        if (type.Namespace == null)
+                            return result;
+                        }
+                        else if (type.Namespace == null)
                         {
                             return TsType.Any();
                         }
