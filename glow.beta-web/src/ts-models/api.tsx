@@ -99,10 +99,12 @@ export function TypedForm<ActionName extends keyof ActionTable>({
   formProps,
   children,
   onSuccess,
+  beforeSubmit,
   onError,
 }: Omit<FormikConfig<Actions[ActionName]>, "onSubmit"> & {
 
   actionName: ActionName
+  beforeSubmit?: (values: Actions[ActionName]) => Actions[ActionName]
   formProps?: FormikFormProps
   onSuccess?: (payload: Outputs[ActionName]) => void
   onError?: (error: ProblemDetails) => void
@@ -112,13 +114,13 @@ export function TypedForm<ActionName extends keyof ActionTable>({
   const [submit, validate] = useTypedAction<ActionName>(actionName)
   return (
     <Formik
-      validate={validate}
+      validate={(values) => validate(beforeSubmit ? beforeSubmit(values) : values) }
       validateOnBlur={true}
       enableReinitialize={true}
       validateOnChange={false}
       initialValues={initialValues}
       onSubmit={async (values) => {
-        const response = await submit(values)
+        const response = await submit(beforeSubmit ? beforeSubmit(values) : values)
         if (response.ok) {
           onSuccess && onSuccess(response.payload)
         } else {
