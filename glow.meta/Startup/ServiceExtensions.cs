@@ -22,13 +22,14 @@ namespace Glow.Core
 {
 
 
-    public static class DefaultFsharpJsonSerializationOptions
-    {
-        public const JsonUnionEncoding UnionEncoding = JsonUnionEncoding.AdjacentTag
-                                                       | JsonUnionEncoding.UnwrapRecordCases
-                                                       | JsonUnionEncoding.UnwrapOption
-                                                       | JsonUnionEncoding.UnwrapSingleCaseUnions | JsonUnionEncoding.AllowUnorderedTag;
-    }
+    // public static class DefaultFsharpJsonSerializationOptions
+    // {
+    //     public const JsonUnionEncoding UnionEncoding = JsonUnionEncoding.AdjacentTag
+    //                                                    | JsonUnionEncoding.UnwrapRecordCases
+    //                                                    | JsonUnionEncoding.UnwrapOption
+    //                                                    | JsonUnionEncoding.UnwrapSingleCaseUnions
+    //                                                    | JsonUnionEncoding.AllowUnorderedTag;
+    // }
 
     public enum JsonSerializationStrategy
     {
