@@ -7,6 +7,7 @@ using NodaTime.Serialization.SystemTextJson;
 public class JsonSerializationSettings
 {
     public const JsonUnionEncoding JsonDefaultUnionEncoding = JsonUnionEncoding.AdjacentTag
+                                                              | JsonUnionEncoding.UnwrapSingleFieldCases
                                                               | JsonUnionEncoding.UnwrapRecordCases
                                                               | JsonUnionEncoding.UnwrapOption
                                                               | JsonUnionEncoding.UnwrapSingleCaseUnions
@@ -18,7 +19,7 @@ public class JsonSerializationSettings
         options.WriteIndented = true;
         options.ReferenceHandler = ReferenceHandler.IgnoreCycles;
         options.Converters.Add(new JsonStringEnumConverter());
-        options.Converters.Add(new JsonFSharpConverter(
-            unionEncoding: JsonDefaultUnionEncoding));
+
+        options.Converters.Add(new JsonFSharpConverter(unionEncoding: JsonDefaultUnionEncoding));
     }
 }

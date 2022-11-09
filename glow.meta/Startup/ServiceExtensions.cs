@@ -64,15 +64,15 @@ namespace Glow.Core
             return mvcBuilder;
         }
 
-        public static void ConfigureStjSerializerDefaults(JsonSerializerOptions options)
-        {
-            options.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
-            options.WriteIndented = true;
-            options.ReferenceHandler = ReferenceHandler.IgnoreCycles;
-            options.Converters.Add(new JsonStringEnumConverter());
-            options.Converters.Add(new JsonFSharpConverter(
-                DefaultFsharpJsonSerializationOptions.UnionEncoding));
-        }
+        // public static void ConfigureStjSerializerDefaults(JsonSerializerOptions options)
+        // {
+        //     options.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
+        //     options.WriteIndented = true;
+        //     options.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+        //     options.Converters.Add(new JsonStringEnumConverter());
+        //     options.Converters.Add(new JsonFSharpConverter(
+        //         DefaultFsharpJsonSerializationOptions.UnionEncoding));
+        // }
 
         public static IMvcBuilder AddGlowSystemTextJsonControllers(
             this IServiceCollection services,
@@ -126,12 +126,13 @@ namespace Glow.Core
                 .AddSignalR()
                 .AddJsonProtocol(options =>
                 {
-                    options.PayloadSerializerOptions.Converters.Add(new JsonFSharpConverter(JsonUnionEncoding.AdjacentTag
-                                                                                            | JsonUnionEncoding.UnwrapRecordCases
-                                                                                            | JsonUnionEncoding.UnwrapOption
-                                                                                            | JsonUnionEncoding.UnwrapSingleCaseUnions
-                                                                                            | JsonUnionEncoding.AllowUnorderedTag));
-                    options.PayloadSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                    JsonSerializationSettings.ConfigureStjSerializerDefaults(options.PayloadSerializerOptions);
+                    // options.PayloadSerializerOptions.Converters.Add(new JsonFSharpConverter(JsonUnionEncoding.AdjacentTag
+                    //                                                                         | JsonUnionEncoding.UnwrapRecordCases
+                    //                                                                         | JsonUnionEncoding.UnwrapOption
+                    //                                                                         | JsonUnionEncoding.UnwrapSingleCaseUnions
+                    //                                                                         | JsonUnionEncoding.AllowUnorderedTag));
+                    // options.PayloadSerializerOptions.Converters.Add(new JsonStringEnumConverter());
                 });
 
             services.AddHttpClient();
