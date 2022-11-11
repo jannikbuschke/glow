@@ -16,6 +16,7 @@ export type MainLinkProps = {
   size?: MantineSize
   padding?: number
   borderRightSize?: number
+  activeLinkIfExactMatch?: boolean
 }
 
 export function MainLinks({
@@ -52,6 +53,7 @@ export function MainLink({
   size,
   padding,
   borderRightSize,
+  activeLinkIfExactMatch,
 }: MainLinkProps) {
   const matchPattern = to.endsWith("*")
     ? to
@@ -59,6 +61,9 @@ export function MainLink({
     ? `${to}*`
     : `${to}/*`
   const match = useMatch(matchPattern)
+  const matched = activeLinkIfExactMatch
+    ? match && match.pathname === to
+    : Boolean(match)
   return (
     <UnstyledButton
       component={Link}
@@ -70,20 +75,18 @@ export function MainLink({
         borderRadius: theme.radius.xs,
         color:
           theme.colorScheme === "dark" ? theme.colors.dark[0] : theme.black,
-        backgroundColor:
-          match !== null
-            ? theme.colorScheme === "dark"
-              ? theme.colors.dark[3]
-              : theme.colors.blue[1]
-            : undefined,
-        borderRight:
-          match !== null
-            ? `${borderRightSize}px solid ${theme.colors.blue[5]}`
-            : `${borderRightSize}px solid ${
-                theme.colorScheme === "dark"
-                  ? theme.colors.dark[6]
-                  : theme.colors.gray[2]
-              }`,
+        backgroundColor: matched
+          ? theme.colorScheme === "dark"
+            ? theme.colors.dark[3]
+            : theme.colors.blue[1]
+          : undefined,
+        borderRight: matched
+          ? `${borderRightSize}px solid ${theme.colors.blue[5]}`
+          : `${borderRightSize}px solid ${
+              theme.colorScheme === "dark"
+                ? theme.colors.dark[6]
+                : theme.colors.gray[2]
+            }`,
         "&:hover": {
           backgroundColor:
             theme.colorScheme === "dark"
