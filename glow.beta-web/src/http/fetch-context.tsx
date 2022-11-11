@@ -1,7 +1,7 @@
 import * as React from "react"
 import * as microsoftTeams from "@microsoft/teams-js"
 import { notification } from "antd"
-import { FetchContext } from "glow-core"
+import { FetchContext, FetchType } from "glow-core"
 
 const teamsInitialized = new Promise<string>((resolve, reject) => {
   console.log("init teams...")
@@ -47,30 +47,33 @@ export function useTeamsContext() {
 }
 
 export function TeamsFetchContextProvider({
+  baseUrl = "",
   children,
   onError,
   onSuccess,
   onPrepareRequest,
 }: React.PropsWithChildren<{
+  baseUrl?: string
   onSuccess?: () => void
   onError?: (e: any) => void
   onPrepareRequest?: (input: RequestInfo, init?: RequestInit) => void
 }>): JSX.Element | null {
   const [loading, setLoading] = React.useState(true)
   const [token, setToken] = React.useState<string | null>(null)
-  const f = React.useCallback(
+  const f: FetchType = React.useCallback(
     (input: RequestInfo, init?: RequestInit) => {
+      const url = `${baseUrl}${input}`
       if (token !== null) {
         const i = init || {}
         i.headers = Object.assign(Object.assign({}, i.headers), {
           Authorization: "Bearer " + token,
         })
         onPrepareRequest && onPrepareRequest(input, i)
-        return fetch(input, i)
+        return fetch(url, i)
       } else {
         const i = init || {}
         onPrepareRequest && onPrepareRequest(input, i)
-        return fetch(input, i)
+        return fetch(url, i)
       }
     },
     [token, onPrepareRequest],

@@ -1,8 +1,11 @@
 import * as React from "react"
 
-type FetchType = (input: RequestInfo, init?: RequestInit) => Promise<Response>
+export type FetchType = (
+  input: RequestInfo,
+  init?: RequestInit | undefined,
+) => Promise<Response>
 
-const FetchContext = React.createContext(fetch)
+const FetchContext = React.createContext<FetchType>(fetch)
 
 export { FetchContext }
 
@@ -16,7 +19,7 @@ export function FetchContextProvider({
 }: React.PropsWithChildren<{
   onPrepareRequest?: (input: RequestInfo, init?: RequestInit) => void
 }>): JSX.Element | null {
-  const f = React.useCallback(
+  const f: FetchType = React.useCallback(
     (input: RequestInfo, init?: RequestInit) => {
       const i = init || {}
       onPrepareRequest && onPrepareRequest(input, i)
