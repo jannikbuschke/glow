@@ -1,11 +1,16 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
 using Glow.Authentication.Aad;
+using Glow.Core.Actions;
 using Glow.Core.Authentication;
 using Glow.TypeScript;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
@@ -14,6 +19,44 @@ using Microsoft.Identity.Client;
 
 namespace Glow.Core.Profiles
 {
+    [Action(Route = "glow/profile/get-profile", AllowAnonymous = true, Authorize = true)]
+    public class GetProfile: IRequest<Profile>{ }
+
+    public class GetProfileHandler: IRequestHandler<GetProfile, Profile>
+    {
+        private readonly IHttpContextAccessor httpContextAccessor;
+
+        public GetProfileHandler(IHttpContextAccessor httpContextAccessor)
+        {
+            this.httpContextAccessor = httpContextAccessor;
+        }
+
+        public Task<Profile> Handle(GetProfile request, CancellationToken cancellationToken)
+        {
+            ClaimsPrincipal user = httpContextAccessor.HttpContext?.User;
+            var isAuthenticated = user?.Identity?.IsAuthenticated ?? false;
+
+            if (!isAuthenticated)
+            {
+                return Task.FromResult(new Profile { IsAuthenticated = false });
+            }
+
+            var profile = new Profile
+            {
+                IsAuthenticated = true,
+                Claims = user.Claims.Select(v=> new KeyValuePair<string, string>(v.Type, v.Value)),
+                DisplayName = user.Name(),
+                Email = user.Email(),
+                Id = user.NameIdentifier(),
+                IdentityName = user.Identity?.Name,
+                ObjectId = user.GetObjectId(),
+                UserId = user.GetObjectId(),
+                AuthenticationType = user.Identity?.AuthenticationType
+            };
+            return Task.FromResult(profile);
+        }
+    }
+
     [GenerateTsInterface]
     public class Profile
     {
@@ -67,7 +110,7 @@ namespace Glow.Core.Profiles
             }
 
             var mockExternalSystems = env.IsDevelopment() && configuration.MockExternalSystems();
-            var isAuthenticated = User?.Identity.IsAuthenticated ?? false;
+            var isAuthenticated = User.Identity?.IsAuthenticated;
             IEnumerable<KeyValuePair<string, string>> claims = env.IsDevelopment()
                 ? User.Claims.Select(v => new KeyValuePair<string, string>(v.Type, v.Value))
                 : null;
@@ -82,7 +125,7 @@ namespace Glow.Core.Profiles
                 Email = User.Email(),
                 Id = User.NameIdentifier(),
                 IdentityName = User?.Identity.Name,
-                IsAuthenticated = isAuthenticated,
+                IsAuthenticated = (bool) isAuthenticated,
                 Scopes = scopes,
                 ObjectId = User.GetObjectId(),
                 UserId = User.GetObjectId(),

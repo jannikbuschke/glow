@@ -1,6 +1,7 @@
 import * as React from "react"
 import { notification } from "antd"
 import { useFetch } from "../actions/fetch-context"
+import { useQuery } from "react-query"
 // import {
 //   defaultProfile,
 //   Profile,
@@ -60,6 +61,60 @@ export function useAuthentication() {
     )
   }
   return ctx
+}
+
+export function VnextAuthenticationProvider(
+  props: React.PropsWithChildren<{}>,
+) {
+  const fetch = useFetch()
+
+  const { data, isLoading, error } = useQuery("/glow/profile/get-profile", {
+    queryFn: async (ctx) => {
+      const response = await fetch(ctx.queryKey, {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+          "x-submit-intent": "execute",
+        },
+        credentials: "same-origin",
+        body: JSON.stringify({}),
+      })
+      if (response.ok) {
+        const data = await response.json()
+        return data as Profile
+      } else {
+        notification.error({
+          message: "Could not check for profile information",
+        })
+        throw new Error("could not get profile")
+      }
+    },
+  })
+  const profile = data ? data : defaultProfile
+
+  const status =
+    profile && profile.isAuthenticated ? Status.loggedIn : Status.loggedOut
+
+  const value = React.useMemo(
+    () =>
+      ({
+        login: (req?: any) => {
+          window.location.replace(
+            `/Account/SignIn?redirectUrl=${window.location.pathname}`,
+          )
+        },
+        status,
+        profile,
+        userIsAuthenticated: status === "loggedIn",
+      } as IAuthenticationContext),
+    [status, profile],
+  )
+
+  return (
+    <AuthenticationContext.Provider value={value}>
+      {props.children}
+    </AuthenticationContext.Provider>
+  )
 }
 
 //maybe rename to ProfileProvider
