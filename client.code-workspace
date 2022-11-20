@@ -5,6 +5,14 @@
       "path": "sample.cs\\web"
     },
     {
+      "name": "treasure island",
+      "path": "sample.treasure-island.cs\\web"
+    },
+    {
+      "name": "treasure island fs",
+      "path": "samples\\treasure-island.fs\\web"
+    },
+    {
       "name": "sample-client-fs",
       "path": "sample.fs\\web"
     },

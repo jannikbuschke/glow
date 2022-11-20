@@ -9,6 +9,7 @@
     "tsc:lerna": "lerna run tsc --stream",
     "lerna": "lerna",
     "tsc": "npm run tsc --workspaces --if-present",
+    "tsc:all": "npm run tsc",
     "tsc:watch": "npm run tsc:watch --workspaces --if-present",
     "build": "npm run build --workspace=gertrud-vite",
     "start": "npm run start --workspace=gertrud-vite"
@@ -26,6 +27,8 @@
     "glow.mantine-web",
     "shared",
     "sample.cs/web",
+    "sample.treasure-island.cs/web",
+    "samples/treasure-island.fs/web",
     "sample.fs/web",
     "react-hexgrid"
   ],
