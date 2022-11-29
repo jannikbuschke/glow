@@ -9,6 +9,7 @@ import {
   notifyInfo,
   notifySuccess,
 } from "./antd-notifies"
+import { ProblemDetails } from "../types"
 
 export function WarningBanner({ message }: { message: any }) {
   return <Render type="warning" message={message} />
@@ -30,6 +31,13 @@ export function SuccessBanner({ message }: { message: any }) {
   return <Render type="success" message={message} />
 }
 
+function isProblemDetails(data: any): data is ProblemDetails {
+  return (
+    Boolean((data as ProblemDetails).title) &&
+    Boolean((data as ProblemDetails).detail)
+  )
+}
+
 function Render({
   type,
   message: msg,
@@ -44,7 +52,12 @@ function Render({
   const message = React.isValidElement(msg) ? (
     msg
   ) : typeof msg === "object" ? (
-    msg instanceof Error ? (
+    isProblemDetails(msg) ? (
+      <div>
+        <b>{msg.title}</b>
+        <div>{msg.detail}</div>
+      </div>
+    ) : msg instanceof Error ? (
       msg.message
     ) : (
       <RenderObject msg={msg} />

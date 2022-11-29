@@ -1,4 +1,5 @@
 import { useFetch } from "./fetch-context"
+import { ProblemDetails } from "./use-submit"
 
 async function handleResponse<T>(response: Response) {
   if (response.ok) {
@@ -19,6 +20,11 @@ async function handleResponse<T>(response: Response) {
       throw new Error(
         data.detail || data.title || data.type || "" + data.status,
       )
+    } else if (response.status === 403) {
+      throw {
+        detail: "You are not authorized",
+        title: "Forbidden",
+      } as ProblemDetails
     } else {
       throw new Error(
         response.statusText + " (" + (await response.text()) + ")",
