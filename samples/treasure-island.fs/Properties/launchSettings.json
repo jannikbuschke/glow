@@ -1,0 +1,13 @@
+﻿{
+  "profiles": {
+    "sample": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "applicationUrl": "https://localhost:5004;",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ConnectionString": "User ID=postgres;Password=postgreS123asd123;Host=localhost;Port=5432;Database=treasure-island-dev-fs;Pooling=true;Connection Lifetime=0;"
+      }
+    }
+  }
+}

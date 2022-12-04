@@ -1,0 +1,17 @@
+{
+  "extends": "glow-shared/tsconfig.ui.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "rootDir": "src",
+    "jsx": "react-jsx",
+    "jsxImportSource": "@emotion/react",
+    "types": ["vite/client", "@emotion/react/types/css-prop"],
+    "esModuleInterop": true
+  },
+  "include": ["./src/**/*"],
+  "references": [
+    {
+      "path": "../../../core-web"
+    }
+  ]
+}

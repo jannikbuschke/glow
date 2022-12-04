@@ -1,0 +1,15 @@
+﻿{
+  "profiles": {
+    "sample-fs": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "applicationUrl": "https://localhost:5004;",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ConnectionString": "User ID=postgres;Password=postgreS123asd123;Host=localhost;Port=5432;Database=marten.stj;Pooling=true;Connection Lifetime=0;",
+        "azdo:PAT": "xxx",
+        "azdo:OrganizationBaseUrl": "https://dev.azure.com/xxx"
+      }
+    }
+  }
+}
