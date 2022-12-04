@@ -3,7 +3,6 @@ namespace TreasureIsland
 open System
 open System.Linq
 open System.Runtime.CompilerServices
-open Glow.Glue.AspNetCore
 open Glow.NotificationsCore
 open Marten
 
@@ -21,12 +20,7 @@ type Extension() =
     task {
       let! current = session.GetGameAsync(gameId)
 
-      if (box current = null) then
-        raise (BadRequestException("Game not found"))
-
-      let playerIds = current.PlayerUnitIds
-
-      let! players = session.GetPlayerUnitsAsync(playerIds)
+      let players = current.PlayerUnits
 
       let dict: System.Collections.Generic.Dictionary<Guid, PlayerUnit> =
         players.ToDictionary(fun v -> v.Id)

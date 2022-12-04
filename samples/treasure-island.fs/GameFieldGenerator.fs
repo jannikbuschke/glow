@@ -91,11 +91,11 @@ module GameFieldGenerator =
     let random = Random()
     let hexas = ResizeArray<Field>()
     // let list1 = [ 1; 5; 100; 450; 788 ]
-// for i in list1 do
-//    printfn "%d" i
+    // for i in list1 do
+    //    printfn "%d" i
 
     for q in 1..width do
-      let offset = (int) ((float) q / 2.0) // or q>>1
+      let offset = (int) ((float) q / 2.0)
 
       for r in -offset .. (height - offset) do
         let material =

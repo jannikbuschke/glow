@@ -27,7 +27,7 @@ type RestartGame =
   { Data: unit }
   interface IRequest<MediatR.Unit>
 
-type CreatePlayerResult = { Id: PlayerUnitId; GameId: GameId }
+type CreatePlayerResult = { PlayerUnitId: PlayerUnitId; GameId: GameId }
 
 [<Action(Route = "api/ti/create-player", AllowAnonymous = true)>]
 type CreatePlayer =
@@ -61,8 +61,7 @@ module Helper =
         players.Where(fun v -> v.IsAlive).ToList()
 
       if (alive.Count = 0) then
-        let e: GameDrawn = { Data = () }
-        session.Events.Append(current.Id, e)
+        session.AppendGameEvent(current.Key(), GameEvent.GameDrawn { Data = () }) |> ignore
         return ()
 
       if (alive.Count = 1) then
@@ -70,10 +69,8 @@ module Helper =
         if (alive.Count = players.Count) then
           return ()
         else
-          let e: GameEnded =
-            { GameEnded.Winner = alive.First().Id }
 
-          session.Events.Append(current.Id, e)
+          session.AppendGameEvent(current.Key(), GameEvent.GameEnded { GameEnded.Winner = alive.First().Id }) |> ignore
           return ()
 
       // alive
@@ -91,11 +88,7 @@ module Helper =
           current.Field.GetRandomPosition()
 
         let item = Utils.GetRandomItem()
-
-        let itemDropped: ItemDropped =
-          { Position = position; Item = item } // new ItemDropped(position, item)
-
-        session.Events.Append(current.Id, itemDropped)
+        session.AppendGameEvent(current.Key(), GameEvent.ItemDropped { Position = position; Item = item }) |> ignore
 
       let nextActivePlayerIndex =
         (current.Tick + 1) % alive.Count
@@ -105,12 +98,8 @@ module Helper =
 
       // select player
 
-      let e1: ActiveUnitChanged =
-        { UnitId = nextActivePlayer.Id }
-
-      session.Events.Append(current.Id, e1)
-      let e2: GameTick = { Data = () }
-      session.Events.Append(current.Id, e2)
+      session.AppendGameEvent(current.Key(), GameEvent.ActiveUnitChanged { UnitId = nextActivePlayer.Id }) |> ignore
+      session.AppendGameEvent(current.Key(), GameEvent.GameTick { Data = () }) |> ignore
     }
 
 type Handler(session: IDocumentSession, mediator: IMediator, notificationService: IClientNotificationService, logger: ILogger<MoveOrAttack>) =
@@ -142,15 +131,13 @@ type Handler(session: IDocumentSession, mediator: IMediator, notificationService
 
           blockedPositions.Add(p)
 
-          let e: PlayerUnitEvent =
-            PlayerUnitEvent.PlayerUnitInitialized { Position = p }
-
-          session.AppendPlayerUnitEvent(player.Key, e)
-          |> ignore
+          // let e: PlayerUnitEvent =
+          //   PlayerUnitEvent.PlayerUnitInitialized { Position = p }
+          //
+          // session.AppendPlayerUnitEvent(player.Key, e)
+          // |> ignore
           // session.Events.Append(player.Id, e)
           ())
-
-
 
         session.AppendGameEvent(request.Data.GameId, GameEvent.GameStarted)
         |> ignore
@@ -298,18 +285,10 @@ type Handler(session: IDocumentSession, mediator: IMediator, notificationService
 
           blockedPositions.Add(p)
 
-          let e: PlayerUnitEvent =
-            PlayerUnitEvent.PlayerUnitInitialized { Position = p }
-
-          session.AppendPlayerUnitEvent(player.Key, e)
-          |> ignore
           // session.Events.Append(player.Id, e)
           ())
 
-        let e: GameRestarted =
-          { GameField = gameField }
-
-        session.Events.Append(game.Id, e)
+        session.AppendGameEvent(game.Key(), GameEvent.GameRestarted { GameField = gameField }) |> ignore
         do! session.SaveChangesAsync()
         return MediatR.Unit.Value
       }
@@ -317,31 +296,20 @@ type Handler(session: IDocumentSession, mediator: IMediator, notificationService
   interface IRequestHandler<CreatePlayer, CreatePlayerResult> with
     member this.Handle(request, cancellationToken) =
       task {
-        let! games = session.Query<Game>().ToListAsync()
+        let! game = session.GetGameAsync(request.GameId |> GameId.create)
 
-        let game =
-          games.FirstOrDefault (fun v ->
-            v.Status = GameStatus.Initializing
-            || v.Status = GameStatus.Running)
+        let id = System.Guid.NewGuid() |> PlayerUnitId.create
 
-        if (box game = null) then
-          raise (BadRequestException("No game found"))
-
-        let id = PlayerUnitId.PlayerUnitId(Guid.NewGuid())
-
-        let e1: PlayerUnitCreated =
-          { GameId = game.Key
-            Name = request.Name
-            Icon = request.Icon }
-
-        session.StartPlayerUnitStream(id, e1)|>ignore
-        let e2: GameEvent= GameEvent.PlayerJoined  { PlayerId = id }
-        session.AppendGameEvent(game.Key, e2)|>ignore
+        session.AppendGameEvent(game.Key(), GameEvent.PlayerJoined  { PlayerId = id }) |> ignore
+        session.AppendGameEvent(game.Key(), GameEvent.PlayerUnitCreated { PlayerUnitId = id
+                                                                          Name = request.Name
+                                                                          Icon = request.Icon
+                                                                          Position = game.Field.GetRandomPosition() }) |> ignore
         // session.Events.Append(game.Id, e2)
         do! session.SaveChangesAsync()
 
         let result: CreatePlayerResult =
-          { Id = id; GameId = game.Key }
+          { PlayerUnitId = id; GameId = game.Key() }
 
         return result
       }

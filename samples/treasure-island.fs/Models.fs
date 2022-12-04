@@ -20,7 +20,6 @@ type AttackModifier = { BaseAttack: int }
 
 type Protection = { BaseDamageReduction: int }
 
-
 type Item =
   { Name: string
     Icon: string
@@ -48,23 +47,26 @@ type ItemDropped =
   interface IClientNotification
 
 type GameId = GameId of Guid
+
+module GameId =
+  let create (rawId: System.Guid) : GameId = GameId rawId
+  let value (GameId rawId) : System.Guid = rawId
+
 type PlayerUnitId = PlayerUnitId of Guid
+
+module PlayerUnitId =
+  let create (rawId: System.Guid) = PlayerUnitId rawId
+  let value (PlayerUnitId rawId) : System.Guid = rawId
 
 type PlayerJoined =
   { PlayerId: PlayerUnitId }
   interface IClientNotification
 
-type PlayerUnitInitialized =
-  { Position: Position }
-  interface IClientNotification
-
-
-type PlayerUnitEvent = PlayerUnitInitialized of PlayerUnitInitialized
-
 type PlayerUnitCreated =
-  { Name: string
-    GameId: GameId
-    Icon: string }
+  { PlayerUnitId: PlayerUnitId
+    Name: string
+    Icon: string
+    Position: Position }
   interface IClientNotification
 
 type UnitMoved =
@@ -116,20 +118,11 @@ type Tile =
     Name: TileName
     Walkable: bool }
 
-// public enum TileName
-// {
-//     Grass = 1, Water = 2, Mountain = 3, Wood = 4, Corn = 5
-// }
 type Field =
   { Position: Position
     Tile: Tile
     Items: Item list }
-// {
-//     public static Field New(Position position, Tile tile)
-//     {
-//         return new Field(position, tile, new List<Item>())
-//     }
-// }
+
 type ActiveUnitChanged =
   { UnitId: Guid }
   interface IClientNotification
@@ -176,21 +169,18 @@ type GameEvent =
   | GameAborted of GameAborted
   | GameEnded of GameEnded
   | PlayerJoined of PlayerJoined
-
+  | PlayerUnitCreated of PlayerUnitCreated
+  | DamageTaken of DamageTaken
+  | UnitEnabledForWalk of UnitEnabledForWalk
+  | ActiveUnitChanged of ActiveUnitChanged
+  | UnitDied of UnitDied
+  | UnitAttacked of UnitAttacked
+  | UnitMoved of UnitMoved
+  | ItemDropped of ItemDropped
+  | ItemPicked of ItemPicked
+  | ItemRemoved of ItemRemoved
+  | GameTick of GameTick
 
 type GameEventNotification =
   { GameEvent: GameEvent }
   interface IClientNotification
-
-// type GameField(IReadOnlyList<Field> Fields)
-// {
-//     public Position GetRandomPosition()
-//     {
-//         return GetRandomField().Position;
-//     }
-//
-//     public Field GetRandomField()
-//     {
-//         return Fields[Utils.RandomInt(Fields.Count)];
-//     }
-// }

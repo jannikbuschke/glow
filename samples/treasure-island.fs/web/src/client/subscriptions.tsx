@@ -13,7 +13,6 @@ export type Events = {
   'TreasureIsland.ItemRemoved': TreasureIsland.ItemRemoved,
   'TreasureIsland.ItemDropped': TreasureIsland.ItemDropped,
   'TreasureIsland.PlayerJoined': TreasureIsland.PlayerJoined,
-  'TreasureIsland.PlayerUnitInitialized': TreasureIsland.PlayerUnitInitialized,
   'TreasureIsland.PlayerUnitCreated': TreasureIsland.PlayerUnitCreated,
   'TreasureIsland.UnitMoved': TreasureIsland.UnitMoved,
   'TreasureIsland.UnitAttacked': TreasureIsland.UnitAttacked,

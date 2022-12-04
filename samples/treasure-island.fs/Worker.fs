@@ -23,7 +23,6 @@ type DungeonWorker(db: IDocumentStore, provider: IServiceProvider) =
 
           session.Events.Append(game.Id, [ drawn :> obj ])
           |> ignore
-
       )
 
       let gameField = GameFieldGenerator.hexagon 5
@@ -31,12 +30,7 @@ type DungeonWorker(db: IDocumentStore, provider: IServiceProvider) =
 
       let id = GameId.GameId(Guid.NewGuid())
 
-      let gameCreated: GameCreated =
-        { GameField = gameField
-          Mode = GameMode.RoundBased }
-
-      session.StartGameStream(id, gameCreated) |> ignore
-
+      session.StartGameStream(id, GameEvent.GameCreated { GameField = gameField; Mode = GameMode.RoundBased }) |> ignore
 
       do! session.SaveChangesAsync(stoppingToken)
     }

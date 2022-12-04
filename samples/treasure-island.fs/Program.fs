@@ -2,6 +2,7 @@ namespace TreasureIsland
 
 open Glow.Api.EventsQueries
 open Glow.Core.MartenSubscriptions
+open LamarCodeGeneration
 open Marten.Events.Daemon.Resiliency
 open Marten.Events.Projections
 open Marten
@@ -15,7 +16,6 @@ open Microsoft.Extensions.DependencyInjection
 open Microsoft.Extensions.Hosting
 open Serilog
 open Glow.Core
-open Glow.TypeScript
 open Weasel.Core
 open Glow.Core.Notifications
 open Glow.Azure.AzureKeyVault
@@ -73,8 +73,8 @@ module Program =
     services.AddGlowApplicationServices(null, null, JsonSerializationStrategy.SystemTextJson, assemblies)
     |> ignore
 
-    let firstLine = ResizeArray()
-    firstLine.Add("/* eslint-disable prettier/prettier */")
+    // let firstLine = ResizeArray()
+    // firstLine.Add("/* eslint-disable prettier/prettier */")
 
     // let apiOptions =
     //   ApiOptions(ApiFileFirstLines = firstLine)
@@ -93,9 +93,11 @@ module Program =
     services
       .AddMarten(fun (sp: IServiceProvider) ->
         let v = StoreOptions()
+        // v.GeneratedCodeMode =
+        v.GeneratedCodeMode = TypeLoadMode.Auto
         v.AutoCreateSchemaObjects = AutoCreate.All
         v.Connection(configuration.GetValue<string>("ConnectionString"))
-        v.Projections.SelfAggregate<PlayerUnit>(ProjectionLifecycle.Inline)
+        // v.Projections.SelfAggregate<PlayerUnit>(ProjectionLifecycle.Inline)
         v.Projections.SelfAggregate<Game>(ProjectionLifecycle.Inline)
 
         let logger = sp.GetService<Microsoft.Extensions.Logging.ILogger<MartenSubscription>>()

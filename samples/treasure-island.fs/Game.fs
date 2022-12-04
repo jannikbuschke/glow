@@ -2,18 +2,36 @@
 
 open System
 
+type PlayerUnit =
+  {
+    Id: Guid
+    Key: PlayerUnitId
+    GameId: GameId
+    Name: string
+    Icon: string
+    Items: Item list
+    IsEnabledToWalk: bool
+    Position: Position
+    RegenRate: int
+    BaseAttack: int
+    BaseProtection: int
+    Health: int
+    IsAlive: bool }
+
 [<CLIMutable>]
 type Game =
   { Id: Guid
-    Key: GameId
     Version: int64
     Tick: int
     Status: GameStatus
     Items: Item list
     Field: GameField
     Mode: GameMode
+    PlayerUnits: PlayerUnit list
     PlayerUnitIds: PlayerUnitId list
     ActiveUnit: Guid option }
+  member this.Key()=
+    this.Id |> GameId.create
   member this.Apply(e: GameTick) = { this with Tick = this.Tick + 1 }
 
   member this.Apply(e: GameEvent, meta: Marten.Events.IEvent) =
@@ -21,13 +39,13 @@ type Game =
     | GameStarted -> { this with Status = GameStatus.Running }
     | GameCreated e ->
       { Id = meta.Id
-        Key = GameId meta.Id
         Status = GameStatus.Initializing
         Field = e.GameField
         Mode = e.Mode
         Version = 0
         Tick = 0
         Items = []
+        PlayerUnits = []
         PlayerUnitIds = []
         ActiveUnit = None }
     | _ -> this
@@ -74,18 +92,6 @@ type Game =
   //         if (i != null) { field.Items.Remove(i); }
   //     }
   // }
-
-  member this.Apply(e: GameCreated, meta: Marten.Events.IEvent) =
-    { Id = meta.Id
-      Key = GameId meta.Id
-      Status = GameStatus.Initializing
-      Field = e.GameField
-      Mode = e.Mode
-      Version = 0
-      Tick = 0
-      Items = []
-      PlayerUnitIds = []
-      ActiveUnit = None }
 
   member this.Apply(e: PlayerJoined) =
     { this with PlayerUnitIds = this.PlayerUnitIds @ [ e.PlayerId ] }

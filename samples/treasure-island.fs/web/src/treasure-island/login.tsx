@@ -125,12 +125,14 @@ export function LoginView() {
           })
         }}
         onSuccess={(v) => {
+          console.log({ result: v })
           localStorage.setItem("user", v.id)
           navigate("/game/" + v.gameId)
         }}
       >
         {(f) => (
           <Center>
+            <h1>LOGIN</h1>
             <Container>
               <TextInput
                 id={id}

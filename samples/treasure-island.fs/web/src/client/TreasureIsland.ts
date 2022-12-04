@@ -72,23 +72,17 @@ export type PlayerJoined = {
 export const defaultPlayerJoined: PlayerJoined = {
   playerId: defaultPlayerUnitId,
 }
-export type PlayerUnitInitialized = {
+export type PlayerUnitCreated = {
+  playerUnitId: PlayerUnitId
+  name: System.String
+  icon: System.String
   position: Position
 }
-export const defaultPlayerUnitInitialized: PlayerUnitInitialized = {
-  position: defaultPosition,
-}
-export type GameId = System.Guid
-export const defaultGameId: GameId = System.defaultGuid
-export type PlayerUnitCreated = {
-  name: System.String
-  gameId: GameId
-  icon: System.String
-}
 export const defaultPlayerUnitCreated: PlayerUnitCreated = {
+  playerUnitId: defaultPlayerUnitId,
   name: System.defaultString,
-  gameId: defaultGameId,
   icon: System.defaultString,
+  position: defaultPosition,
 }
 export type UnitMoved = {
   unitId: System.Guid
@@ -231,9 +225,20 @@ export type GameEvent_Case_GameDrawn = { Case: "GameDrawn", Fields: GameDrawn }
 export type GameEvent_Case_GameAborted = { Case: "GameAborted", Fields: GameAborted }
 export type GameEvent_Case_GameEnded = { Case: "GameEnded", Fields: GameEnded }
 export type GameEvent_Case_PlayerJoined = { Case: "PlayerJoined", Fields: PlayerJoined }
-export type GameEvent = GameEvent_Case_GameCreated | GameEvent_Case_GameStarted | GameEvent_Case_GameRestarted | GameEvent_Case_GameDrawn | GameEvent_Case_GameAborted | GameEvent_Case_GameEnded | GameEvent_Case_PlayerJoined
-export type GameEvent_Case = "GameCreated" | "GameStarted" | "GameRestarted" | "GameDrawn" | "GameAborted" | "GameEnded" | "PlayerJoined"
-export const GameEvent_AllCases = [ "GameCreated", "GameStarted", "GameRestarted", "GameDrawn", "GameAborted", "GameEnded", "PlayerJoined" ] as const
+export type GameEvent_Case_PlayerUnitCreated = { Case: "PlayerUnitCreated", Fields: PlayerUnitCreated }
+export type GameEvent_Case_DamageTaken = { Case: "DamageTaken", Fields: DamageTaken }
+export type GameEvent_Case_UnitEnabledForWalk = { Case: "UnitEnabledForWalk", Fields: UnitEnabledForWalk }
+export type GameEvent_Case_ActiveUnitChanged = { Case: "ActiveUnitChanged", Fields: ActiveUnitChanged }
+export type GameEvent_Case_UnitDied = { Case: "UnitDied", Fields: UnitDied }
+export type GameEvent_Case_UnitAttacked = { Case: "UnitAttacked", Fields: UnitAttacked }
+export type GameEvent_Case_UnitMoved = { Case: "UnitMoved", Fields: UnitMoved }
+export type GameEvent_Case_ItemDropped = { Case: "ItemDropped", Fields: ItemDropped }
+export type GameEvent_Case_ItemPicked = { Case: "ItemPicked", Fields: ItemPicked }
+export type GameEvent_Case_ItemRemoved = { Case: "ItemRemoved", Fields: ItemRemoved }
+export type GameEvent_Case_GameTick = { Case: "GameTick", Fields: GameTick }
+export type GameEvent = GameEvent_Case_GameCreated | GameEvent_Case_GameStarted | GameEvent_Case_GameRestarted | GameEvent_Case_GameDrawn | GameEvent_Case_GameAborted | GameEvent_Case_GameEnded | GameEvent_Case_PlayerJoined | GameEvent_Case_PlayerUnitCreated | GameEvent_Case_DamageTaken | GameEvent_Case_UnitEnabledForWalk | GameEvent_Case_ActiveUnitChanged | GameEvent_Case_UnitDied | GameEvent_Case_UnitAttacked | GameEvent_Case_UnitMoved | GameEvent_Case_ItemDropped | GameEvent_Case_ItemPicked | GameEvent_Case_ItemRemoved | GameEvent_Case_GameTick
+export type GameEvent_Case = "GameCreated" | "GameStarted" | "GameRestarted" | "GameDrawn" | "GameAborted" | "GameEnded" | "PlayerJoined" | "PlayerUnitCreated" | "DamageTaken" | "UnitEnabledForWalk" | "ActiveUnitChanged" | "UnitDied" | "UnitAttacked" | "UnitMoved" | "ItemDropped" | "ItemPicked" | "ItemRemoved" | "GameTick"
+export const GameEvent_AllCases = [ "GameCreated", "GameStarted", "GameRestarted", "GameDrawn", "GameAborted", "GameEnded", "PlayerJoined", "PlayerUnitCreated", "DamageTaken", "UnitEnabledForWalk", "ActiveUnitChanged", "UnitDied", "UnitAttacked", "UnitMoved", "ItemDropped", "ItemPicked", "ItemRemoved", "GameTick" ] as const
 export const defaultGameEvent_Case_GameCreated = { Case: "GameCreated", Fields: defaultGameCreated }
 export const defaultGameEvent_Case_GameStarted = { Case: "GameStarted" }
 export const defaultGameEvent_Case_GameRestarted = { Case: "GameRestarted", Fields: defaultGameRestarted }
@@ -241,6 +246,17 @@ export const defaultGameEvent_Case_GameDrawn = { Case: "GameDrawn", Fields: defa
 export const defaultGameEvent_Case_GameAborted = { Case: "GameAborted", Fields: defaultGameAborted }
 export const defaultGameEvent_Case_GameEnded = { Case: "GameEnded", Fields: defaultGameEnded }
 export const defaultGameEvent_Case_PlayerJoined = { Case: "PlayerJoined", Fields: defaultPlayerJoined }
+export const defaultGameEvent_Case_PlayerUnitCreated = { Case: "PlayerUnitCreated", Fields: defaultPlayerUnitCreated }
+export const defaultGameEvent_Case_DamageTaken = { Case: "DamageTaken", Fields: defaultDamageTaken }
+export const defaultGameEvent_Case_UnitEnabledForWalk = { Case: "UnitEnabledForWalk", Fields: defaultUnitEnabledForWalk }
+export const defaultGameEvent_Case_ActiveUnitChanged = { Case: "ActiveUnitChanged", Fields: defaultActiveUnitChanged }
+export const defaultGameEvent_Case_UnitDied = { Case: "UnitDied", Fields: defaultUnitDied }
+export const defaultGameEvent_Case_UnitAttacked = { Case: "UnitAttacked", Fields: defaultUnitAttacked }
+export const defaultGameEvent_Case_UnitMoved = { Case: "UnitMoved", Fields: defaultUnitMoved }
+export const defaultGameEvent_Case_ItemDropped = { Case: "ItemDropped", Fields: defaultItemDropped }
+export const defaultGameEvent_Case_ItemPicked = { Case: "ItemPicked", Fields: defaultItemPicked }
+export const defaultGameEvent_Case_ItemRemoved = { Case: "ItemRemoved", Fields: defaultItemRemoved }
+export const defaultGameEvent_Case_GameTick = { Case: "GameTick", Fields: defaultGameTick }
 export const defaultGameEvent = null as any as GameEvent
 export type GameEventNotification = {
   gameEvent: GameEvent
@@ -248,6 +264,8 @@ export type GameEventNotification = {
 export const defaultGameEventNotification: GameEventNotification = {
   gameEvent: defaultGameEvent,
 }
+export type GameId = System.Guid
+export const defaultGameId: GameId = System.defaultGuid
 export type PlayerUnit = {
   id: System.Guid
   key: PlayerUnitId
@@ -294,25 +312,25 @@ export const defaultGameStatus_Case_Aborted = { Case: "Aborted" }
 export const defaultGameStatus = null as any as GameStatus
 export type Game = {
   id: System.Guid
-  key: GameId
   version: System.Int64
   tick: System.Int32
   status: GameStatus
   items: Microsoft_FSharp_Collections.FSharpList<Item>
   field: GameField
   mode: GameMode
+  playerUnits: Microsoft_FSharp_Collections.FSharpList<PlayerUnit>
   playerUnitIds: Microsoft_FSharp_Collections.FSharpList<PlayerUnitId>
   activeUnit: Microsoft_FSharp_Core.FSharpOption<System.Guid>
 }
 export const defaultGame: Game = {
   id: System.defaultGuid,
-  key: defaultGameId,
   version: System.defaultInt64,
   tick: System.defaultInt32,
   status: defaultGameStatus,
   items: Microsoft_FSharp_Collections.defaultFSharpList(defaultItem),
   field: defaultGameField,
   mode: defaultGameMode,
+  playerUnits: Microsoft_FSharp_Collections.defaultFSharpList(defaultPlayerUnit),
   playerUnitIds: Microsoft_FSharp_Collections.defaultFSharpList(defaultPlayerUnitId),
   activeUnit: Microsoft_FSharp_Core.defaultFSharpOption(System.defaultGuid),
 }
@@ -409,11 +427,11 @@ export const defaultGetDocuments: GetDocuments = {
   documentName: System.defaultString,
 }
 export type CreatePlayerResult = {
-  id: PlayerUnitId
+  playerUnitId: PlayerUnitId
   gameId: GameId
 }
 export const defaultCreatePlayerResult: CreatePlayerResult = {
-  id: defaultPlayerUnitId,
+  playerUnitId: defaultPlayerUnitId,
   gameId: defaultGameId,
 }
 export type EventViewmodel = {
