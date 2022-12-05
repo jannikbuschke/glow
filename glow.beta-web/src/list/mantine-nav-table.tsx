@@ -37,7 +37,10 @@ export function usePagination(): Pagination {
 }
 
 export function CustomTable<RecordType extends { id: string } = any>(
-  props: NavtableProps<RecordType> & { loading?: boolean },
+  props: NavtableProps<RecordType> & {
+    selected?: RecordType
+    onRowClick?: (record: RecordType) => void
+  },
 ) {
   const [
     { pageIndex, pageSize },
@@ -75,7 +78,7 @@ export function CustomTable<RecordType extends { id: string } = any>(
             header: (props) => "" + v.title,
             cell: (props) => v.render(props.row.original!),
             meta: { width: v.width },
-          } as ColumnDef<any, { width: string | null }>),
+          } as ColumnDef<RecordType>),
       ),
     getCoreRowModel: getCoreRowModel(),
     state:
@@ -133,13 +136,20 @@ export function CustomTable<RecordType extends { id: string } = any>(
                 component="tr"
                 key={row.id}
                 onClick={
-                  navigateOnClickTo
-                    ? () => navigate(navigateOnClickTo(row.original!))
+                  navigateOnClickTo || props.onRowClick
+                    ? () => {
+                        props.onRowClick && props.onRowClick(row.original!)
+                        navigateOnClickTo &&
+                          navigate(navigateOnClickTo(row.original!))
+                      }
                     : undefined
                 }
                 sx={(theme) => ({
-                  cursor: props.navigateOnClickTo ? "pointer" : undefined,
                   display: props.responsive ? "flex" : undefined,
+                  cursor:
+                    props.navigateOnClickTo || props.onRowClick
+                      ? "pointer"
+                      : undefined,
                   backgroundColor:
                     row.original?.id === match?.params.id
                       ? theme.colorScheme === "dark"
