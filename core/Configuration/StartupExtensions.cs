@@ -20,6 +20,17 @@ namespace Glow.Configurations
             return builder.Add(new ConfigurationSource(optionsAction));
         }
 
+        public static IServiceCollection AddFixForGlowConfigurationMissingDependencies(
+            this IServiceCollection services,
+            IEnumerable<Assembly> assemblies = null
+            )
+        {
+            IEnumerable<Assembly> a = assemblies ?? new[] { Assembly.GetCallingAssembly() };
+            services.AddSingleton((services) => new AssembliesCache(a));
+            services.AddSingleton<Configurations>();
+            return services;
+        }
+
         public static IServiceCollection AddEfConfiguration(
             this IServiceCollection services,
             Action<ConfigurationOptions> configure = null,
