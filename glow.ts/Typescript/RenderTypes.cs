@@ -70,12 +70,13 @@ namespace Glow.Core.Typescript
 
             foreach (IGrouping<string, Dependency> group in dependencies)
             {
+                // namespace imports
+                // builder.AppendLine(
+                //     $"import * as {group.Key.Replace(".","_")} from \"./{group.Key}\"");
                 builder.AppendLine(
-                    $"import * as {group.Key.Replace(".","_")} from \"./{group.Key}\"");
-                // builder.AppendLine(
-                //     $"import {{ {string.Join(", ", group.Select(v => v.Name.Replace("[]", "")))} }} from \"./{group.Key}\"");
-                // builder.AppendLine(
-                //     $"import {{ {string.Join(", ", group.Where(v => v != null).Select(v => "default" + v.Name.Replace("[]", "")))} }} from \"./{group.Key}\"");
+                    $"import {{ {string.Join(", ", group.Select(v => v.Name.Replace("[]", "")))} }} from \"./{group.Key}\"");
+                builder.AppendLine(
+                    $"import {{ {string.Join(", ", group.Where(v => v != null).Select(v => "default" + v.Name.Replace("[]", "")))} }} from \"./{group.Key}\"");
             }
 
             if (dependencies.Count() != 0)
@@ -146,7 +147,7 @@ namespace Glow.Core.Typescript
             {
                 foreach (Property v in type.Properties)
                 {
-                    builder.AppendLine($" //  property name = {v.PropertyName} type name =  {v.TypeName},  namespace = {v.NameSpace}");
+                    // builder.AppendLine($" //  property name = {v.PropertyName} type name =  {v.TypeName},  namespace = {v.NameSpace}");
                     if (v.NameSpace != null && v.NameSpace != type.Namespace)
                     {
                         builder.AppendLine($"  {v.PropertyName}: {v.NameSpace.Replace(".","_")}.{v.TypeName}{(v.IsNullable ? " | null" : "")}");
