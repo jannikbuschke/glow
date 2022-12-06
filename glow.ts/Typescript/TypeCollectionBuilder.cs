@@ -491,7 +491,7 @@ namespace Glow.Core.Typescript
             return new TsType
             {
                 Id = id,
-                Name = name + "[]",
+                Name = name.EndsWith("null") ? $"({name})[]" : name + "[]",
                 Namespace = elementTypeNamespace,
                 DefaultValue = "[]",
                 GenericArgumentsTsTypes = genericArgumentTypes,
