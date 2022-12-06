@@ -7,6 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <Compile Include="SomeTypes.fs" />
         <Compile Include="Tests.fs" />
         <Compile Include="FSharpResult.fs" />
         <Compile Include="Collections.fs" />

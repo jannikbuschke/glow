@@ -8,14 +8,16 @@ import { Formik, FormikConfig, FormikFormProps, FormikProps } from "formik"
 import { Form } from "formik-antd"
 import * as Glow_TestAutomation from "./Glow.TestAutomation"
 import * as Glow_Azure_AzureKeyVault from "./Glow.Azure.AzureKeyVault"
-import * as MediatR from "./MediatR"
 import * as Glow_Core_Profiles from "./Glow.Core.Profiles"
+import * as MediatR from "./MediatR"
 
 export type QueryInputs = {
   "/api/glow/test-automation/get-available-fake-users": Glow_TestAutomation.GetAvailableFakeUsers,
+  "/glow/profile/get-profile": Glow_Core_Profiles.GetProfile,
 }
 export type QueryOutputs = {
   "/api/glow/test-automation/get-available-fake-users": Glow_TestAutomation.FakeUsers,
+  "/glow/profile/get-profile": Glow_Core_Profiles.Profile,
 }
 export type Outputs = {
   "/api/glow/set-openid-connect-options": MediatR.Unit,

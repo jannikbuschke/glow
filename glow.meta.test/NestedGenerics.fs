@@ -58,6 +58,15 @@ let ``Create correct generic type definition TsSignature with generic argument``
             IsGenericTypeDefinition = false
             GenericArgumentTypes = [] } ] }
 
+[<Fact>]
+let ``Nested generic dependency correctly resolved`` () =
+  let def =
+    typeof<MyNamespace2.MyType2>
+  let t = Glow.GetTsSignature.toTsType 0 def
+  let deps = t.Dependencies
+  let signature =
+    Glow.GetTsSignature.getTsSignature def
+  ()
 
 [<Fact>]
 let ``typeof Result<string,string> list`` () =
@@ -65,8 +74,11 @@ let ``typeof Result<string,string> list`` () =
   let def =
     typeof<Result<string, string> list>
 
+  let t = Glow.GetTsSignature.toTsType 0 def
+  let deps = t.Dependencies
   let signature =
     Glow.GetTsSignature.getTsSignature def
+
 
   Expect.eq
     signature

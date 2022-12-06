@@ -9,6 +9,9 @@ let renderTsTypesInternal (path: string) (assemblies: Assembly list) =
   if not (System.IO.Directory.Exists(path)) then
     System.IO.Directory.CreateDirectory path |> ignore
     ()
+  System.IO.Directory.EnumerateFiles path |> Seq.iter(fun file ->
+    System.IO.File.Delete(file)
+  )
   let stopWatch = System.Diagnostics.Stopwatch.StartNew()
   let es = GetTypes.getEvents assemblies
   let actions = GetTypes.getRequests assemblies
@@ -25,8 +28,8 @@ let renderTsTypesInternal (path: string) (assemblies: Assembly list) =
   let modules =
     Glow.TsGen.Gen.generateModules allTypes
 
-
   modules
+  |> List.filter(fun v->v.Name |> NamespaceName.value <> "")
   |> List.iter (fun v ->
     let fs = Glow.TsGen.Gen.renderModule v
     System.IO.File.WriteAllText($"{path}{NamespaceName.filename v.Name}", fs)

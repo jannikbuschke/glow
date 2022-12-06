@@ -6,8 +6,8 @@ import mitt, { Handler, WildcardHandler } from "mitt"
 import { useNotification, useWildcardNotification } from "glow-core/lib/notifications/type-notifications"
 import * as Glow_TestAutomation from "./Glow.TestAutomation"
 import * as Glow_Azure_AzureKeyVault from "./Glow.Azure.AzureKeyVault"
-import * as MediatR from "./MediatR"
 import * as Glow_Core_Profiles from "./Glow.Core.Profiles"
+import * as MediatR from "./MediatR"
 
 export type Events = {
 }

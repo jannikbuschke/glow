@@ -1,4 +1,10 @@
 /* eslint-disable prettier/prettier */
+export interface GetProfile {
+}
+
+export const defaultGetProfile: GetProfile = {
+}
+
 export interface Profile {
   displayName: string | null
   id: string | null

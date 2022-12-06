@@ -56,10 +56,13 @@ let render (assemblies: Assembly list) (path:string) =
     |> ignore
 
   modules |> List.iter(fun m ->
-    let name = m.Name
-    let sanitized = name |> NamespaceName.sanitize
-    let filename = name |> NamespaceName.filenameWithoutExtensions
-    imports.AppendLine($"import * as {sanitized} from \"{filename}\"") |> ignore
+    if m.Name |> NamespaceName.value = "" then
+      ()
+    else
+      let name = m.Name
+      let sanitized = name |> NamespaceName.sanitize
+      let filename = name |> NamespaceName.filenameWithoutExtensions
+      imports.AppendLine($"import * as {sanitized} from \"{filename}\"") |> ignore
   )
 
   let queryInputs = StringBuilder()

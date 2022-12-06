@@ -86,13 +86,14 @@ let rec toTsType (depth: int) (t: Type) : TsType =
       if t |> isCollection then
         []
       else
-        t.GetProperties()
 
+        t.GetProperties()
         |> Seq.toList
         |> List.choose (fun v ->
           if v.PropertyType.Equals(t) then
             None
           else
+
             let result =
               toTsType (depth + 1) v.PropertyType
 
@@ -123,8 +124,9 @@ let rec toTsType (depth: int) (t: Type) : TsType =
         let result =
           t.Type.GetGenericTypeDefinition()
           |> toTsType (depth + 1)
+        let genericArgs = t.Type.GetGenericArguments() |> Seq.map(toTsType(depth+1))|>Seq.toList
 
-        result :: t.GenericTypeArguments
+        result :: genericArgs
       else
         [ t ]
 

@@ -17,16 +17,14 @@ module DuCaseSignature =
   let value (DuCaseSignature s) = s
 
 module NamespaceName =
-  let sanitize (namespaceName: NamespaceName) : string =
-    let (NamespaceName namespaceName) =
-      namespaceName
 
-    namespaceName.Replace(".", "_")
+  let value (NamespaceName namespaceName) : string = namespaceName
+  let sanitize (namespaceName: NamespaceName) : string =
+    (namespaceName |> value).Replace(".", "_")
 
   let filenameWithoutExtensions (namespaceName: NamespaceName) : string = $"./{sanitize namespaceName}"
 
   let filename (namespaceName: NamespaceName) : string = $"./{sanitize namespaceName}.ts"
-  let value (NamespaceName namespaceName) : string = namespaceName
 
 type TsSignature =
   { TsNamespace: NamespaceName

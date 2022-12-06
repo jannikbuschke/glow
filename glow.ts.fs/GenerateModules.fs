@@ -358,7 +358,11 @@ module DefaultTypeDefinitionsAndValues =
     add (typeof<System.String>, ("String", None, "string", None, "\"\""))
     add (typedefof<_ list>, ("FSharpList", Some "FSharpList<T>", "Array<T>", Some "<T>(t:T)", "[]"))
     add (typedefof<_ option>, ("FSharpOption", Some "FSharpOption<T>", "T | null", Some "<T>(t:T)", "null"))
+    add (typedefof<Nullable<_>>, ("Nullable", Some "Nullable<T>", "T | null", Some "<T>(t:T)", "null"))
     add (typedefof<System.Collections.Generic.IEnumerable<_>>, ("IEnumerable", Some "IEnumerable<T>", "Array<T>", Some "<T>(t:T)", "[]"))
+    add (typedefof<System.Collections.Generic.IList<_>>, ("IList", Some "IList<T>", "Array<T>", Some "<T>(t:T)", "[]"))
+    add (typedefof<System.Collections.Generic.ICollection<_>>, ("ICollection", Some "ICollection<T>", "Array<T>", Some "<T>(t:T)", "[]"))
+    add (typedefof<System.Collections.Generic.IDictionary<_,_>>, ("IDictionary", Some "IDictionary<TKey, TValue>", "{ [key: string | number]: TValue }", Some "<TKey, TValue>(t:TKey,tValue:TValue)", "({})"))
 
     add (
       typedefof<System.Collections.Generic.Dictionary<_, _>>,
@@ -575,6 +579,7 @@ let renderTypeDefinitionAndValue t : string option =
 
 let renderModule (m: Namespace) : string =
 
+  let name = m.Name |> NamespaceName.value
   let deps = getDependencies m
 
   let builder = StringBuilder()
@@ -591,13 +596,17 @@ let renderModule (m: Namespace) : string =
     let name =
       v.OriginalNamespace |> NamespaceName.sanitize
 
-    if v.Id = TsTypeId "Any" then
+    if v.Id = TsTypeId "Any" || name = null then
       ()
-    elif name = "" then
+    elif name = "" || name = null then
       builder.AppendLine($"// skipped importing empty namespace (type={v.OriginalName})")
       |> ignore
     else
-      builder.AppendLine($@"import * as {name} from ""./{name}""")
+      let x = $@"import * as {name} from ""./{name}"""
+      if x = $"import * as  from \"./\"" then
+        ()
+      else
+        builder.AppendLine(x)
       |> ignore
 
     ())
