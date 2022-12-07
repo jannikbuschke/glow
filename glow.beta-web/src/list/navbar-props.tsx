@@ -1,3 +1,4 @@
+import { MantineShadow } from "@mantine/core"
 import { PaginationState } from "@tanstack/react-table"
 import { ColumnType, TableProps } from "antd/es/table"
 import * as React from "react"
@@ -27,6 +28,7 @@ export type NavtableProps<RecordType extends { id: string } = any> = {
   paginate?: boolean | undefined
   responsive?: boolean
   loading?: boolean
+  shadow?: MantineShadow | false | undefined
 } & Omit<
   TableProps<RecordType>,
   | "columns"

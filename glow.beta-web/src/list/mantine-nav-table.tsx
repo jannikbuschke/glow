@@ -97,7 +97,10 @@ export function CustomTable<RecordType extends { id: string } = any>(
   return (
     <Box sx={(theme) => ({ position: "relative" })}>
       <LoadingOverlay visible={props.loading || false} />
-      <Paper withBorder={false} shadow="xs">
+      <Paper
+        withBorder={false}
+        shadow={props.shadow === false ? undefined : props.shadow || "xs"}
+      >
         <Table>
           <thead>
             {instance.getHeaderGroups().map((headerGroup) => {
@@ -136,8 +139,9 @@ export function CustomTable<RecordType extends { id: string } = any>(
                 component="tr"
                 key={row.id}
                 onClick={
-                  navigateOnClickTo || props.onRowClick
+                  navigateOnClickTo || props.onRowClick || props.onSelect
                     ? () => {
+                        props.onSelect && props.onSelect(row.original)
                         props.onRowClick && props.onRowClick(row.original!)
                         navigateOnClickTo &&
                           navigate(navigateOnClickTo(row.original!))
@@ -147,7 +151,9 @@ export function CustomTable<RecordType extends { id: string } = any>(
                 sx={(theme) => ({
                   display: props.responsive ? "flex" : undefined,
                   cursor:
-                    props.navigateOnClickTo || props.onRowClick
+                    props.navigateOnClickTo ||
+                    props.onRowClick ||
+                    props.onSelect
                       ? "pointer"
                       : undefined,
                   backgroundColor:
