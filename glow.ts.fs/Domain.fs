@@ -96,7 +96,7 @@ type TsProperty = { Name: string; TsType: TsSignature }
 type FullTsTypeId =
   { Id: TsTypeId
     OriginalName: string
-    OriginalNamespace: NamespaceName
+    OriginalNamespace: string
     TsSignature: TsSignature }
 
 type DuCaseField = { Name: string; TsType: TsType }
@@ -113,14 +113,27 @@ and TsType =
     GenericTypeArguments: TsType list
     Type: Type
     DuCases: DuCase list
-    Dependencies: TsType list }
+    Dependencies: TsType list
+    HasCyclicDependency: bool
+    }
+  member this.GetAllDependencies() =
+    let directDeps = this.Dependencies |> List.filter(fun v -> not v.Id.TsSignature.IsGenericParameter)
+
+    let rec getAllGenericTypeArguments (t: TsType) =
+      let args = t.GenericTypeArguments
+      let childArgs = args |> List.collect getAllGenericTypeArguments
+      args @ childArgs
+    
+    let genericArgs = getAllGenericTypeArguments this
+    directDeps @ genericArgs
+
   static member Any(t: Type) =
     { Id =
         { Id = TsTypeId "Any"
           OriginalName = ""
-          OriginalNamespace = NamespaceName ""
+          OriginalNamespace = ""
           TsSignature =
-            { TsNamespace = NamespaceName ""
+            { TsNamespace = NamespaceName "TsType"
               IsGenericType = false
               ContainsGenericParameters = false
               IsGenericTypeDefinition = false
@@ -133,6 +146,7 @@ and TsType =
       Type = t
       DuCases = []
       Dependencies = []
+      HasCyclicDependency = false
     }
 
 type Namespace =

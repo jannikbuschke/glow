@@ -53,8 +53,9 @@ module DefaultSerialize =
     options.Converters.Add(JsonFSharpConverter(JsonDefaultUnionEncoding))
     options
 
-  let serialize0 (options: System.Text.Json.JsonSerializerOptions) (value) =
+  let serialize0 (options: System.Text.Json.JsonSerializerOptions) value =
     System.Text.Json.JsonSerializer.Serialize(value, options)
 
   let options = getOptions ()
-  let serialize (value: obj) = serialize0 options value
+  let x = NodaTime.Serialization.SystemTextJson.Extensions.ConfigureForNodaTime(options, NodaTime.DateTimeZoneProviders.Tzdb)
+  let serialize (value: obj) = serialize0 x value

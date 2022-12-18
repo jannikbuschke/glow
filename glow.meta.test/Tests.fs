@@ -42,8 +42,7 @@ module Helpers =
     let modules = generateModules types
     let item = findeTsTypeInModules modules t
 
-    let rendered =
-      renderTypeDefinitionAndValue item
+    let rendered = renderTypeAndDefaultValue item
 
     match rendered with
     | Some rendered -> rendered

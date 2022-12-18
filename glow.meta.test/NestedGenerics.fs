@@ -62,8 +62,30 @@ let ``Create correct generic type definition TsSignature with generic argument``
 let ``Nested generic dependency correctly resolved`` () =
   let def =
     typeof<MyNamespace2.MyType2>
-  let t = Glow.GetTsSignature.toTsType 0 def
+  let t = Glow.GetTsSignature.toTsType1 0 def
   let deps = t.Dependencies
+  let foudn = deps |> List.find(fun v -> v.Id.OriginalName = "Generic`1" && v.IsGenericTypeDefinition)
+  let signature =
+    Glow.GetTsSignature.getTsSignature def
+  ()
+
+type G<'a> ={
+  A: 'a
+}
+type X = {
+  Option: Option<G<int>>
+}
+
+[<Fact>]
+let ``Nested generic dependency correctly resolved 2`` () =
+  let def =
+    typeof<X>
+    
+  let allRuntimeArguments = Glow.GetTsSignature.getArgumentsRecursively typeof<Option<G<int>>>
+  
+  let t = Glow.GetTsSignature.toTsType1 0 def
+  let deps = t.Dependencies
+  let foudn = deps |> List.find(fun v -> v.Id.OriginalName = "G`1" && v.IsGenericTypeDefinition)
   let signature =
     Glow.GetTsSignature.getTsSignature def
   ()
@@ -74,7 +96,7 @@ let ``typeof Result<string,string> list`` () =
   let def =
     typeof<Result<string, string> list>
 
-  let t = Glow.GetTsSignature.toTsType 0 def
+  let t = Glow.GetTsSignature.toTsType1 0 def
   let deps = t.Dependencies
   let signature =
     Glow.GetTsSignature.getTsSignature def
@@ -334,3 +356,5 @@ let ``Properties of typeof <System.Collections.Generic.IEnumerable<System.Collec
 
   "Should containt KeyValuePair definition"
   |> Expect.exists modules (hasItemWithSignature keyValueSignature)
+
+

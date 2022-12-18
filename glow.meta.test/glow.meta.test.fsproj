@@ -10,8 +10,11 @@
         <Compile Include="SomeTypes.fs" />
         <Compile Include="Tests.fs" />
         <Compile Include="FSharpResult.fs" />
+        <Compile Include="FSharpMap.fs" />
         <Compile Include="Collections.fs" />
         <Compile Include="StronglyTypedId.fs" />
+        <Compile Include="Arrays.fs" />
+        <Compile Include="Object.fs" />
         <Compile Include="RecordWithList.fs" />
         <Compile Include="FSharpOption.fs" />
         <Compile Include="RecordWithPrimitiveOption.fs" />
@@ -23,6 +26,9 @@
         <Compile Include="DuWithMultipleFields.fs" />
         <Compile Include="RenderModule.fs" />
         <Compile Include="SerializeSomeTypes.fs" />
+        <Compile Include="NodaTime.fs" />
+        <Compile Include="EntityFrameworkTypes.fs" />
+        <Compile Include="CircularReference.fs" />
         <Compile Include="Program.fs" />
     </ItemGroup>
 

@@ -4,71 +4,89 @@ open System
 open System.Text
 open System.Text.Json.Serialization
 open Domain
+open Glow.GetTsSignature
 open Glow.Ts
 open Microsoft.FSharp.Core
 
 let getDependencies (n: Namespace) =
-  n.Items
-  |> List.filter Glow.GetTsSignature.isNonGenericTypeOrGenericTypeDefinition
-  |> List.collect (fun v -> v.Dependencies)
-  |> List.map (fun v -> v.Id)
-  |> List.distinctBy (fun v -> v.OriginalNamespace)
-  |> List.filter (fun v -> v.OriginalNamespace <> n.Name)
+  let deps = 
+    n.Items
+    |> List.filter Glow.GetTsSignature.isNonGenericTypeOrGenericTypeDefinition
+    |> List.collect (fun v -> v.Dependencies)
+    |> List.map (fun v -> v.Id)
+    |> List.distinctBy (fun v -> v.OriginalNamespace)
+    |> List.filter (fun v -> v.TsSignature.TsNamespace <> n.Name)
+  deps
 
-let generateModules (types: Type list) : Namespace list =
-  let directTypes =
-    types |> List.map (Glow.GetTsSignature.toTsType 0)
+let rec collectDependencies (depth: int) (v: TsType) =
+  let name = v.Id.OriginalName
+  if depth > 2 then
+    v.Dependencies
+  else
+    (v.Dependencies
+     @ (v.Dependencies
+        |> List.collect (collectDependencies (depth + 1))))
 
-  let rec collectDependencies (depth: int) (v: TsType) =
-    if depth > 0 then
-      v.Dependencies
-    else
-      (v.Dependencies
-       @ (v.Dependencies
-          |> List.collect (collectDependencies (depth + 1))))
+let getDependenciesFor items =
+  items
+  |> List.collect(collectDependencies 0)
+  |> List.rev
 
-  let dependencies =
-    directTypes
-    |> List.collect (collectDependencies 0)
-    |> List.rev
+let getGenericDefinitions items =
+  items
+  |> List.filter (fun v -> v.IsGenericType && not v.IsGenericTypeDefinition)
+  |> List.map (fun v -> Glow.GetTsSignature.toTsType1 0 (v.Type.GetGenericTypeDefinition()))
+  
+let getDirectTypes (items: Type list) =
+  items |> List.map (Glow.GetTsSignature.toTsType1 0)
 
-  let genericDefinitions =
-    (directTypes @ dependencies)
-    |> List.filter (fun v -> v.IsGenericType && not v.IsGenericTypeDefinition)
-    |> List.map (fun v -> Glow.GetTsSignature.toTsType 0 (v.Type.GetGenericTypeDefinition()))
-
-  let modules =
-    (directTypes @ dependencies @ genericDefinitions)
+let getAllTypes items =
+  let directTypes = getDirectTypes items
+  let dependencies = getDependenciesFor directTypes
+  let genericDefinitions = getGenericDefinitions (directTypes @ dependencies)
+  directTypes @ dependencies @ genericDefinitions
+  
+let groupToModules items=
+  let reg = items |> List.filter(fun v->v.Id.OriginalName="Registration")
+  items
     |> List.distinct
     |> List.groupBy (fun v -> v.Id.TsSignature.TsNamespace)
     |> List.map (fun (namespaceName, types) ->
-      { Name = namespaceName
-        Items =
-          types
-          |> Seq.distinctBy (fun v -> v.Id.TsSignature)
-          |> Seq.toList })
+      let name = namespaceName|>NamespaceName.value
+      let result =
+        { Name = namespaceName
+          Items =
+            types
+            // |> Seq.filter(fun v -> not v.HasCyclicDependency)
+            |> Seq.distinctBy (fun v -> v.Id.TsSignature,v.HasCyclicDependency,v.Dependencies.Length)
+            |> Seq.toList }
+      result
+      )
 
-  modules
+let generateModules (types: Type list) : Namespace list =
+  let allTsTypes = getAllTypes (typedefof<System.Object> :: types)
+  
+  groupToModules(TsType.Any(typeof<System.Object>)::allTsTypes)
 
 let renderPropertyDefinitions (typeToBeRendered: TsType) : string =
   let props =
     typeToBeRendered.Type.GetProperties()
 
   let nameSpace =
-    typeToBeRendered.Id.OriginalNamespace
+    typeToBeRendered.Id.TsSignature.TsNamespace
 
   let result =
     props
     |> Seq.toList
     |> List.map (fun v ->
       let propertyTsType =
-        Glow.GetTsSignature.toTsType 0 v.PropertyType
+        Glow.GetTsSignature.toTsType1 0 v.PropertyType
 
       let propertySignature =
         propertyTsType.Id.TsSignature
 
       let propName =
-        if propertyTsType.Id.OriginalNamespace = nameSpace then
+        if propertyTsType.Id.TsSignature.TsNamespace = nameSpace then
           propertySignature.Name()
         else
           propertySignature.FullSanitizedName()
@@ -90,69 +108,99 @@ let renderPropertyDefinitions (typeToBeRendered: TsType) : string =
         else
           ""
 
-      $"{Utils.camelize v.Name}: {propName}{getGenericParameters (propertyTsType.Id.TsSignature)}")
+      $"{Utils.camelize v.Name}: {propName}{getGenericParameters propertyTsType.Id.TsSignature}")
     |> String.concat "\n  "
 
+  result
+
+
+let renderValueStub (t: TsType): string=
+  let props = t.Type.GetProperties()
+  let nameSpace = t.Id.TsSignature.TsNamespace
+  let result =
+    props
+    |> Seq.toList
+    |> List.map (fun v ->
+      let result = $"{Utils.camelize v.Name}: undefined as any,"
+      result
+      )
+    |> String.concat "\n  "
+  result
+
+let getDefaultValue (nameSpace: NamespaceName) (v: Reflection.PropertyInfo) =
+  let propertyTsType =
+    Glow.GetTsSignature.toTsType1 0 v.PropertyType
+
+  let propertySignature =
+    propertyTsType.Id.TsSignature
+
+  let defaultPrefix =
+    if propertyTsType.Id.TsSignature.IsGenericParameter then
+      ""
+    else
+      "default"
+
+  let propName =
+    if propertyTsType.Id.TsSignature.IsGenericParameter then
+      $"{defaultPrefix}{propertySignature.Name().ToLower()}"
+    elif propertyTsType.Id.TsSignature.TsNamespace = nameSpace then
+      $"{defaultPrefix}{propertySignature.Name()}"
+    else
+      $"{(NamespaceName.sanitize propertySignature.TsNamespace)}.{defaultPrefix}{propertySignature.Name()}"
+
+  let rec getGenericArguments (t: TsSignature) =
+    if t.IsGenericType then
+      "("
+      + (t.GenericArgumentTypes
+         |> Seq.map (fun v ->
+           
+           let defaultPrefix =
+             if v.IsGenericParameter then
+               ""
+             else
+               "default"
+
+           let name = if v.IsGenericParameter then v.Name().ToLower() else v.Name()
+           if nameSpace = v.TsNamespace then
+             $"{defaultPrefix}{name}{getGenericArguments v}"
+           else
+             $"{(NamespaceName.sanitize v.TsNamespace)}.{defaultPrefix}{name}{getGenericArguments v}")
+         |> String.concat ",")
+      + ")"
+    else
+      ""
+  $"{propName}{getGenericArguments propertyTsType.Id.TsSignature}"
+
+let renderValueFix (t: TsType): string=
+  let props = t.Type.GetProperties()
+  let nameSpace = t.Id.TsSignature.TsNamespace
+  let result =
+    props
+    |> Seq.toList
+    |> List.map (fun v ->
+      let value = getDefaultValue nameSpace v
+      let result = $"default{t.Id.TsSignature.GetName()}.{Utils.camelize v.Name} = {value}"
+      result
+      )
+    |> String.concat "\n"
   result
 
 let renderPropertyValues (t: TsType) : string =
   let props = t.Type.GetProperties()
 
-  let nameSpace = t.Id.OriginalNamespace
+  let nameSpace = t.Id.TsSignature.TsNamespace
 
   let result =
     props
     |> Seq.toList
     |> List.map (fun v ->
-      let propertyTsType =
-        Glow.GetTsSignature.toTsType 0 v.PropertyType
-
-      let propertySignature =
-        propertyTsType.Id.TsSignature
-
-      let defaultPrefix =
-        if propertyTsType.Id.TsSignature.IsGenericParameter then
-          ""
-        else
-          "default"
-
-      let propName =
-        if propertyTsType.Id.OriginalNamespace = nameSpace then
-          $"{defaultPrefix}{propertySignature.Name()}"
-        else
-          $"{(NamespaceName.sanitize propertySignature.TsNamespace)}.{defaultPrefix}{propertySignature.Name()}"
-
-      let rec getGenericArguments (t: TsSignature) =
-        if t.IsGenericType then
-          "("
-          + (t.GenericArgumentTypes
-             |> Seq.map (fun v ->
-               let defaultPrefix =
-                 if v.IsGenericParameter then
-                   ""
-                 else
-                   "default"
-
-               if nameSpace = v.TsNamespace then
-                 $"{defaultPrefix}{v.Name()}{getGenericArguments (v)}"
-               else
-                 $"{(NamespaceName.sanitize v.TsNamespace)}.{defaultPrefix}{v.Name()}{getGenericArguments (v)}")
-             |> String.concat ",")
-          + ")"
-        else
-          ""
-
-      $"{Utils.camelize v.Name}: {propName}{getGenericArguments (propertyTsType.Id.TsSignature)},")
+      let value = getDefaultValue nameSpace v
+      let result = $"{Utils.camelize v.Name}: {value},"
+      result
+      )
     |> String.concat "\n  "
 
   result
-
-type RenderedDuCaseDefinitionAndValue =
-  { Name: string
-    GenericName: string option
-    CaseName: string
-    Definition: string
-    DefaultValue: string }
 
 let getCases (t: TsType) : RenderedDuCaseDefinitionAndValue list =
   let cases = t.DuCases
@@ -196,7 +244,7 @@ let getCases (t: TsType) : RenderedDuCaseDefinitionAndValue list =
           if field.TsType.Id.OriginalNamespace = t.Id.OriginalNamespace then
             ""
           else
-            (field.TsType.Id.OriginalNamespace
+            (field.TsType.Id.TsSignature.TsNamespace
              |> NamespaceName.sanitize)
             + "."
 
@@ -339,77 +387,6 @@ let renderRecordOrClassDefinition (t: TsType) : string =
   {renderPropertyDefinitions t}
 }}"""
 
-type Renderable =
-  | TypeAndValue of name: string * definition: string * defaultValue: string
-  | GenericTypeAndFunction of name: string * genericName: string * definition: string * defaultGeneratorSignature: string * defaultGeneratorImpl: string
-  | Enum of name: string * values: string list
-  | DiscriminatedUnion of name: string * genericName: string option * cases: RenderedDuCaseDefinitionAndValue list
-  | NotRenderable
-
-module DefaultTypeDefinitionsAndValues =
-  type Dict<'a, 'b> = System.Collections.Concurrent.ConcurrentDictionary<'a, 'b>
-
-  let tryGetExistingTypeDefinition =
-    let types =
-      Dict<System.Type, string * string option * string * string option * string>()
-
-    let add v = types.TryAdd v |> ignore
-
-    add (typeof<System.String>, ("String", None, "string", None, "\"\""))
-    add (typedefof<_ list>, ("FSharpList", Some "FSharpList<T>", "Array<T>", Some "<T>(t:T)", "[]"))
-    add (typedefof<_ option>, ("FSharpOption", Some "FSharpOption<T>", "T | null", Some "<T>(t:T)", "null"))
-    add (typedefof<Nullable<_>>, ("Nullable", Some "Nullable<T>", "T | null", Some "<T>(t:T)", "null"))
-    add (typedefof<System.Collections.Generic.IEnumerable<_>>, ("IEnumerable", Some "IEnumerable<T>", "Array<T>", Some "<T>(t:T)", "[]"))
-    add (typedefof<System.Collections.Generic.IList<_>>, ("IList", Some "IList<T>", "Array<T>", Some "<T>(t:T)", "[]"))
-    add (typedefof<System.Collections.Generic.ICollection<_>>, ("ICollection", Some "ICollection<T>", "Array<T>", Some "<T>(t:T)", "[]"))
-    add (typedefof<System.Collections.Generic.IDictionary<_,_>>, ("IDictionary", Some "IDictionary<TKey, TValue>", "{ [key: string | number]: TValue }", Some "<TKey, TValue>(t:TKey,tValue:TValue)", "({})"))
-
-    add (
-      typedefof<System.Collections.Generic.Dictionary<_, _>>,
-      ("Dictionary", Some "Dictionary<TKey, TValue>", "{ [key: string | number]: TValue }", Some "<TKey, TValue>(t:TKey,tValue:TValue)", "({})")
-    )
-
-    add (typedefof<System.Collections.Generic.IReadOnlyList<_>>, ("IReadOnlyList", Some "IReadOnlyList<T>", "Array<T>", Some "<T>(t:T)", "([])"))
-    add (typedefof<System.Collections.Generic.List<_>>, ("List", Some "List<T>", "Array<T>", Some "<T>(t:T)", "([])"))
-
-    add (
-      typedefof<System.Collections.Generic.KeyValuePair<_, _>>,
-      ("KeyValuePair", Some "KeyValuePair<TKey,TValue>", "{Key:TKey,Value:TValue}", Some "<TKey,TValue>(tKey:TKey,tValue:TValue)", "({Key:tKey,Value:tValue})")
-    )
-
-    add (typeof<System.DateTimeOffset>, ("DateTimeOffset", None, "string", None, "\"0000-00-00T00:00:00+00:00\""))
-    add (typeof<System.String>, ("String", None, "string", None, "\"\""))
-    add (typeof<System.TimeSpan>, ("TimeSpan", None, "string", None, "\"00:00:00\""))
-    add (typeof<System.DateTime>, ("DateTime", None, "string", None, "\"0001-01-01T00:00:00\""))
-    add (typeof<System.DateTimeOffset>, ("DateTimeOffset", None, "string", None, ""))
-    add (typeof<System.Char>, ("Char", None, "string", None, @"''"))
-    add (typeof<System.Guid>, ("Guid", None, "string", None, @"""00000000-0000-0000-000000000000"""))
-    add (typeof<System.Int32>, ("Int32", None, "number", None, "0"))
-    add (typeof<System.Int64>, ("Int64", None, "number", None, "0"))
-    add (typeof<System.Double>, ("Double", None, "number", None, "0"))
-    add (typeof<System.Boolean>, ("Boolean", None, "boolean", None, "false"))
-    add (typeof<System.Object>, ("Object", None, "any", None, "{}"))
-
-    fun (t: System.Type) ->
-      if types.ContainsKey t then
-        let name, genericName, definition, defaultValueSignature, defaultValue =
-          types.[t]
-
-        match genericName with
-        | Some genericName ->
-          Some(
-            Renderable.GenericTypeAndFunction(
-              name = name,
-              genericName = genericName,
-              definition = definition,
-              defaultGeneratorSignature = defaultValueSignature.Value,
-              defaultGeneratorImpl = defaultValue
-            )
-          )
-        | None -> Some(Renderable.TypeAndValue(name = name, definition = definition, defaultValue = defaultValue))
-      else
-        None
-
 let getDuDefinitionsAndValues (t: TsType) =
   if
     (TypeCache.getKind t.Type)
@@ -429,7 +406,9 @@ let getDuDefinitionsAndValues (t: TsType) =
     cases = cases
   )
 
-let renderKnownTypeAndDefaultValue (t: TsType) (serialize: Serialize) : string option =
+type RenderCyclicDefault = | NoCycle | Stub | Fix
+
+let renderKnownTypeAndDefaultValue (t: TsType) (cyclic: RenderCyclicDefault) (serialize: Serialize) : string option =
 
   let existingType =
     DefaultTypeDefinitionsAndValues.tryGetExistingTypeDefinition t.Type
@@ -438,7 +417,11 @@ let renderKnownTypeAndDefaultValue (t: TsType) (serialize: Serialize) : string o
 
   let renderable =
     match existingType with
-    | Some r -> r
+    | Some r ->
+      match cyclic with
+      | NoCycle -> r
+      | _ -> Renderable.NotRenderable
+      
     | None ->
       match kind with
       | System.Text.Json.Serialization.TypeCache.TypeKind.Enum ->
@@ -465,11 +448,9 @@ let renderKnownTypeAndDefaultValue (t: TsType) (serialize: Serialize) : string o
         else if t.IsGenericType && not t.IsGenericTypeDefinition then
           Renderable.NotRenderable
         else if t.IsGenericType && t.IsGenericTypeDefinition then
-          let definition =
-            renderRecordOrClassDefinition t
+          let definition = renderRecordOrClassDefinition t
 
-          let value =
-            renderDefaultRecordOrClassValue t
+          let value = renderDefaultRecordOrClassValue t
 
           Renderable.GenericTypeAndFunction(
             name = t.Id.TsSignature.GetName(),
@@ -479,16 +460,42 @@ let renderKnownTypeAndDefaultValue (t: TsType) (serialize: Serialize) : string o
             defaultGeneratorImpl = $"({value})"
           )
         else
-          let definition =
-            renderRecordOrClassDefinition t
-
-          let value =
-            renderDefaultRecordOrClassValue t
-
-          Renderable.TypeAndValue(name = t.Id.TsSignature.GetName(), definition = definition, defaultValue = value)
+          match cyclic with
+          | Fix ->
+            let definition = renderRecordOrClassDefinition t
+            let value = "stub"
+            let fix = renderValueFix t
+            Renderable.CyclicFixValue(name = t.Id.TsSignature.GetName(), fixReferences = fix )
+          | Stub ->
+            let stub = renderValueStub t
+            let definition = renderRecordOrClassDefinition t
+            let value = renderDefaultRecordOrClassValue t
+            Renderable.CyclicTypeAndStubValue(name = t.Id.TsSignature.GetName(), definition = definition, stubValue = stub)
+          | NoCycle ->
+            let definition = renderRecordOrClassDefinition t
+            let value = renderDefaultRecordOrClassValue t
+            Renderable.TypeAndValue(name = t.Id.TsSignature.GetName(), definition = definition, defaultValue = value)
 
   match renderable with
   | NotRenderable -> None
+  | CyclicFixValue(name, fixValue) ->
+    Some(
+      $"// the type {name} has cyclic dependencies\n"
+      + "// in general this should be avoided\n"
+      + "// fill all props\n"
+      + $"{fixValue}"
+    )
+  | CyclicTypeAndStubValue(name, definition, stubValue) ->
+    Some(
+      $"// the type {name} has cyclic dependencies\n"
+      + "// in general this should be avoided\n"
+      + "// Render an empty object to be filled later at end of file\n"
+      + "// to prevent typescript errors (reference used before declaration)\n"
+      + $"export type {name} = {definition} \n\n"
+      + $"export const default{name}: {name} = {{
+  {stubValue} }}
+"
+    )
   | Enum(name, values) ->
     let definition = values |> List.map(fun v-> $"\"{v}\"") |> String.concat " | "
     let allValues = values |> List.map(fun v-> $"\"{v}\"") |> String.concat ", "
@@ -574,8 +581,21 @@ let renderKnownTypeAndDefaultValue (t: TsType) (serialize: Serialize) : string o
       + $"export const default{name}: {defaultGeneratorSignature} => {genericName} = {defaultGeneratorSignature} => {defaultGeneratorimpl}"
     )
 
-let renderTypeDefinitionAndValue t : string option =
-  renderKnownTypeAndDefaultValue t DefaultSerialize.serialize
+let renderTypeAndDefaultValue (t:TsType)=
+  renderKnownTypeAndDefaultValue t RenderCyclicDefault.NoCycle DefaultSerialize.serialize
+
+let sortItemsTopologically (items: TsType list) =
+    items
+    |> List.distinctBy (fun v -> v.Id.TsSignature)
+    |> List.filter Glow.GetTsSignature.isNonGenericTypeOrGenericTypeDefinition
+    |> Glow.TopologicalSort.topologicalSort (fun v ->
+      let name = v.Id.OriginalName
+      v.Dependencies
+      |> List.filter (fun dependency ->
+       
+        dependency.Id.TsSignature.TsNamespace = v.Id.TsSignature.TsNamespace
+        )
+      )
 
 let renderModule (m: Namespace) : string =
 
@@ -585,16 +605,17 @@ let renderModule (m: Namespace) : string =
   let builder = StringBuilder()
 
   builder
-    .AppendLine("///////////////////////////////////////////////////////////")
-    .AppendLine("//                          This file is auto generated //")
-    .AppendLine("//////////////////////////////////////////////////////////")
+    .AppendLine("//////////////////////////////////////")
+    .AppendLine("//   This file is auto generated   //")
+    .AppendLine("//////////////////////////////////////")
     .AppendLine("")
   |> ignore
 
+  builder.AppendLine("import * as TsType from \"./TsType\"") |> ignore
   deps
   |> List.iter (fun v ->
     let name =
-      v.OriginalNamespace |> NamespaceName.sanitize
+      v.TsSignature.TsNamespace |> NamespaceName.sanitize
 
     if v.Id = TsTypeId "Any" || name = null then
       ()
@@ -611,15 +632,8 @@ let renderModule (m: Namespace) : string =
 
     ())
 
-  let sorted, cyclics =
-    m.Items
-    |> List.distinctBy (fun v -> v.Id.TsSignature)
-    |> List.filter Glow.GetTsSignature.isNonGenericTypeOrGenericTypeDefinition
-    |> Glow.TopologicalSort.topologicalSort (fun v ->
-      v.Dependencies
-      |> List.filter (fun dependency ->
-        dependency <> v
-        && dependency.Id.TsSignature.TsNamespace = v.Id.TsSignature.TsNamespace))
+  builder.AppendLine() |> ignore
+  let sorted, cyclics = sortItemsTopologically m.Items
 
   if cyclics.Length > 0 then
     builder
@@ -639,7 +653,9 @@ let renderModule (m: Namespace) : string =
   sorted
   |> List.distinctBy (fun v -> v.Id.TsSignature)
   |> List.map (fun v ->
-    let x = renderTypeDefinitionAndValue v
+    let isCyclic = cyclics |> List.contains(v)
+    let cycle = if isCyclic then RenderCyclicDefault.Stub else RenderCyclicDefault.NoCycle
+    let x = renderKnownTypeAndDefaultValue v cycle DefaultSerialize.serialize
 
     match x with
     | Some x -> x
@@ -647,6 +663,21 @@ let renderModule (m: Namespace) : string =
   |> List.map Utils.cleanTs
   |> List.iter (fun v -> builder.AppendLine(v) |> ignore)
 
+  if cyclics.Length > 0 then
+    builder.AppendLine("// Render cyclic fixes") |> ignore
+  
+  cyclics
+  |> List.distinctBy (fun v -> v.Id.TsSignature)
+  |> List.map (fun v ->
+    
+    let x = renderKnownTypeAndDefaultValue v RenderCyclicDefault.Fix DefaultSerialize.serialize
+
+    match x with
+    | Some x -> x
+    | None -> $"// skipped {v.Id.TsSignature.TsName |> TsName.value}")
+  |> List.map Utils.cleanTs
+  |> List.iter (fun v -> builder.AppendLine(v) |> ignore)
+  
   builder.ToString().Replace("\r\n", "\n")
 
 let findeTsTypeInModules modules t =

@@ -2,6 +2,7 @@
 
 open System
 open System.Collections.Generic
+open Glow.TsGen.Domain
 
 type CyclicDependencyException(args) =
   inherit Exception(args)
@@ -11,24 +12,25 @@ type VisitResult =
   | New
   | AlreadyVisited
 
-let topologicalSort<'T when 'T: equality> (getDependencies: 'T -> 'T list) (source: 'T list) =
-  let sorted = ResizeArray<'T>()
-  let visited = Dictionary<'T, bool>()
-  let cyclics = ResizeArray<'T>()
+let topologicalSort (getDependencies: TsType -> TsType list) (source: TsType list) =
+  let sorted = ResizeArray<TsType>()
+  let visited = Dictionary<TsSignature, bool>()
+  let cyclics = ResizeArray<TsType>()
 
-  let rec visit (item: 'T) (getDependencies: 'T -> 'T list) (sorted: ResizeArray<'T>) (visited: Dictionary<'T, bool>) (cyclics: ResizeArray<'T>) =
+  let rec visit (item: TsType) (getDependencies: TsType -> TsType list) (sorted: ResizeArray<TsType>) (visited: Dictionary<TsSignature, bool>) (cyclics: ResizeArray<TsType>) =
+    let name = item.Id.OriginalName
     let alreadyVisited, inProcess =
-      visited.TryGetValue(item)
+      visited.TryGetValue(item.Id.TsSignature)
 
-    if sorted.Contains(item) then
-      VisitResult.AlreadyVisited
-    else if alreadyVisited then
+    if alreadyVisited then
       if inProcess then
         VisitResult.CyclicDependencyDetected
       else
         VisitResult.AlreadyVisited
+    else if sorted.Contains(item) then
+      VisitResult.AlreadyVisited
     else
-      visited[item] <- true
+      visited[item.Id.TsSignature] <- true
       let dependencies = getDependencies item
 
       dependencies
@@ -41,8 +43,10 @@ let topologicalSort<'T when 'T: equality> (getDependencies: 'T -> 'T list) (sour
         | _ -> ()
 
         ())
-      visited[item] <- false
+      visited[item.Id.TsSignature] <- false
       sorted.Add(item)
+      if item.HasCyclicDependency then
+        cyclics.Add(item)
       VisitResult.New
 
   source

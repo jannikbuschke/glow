@@ -24,15 +24,25 @@ let renderTsTypesInternal (path: string) (assemblies: Assembly list) =
       @ (actions
          |> Seq.map (fun v -> v.Output)
          |> Seq.toList)
-
+      
+  // let filtered = allTypes |> List.filter (fun t -> t.Namespace = "Gertrud.Configuration")
+  // let modules0 =
+  //   Glow.TsGen.Gen.generateModules filtered
   let modules =
     Glow.TsGen.Gen.generateModules allTypes
+    
+  let distinctModules = modules |> List.distinctBy(fun v-> v.Name)
+  if distinctModules.Length <> modules.Length then
+    failwith "modules not distinct"
 
   modules
   |> List.filter(fun v->v.Name |> NamespaceName.value <> "")
   |> List.iter (fun v ->
     let fs = Glow.TsGen.Gen.renderModule v
-    System.IO.File.WriteAllText($"{path}{NamespaceName.filename v.Name}", fs)
+    let filePath = $"{path}{NamespaceName.filename v.Name}"
+    if System.IO.File.Exists filePath then
+      failwith (sprintf "error module already rendered %s" filePath)
+    System.IO.File.WriteAllText(filePath, fs)
     ()
   )
 
