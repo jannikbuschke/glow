@@ -39,8 +39,9 @@ namespace Glow.Glue.AspNetCore
             TResponse response = await next();
             stopWatch.Stop();
             TimeSpan ts = stopWatch.Elapsed;
-            logger.LogInformation("[Handled Request]: {requestName} ({timeMs} ms)", typeof(TRequest).Name,
-                (long)ts.TotalMilliseconds);
+            var requestName = typeof(TRequest).Name;
+            var logLevel = requestName.StartsWith("Get")?LogLevel.Debug : LogLevel.Information;
+            logger.Log(logLevel, "[Handled Request]: {requestName} ({timeMs} ms)", requestName,  (long)ts.TotalMilliseconds);
             logger.LogTrace("Response payload {@values}", response);
             return response;
         }

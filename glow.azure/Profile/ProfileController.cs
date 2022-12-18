@@ -71,6 +71,7 @@ namespace Glow.Core.Profiles
         public IEnumerable<string> Scopes { get; set; }
         public IEnumerable<KeyValuePair<string, string>> Claims { get; set; }
         public string AuthenticationType { get; set; }
+        public string Upn { get; set; }
     }
 
     public class HasConsented
@@ -125,6 +126,7 @@ namespace Glow.Core.Profiles
                 Email = User.Email(),
                 Id = User.NameIdentifier(),
                 IdentityName = User?.Identity.Name,
+                Upn = User.Upn(),
                 IsAuthenticated = (bool) isAuthenticated,
                 Scopes = scopes,
                 ObjectId = User.GetObjectId(),

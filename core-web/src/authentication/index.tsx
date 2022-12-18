@@ -14,6 +14,7 @@ export interface Profile {
   displayName: string | null
   id: string | null
   email: string | null
+  upn: string | null
   identityName: string | null
   isAuthenticated: boolean
   objectId: string | null
@@ -27,6 +28,7 @@ export const defaultProfile: Profile = {
   displayName: null,
   id: null,
   email: null,
+  upn: null,
   identityName: null,
   isAuthenticated: false,
   objectId: null,
