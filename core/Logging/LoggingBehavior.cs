@@ -34,8 +34,8 @@ namespace Glow.Glue.AspNetCore
                 httpContextAccessor.HttpContext.Items.TryAdd(GlowLoggingConstants.HttpContextRequestItemName, request);
             }
             stopWatch.Start();
-            logger.LogDebug($"[Handling Request]: {typeof(TRequest).Name}");
-            logger.LogTrace("Parameters {@values}", request);
+            logger.LogInformation($"[Handling Request]: {typeof(TRequest).Name}");
+            logger.LogInformation("Parameters {@values}", request);
             TResponse response = await next();
             stopWatch.Stop();
             TimeSpan ts = stopWatch.Elapsed;
