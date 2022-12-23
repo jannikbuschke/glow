@@ -11,6 +11,7 @@
         <Compile Include="Tests.fs" />
         <Compile Include="FSharpResult.fs" />
         <Compile Include="FSharpMap.fs" />
+        <Compile Include="Skippable.fs" />
         <Compile Include="Collections.fs" />
         <Compile Include="StronglyTypedId.fs" />
         <Compile Include="Arrays.fs" />
