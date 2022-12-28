@@ -57,7 +57,7 @@ namespace Glow.Tests
             if (useSystemTextJson)
             {
                 var options = new JsonSerializerOptions();
-                JsonSerializationSettings.ConfigureStjSerializerDefaults(options);
+                JsonSerializationSettings.ConfigureStjSerializerDefaultsForWeb(options);
                 options.PropertyNameCaseInsensitive = true;
                 TResponse result00 = System.Text.Json.JsonSerializer.Deserialize<TResponse>(content, options);
                 return result00;
@@ -107,7 +107,7 @@ namespace Glow.Tests
             }
 
             var options = new JsonSerializerOptions();
-            JsonSerializationSettings.ConfigureStjSerializerDefaults(options);
+            JsonSerializationSettings.ConfigureStjSerializerDefaultsForWeb(options);
             var data = useSystemTextJson ? System.Text.Json.JsonSerializer.Serialize(request, options) : JObject.FromObject(request).ToString();
             HttpResponseMessage response = await client.PostAsync(route, new StringContent(data, Encoding.UTF8, "application/json"));
 

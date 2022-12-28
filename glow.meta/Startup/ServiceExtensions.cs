@@ -87,7 +87,7 @@ namespace Glow.Core
                 })
                 .AddJsonOptions(options =>
                 {
-                    JsonSerializationSettings.ConfigureStjSerializerDefaults(options.JsonSerializerOptions);
+                    JsonSerializationSettings.ConfigureStjSerializerDefaultsForWeb(options.JsonSerializerOptions);
                 })
                 .ConfigureApiBehaviorOptions(v =>
                 {
@@ -127,7 +127,7 @@ namespace Glow.Core
                 .AddSignalR()
                 .AddJsonProtocol(options =>
                 {
-                    JsonSerializationSettings.ConfigureStjSerializerDefaults(options.PayloadSerializerOptions);
+                    JsonSerializationSettings.ConfigureStjSerializerDefaultsForWeb(options.PayloadSerializerOptions);
                     // options.PayloadSerializerOptions.Converters.Add(new JsonFSharpConverter(JsonUnionEncoding.AdjacentTag
                     //                                                                         | JsonUnionEncoding.UnwrapRecordCases
                     //                                                                         | JsonUnionEncoding.UnwrapOption
