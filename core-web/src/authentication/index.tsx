@@ -2,6 +2,7 @@ import * as React from "react"
 import { notification } from "antd"
 import { useFetch } from "../actions/fetch-context"
 import { useQuery } from "react-query"
+import { useNotify } from "../types"
 // import {
 //   defaultProfile,
 //   Profile,
@@ -69,6 +70,7 @@ export function VnextAuthenticationProvider(
   props: React.PropsWithChildren<{}>,
 ) {
   const fetch = useFetch()
+  const { notifyError } = useNotify()
 
   const { data, isLoading, error } = useQuery("/glow/profile/get-profile", {
     queryFn: async (ctx) => {
@@ -85,10 +87,8 @@ export function VnextAuthenticationProvider(
         const data = await response.json()
         return data as Profile
       } else {
-        notification.error({
-          message: "Could not check for profile information",
-        })
-        throw new Error("could not get profile")
+        notifyError("Could not check for profile information")
+        // throw new Error("could not get profile")
       }
     },
   })
