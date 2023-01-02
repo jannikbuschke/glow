@@ -21,7 +21,7 @@ module Module =
 
   let render (serialize: Serialize) (obj: obj) = serialize obj
 
-let generateSampleData (assemblies: Assembly seq) (serialize: Serialize) =
+let generateSampleData (path: string) (assemblies: Assembly seq) (serialize: Serialize) =
   let text =
     assemblies
     |> Seq.collect Module.findTypes
@@ -29,4 +29,4 @@ let generateSampleData (assemblies: Assembly seq) (serialize: Serialize) =
     |> Seq.map (Module.render serialize)
     |> String.concat "\n"
 
-  System.IO.File.WriteAllText(".\web\src\client\sample-data.json", text)
+  System.IO.File.WriteAllText(path, $"""export const sample_data = { text } as const""")
