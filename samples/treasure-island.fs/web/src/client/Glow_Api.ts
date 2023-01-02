@@ -1,9 +1,11 @@
-///////////////////////////////////////////////////////////
-//                          This file is auto generated //
-//////////////////////////////////////////////////////////
+//////////////////////////////////////
+//   This file is auto generated   //
+//////////////////////////////////////
 
+import * as TsType from "./TsType"
 import * as System from "./System"
 import * as System_Collections_Generic from "./System_Collections_Generic"
+
 export type GetEsEvents = {
   
 }

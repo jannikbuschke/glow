@@ -1,11 +1,13 @@
-///////////////////////////////////////////////////////////
-//                          This file is auto generated //
-//////////////////////////////////////////////////////////
+//////////////////////////////////////
+//   This file is auto generated   //
+//////////////////////////////////////
 
+import * as TsType from "./TsType"
 import * as System from "./System"
 import * as Microsoft_FSharp_Core from "./Microsoft_FSharp_Core"
-import * as System_Collections_Generic from "./System_Collections_Generic"
 import * as Microsoft_FSharp_Collections from "./Microsoft_FSharp_Collections"
+import * as System_Collections_Generic from "./System_Collections_Generic"
+
 export type AttackModifier = {
   baseAttack: System.Int32
 }
@@ -32,12 +34,6 @@ export const defaultItem: Item = {
   attackModifier: defaultAttackModifier,
   protection: defaultProtection,
 }
-export type ItemPicked = {
-  item: Item
-}
-export const defaultItemPicked: ItemPicked = {
-  item: defaultItem,
-}
 export type Position = {
   r: System.Int32
   q: System.Int32
@@ -47,6 +43,14 @@ export const defaultPosition: Position = {
   r: System.defaultInt32,
   q: System.defaultInt32,
   s: System.defaultInt32,
+}
+export type ItemPicked = {
+  item: Item
+  position: Position
+}
+export const defaultItemPicked: ItemPicked = {
+  item: defaultItem,
+  position: defaultPosition,
 }
 export type ItemRemoved = {
   item: Item
@@ -66,31 +70,13 @@ export const defaultItemDropped: ItemDropped = {
 }
 export type PlayerUnitId = System.Guid
 export const defaultPlayerUnitId: PlayerUnitId = System.defaultGuid
-export type PlayerJoined = {
-  playerId: PlayerUnitId
-}
-export const defaultPlayerJoined: PlayerJoined = {
-  playerId: defaultPlayerUnitId,
-}
-export type PlayerUnitCreated = {
-  playerUnitId: PlayerUnitId
-  name: System.String
-  icon: System.String
-  position: Position
-}
-export const defaultPlayerUnitCreated: PlayerUnitCreated = {
-  playerUnitId: defaultPlayerUnitId,
-  name: System.defaultString,
-  icon: System.defaultString,
-  position: defaultPosition,
-}
 export type UnitMoved = {
-  unitId: System.Guid
+  unitId: PlayerUnitId
   oldPosition: Position
   position: Position
 }
 export const defaultUnitMoved: UnitMoved = {
-  unitId: System.defaultGuid,
+  unitId: defaultPlayerUnitId,
   oldPosition: defaultPosition,
   position: defaultPosition,
 }
@@ -127,10 +113,10 @@ export const defaultDamageTaken: DamageTaken = {
   damage: System.defaultInt32,
 }
 export type ActiveUnitChanged = {
-  unitId: System.Guid
+  unitId: PlayerUnitId
 }
 export const defaultActiveUnitChanged: ActiveUnitChanged = {
-  unitId: System.defaultGuid,
+  unitId: defaultPlayerUnitId,
 }
 export type UnitEnabledForWalk = {
   data: Microsoft_FSharp_Core.Unit
@@ -156,11 +142,13 @@ export type Tile = {
   color: System.String
   name: TileName
   walkable: System.Boolean
+  assetIds: Microsoft_FSharp_Collections.FSharpList<System.String>
 }
 export const defaultTile: Tile = {
   color: System.defaultString,
   name: defaultTileName,
   walkable: System.defaultBoolean,
+  assetIds: Microsoft_FSharp_Collections.defaultFSharpList(System.defaultString),
 }
 export type Field = {
   position: Position
@@ -212,11 +200,45 @@ export type GameAborted = {
 export const defaultGameAborted: GameAborted = {
   data: Microsoft_FSharp_Core.defaultUnit,
 }
+export type PlayerId = System.Guid
+export const defaultPlayerId: PlayerId = System.defaultGuid
 export type GameEnded = {
-  winner: System.Guid
+  winner: PlayerId
 }
 export const defaultGameEnded: GameEnded = {
-  winner: System.defaultGuid,
+  winner: defaultPlayerId,
+}
+export type Player = {
+  id: PlayerId
+  name: System.String
+}
+export const defaultPlayer: Player = {
+  id: defaultPlayerId,
+  name: System.defaultString,
+}
+export type Health = System.Int32
+export const defaultHealth: Health = System.defaultInt32
+export type PlayerUnit = {
+  id: PlayerUnitId
+  playerId: PlayerId
+  name: System.String
+  icon: System.String
+  assetId: System.String
+  position: Position
+  items: Microsoft_FSharp_Collections.FSharpList<Item>
+  health: Health
+  isAlive: System.Boolean
+}
+export const defaultPlayerUnit: PlayerUnit = {
+  id: defaultPlayerUnitId,
+  playerId: defaultPlayerId,
+  name: System.defaultString,
+  icon: System.defaultString,
+  assetId: System.defaultString,
+  position: defaultPosition,
+  items: Microsoft_FSharp_Collections.defaultFSharpList(defaultItem),
+  health: defaultHealth,
+  isAlive: System.defaultBoolean,
 }
 export type GameEvent_Case_GameCreated = { Case: "GameCreated", Fields: GameCreated }
 export type GameEvent_Case_GameStarted = { Case: "GameStarted" }
@@ -224,8 +246,8 @@ export type GameEvent_Case_GameRestarted = { Case: "GameRestarted", Fields: Game
 export type GameEvent_Case_GameDrawn = { Case: "GameDrawn", Fields: GameDrawn }
 export type GameEvent_Case_GameAborted = { Case: "GameAborted", Fields: GameAborted }
 export type GameEvent_Case_GameEnded = { Case: "GameEnded", Fields: GameEnded }
-export type GameEvent_Case_PlayerJoined = { Case: "PlayerJoined", Fields: PlayerJoined }
-export type GameEvent_Case_PlayerUnitCreated = { Case: "PlayerUnitCreated", Fields: PlayerUnitCreated }
+export type GameEvent_Case_PlayerJoined = { Case: "PlayerJoined", Fields: Player }
+export type GameEvent_Case_PlayerUnitCreated = { Case: "PlayerUnitCreated", Fields: PlayerUnit }
 export type GameEvent_Case_DamageTaken = { Case: "DamageTaken", Fields: DamageTaken }
 export type GameEvent_Case_UnitEnabledForWalk = { Case: "UnitEnabledForWalk", Fields: UnitEnabledForWalk }
 export type GameEvent_Case_ActiveUnitChanged = { Case: "ActiveUnitChanged", Fields: ActiveUnitChanged }
@@ -245,8 +267,8 @@ export const defaultGameEvent_Case_GameRestarted = { Case: "GameRestarted", Fiel
 export const defaultGameEvent_Case_GameDrawn = { Case: "GameDrawn", Fields: defaultGameDrawn }
 export const defaultGameEvent_Case_GameAborted = { Case: "GameAborted", Fields: defaultGameAborted }
 export const defaultGameEvent_Case_GameEnded = { Case: "GameEnded", Fields: defaultGameEnded }
-export const defaultGameEvent_Case_PlayerJoined = { Case: "PlayerJoined", Fields: defaultPlayerJoined }
-export const defaultGameEvent_Case_PlayerUnitCreated = { Case: "PlayerUnitCreated", Fields: defaultPlayerUnitCreated }
+export const defaultGameEvent_Case_PlayerJoined = { Case: "PlayerJoined", Fields: defaultPlayer }
+export const defaultGameEvent_Case_PlayerUnitCreated = { Case: "PlayerUnitCreated", Fields: defaultPlayerUnit }
 export const defaultGameEvent_Case_DamageTaken = { Case: "DamageTaken", Fields: defaultDamageTaken }
 export const defaultGameEvent_Case_UnitEnabledForWalk = { Case: "UnitEnabledForWalk", Fields: defaultUnitEnabledForWalk }
 export const defaultGameEvent_Case_ActiveUnitChanged = { Case: "ActiveUnitChanged", Fields: defaultActiveUnitChanged }
@@ -264,92 +286,14 @@ export type GameEventNotification = {
 export const defaultGameEventNotification: GameEventNotification = {
   gameEvent: defaultGameEvent,
 }
-export type GameId = System.Guid
-export const defaultGameId: GameId = System.defaultGuid
-export type PlayerUnit = {
-  id: System.Guid
-  key: PlayerUnitId
-  gameId: GameId
-  name: System.String
-  icon: System.String
-  items: Microsoft_FSharp_Collections.FSharpList<Item>
-  isEnabledToWalk: System.Boolean
-  position: Position
-  regenRate: System.Int32
-  baseAttack: System.Int32
-  baseProtection: System.Int32
-  health: System.Int32
-  isAlive: System.Boolean
-}
-export const defaultPlayerUnit: PlayerUnit = {
-  id: System.defaultGuid,
-  key: defaultPlayerUnitId,
-  gameId: defaultGameId,
-  name: System.defaultString,
-  icon: System.defaultString,
-  items: Microsoft_FSharp_Collections.defaultFSharpList(defaultItem),
-  isEnabledToWalk: System.defaultBoolean,
-  position: defaultPosition,
-  regenRate: System.defaultInt32,
-  baseAttack: System.defaultInt32,
-  baseProtection: System.defaultInt32,
-  health: System.defaultInt32,
-  isAlive: System.defaultBoolean,
-}
-export type GameStatus_Case_Initializing = { Case: "Initializing" }
-export type GameStatus_Case_Running = { Case: "Running" }
-export type GameStatus_Case_Paused = { Case: "Paused" }
-export type GameStatus_Case_Ended = { Case: "Ended" }
-export type GameStatus_Case_Aborted = { Case: "Aborted" }
-export type GameStatus = GameStatus_Case_Initializing | GameStatus_Case_Running | GameStatus_Case_Paused | GameStatus_Case_Ended | GameStatus_Case_Aborted
-export type GameStatus_Case = "Initializing" | "Running" | "Paused" | "Ended" | "Aborted"
-export const GameStatus_AllCases = [ "Initializing", "Running", "Paused", "Ended", "Aborted" ] as const
-export const defaultGameStatus_Case_Initializing = { Case: "Initializing" }
-export const defaultGameStatus_Case_Running = { Case: "Running" }
-export const defaultGameStatus_Case_Paused = { Case: "Paused" }
-export const defaultGameStatus_Case_Ended = { Case: "Ended" }
-export const defaultGameStatus_Case_Aborted = { Case: "Aborted" }
-export const defaultGameStatus = null as any as GameStatus
-export type Game = {
-  id: System.Guid
-  version: System.Int64
-  tick: System.Int32
-  status: GameStatus
-  items: Microsoft_FSharp_Collections.FSharpList<Item>
-  field: GameField
-  mode: GameMode
-  playerUnits: Microsoft_FSharp_Collections.FSharpList<PlayerUnit>
-  playerUnitIds: Microsoft_FSharp_Collections.FSharpList<PlayerUnitId>
-  activeUnit: Microsoft_FSharp_Core.FSharpOption<System.Guid>
-}
-export const defaultGame: Game = {
-  id: System.defaultGuid,
-  version: System.defaultInt64,
-  tick: System.defaultInt32,
-  status: defaultGameStatus,
-  items: Microsoft_FSharp_Collections.defaultFSharpList(defaultItem),
-  field: defaultGameField,
-  mode: defaultGameMode,
-  playerUnits: Microsoft_FSharp_Collections.defaultFSharpList(defaultPlayerUnit),
-  playerUnitIds: Microsoft_FSharp_Collections.defaultFSharpList(defaultPlayerUnitId),
-  activeUnit: Microsoft_FSharp_Core.defaultFSharpOption(System.defaultGuid),
-}
-export type CurrentGameState = {
-  gameId: System.Guid
-  units: System_Collections_Generic.Dictionary<System.Guid,PlayerUnit>
-  game: Game
-}
-export const defaultCurrentGameState: CurrentGameState = {
-  gameId: System.defaultGuid,
-  units: System_Collections_Generic.defaultDictionary(System.defaultGuid,defaultPlayerUnit),
-  game: defaultGame,
-}
 export type GetEsEvents = {
   
 }
 export const defaultGetEsEvents: GetEsEvents = {
   
 }
+export type GameId = System.Guid
+export const defaultGameId: GameId = System.defaultGuid
 export type Direction = {
   r: System.Int32
   q: System.Int32
@@ -361,11 +305,13 @@ export const defaultDirection: Direction = {
   s: System.defaultInt32,
 }
 export type MoveOrAttack = {
-  id: System.Guid
+  gameId: GameId
+  unitId: PlayerUnitId
   direction: Direction
 }
 export const defaultMoveOrAttack: MoveOrAttack = {
-  id: System.defaultGuid,
+  gameId: defaultGameId,
+  unitId: defaultPlayerUnitId,
   direction: defaultDirection,
 }
 export type StartGame = {
@@ -402,6 +348,20 @@ export type GetPlayers = {
 export const defaultGetPlayers: GetPlayers = {
   data: Microsoft_FSharp_Core.defaultUnit,
 }
+export type GameStatus_Case_Initializing = { Case: "Initializing" }
+export type GameStatus_Case_Running = { Case: "Running" }
+export type GameStatus_Case_Paused = { Case: "Paused" }
+export type GameStatus_Case_Ended = { Case: "Ended" }
+export type GameStatus_Case_Aborted = { Case: "Aborted" }
+export type GameStatus = GameStatus_Case_Initializing | GameStatus_Case_Running | GameStatus_Case_Paused | GameStatus_Case_Ended | GameStatus_Case_Aborted
+export type GameStatus_Case = "Initializing" | "Running" | "Paused" | "Ended" | "Aborted"
+export const GameStatus_AllCases = [ "Initializing", "Running", "Paused", "Ended", "Aborted" ] as const
+export const defaultGameStatus_Case_Initializing = { Case: "Initializing" }
+export const defaultGameStatus_Case_Running = { Case: "Running" }
+export const defaultGameStatus_Case_Paused = { Case: "Paused" }
+export const defaultGameStatus_Case_Ended = { Case: "Ended" }
+export const defaultGameStatus_Case_Aborted = { Case: "Aborted" }
+export const defaultGameStatus = null as any as GameStatus
 export type GetGames = {
   status: GameStatus
 }
@@ -427,12 +387,50 @@ export const defaultGetDocuments: GetDocuments = {
   documentName: System.defaultString,
 }
 export type CreatePlayerResult = {
+  playerId: PlayerId
   playerUnitId: PlayerUnitId
   gameId: GameId
 }
 export const defaultCreatePlayerResult: CreatePlayerResult = {
+  playerId: defaultPlayerId,
   playerUnitId: defaultPlayerUnitId,
   gameId: defaultGameId,
+}
+export type Error_Case_NotFound = { Case: "NotFound", Fields: System.String }
+export type Error_Case_InvalidState = { Case: "InvalidState", Fields: System.String }
+export type Error_Case_InvalidRequest = { Case: "InvalidRequest", Fields: System.String }
+export type Error_Case_Other = { Case: "Other", Fields: System.String }
+export type Error = Error_Case_NotFound | Error_Case_InvalidState | Error_Case_InvalidRequest | Error_Case_Other
+export type Error_Case = "NotFound" | "InvalidState" | "InvalidRequest" | "Other"
+export const Error_AllCases = [ "NotFound", "InvalidState", "InvalidRequest", "Other" ] as const
+export const defaultError_Case_NotFound = { Case: "NotFound", Fields: System.defaultString }
+export const defaultError_Case_InvalidState = { Case: "InvalidState", Fields: System.defaultString }
+export const defaultError_Case_InvalidRequest = { Case: "InvalidRequest", Fields: System.defaultString }
+export const defaultError_Case_Other = { Case: "Other", Fields: System.defaultString }
+export const defaultError = null as any as Error
+export type Game = {
+  id: System.Guid
+  version: System.Int64
+  tick: System.Int32
+  status: GameStatus
+  items: Microsoft_FSharp_Collections.FSharpList<Item>
+  field: GameField
+  mode: GameMode
+  playerUnits: Microsoft_FSharp_Collections.FSharpMap<PlayerUnitId,PlayerUnit>
+  players: Microsoft_FSharp_Collections.FSharpMap<PlayerId,Player>
+  activeUnit: Microsoft_FSharp_Core.FSharpOption<PlayerUnitId>
+}
+export const defaultGame: Game = {
+  id: System.defaultGuid,
+  version: System.defaultInt64,
+  tick: System.defaultInt32,
+  status: defaultGameStatus,
+  items: Microsoft_FSharp_Collections.defaultFSharpList(defaultItem),
+  field: defaultGameField,
+  mode: defaultGameMode,
+  playerUnits: Microsoft_FSharp_Collections.defaultFSharpMap(defaultPlayerUnitId,defaultPlayerUnit),
+  players: Microsoft_FSharp_Collections.defaultFSharpMap(defaultPlayerId,defaultPlayer),
+  activeUnit: Microsoft_FSharp_Core.defaultFSharpOption(defaultPlayerUnitId),
 }
 export type EventViewmodel = {
   id: System.Guid

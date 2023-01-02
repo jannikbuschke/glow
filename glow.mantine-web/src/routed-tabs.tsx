@@ -30,9 +30,9 @@ export function RoutedTabs({
 
   return (
     <>
-      <pre>
+      {/* <pre>
         {JSON.stringify({ rootMatch, matchExpression, paramName }, null, 4)}
-      </pre>
+      </pre> */}
       <Tabs {...props} value={activeTab} onTabChange={onChange} />
     </>
   )

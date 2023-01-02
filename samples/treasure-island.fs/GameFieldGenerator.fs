@@ -29,37 +29,52 @@ module GameFieldGenerator =
   let grass: Tile =
     { Color = "lime"
       Name = TileName.Grass
-      Walkable = true }
+      Walkable = true
+      AssetIds =
+        [ "grass-and-road"
+          "grass-and-stones"
+          "road-1" ] }
 
   let water: Tile =
     { Color = "blue"
       Name = TileName.Water
-      Walkable = false }
+      Walkable = false
+      AssetIds =
+        [ "river"
+          "river-1"
+          "river-2"
+          "river-3"
+          "river-6" ] }
 
   let mountain: Tile =
     { Color = "dark"
       Name = TileName.Mountain
-      Walkable = false }
+      Walkable = false
+      AssetIds = [ "stones" ] }
 
   let wood: Tile =
     { Color = "green"
       Name = TileName.Wood
-      Walkable = true }
+      Walkable = true
+      AssetIds = [ "wood-1"; "mountain-wood-river" ] }
 
   let corn: Tile =
     { Color = "yellow"
       Name = TileName.Corn
-      Walkable = true }
+      Walkable = true
+      AssetIds = [ "wood-1"; "mountain-wood-river" ] }
 
   let stone: Tile =
     { Color = "red"
       Name = TileName.Corn
-      Walkable = true }
+      Walkable = true
+      AssetIds = [ "wood-1"; "mountain-wood-river" ] }
 
   let mud: Tile =
     { Color = "orange"
       Name = TileName.Corn
-      Walkable = true }
+      Walkable = true
+      AssetIds = [ "wood-1"; "mountain-wood-river" ] }
 
   let tiles =
     [ grass
@@ -95,7 +110,7 @@ module GameFieldGenerator =
     //    printfn "%d" i
 
     for q in 1..width do
-      let offset = (int) ((float) q / 2.0)
+      let offset = int (float q / 2.0)
 
       for r in -offset .. (height - offset) do
         let material =

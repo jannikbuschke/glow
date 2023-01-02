@@ -1,9 +1,9 @@
 import { Button, Center, Paper } from "@mantine/core"
 import { useNotify } from "glow-core"
 import { useTypedAction } from "../../client/api"
-import { CurrentGameState } from "../../client/TreasureIsland"
+import { Game } from "../../client/TreasureIsland"
 
-export function GamePanel({ state }: { state: CurrentGameState }) {
+export function GamePanel({ state }: { state: Game }) {
   const [startGame, , { submitting }] = useTypedAction("/api/start-game")
   const { notifyError } = useNotify()
   return (
@@ -17,26 +17,26 @@ export function GamePanel({ state }: { state: CurrentGameState }) {
       <div>
         <div>
           active unit:{" "}
-          {state.game.activeUnit
-            ? state.game.activeUnit?.substring(0, 4) +
+          {state.activeUnit
+            ? state.activeUnit?.substring(0, 4) +
               "..." +
-              state.game.activeUnit?.substring(
-                state.game.activeUnit.length - 4,
-                state.game.activeUnit.length,
+              state.activeUnit?.substring(
+                state.activeUnit.length - 4,
+                state.activeUnit.length,
               )
             : "N/A"}
         </div>
-        <div>Status: {state.game.status.Case}</div>
-        <div>Tick: {state.game.tick}</div>
-        <div>Version: {state.game.version}</div>
-        {state.game.status.Case === "Initializing" && (
+        <div>Status: {state.status.Case}</div>
+        <div>Tick: {state.tick}</div>
+        <div>Version: {state.version}</div>
+        {state.status.Case === "Initializing" && (
           <Center pt="xs">
             <Button
               loading={submitting}
               variant="white"
               onClick={async () => {
                 const result = await startGame({
-                  data: { gameId: state.gameId },
+                  data: { gameId: state.id },
                 })
                 if (!result.ok) {
                   notifyError(result.error)

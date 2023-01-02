@@ -2,21 +2,6 @@
 
 open System
 
-type PlayerUnit =
-  {
-    Id: Guid
-    Key: PlayerUnitId
-    GameId: GameId
-    Name: string
-    Icon: string
-    Items: Item list
-    IsEnabledToWalk: bool
-    Position: Position
-    RegenRate: int
-    BaseAttack: int
-    BaseProtection: int
-    Health: int
-    IsAlive: bool }
 
 [<CLIMutable>]
 type Game =
@@ -27,15 +12,32 @@ type Game =
     Items: Item list
     Field: GameField
     Mode: GameMode
-    PlayerUnits: PlayerUnit list
-    PlayerUnitIds: PlayerUnitId list
-    ActiveUnit: Guid option }
-  member this.Key()=
+    PlayerUnits: Map<PlayerUnitId, PlayerUnit>
+    Players: Map<PlayerId, Player>
+    ActiveUnit: PlayerUnitId option }
+  member this.Key() =
     this.Id |> GameId.create
-  member this.Apply(e: GameTick) = { this with Tick = this.Tick + 1 }
 
-  member this.Apply(e: GameEvent, meta: Marten.Events.IEvent) =
+  // member this.Create(e: GameCreated) : Game =
+  //   failwith "Invalid event"
+    // match e with
+    // | GameCreatedEvent.GameCreated e ->
+    //   { Game.Id = System.Guid.NewGuid()
+    //     Status = GameStatus.Initializing
+    //     Field = e.GameField
+    //     Mode = e.Mode
+    //     Version = 0
+    //     Tick = 0
+    //     Items = []
+    //     PlayerUnits = []
+    //     Players = []
+    //     ActiveUnit = None }
+    // | _ -> failwith "Invalid event"
+
+  member this.Apply( e: GameEvent, meta: Marten.Events.IEvent) : Game =
     match e with
+    | GameTick e ->
+      { this with Tick = this.Tick + 1 }
     | GameStarted -> { this with Status = GameStatus.Running }
     | GameCreated e ->
       { Id = meta.Id
@@ -45,9 +47,13 @@ type Game =
         Version = 0
         Tick = 0
         Items = []
-        PlayerUnits = []
-        PlayerUnitIds = []
+        PlayerUnits = Map.empty
+        Players = Map.empty
         ActiveUnit = None }
+    | PlayerJoined player ->
+      { this with Players = this.Players.Add(player.Id, player) }
+    | PlayerUnitCreated unit ->
+      { this with PlayerUnits = this.PlayerUnits.Add(unit.Id, unit)  }
     | _ -> this
 
   member this.Apply(e: ItemDropped) =
@@ -93,8 +99,6 @@ type Game =
   //     }
   // }
 
-  member this.Apply(e: PlayerJoined) =
-    { this with PlayerUnitIds = this.PlayerUnitIds @ [ e.PlayerId ] }
 
   member this.Apply(e: GameAborted) =
     { this with Status = GameStatus.Aborted }

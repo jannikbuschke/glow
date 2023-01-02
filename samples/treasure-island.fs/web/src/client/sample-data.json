@@ -1,0 +1,1025 @@
+{
+  "initializedGame": {
+    "id": "5a51d49e-95d7-4fa4-95f1-4499c1002e80",
+    "version": 0,
+    "tick": 0,
+    "status": {
+      "Case": "Initializing"
+    },
+    "items": [],
+    "field": {
+      "fields": [
+        {
+          "position": {
+            "r": 0,
+            "q": -3,
+            "s": 3
+          },
+          "tile": {
+            "color": "blue",
+            "name": {
+              "Case": "Water"
+            },
+            "walkable": false,
+            "assetIds": [
+              "river",
+              "river-1",
+              "river-2",
+              "river-3",
+              "river-6"
+            ]
+          },
+          "items": []
+        },
+        {
+          "position": {
+            "r": 1,
+            "q": -3,
+            "s": 2
+          },
+          "tile": {
+            "color": "lime",
+            "name": {
+              "Case": "Grass"
+            },
+            "walkable": true,
+            "assetIds": [
+              "grass-and-road",
+              "grass-and-stones",
+              "road-1"
+            ]
+          },
+          "items": []
+        },
+        {
+          "position": {
+            "r": 2,
+            "q": -3,
+            "s": 1
+          },
+          "tile": {
+            "color": "yellow",
+            "name": {
+              "Case": "Corn"
+            },
+            "walkable": true,
+            "assetIds": [
+              "wood-1",
+              "mountain-wood-river"
+            ]
+          },
+          "items": []
+        },
+        {
+          "position": {
+            "r": 3,
+            "q": -3,
+            "s": 0
+          },
+          "tile": {
+            "color": "lime",
+            "name": {
+              "Case": "Grass"
+            },
+            "walkable": true,
+            "assetIds": [
+              "grass-and-road",
+              "grass-and-stones",
+              "road-1"
+            ]
+          },
+          "items": []
+        },
+        {
+          "position": {
+            "r": 4,
+            "q": -3,
+            "s": -1
+          },
+          "tile": {
+            "color": "orange",
+            "name": {
+              "Case": "Corn"
+            },
+            "walkable": true,
+            "assetIds": [
+              "wood-1",
+              "mountain-wood-river"
+            ]
+          },
+          "items": []
+        },
+        {
+          "position": {
+            "r": -1,
+            "q": -2,
+            "s": 3
+          },
+          "tile": {
+            "color": "red",
+            "name": {
+              "Case": "Corn"
+            },
+            "walkable": true,
+            "assetIds": [
+              "wood-1",
+              "mountain-wood-river"
+            ]
+          },
+          "items": []
+        },
+        {
+          "position": {
+            "r": 0,
+            "q": -2,
+            "s": 2
+          },
+          "tile": {
+            "color": "orange",
+            "name": {
+              "Case": "Corn"
+            },
+            "walkable": true,
+            "assetIds": [
+              "wood-1",
+              "mountain-wood-river"
+            ]
+          },
+          "items": []
+        },
+        {
+          "position": {
+            "r": 1,
+            "q": -2,
+            "s": 1
+          },
+          "tile": {
+            "color": "dark",
+            "name": {
+              "Case": "Mountain"
+            },
+            "walkable": false,
+            "assetIds": [
+              "stones"
+            ]
+          },
+          "items": []
+        },
+        {
+          "position": {
+            "r": 2,
+            "q": -2,
+            "s": 0
+          },
+          "tile": {
+            "color": "green",
+            "name": {
+              "Case": "Wood"
+            },
+            "walkable": true,
+            "assetIds": [
+              "wood-1",
+              "mountain-wood-river"
+            ]
+          },
+          "items": []
+        },
+        {
+          "position": {
+            "r": 3,
+            "q": -2,
+            "s": -1
+          },
+          "tile": {
+            "color": "blue",
+            "name": {
+              "Case": "Water"
+            },
+            "walkable": false,
+            "assetIds": [
+              "river",
+              "river-1",
+              "river-2",
+              "river-3",
+              "river-6"
+            ]
+          },
+          "items": []
+        },
+        {
+          "position": {
+            "r": 4,
+            "q": -2,
+            "s": -2
+          },
+          "tile": {
+            "color": "orange",
+            "name": {
+              "Case": "Corn"
+            },
+            "walkable": true,
+            "assetIds": [
+              "wood-1",
+              "mountain-wood-river"
+            ]
+          },
+          "items": []
+        },
+        {
+          "position": {
+            "r": -2,
+            "q": -1,
+            "s": 3
+          },
+          "tile": {
+            "color": "dark",
+            "name": {
+              "Case": "Mountain"
+            },
+            "walkable": false,
+            "assetIds": [
+              "stones"
+            ]
+          },
+          "items": []
+        },
+        {
+          "position": {
+            "r": -1,
+            "q": -1,
+            "s": 2
+          },
+          "tile": {
+            "color": "green",
+            "name": {
+              "Case": "Wood"
+            },
+            "walkable": true,
+            "assetIds": [
+              "wood-1",
+              "mountain-wood-river"
+            ]
+          },
+          "items": []
+        },
+        {
+          "position": {
+            "r": 0,
+            "q": -1,
+            "s": 1
+          },
+          "tile": {
+            "color": "orange",
+            "name": {
+              "Case": "Corn"
+            },
+            "walkable": true,
+            "assetIds": [
+              "wood-1",
+              "mountain-wood-river"
+            ]
+          },
+          "items": []
+        },
+        {
+          "position": {
+            "r": 1,
+            "q": -1,
+            "s": 0
+          },
+          "tile": {
+            "color": "dark",
+            "name": {
+              "Case": "Mountain"
+            },
+            "walkable": false,
+            "assetIds": [
+              "stones"
+            ]
+          },
+          "items": []
+        },
+        {
+          "position": {
+            "r": 2,
+            "q": -1,
+            "s": -1
+          },
+          "tile": {
+            "color": "lime",
+            "name": {
+              "Case": "Grass"
+            },
+            "walkable": true,
+            "assetIds": [
+              "grass-and-road",
+              "grass-and-stones",
+              "road-1"
+            ]
+          },
+          "items": []
+        },
+        {
+          "position": {
+            "r": 3,
+            "q": -1,
+            "s": -2
+          },
+          "tile": {
+            "color": "lime",
+            "name": {
+              "Case": "Grass"
+            },
+            "walkable": true,
+            "assetIds": [
+              "grass-and-road",
+              "grass-and-stones",
+              "road-1"
+            ]
+          },
+          "items": []
+        },
+        {
+          "position": {
+            "r": 4,
+            "q": -1,
+            "s": -3
+          },
+          "tile": {
+            "color": "lime",
+            "name": {
+              "Case": "Grass"
+            },
+            "walkable": true,
+            "assetIds": [
+              "grass-and-road",
+              "grass-and-stones",
+              "road-1"
+            ]
+          },
+          "items": []
+        },
+        {
+          "position": {
+            "r": -3,
+            "q": 0,
+            "s": 3
+          },
+          "tile": {
+            "color": "lime",
+            "name": {
+              "Case": "Grass"
+            },
+            "walkable": true,
+            "assetIds": [
+              "grass-and-road",
+              "grass-and-stones",
+              "road-1"
+            ]
+          },
+          "items": []
+        },
+        {
+          "position": {
+            "r": -2,
+            "q": 0,
+            "s": 2
+          },
+          "tile": {
+            "color": "lime",
+            "name": {
+              "Case": "Grass"
+            },
+            "walkable": true,
+            "assetIds": [
+              "grass-and-road",
+              "grass-and-stones",
+              "road-1"
+            ]
+          },
+          "items": []
+        },
+        {
+          "position": {
+            "r": -1,
+            "q": 0,
+            "s": 1
+          },
+          "tile": {
+            "color": "yellow",
+            "name": {
+              "Case": "Corn"
+            },
+            "walkable": true,
+            "assetIds": [
+              "wood-1",
+              "mountain-wood-river"
+            ]
+          },
+          "items": []
+        },
+        {
+          "position": {
+            "r": 0,
+            "q": 0,
+            "s": 0
+          },
+          "tile": {
+            "color": "dark",
+            "name": {
+              "Case": "Mountain"
+            },
+            "walkable": false,
+            "assetIds": [
+              "stones"
+            ]
+          },
+          "items": []
+        },
+        {
+          "position": {
+            "r": 1,
+            "q": 0,
+            "s": -1
+          },
+          "tile": {
+            "color": "lime",
+            "name": {
+              "Case": "Grass"
+            },
+            "walkable": true,
+            "assetIds": [
+              "grass-and-road",
+              "grass-and-stones",
+              "road-1"
+            ]
+          },
+          "items": []
+        },
+        {
+          "position": {
+            "r": 2,
+            "q": 0,
+            "s": -2
+          },
+          "tile": {
+            "color": "green",
+            "name": {
+              "Case": "Wood"
+            },
+            "walkable": true,
+            "assetIds": [
+              "wood-1",
+              "mountain-wood-river"
+            ]
+          },
+          "items": []
+        },
+        {
+          "position": {
+            "r": 3,
+            "q": 0,
+            "s": -3
+          },
+          "tile": {
+            "color": "blue",
+            "name": {
+              "Case": "Water"
+            },
+            "walkable": false,
+            "assetIds": [
+              "river",
+              "river-1",
+              "river-2",
+              "river-3",
+              "river-6"
+            ]
+          },
+          "items": []
+        },
+        {
+          "position": {
+            "r": 4,
+            "q": 0,
+            "s": -4
+          },
+          "tile": {
+            "color": "red",
+            "name": {
+              "Case": "Corn"
+            },
+            "walkable": true,
+            "assetIds": [
+              "wood-1",
+              "mountain-wood-river"
+            ]
+          },
+          "items": []
+        },
+        {
+          "position": {
+            "r": -3,
+            "q": 1,
+            "s": 2
+          },
+          "tile": {
+            "color": "dark",
+            "name": {
+              "Case": "Mountain"
+            },
+            "walkable": false,
+            "assetIds": [
+              "stones"
+            ]
+          },
+          "items": []
+        },
+        {
+          "position": {
+            "r": -2,
+            "q": 1,
+            "s": 1
+          },
+          "tile": {
+            "color": "lime",
+            "name": {
+              "Case": "Grass"
+            },
+            "walkable": true,
+            "assetIds": [
+              "grass-and-road",
+              "grass-and-stones",
+              "road-1"
+            ]
+          },
+          "items": []
+        },
+        {
+          "position": {
+            "r": -1,
+            "q": 1,
+            "s": 0
+          },
+          "tile": {
+            "color": "lime",
+            "name": {
+              "Case": "Grass"
+            },
+            "walkable": true,
+            "assetIds": [
+              "grass-and-road",
+              "grass-and-stones",
+              "road-1"
+            ]
+          },
+          "items": []
+        },
+        {
+          "position": {
+            "r": 0,
+            "q": 1,
+            "s": -1
+          },
+          "tile": {
+            "color": "yellow",
+            "name": {
+              "Case": "Corn"
+            },
+            "walkable": true,
+            "assetIds": [
+              "wood-1",
+              "mountain-wood-river"
+            ]
+          },
+          "items": []
+        },
+        {
+          "position": {
+            "r": 1,
+            "q": 1,
+            "s": -2
+          },
+          "tile": {
+            "color": "lime",
+            "name": {
+              "Case": "Grass"
+            },
+            "walkable": true,
+            "assetIds": [
+              "grass-and-road",
+              "grass-and-stones",
+              "road-1"
+            ]
+          },
+          "items": []
+        },
+        {
+          "position": {
+            "r": 2,
+            "q": 1,
+            "s": -3
+          },
+          "tile": {
+            "color": "yellow",
+            "name": {
+              "Case": "Corn"
+            },
+            "walkable": true,
+            "assetIds": [
+              "wood-1",
+              "mountain-wood-river"
+            ]
+          },
+          "items": []
+        },
+        {
+          "position": {
+            "r": 3,
+            "q": 1,
+            "s": -4
+          },
+          "tile": {
+            "color": "orange",
+            "name": {
+              "Case": "Corn"
+            },
+            "walkable": true,
+            "assetIds": [
+              "wood-1",
+              "mountain-wood-river"
+            ]
+          },
+          "items": []
+        },
+        {
+          "position": {
+            "r": -3,
+            "q": 2,
+            "s": 1
+          },
+          "tile": {
+            "color": "lime",
+            "name": {
+              "Case": "Grass"
+            },
+            "walkable": true,
+            "assetIds": [
+              "grass-and-road",
+              "grass-and-stones",
+              "road-1"
+            ]
+          },
+          "items": []
+        },
+        {
+          "position": {
+            "r": -2,
+            "q": 2,
+            "s": 0
+          },
+          "tile": {
+            "color": "orange",
+            "name": {
+              "Case": "Corn"
+            },
+            "walkable": true,
+            "assetIds": [
+              "wood-1",
+              "mountain-wood-river"
+            ]
+          },
+          "items": []
+        },
+        {
+          "position": {
+            "r": -1,
+            "q": 2,
+            "s": -1
+          },
+          "tile": {
+            "color": "red",
+            "name": {
+              "Case": "Corn"
+            },
+            "walkable": true,
+            "assetIds": [
+              "wood-1",
+              "mountain-wood-river"
+            ]
+          },
+          "items": []
+        },
+        {
+          "position": {
+            "r": 0,
+            "q": 2,
+            "s": -2
+          },
+          "tile": {
+            "color": "blue",
+            "name": {
+              "Case": "Water"
+            },
+            "walkable": false,
+            "assetIds": [
+              "river",
+              "river-1",
+              "river-2",
+              "river-3",
+              "river-6"
+            ]
+          },
+          "items": []
+        },
+        {
+          "position": {
+            "r": 1,
+            "q": 2,
+            "s": -3
+          },
+          "tile": {
+            "color": "dark",
+            "name": {
+              "Case": "Mountain"
+            },
+            "walkable": false,
+            "assetIds": [
+              "stones"
+            ]
+          },
+          "items": []
+        },
+        {
+          "position": {
+            "r": 2,
+            "q": 2,
+            "s": -4
+          },
+          "tile": {
+            "color": "red",
+            "name": {
+              "Case": "Corn"
+            },
+            "walkable": true,
+            "assetIds": [
+              "wood-1",
+              "mountain-wood-river"
+            ]
+          },
+          "items": []
+        },
+        {
+          "position": {
+            "r": -3,
+            "q": 3,
+            "s": 0
+          },
+          "tile": {
+            "color": "yellow",
+            "name": {
+              "Case": "Corn"
+            },
+            "walkable": true,
+            "assetIds": [
+              "wood-1",
+              "mountain-wood-river"
+            ]
+          },
+          "items": []
+        },
+        {
+          "position": {
+            "r": -2,
+            "q": 3,
+            "s": -1
+          },
+          "tile": {
+            "color": "orange",
+            "name": {
+              "Case": "Corn"
+            },
+            "walkable": true,
+            "assetIds": [
+              "wood-1",
+              "mountain-wood-river"
+            ]
+          },
+          "items": []
+        },
+        {
+          "position": {
+            "r": -1,
+            "q": 3,
+            "s": -2
+          },
+          "tile": {
+            "color": "dark",
+            "name": {
+              "Case": "Mountain"
+            },
+            "walkable": false,
+            "assetIds": [
+              "stones"
+            ]
+          },
+          "items": []
+        },
+        {
+          "position": {
+            "r": 0,
+            "q": 3,
+            "s": -3
+          },
+          "tile": {
+            "color": "green",
+            "name": {
+              "Case": "Wood"
+            },
+            "walkable": true,
+            "assetIds": [
+              "wood-1",
+              "mountain-wood-river"
+            ]
+          },
+          "items": []
+        },
+        {
+          "position": {
+            "r": 1,
+            "q": 3,
+            "s": -4
+          },
+          "tile": {
+            "color": "lime",
+            "name": {
+              "Case": "Grass"
+            },
+            "walkable": true,
+            "assetIds": [
+              "grass-and-road",
+              "grass-and-stones",
+              "road-1"
+            ]
+          },
+          "items": []
+        },
+        {
+          "position": {
+            "r": -3,
+            "q": 4,
+            "s": -1
+          },
+          "tile": {
+            "color": "green",
+            "name": {
+              "Case": "Wood"
+            },
+            "walkable": true,
+            "assetIds": [
+              "wood-1",
+              "mountain-wood-river"
+            ]
+          },
+          "items": []
+        },
+        {
+          "position": {
+            "r": -2,
+            "q": 4,
+            "s": -2
+          },
+          "tile": {
+            "color": "orange",
+            "name": {
+              "Case": "Corn"
+            },
+            "walkable": true,
+            "assetIds": [
+              "wood-1",
+              "mountain-wood-river"
+            ]
+          },
+          "items": []
+        },
+        {
+          "position": {
+            "r": -1,
+            "q": 4,
+            "s": -3
+          },
+          "tile": {
+            "color": "lime",
+            "name": {
+              "Case": "Grass"
+            },
+            "walkable": true,
+            "assetIds": [
+              "grass-and-road",
+              "grass-and-stones",
+              "road-1"
+            ]
+          },
+          "items": []
+        },
+        {
+          "position": {
+            "r": 0,
+            "q": 4,
+            "s": -4
+          },
+          "tile": {
+            "color": "yellow",
+            "name": {
+              "Case": "Corn"
+            },
+            "walkable": true,
+            "assetIds": [
+              "wood-1",
+              "mountain-wood-river"
+            ]
+          },
+          "items": []
+        }
+      ]
+    },
+    "mode": {
+      "Case": "RoundBased"
+    },
+    "playerUnits": [
+      [
+        "3dcf1748-3f56-4862-ac75-b73d1764ecf7",
+        {
+          "id": "3dcf1748-3f56-4862-ac75-b73d1764ecf7",
+          "playerId": "3755e222-011f-4750-b1bd-182676ff7cca",
+          "name": "Unit 2",
+          "icon": "\uD83E\uDD2A",
+          "assetId": "ghost.png",
+          "position": {
+            "r": -1,
+            "q": -1,
+            "s": 2
+          },
+          "items": [],
+          "health": 100,
+          "isAlive": true
+        }
+      ],
+      [
+        "4b1b6da5-dcd3-4a28-b45a-ef084b24e3ee",
+        {
+          "id": "4b1b6da5-dcd3-4a28-b45a-ef084b24e3ee",
+          "playerId": "acf1f866-ff5e-46c6-b8fc-cbb5f7cc172b",
+          "name": "Unit 2",
+          "icon": "\uD83E\uDD2A",
+          "assetId": "young-wizard.png",
+          "position": {
+            "r": 4,
+            "q": 0,
+            "s": -4
+          },
+          "items": [],
+          "health": 100,
+          "isAlive": true
+        }
+      ],
+      [
+        "66b80427-03d6-4c3a-b850-771dc4c321ba",
+        {
+          "id": "66b80427-03d6-4c3a-b850-771dc4c321ba",
+          "playerId": "66b80427-03d6-4c3a-b850-771dc4c321ba",
+          "name": "Unit 1",
+          "icon": "\uD83D\uDE11",
+          "assetId": "hexe.png",
+          "position": {
+            "r": -1,
+            "q": 3,
+            "s": -2
+          },
+          "items": [],
+          "health": 100,
+          "isAlive": true
+        }
+      ],
+      [
+        "de0e29d7-6365-46f8-babe-27e7da5cb9be",
+        {
+          "id": "de0e29d7-6365-46f8-babe-27e7da5cb9be",
+          "playerId": "3b301796-3eb2-4cc6-a4ce-f4a81e8bff6c",
+          "name": "Unit 2",
+          "icon": "\uD83E\uDD2A",
+          "assetId": "warrior-highlight.png",
+          "position": {
+            "r": 1,
+            "q": 1,
+            "s": -2
+          },
+          "items": [],
+          "health": 100,
+          "isAlive": true
+        }
+      ]
+    ],
+    "players": [],
+    "activeUnit": "66b80427-03d6-4c3a-b850-771dc4c321ba"
+  }
+}

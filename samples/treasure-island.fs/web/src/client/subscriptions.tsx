@@ -2,18 +2,16 @@ import * as React from "react"
 import { Form } from "formik-antd"
 import mitt, { Handler, WildcardHandler } from "mitt"
 import { useNotification, useWildcardNotification } from "glow-core/lib/notifications/type-notifications"
-import * as TreasureIsland from "./TreasureIsland"
+import * as TsType from "./TsType"
 import * as System from "./System"
+import * as TreasureIsland from "./TreasureIsland"
 import * as Microsoft_FSharp_Core from "./Microsoft_FSharp_Core"
 import * as Microsoft_FSharp_Collections from "./Microsoft_FSharp_Collections"
-import * as System_Collections_Generic from "./System_Collections_Generic"
 
 export type Events = {
   'TreasureIsland.ItemPicked': TreasureIsland.ItemPicked,
   'TreasureIsland.ItemRemoved': TreasureIsland.ItemRemoved,
   'TreasureIsland.ItemDropped': TreasureIsland.ItemDropped,
-  'TreasureIsland.PlayerJoined': TreasureIsland.PlayerJoined,
-  'TreasureIsland.PlayerUnitCreated': TreasureIsland.PlayerUnitCreated,
   'TreasureIsland.UnitMoved': TreasureIsland.UnitMoved,
   'TreasureIsland.UnitAttacked': TreasureIsland.UnitAttacked,
   'TreasureIsland.GameTick': TreasureIsland.GameTick,
@@ -27,7 +25,6 @@ export type Events = {
   'TreasureIsland.GameAborted': TreasureIsland.GameAborted,
   'TreasureIsland.GameEnded': TreasureIsland.GameEnded,
   'TreasureIsland.GameEventNotification': TreasureIsland.GameEventNotification,
-  'TreasureIsland.CurrentGameState': TreasureIsland.CurrentGameState,
 }
 
 // export const emitter = mitt<Events>();

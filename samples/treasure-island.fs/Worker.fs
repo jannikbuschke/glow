@@ -1,11 +1,8 @@
 ﻿namespace TreasureIsland
 
 open System
-open System.Threading.Tasks
-open System.Threading
 open Marten
 open Microsoft.Extensions.Hosting
-
 
 type DungeonWorker(db: IDocumentStore, provider: IServiceProvider) =
   inherit BackgroundService()
@@ -25,7 +22,7 @@ type DungeonWorker(db: IDocumentStore, provider: IServiceProvider) =
           |> ignore
       )
 
-      let gameField = GameFieldGenerator.hexagon 5
+      let gameField = GameFieldGenerator.hexagon 6
       // GameFieldGenerator.orientedRectangle 15 15
 
       let id = GameId.GameId(Guid.NewGuid())

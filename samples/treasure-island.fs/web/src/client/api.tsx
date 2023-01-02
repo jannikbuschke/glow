@@ -4,6 +4,8 @@ import { useApi, ApiResult, useNotify } from "glow-core"
 import { useAction, useSubmit, UseSubmit, ProblemDetails } from "glow-core"
 import { Formik, FormikConfig, FormikFormProps, FormikProps } from "formik"
 import { Form } from "formik-antd"
+import * as TsType from "./TsType"
+import * as System from "./System"
 import * as TreasureIsland from "./TreasureIsland"
 import * as Glow_Api from "./Glow_Api"
 import * as Glow_Debug from "./Glow_Debug"
@@ -11,9 +13,8 @@ import * as Glow_TestAutomation from "./Glow_TestAutomation"
 import * as Glow_Azure_AzureKeyVault from "./Glow_Azure_AzureKeyVault"
 import * as Glow_Core_Profiles from "./Glow_Core_Profiles"
 import * as System_Collections_Generic from "./System_Collections_Generic"
-import * as MediatR from "./MediatR"
-import * as System from "./System"
 import * as Microsoft_FSharp_Core from "./Microsoft_FSharp_Core"
+import * as MediatR from "./MediatR"
 import * as Microsoft_FSharp_Collections from "./Microsoft_FSharp_Collections"
 
 export type QueryInputs = {
@@ -31,7 +32,7 @@ export type QueryOutputs = {
   "/api/es/get-events2": System_Collections_Generic.List<TreasureIsland.EventViewmodel>,
   "/api/ti/get-players": System_Collections_Generic.IReadOnlyList<TreasureIsland.PlayerUnit>,
   "/api/ti/get-games": System_Collections_Generic.IReadOnlyList<TreasureIsland.Game>,
-  "/api/ti/get-game-sate": TreasureIsland.CurrentGameState,
+  "/api/ti/get-game-sate": Microsoft_FSharp_Core.FSharpResult<TreasureIsland.Game,TreasureIsland.Error>,
   "/api/debug/get-documents": System_Collections_Generic.IEnumerable<System.Object>,
   "/api/es/get-events": System_Collections_Generic.List<Glow_Api.EventViewmodel>,
   "/api/glow/pgsql/get-activity": System_Collections_Generic.List<Glow_Debug.Activity>,
@@ -39,8 +40,8 @@ export type QueryOutputs = {
   "/glow/profile/get-profile": Glow_Core_Profiles.Profile,
 }
 export type Outputs = {
-  "/api/move-player": MediatR.Unit,
-  "/api/start-game": MediatR.Unit,
+  "/api/move-player": Microsoft_FSharp_Core.FSharpResult<MediatR.Unit,TreasureIsland.Error>,
+  "/api/start-game": Microsoft_FSharp_Core.FSharpResult<MediatR.Unit,TreasureIsland.Error>,
   "/api/restart-game": MediatR.Unit,
   "/api/ti/create-player": TreasureIsland.CreatePlayerResult,
   "/api/debug/rebuild-projections": MediatR.Unit,

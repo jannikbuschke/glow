@@ -14,9 +14,23 @@ type MartenExtensions() =
 
   [<Extension>]
   static member GetGameAsync(ty: IDocumentSession, GameId id) =
-    task{
+    task {
       let! result = ty.LoadAsync<Game>(id)
+
       if (box result = null) then
         raise (BadRequestException("Game not found"))
+
       return result
+    }
+
+  [<Extension>]
+  static member GetGame(ty: IDocumentSession, GameId id) =
+    task {
+      let! result = ty.LoadAsync<Game>(id)
+
+      return
+        if (box result = null) then
+          Result.Error(NotFound("Game not found"))
+        else
+          Result.Ok result
     }

@@ -5,12 +5,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="Utils1.fs" />
     <Compile Include="Models.fs" />
-    <Compile Include="PlayerUnit.fs" />
     <Compile Include="Game.fs" />
     <Compile Include="MartenExtensions.fs" />
-    <Compile Include="CurrentGameState.fs" />
     <Compile Include="Debug.fs" />
     <Compile Include="Utils.fs" />
     <Compile Include="GameFieldGenerator.fs" />
@@ -23,9 +20,11 @@
   <ItemGroup>
     <ProjectReference Include="..\..\glow.core.fs\glow.core.fs.fsproj" />
     <ProjectReference Include="..\..\glow.meta\glow.meta.csproj" />
+    
   </ItemGroup>
 
   <ItemGroup>
+  <PackageReference Include="FsToolkit.ErrorHandling.TaskResult" Version="3.3.1" />
     <PackageReference Include="FSharp.Control.AsyncSeq" Version="3.2.1" />
   </ItemGroup>
 

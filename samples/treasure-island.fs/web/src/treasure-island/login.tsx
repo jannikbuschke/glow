@@ -1,6 +1,14 @@
 import React from "react"
-import { TextInput, RadioGroup, Radio, Chips, Chip } from "formik-mantine"
-import { Center, Space, Button, Text, Container, Box } from "@mantine/core"
+import { TextInput, RadioGroup, Radio, ChipGroup } from "formik-mantine"
+import {
+  Center,
+  Space,
+  Button,
+  Text,
+  Container,
+  Box,
+  Chip,
+} from "@mantine/core"
 import { useId } from "@mantine/hooks"
 import { useNavigate } from "react-router"
 import { showNotification } from "@mantine/notifications"
@@ -12,6 +20,7 @@ import {
 import { css } from "@emotion/react"
 import { TypedForm, useTypedQuery } from "../client/api"
 import { Game, GameStatus } from "../client/TreasureIsland"
+import { defaultGuid } from "../client/System"
 
 const avatare = [
   "⛄",
@@ -114,7 +123,7 @@ export function LoginView() {
       <TypedForm
         actionName="/api/ti/create-player"
         initialValues={{
-          gameId: selectedGame?.id || "",
+          gameId: selectedGame?.id || defaultGuid,
           ...initalRequest,
         }}
         onError={(v) => {
@@ -126,7 +135,7 @@ export function LoginView() {
         }}
         onSuccess={(v) => {
           console.log({ result: v })
-          localStorage.setItem("user", v.id)
+          localStorage.setItem("user", v.playerUnitId)
           navigate("/game/" + v.gameId)
         }}
       >
@@ -151,7 +160,7 @@ export function LoginView() {
               <Text size="xl" weight={500}>
                 Avatar
               </Text>
-              <Chips name="icon" size="xl" variant="outline">
+              <ChipGroup name="icon">
                 {avatare.map((v) => (
                   <Chip key={v} value={v}>
                     {v}
@@ -161,7 +170,7 @@ export function LoginView() {
               <Chip value="ng">Angular</Chip>
               <Chip value="svelte">Svelte</Chip>
               <Chip value="vue">Vue</Chip> */}
-              </Chips>
+              </ChipGroup>
               <Space h="xl" />
 
               {/* <TextInput name="icon" label="Icon" />

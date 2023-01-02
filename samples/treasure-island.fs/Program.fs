@@ -1,5 +1,8 @@
 namespace TreasureIsland
 
+open System.Text.Json.Serialization
+open System.Threading.Tasks
+open Glow
 open Glow.Api.EventsQueries
 open Glow.Core.MartenSubscriptions
 open LamarCodeGeneration
@@ -8,6 +11,7 @@ open Marten.Events.Projections
 open Marten
 open System
 open System.Reflection
+open Marten.Services
 open Microsoft.AspNetCore.Builder
 open Microsoft.AspNetCore.Hosting
 open Microsoft.AspNetCore.SignalR
@@ -68,37 +72,28 @@ module Program =
          typedefof<GetEsEvents>.Assembly
          typedefof<Glow.Core.Profiles.GetProfile>.Assembly |]
 
-    Glow.Core.TsGen.Generate.renderTsTypes (assemblies |> Seq.toList)
-
     services.AddGlowApplicationServices(null, null, JsonSerializationStrategy.SystemTextJson, assemblies)
     |> ignore
-
-    // let firstLine = ResizeArray()
-    // firstLine.Add("/* eslint-disable prettier/prettier */")
-
-    // let apiOptions =
-    //   ApiOptions(ApiFileFirstLines = firstLine)
-    //
-    // services.AddTypescriptGeneration [| TsGenerationOptions(
-    //                                       Assemblies = assemblies,
-    //                                       Path = "./web/src/ts-models/",
-    //                                       GenerateApi = true,
-    //                                       ApiOptions = apiOptions,
-    //                                       GenerateSubscriptions = true
-    //                                     ) |]
 
     // services.AddTestAuthentication()
     services.AddHostedService<DungeonWorker>()
 
+    let serializer = SystemTextJsonSerializer()
+    serializer.Customize(fun v ->
+        v.Converters.Add(JsonFSharpConverter(Glow.JsonSerializationSettings.JsonDefaultWebUnionEncoding, allowNullFields = false))
+    )
     services
       .AddMarten(fun (sp: IServiceProvider) ->
         let v = StoreOptions()
-        // v.GeneratedCodeMode =
-        v.GeneratedCodeMode = TypeLoadMode.Auto
-        v.AutoCreateSchemaObjects = AutoCreate.All
+        v.GeneratedCodeMode <- TypeLoadMode.Auto
+        v.AutoCreateSchemaObjects <- AutoCreate.All
         v.Connection(configuration.GetValue<string>("ConnectionString"))
         // v.Projections.SelfAggregate<PlayerUnit>(ProjectionLifecycle.Inline)
         v.Projections.SelfAggregate<Game>(ProjectionLifecycle.Inline)
+        // v.UseNodaTime()
+        v.Events.MetadataConfig.HeadersEnabled <- true
+    
+        v.Serializer(serializer)
 
         let logger = sp.GetService<Microsoft.Extensions.Logging.ILogger<MartenSubscription>>()
         v.Projections.Add(
@@ -110,6 +105,16 @@ module Program =
       .UseLightweightSessions()
       .AddAsyncDaemon(DaemonMode.Solo)
 
+    Glow.Core.TsGen.Generate.renderTsTypes (assemblies |> Seq.toList)
+
+    let options = System.Text.Json.JsonSerializerOptions()
+    options.PropertyNamingPolicy <- System.Text.Json.JsonNamingPolicy.CamelCase
+    JsonSerializationSettings.ConfigureStjSerializerDefaultsForWeb(options)   
+    let serialize (obj: obj) =
+       System.Text.Json.JsonSerializer.Serialize(obj, options)
+
+    Glow.SampleData.generateSampleData assemblies serialize
+    
     services.AddFixForGlowConfigurationMissingDependencies(assemblies)
     services.AddAzureKeyvaultClientProvider()
     services.AddGlowNotifications<NotificationsHub>()
@@ -132,6 +137,7 @@ module Program =
 
     let store = app.Services.GetService<IDocumentStore>()
     store.Advanced.Clean.CompletelyRemoveAll()
+    store.Storage.ApplyAllConfiguredChangesToDatabaseAsync() |> Async.AwaitTask|>Async.RunSynchronously
 
     let configuration =
       app.Services.GetService<IConfiguration>()

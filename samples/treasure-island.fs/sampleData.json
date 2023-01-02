@@ -1,0 +1,989 @@
+{
+  "InitializedGame": {
+    "Id": "bd869640-afe5-46a2-94f9-c6917ce82996",
+    "Version": 0,
+    "Tick": 0,
+    "Status": { "Case": "Initializing" },
+    "Items": [],
+    "Field": {
+      "Fields": [
+        {
+          "Position": { "R": 0, "Q": -5, "S": 5 },
+          "Tile": {
+            "Color": "yellow",
+            "Name": { "Case": "Corn" },
+            "Walkable": true
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": 1, "Q": -5, "S": 4 },
+          "Tile": {
+            "Color": "blue",
+            "Name": { "Case": "Water" },
+            "Walkable": false
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": 2, "Q": -5, "S": 3 },
+          "Tile": {
+            "Color": "lime",
+            "Name": { "Case": "Grass" },
+            "Walkable": true
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": 3, "Q": -5, "S": 2 },
+          "Tile": {
+            "Color": "blue",
+            "Name": { "Case": "Water" },
+            "Walkable": false
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": 4, "Q": -5, "S": 1 },
+          "Tile": {
+            "Color": "green",
+            "Name": { "Case": "Wood" },
+            "Walkable": true
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": 5, "Q": -5, "S": 0 },
+          "Tile": {
+            "Color": "blue",
+            "Name": { "Case": "Water" },
+            "Walkable": false
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": 6, "Q": -5, "S": -1 },
+          "Tile": {
+            "Color": "green",
+            "Name": { "Case": "Wood" },
+            "Walkable": true
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": -1, "Q": -4, "S": 5 },
+          "Tile": {
+            "Color": "orange",
+            "Name": { "Case": "Corn" },
+            "Walkable": true
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": 0, "Q": -4, "S": 4 },
+          "Tile": {
+            "Color": "lime",
+            "Name": { "Case": "Grass" },
+            "Walkable": true
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": 1, "Q": -4, "S": 3 },
+          "Tile": {
+            "Color": "yellow",
+            "Name": { "Case": "Corn" },
+            "Walkable": true
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": 2, "Q": -4, "S": 2 },
+          "Tile": {
+            "Color": "yellow",
+            "Name": { "Case": "Corn" },
+            "Walkable": true
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": 3, "Q": -4, "S": 1 },
+          "Tile": {
+            "Color": "red",
+            "Name": { "Case": "Corn" },
+            "Walkable": true
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": 4, "Q": -4, "S": 0 },
+          "Tile": {
+            "Color": "blue",
+            "Name": { "Case": "Water" },
+            "Walkable": false
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": 5, "Q": -4, "S": -1 },
+          "Tile": {
+            "Color": "blue",
+            "Name": { "Case": "Water" },
+            "Walkable": false
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": 6, "Q": -4, "S": -2 },
+          "Tile": {
+            "Color": "green",
+            "Name": { "Case": "Wood" },
+            "Walkable": true
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": -2, "Q": -3, "S": 5 },
+          "Tile": {
+            "Color": "lime",
+            "Name": { "Case": "Grass" },
+            "Walkable": true
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": -1, "Q": -3, "S": 4 },
+          "Tile": {
+            "Color": "dark",
+            "Name": { "Case": "Mountain" },
+            "Walkable": false
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": 0, "Q": -3, "S": 3 },
+          "Tile": {
+            "Color": "blue",
+            "Name": { "Case": "Water" },
+            "Walkable": false
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": 1, "Q": -3, "S": 2 },
+          "Tile": {
+            "Color": "blue",
+            "Name": { "Case": "Water" },
+            "Walkable": false
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": 2, "Q": -3, "S": 1 },
+          "Tile": {
+            "Color": "blue",
+            "Name": { "Case": "Water" },
+            "Walkable": false
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": 3, "Q": -3, "S": 0 },
+          "Tile": {
+            "Color": "green",
+            "Name": { "Case": "Wood" },
+            "Walkable": true
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": 4, "Q": -3, "S": -1 },
+          "Tile": {
+            "Color": "lime",
+            "Name": { "Case": "Grass" },
+            "Walkable": true
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": 5, "Q": -3, "S": -2 },
+          "Tile": {
+            "Color": "yellow",
+            "Name": { "Case": "Corn" },
+            "Walkable": true
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": 6, "Q": -3, "S": -3 },
+          "Tile": {
+            "Color": "blue",
+            "Name": { "Case": "Water" },
+            "Walkable": false
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": -3, "Q": -2, "S": 5 },
+          "Tile": {
+            "Color": "lime",
+            "Name": { "Case": "Grass" },
+            "Walkable": true
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": -2, "Q": -2, "S": 4 },
+          "Tile": {
+            "Color": "lime",
+            "Name": { "Case": "Grass" },
+            "Walkable": true
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": -1, "Q": -2, "S": 3 },
+          "Tile": {
+            "Color": "green",
+            "Name": { "Case": "Wood" },
+            "Walkable": true
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": 0, "Q": -2, "S": 2 },
+          "Tile": {
+            "Color": "lime",
+            "Name": { "Case": "Grass" },
+            "Walkable": true
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": 1, "Q": -2, "S": 1 },
+          "Tile": {
+            "Color": "orange",
+            "Name": { "Case": "Corn" },
+            "Walkable": true
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": 2, "Q": -2, "S": 0 },
+          "Tile": {
+            "Color": "blue",
+            "Name": { "Case": "Water" },
+            "Walkable": false
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": 3, "Q": -2, "S": -1 },
+          "Tile": {
+            "Color": "lime",
+            "Name": { "Case": "Grass" },
+            "Walkable": true
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": 4, "Q": -2, "S": -2 },
+          "Tile": {
+            "Color": "yellow",
+            "Name": { "Case": "Corn" },
+            "Walkable": true
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": 5, "Q": -2, "S": -3 },
+          "Tile": {
+            "Color": "green",
+            "Name": { "Case": "Wood" },
+            "Walkable": true
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": 6, "Q": -2, "S": -4 },
+          "Tile": {
+            "Color": "yellow",
+            "Name": { "Case": "Corn" },
+            "Walkable": true
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": -4, "Q": -1, "S": 5 },
+          "Tile": {
+            "Color": "green",
+            "Name": { "Case": "Wood" },
+            "Walkable": true
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": -3, "Q": -1, "S": 4 },
+          "Tile": {
+            "Color": "lime",
+            "Name": { "Case": "Grass" },
+            "Walkable": true
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": -2, "Q": -1, "S": 3 },
+          "Tile": {
+            "Color": "lime",
+            "Name": { "Case": "Grass" },
+            "Walkable": true
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": -1, "Q": -1, "S": 2 },
+          "Tile": {
+            "Color": "blue",
+            "Name": { "Case": "Water" },
+            "Walkable": false
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": 0, "Q": -1, "S": 1 },
+          "Tile": {
+            "Color": "red",
+            "Name": { "Case": "Corn" },
+            "Walkable": true
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": 1, "Q": -1, "S": 0 },
+          "Tile": {
+            "Color": "blue",
+            "Name": { "Case": "Water" },
+            "Walkable": false
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": 2, "Q": -1, "S": -1 },
+          "Tile": {
+            "Color": "green",
+            "Name": { "Case": "Wood" },
+            "Walkable": true
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": 3, "Q": -1, "S": -2 },
+          "Tile": {
+            "Color": "lime",
+            "Name": { "Case": "Grass" },
+            "Walkable": true
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": 4, "Q": -1, "S": -3 },
+          "Tile": {
+            "Color": "blue",
+            "Name": { "Case": "Water" },
+            "Walkable": false
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": 5, "Q": -1, "S": -4 },
+          "Tile": {
+            "Color": "orange",
+            "Name": { "Case": "Corn" },
+            "Walkable": true
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": 6, "Q": -1, "S": -5 },
+          "Tile": {
+            "Color": "yellow",
+            "Name": { "Case": "Corn" },
+            "Walkable": true
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": -5, "Q": 0, "S": 5 },
+          "Tile": {
+            "Color": "green",
+            "Name": { "Case": "Wood" },
+            "Walkable": true
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": -4, "Q": 0, "S": 4 },
+          "Tile": {
+            "Color": "lime",
+            "Name": { "Case": "Grass" },
+            "Walkable": true
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": -3, "Q": 0, "S": 3 },
+          "Tile": {
+            "Color": "orange",
+            "Name": { "Case": "Corn" },
+            "Walkable": true
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": -2, "Q": 0, "S": 2 },
+          "Tile": {
+            "Color": "lime",
+            "Name": { "Case": "Grass" },
+            "Walkable": true
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": -1, "Q": 0, "S": 1 },
+          "Tile": {
+            "Color": "dark",
+            "Name": { "Case": "Mountain" },
+            "Walkable": false
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": 0, "Q": 0, "S": 0 },
+          "Tile": {
+            "Color": "blue",
+            "Name": { "Case": "Water" },
+            "Walkable": false
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": 1, "Q": 0, "S": -1 },
+          "Tile": {
+            "Color": "lime",
+            "Name": { "Case": "Grass" },
+            "Walkable": true
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": 2, "Q": 0, "S": -2 },
+          "Tile": {
+            "Color": "yellow",
+            "Name": { "Case": "Corn" },
+            "Walkable": true
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": 3, "Q": 0, "S": -3 },
+          "Tile": {
+            "Color": "lime",
+            "Name": { "Case": "Grass" },
+            "Walkable": true
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": 4, "Q": 0, "S": -4 },
+          "Tile": {
+            "Color": "blue",
+            "Name": { "Case": "Water" },
+            "Walkable": false
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": 5, "Q": 0, "S": -5 },
+          "Tile": {
+            "Color": "green",
+            "Name": { "Case": "Wood" },
+            "Walkable": true
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": 6, "Q": 0, "S": -6 },
+          "Tile": {
+            "Color": "lime",
+            "Name": { "Case": "Grass" },
+            "Walkable": true
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": -5, "Q": 1, "S": 4 },
+          "Tile": {
+            "Color": "red",
+            "Name": { "Case": "Corn" },
+            "Walkable": true
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": -4, "Q": 1, "S": 3 },
+          "Tile": {
+            "Color": "dark",
+            "Name": { "Case": "Mountain" },
+            "Walkable": false
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": -3, "Q": 1, "S": 2 },
+          "Tile": {
+            "Color": "red",
+            "Name": { "Case": "Corn" },
+            "Walkable": true
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": -2, "Q": 1, "S": 1 },
+          "Tile": {
+            "Color": "red",
+            "Name": { "Case": "Corn" },
+            "Walkable": true
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": -1, "Q": 1, "S": 0 },
+          "Tile": {
+            "Color": "yellow",
+            "Name": { "Case": "Corn" },
+            "Walkable": true
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": 0, "Q": 1, "S": -1 },
+          "Tile": {
+            "Color": "yellow",
+            "Name": { "Case": "Corn" },
+            "Walkable": true
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": 1, "Q": 1, "S": -2 },
+          "Tile": {
+            "Color": "lime",
+            "Name": { "Case": "Grass" },
+            "Walkable": true
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": 2, "Q": 1, "S": -3 },
+          "Tile": {
+            "Color": "lime",
+            "Name": { "Case": "Grass" },
+            "Walkable": true
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": 3, "Q": 1, "S": -4 },
+          "Tile": {
+            "Color": "green",
+            "Name": { "Case": "Wood" },
+            "Walkable": true
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": 4, "Q": 1, "S": -5 },
+          "Tile": {
+            "Color": "yellow",
+            "Name": { "Case": "Corn" },
+            "Walkable": true
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": 5, "Q": 1, "S": -6 },
+          "Tile": {
+            "Color": "orange",
+            "Name": { "Case": "Corn" },
+            "Walkable": true
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": -5, "Q": 2, "S": 3 },
+          "Tile": {
+            "Color": "lime",
+            "Name": { "Case": "Grass" },
+            "Walkable": true
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": -4, "Q": 2, "S": 2 },
+          "Tile": {
+            "Color": "lime",
+            "Name": { "Case": "Grass" },
+            "Walkable": true
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": -3, "Q": 2, "S": 1 },
+          "Tile": {
+            "Color": "green",
+            "Name": { "Case": "Wood" },
+            "Walkable": true
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": -2, "Q": 2, "S": 0 },
+          "Tile": {
+            "Color": "green",
+            "Name": { "Case": "Wood" },
+            "Walkable": true
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": -1, "Q": 2, "S": -1 },
+          "Tile": {
+            "Color": "blue",
+            "Name": { "Case": "Water" },
+            "Walkable": false
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": 0, "Q": 2, "S": -2 },
+          "Tile": {
+            "Color": "red",
+            "Name": { "Case": "Corn" },
+            "Walkable": true
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": 1, "Q": 2, "S": -3 },
+          "Tile": {
+            "Color": "red",
+            "Name": { "Case": "Corn" },
+            "Walkable": true
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": 2, "Q": 2, "S": -4 },
+          "Tile": {
+            "Color": "lime",
+            "Name": { "Case": "Grass" },
+            "Walkable": true
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": 3, "Q": 2, "S": -5 },
+          "Tile": {
+            "Color": "green",
+            "Name": { "Case": "Wood" },
+            "Walkable": true
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": 4, "Q": 2, "S": -6 },
+          "Tile": {
+            "Color": "green",
+            "Name": { "Case": "Wood" },
+            "Walkable": true
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": -5, "Q": 3, "S": 2 },
+          "Tile": {
+            "Color": "lime",
+            "Name": { "Case": "Grass" },
+            "Walkable": true
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": -4, "Q": 3, "S": 1 },
+          "Tile": {
+            "Color": "lime",
+            "Name": { "Case": "Grass" },
+            "Walkable": true
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": -3, "Q": 3, "S": 0 },
+          "Tile": {
+            "Color": "green",
+            "Name": { "Case": "Wood" },
+            "Walkable": true
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": -2, "Q": 3, "S": -1 },
+          "Tile": {
+            "Color": "yellow",
+            "Name": { "Case": "Corn" },
+            "Walkable": true
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": -1, "Q": 3, "S": -2 },
+          "Tile": {
+            "Color": "red",
+            "Name": { "Case": "Corn" },
+            "Walkable": true
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": 0, "Q": 3, "S": -3 },
+          "Tile": {
+            "Color": "dark",
+            "Name": { "Case": "Mountain" },
+            "Walkable": false
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": 1, "Q": 3, "S": -4 },
+          "Tile": {
+            "Color": "red",
+            "Name": { "Case": "Corn" },
+            "Walkable": true
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": 2, "Q": 3, "S": -5 },
+          "Tile": {
+            "Color": "dark",
+            "Name": { "Case": "Mountain" },
+            "Walkable": false
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": 3, "Q": 3, "S": -6 },
+          "Tile": {
+            "Color": "blue",
+            "Name": { "Case": "Water" },
+            "Walkable": false
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": -5, "Q": 4, "S": 1 },
+          "Tile": {
+            "Color": "orange",
+            "Name": { "Case": "Corn" },
+            "Walkable": true
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": -4, "Q": 4, "S": 0 },
+          "Tile": {
+            "Color": "orange",
+            "Name": { "Case": "Corn" },
+            "Walkable": true
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": -3, "Q": 4, "S": -1 },
+          "Tile": {
+            "Color": "yellow",
+            "Name": { "Case": "Corn" },
+            "Walkable": true
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": -2, "Q": 4, "S": -2 },
+          "Tile": {
+            "Color": "blue",
+            "Name": { "Case": "Water" },
+            "Walkable": false
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": -1, "Q": 4, "S": -3 },
+          "Tile": {
+            "Color": "orange",
+            "Name": { "Case": "Corn" },
+            "Walkable": true
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": 0, "Q": 4, "S": -4 },
+          "Tile": {
+            "Color": "green",
+            "Name": { "Case": "Wood" },
+            "Walkable": true
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": 1, "Q": 4, "S": -5 },
+          "Tile": {
+            "Color": "lime",
+            "Name": { "Case": "Grass" },
+            "Walkable": true
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": 2, "Q": 4, "S": -6 },
+          "Tile": {
+            "Color": "blue",
+            "Name": { "Case": "Water" },
+            "Walkable": false
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": -5, "Q": 5, "S": 0 },
+          "Tile": {
+            "Color": "lime",
+            "Name": { "Case": "Grass" },
+            "Walkable": true
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": -4, "Q": 5, "S": -1 },
+          "Tile": {
+            "Color": "yellow",
+            "Name": { "Case": "Corn" },
+            "Walkable": true
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": -3, "Q": 5, "S": -2 },
+          "Tile": {
+            "Color": "red",
+            "Name": { "Case": "Corn" },
+            "Walkable": true
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": -2, "Q": 5, "S": -3 },
+          "Tile": {
+            "Color": "green",
+            "Name": { "Case": "Wood" },
+            "Walkable": true
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": -1, "Q": 5, "S": -4 },
+          "Tile": {
+            "Color": "blue",
+            "Name": { "Case": "Water" },
+            "Walkable": false
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": 0, "Q": 5, "S": -5 },
+          "Tile": {
+            "Color": "lime",
+            "Name": { "Case": "Grass" },
+            "Walkable": true
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": 1, "Q": 5, "S": -6 },
+          "Tile": {
+            "Color": "red",
+            "Name": { "Case": "Corn" },
+            "Walkable": true
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": -5, "Q": 6, "S": -1 },
+          "Tile": {
+            "Color": "blue",
+            "Name": { "Case": "Water" },
+            "Walkable": false
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": -4, "Q": 6, "S": -2 },
+          "Tile": {
+            "Color": "lime",
+            "Name": { "Case": "Grass" },
+            "Walkable": true
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": -3, "Q": 6, "S": -3 },
+          "Tile": {
+            "Color": "red",
+            "Name": { "Case": "Corn" },
+            "Walkable": true
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": -2, "Q": 6, "S": -4 },
+          "Tile": {
+            "Color": "orange",
+            "Name": { "Case": "Corn" },
+            "Walkable": true
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": -1, "Q": 6, "S": -5 },
+          "Tile": {
+            "Color": "green",
+            "Name": { "Case": "Wood" },
+            "Walkable": true
+          },
+          "Items": []
+        },
+        {
+          "Position": { "R": 0, "Q": 6, "S": -6 },
+          "Tile": {
+            "Color": "red",
+            "Name": { "Case": "Corn" },
+            "Walkable": true
+          },
+          "Items": []
+        }
+      ]
+    },
+    "Mode": { "Case": "RoundBased" },
+    "PlayerUnits": [],
+    "Players": [],
+    "ActiveUnit": null
+  }
+}

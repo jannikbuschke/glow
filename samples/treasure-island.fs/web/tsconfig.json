@@ -8,7 +8,7 @@
     "types": ["vite/client", "@emotion/react/types/css-prop"],
     "esModuleInterop": true
   },
-  "include": ["./src/**/*"],
+  "include": ["./src/**/*", "./src/client/sample-data.json"],
   "references": [
     {
       "path": "../../../core-web"

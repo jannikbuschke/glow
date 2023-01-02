@@ -1,10 +1,18 @@
-import { useNotify } from "glow-core"
+import { RenderObject, useNotify } from "glow-core"
 import React from "react"
-import { HexGrid, Layout, Hexagon, Text, Hex, HexUtils } from "react-hexgrid"
+import {
+  HexGrid,
+  Layout,
+  Hexagon,
+  Text,
+  Hex,
+  HexUtils,
+  Pattern,
+} from "react-hexgrid"
 import "./game.css"
 import styled from "styled-components"
 import { useMantineTheme } from "@mantine/styles"
-import { Space } from "@mantine/core"
+import { Button, Space } from "@mantine/core"
 import { showNotification } from "@mantine/notifications"
 import { HexagonMouseEventHandler } from "react-hexgrid/lib/Hexagon/Hexagon"
 import { Center, Stack } from "@mantine/core"
@@ -15,11 +23,20 @@ import { RenderPlayer } from "./game/player-pannel"
 import { GamePanel } from "./game/game-panel"
 import { useSubscription, useSubscriptions } from "../client/subscriptions"
 import {
-  defaultCurrentGameState,
+  defaultError,
+  defaultGame,
+  Game,
   Position,
   Tile,
 } from "../client/TreasureIsland"
 import { useTypedAction, useTypedQuery } from "../client/api"
+import { Guid } from "../client/System"
+import { match } from "ts-pattern"
+import { defaultFSharpResult } from "../client/Microsoft_FSharp_Core"
+import img1 from "../assets/mountain-and-river.png"
+import img2 from "../assets/mountain-and-river-2.png"
+import grass4 from "../assets/mountain-and-river-2.png"
+const images = require.context("../assets/", true)
 
 function positionsAreEqual(p1: Position, p2: Position | null) {
   if (p2 === null) {
@@ -29,16 +46,34 @@ function positionsAreEqual(p1: Position, p2: Position | null) {
 }
 
 export function GameView() {
-  const { id } = useParams<{ id: string }>()
+  const { id } = useParams<{ id: Guid }>()
   const {
     data: currentState,
     refetch,
     isFetched,
   } = useTypedQuery("/api/ti/get-game-sate", {
     input: { gameId: id! },
-    placeholder: defaultCurrentGameState,
+    placeholder: defaultFSharpResult(defaultGame, defaultError),
   })
 
+  if (!isFetched) {
+    return <div>Loading</div>
+  }
+  return match(currentState)
+    .with({ Case: "Error" }, (error) => <div>Error {error}</div>)
+    .with({ Case: "Ok" }, ({ Fields }) => (
+      <RenderGame game={Fields} refetch={refetch} />
+    ))
+    .exhaustive()
+}
+
+export function RenderGame({
+  game: currentState,
+  refetch,
+}: {
+  game: Game
+  refetch: () => void
+}) {
   useSubscriptions((name, e) => {
     showNotification({
       message: name,
@@ -52,8 +87,8 @@ export function GameView() {
   useSubscription(
     "TreasureIsland.UnitAttacked",
     (e) => {
-      const src = currentState?.units[e.attackingUnit]!
-      const target = currentState?.units[e.targetUnit]!
+      const src = currentState?.playerUnits[e.attackingUnit]!
+      const target = currentState?.playerUnits[e.targetUnit]!
 
       showNotification({
         title: "Player attacked",
@@ -65,33 +100,41 @@ export function GameView() {
   )
 
   useSubscription(
-    "TreasureIsland.CurrentGameState",
+    "TreasureIsland.GameEventNotification",
     (e) => {
       refetch()
-    },
-    [currentState],
-  )
-  useSubscription(
-    "TreasureIsland.UnitMoved",
-    (e) => {
-      const player = currentState?.units[e.unitId]
-      if (player) {
-        showNotification({
-          title: "Player moved",
-          message: player.name + " " + player.icon,
+      match(e.gameEvent)
+        .with({ Case: "ActiveUnitChanged" }, (e1) => {
+          showNotification({
+            title: "Active unit changed",
+            color: "gray",
+            message: e.gameEvent,
+          })
         })
-      }
+        .otherwise(() => {
+          showNotification({
+            title: "Game event",
+            color: "gray",
+            message: e.gameEvent,
+          })
+        })
     },
-    [currentState],
+    [],
   )
 
-  const [userId, setUserId] = React.useState<string | null>(null)
-  const user = React.useMemo(
-    () => (userId && currentState ? currentState?.units[userId] : null),
-    [userId, currentState],
-  )
+  const [userId, setUserId] = React.useState<Guid | null>(null)
+  const user = React.useMemo(() => {
+    if (userId && currentState) {
+      const player = currentState.players[userId]
+      return player
+      const unit = currentState.playerUnits.find((v) => v[1].playerId == userId)
+      return unit
+    } else {
+      return null
+    }
+  }, [userId, currentState])
   React.useEffect(() => {
-    let user = localStorage.getItem("user")
+    let user = localStorage.getItem("user") as Guid | null
     setUserId(user)
   }, [])
   const [movePlayer] = useTypedAction("/api/move-player")
@@ -110,7 +153,12 @@ export function GameView() {
           const direction = HexUtils.subtract(cell, userPosition)
           if (distance === 1) {
             // showNotification({ message: "move", color: "green" })
-            movePlayer({ id: userId!, direction: direction })
+            // TODO: FIX
+            movePlayer({
+              unitId: userId!,
+              direction: direction,
+              gameId: currentState.id,
+            })
               .then((v) => {
                 if (!v.ok) {
                   notifyError(v.error)
@@ -139,12 +187,12 @@ export function GameView() {
 
   const theme = useMantineTheme()
 
-  const [viewbox0, setViewbox0] = React.useState(-50)
-  const [viewbox1, setViewbox1] = React.useState(-50)
-  const [viewbox2, setViewbox2] = React.useState(100)
-  const [viewbox3, setViewbox3] = React.useState(100)
+  const [viewbox0, setViewbox0] = React.useState(-25)
+  const [viewbox1, setViewbox1] = React.useState(-30)
+  const [viewbox2, setViewbox2] = React.useState(70)
+  const [viewbox3, setViewbox3] = React.useState(70)
   const [xy, setXY] = React.useState(5.0)
-  const [spacing, setSpacing] = React.useState(1.02)
+  const [spacing, setSpacing] = React.useState(1.0)
 
   function colorForTile(tile: Tile) {
     const color = tile.color || "dark"
@@ -152,10 +200,47 @@ export function GameView() {
     return theme.colors[color]?.[7] || tile.color || "dark"
   }
 
-  if (!isFetched) {
-    return <div>Loading</div>
-  }
+  const { activeUnit } = currentState
+  // return <RenderObject {...{ activeUnit }} game={currentState} />
 
+  const img = [
+    "grass-4",
+    "grass-and-river",
+    "grass-and-road",
+    "grass-and-stones",
+    "grass-and-water",
+    "mountain-1",
+    "mountain-2",
+    "mountain-3",
+    "mountain-4",
+    "mountain-5",
+    "mountain-6",
+    "mountain-and-river-2",
+    "mountain-and-river",
+    "mountain-and-sea",
+    "mountain-or-stone-3",
+    "mountain-wood-river",
+    "river-1",
+    "river-2",
+    "river-3",
+    "river-6",
+    "river-and-grass",
+    "river",
+    "road-1",
+    "stones",
+    "unclear",
+    "water",
+    "wood-1",
+  ]
+  const characters = [
+    "diamant",
+    "ghost",
+    "hexe",
+    "long-beard",
+    "old-man",
+    "warrior-highlight",
+    "young-wizard",
+  ]
   return (
     <>
       <div
@@ -189,6 +274,15 @@ export function GameView() {
         />
         <Space my="xs" />
         <GamePanel state={currentState} />
+        <Space my="xs" />
+
+        <Button
+          onClick={() => {
+            refetch
+          }}
+        >
+          Refresh
+        </Button>
       </div>
 
       <div
@@ -200,20 +294,54 @@ export function GameView() {
         }}
       >
         <Stack>
-          {currentState &&
+          <div
+            style={{
+              // background: "white",
+              opacity: 0.5,
+            }}
+          >
+            <RenderObject
+              {...{
+                players: currentState.players,
+                activeUnit: currentState.activeUnit,
+                units: currentState.playerUnits,
+              }}
+            />
+          </div>
+          {currentState.players.map((v) => (
+            <div>{v[0]}</div>
+          ))}
+          {/* {currentState &&
             Object.keys(currentState.units)
               .map((v) => currentState.units[v]!)
               .map((v) => (
                 <RenderPlayer player={v} currentState={currentState} />
-              ))}
+              ))} */}
         </Stack>
       </div>
 
+      <div
+        style={{
+          width: "100vw",
+          height: "calc(100vh - 40px)",
+          position: "absolute",
+
+          // backgroundImage: images("./wooden-background-tile.png"),
+        }}
+        css={css`
+          /* position: absolute; */
+        `}
+      >
+        {/* <RenderObject c={currentState} /> */}
+      </div>
       <Center
         style={{
           width: "100vw",
           height: "calc(100vh - 40px)",
           position: "absolute",
+          background: "#D0A97A",
+
+          // backgroundImage: `url(${images("./wooden-background-tile.png")})`,
         }}
       >
         <HexGrid
@@ -223,20 +351,25 @@ export function GameView() {
         >
           <Layout size={{ x: xy, y: xy }} spacing={spacing}>
             <>
-              {currentState.game?.field?.fields.map(
+              {currentState.field.fields.map(
                 ({ position: hex, tile, items }, i) => {
                   const inWalkingRange = Boolean(
-                    currentState?.game?.activeUnit === user?.id &&
+                    currentState?.activeUnit === user?.id &&
                       user &&
                       HexUtils.distance(hex, user.position) > 0 &&
                       HexUtils.distance(hex, user.position) < 2,
                   )
                   return (
                     <Hexagon
+                      key={"" + i}
+                      fill={`./${
+                        tile.assetIds[0] ||
+                        img[Math.floor(Math.random() * img.length)]
+                      }.png`}
                       css={css`
                         polygon {
-                          fill: ${colorForTile(tile)};
-                          fill-opacity: 0.92;
+                          /* fill: ${colorForTile(tile)}; */
+                          fill-opacity: 0.78;
                           transition: fill-opacity 0.2s;
                           stroke: transparent;
                           stroke-width: 0.2;
@@ -256,7 +389,6 @@ export function GameView() {
                       // fillColor={colorForTile(tile)}
                       // draggable="true"
                       onDragStart={() => {}}
-                      key={i}
                       q={hex.q}
                       r={hex.r}
                       s={hex.s}
@@ -293,7 +425,7 @@ export function GameView() {
                       ) : //  <Text>In distance</Text>
                       null}
                       <Text>
-                        {hex.q} / {hex.r} / {hex.s} /
+                        {/* {hex.q} / {hex.r} / {hex.s} / */}
                         {items.length > 0 ? "items" : ""}
                       </Text>
                     </Hexagon>
@@ -360,47 +492,77 @@ export function GameView() {
                 ))}
             </> */}
             <>
-              {Object.keys(currentState.units)
-                .map((v) => currentState.units[v]!)
-                .filter((v) => v.position !== null)
-                .map((v) => (
+              {currentState.playerUnits.map(
+                ([id, { icon, position, assetId }]) => (
                   <Hexagon
+                    key={id}
+                    fill={`./${assetId}`}
                     css={css`
-                      fill-opacity: 0;
+                      polygon {
+                        fill-opacity: 0.9;
+                        transition: fill-opacity 0.2s;
+                        stroke: ${currentState.activeUnit === id
+                          ? "var(--mantine-color-white)"
+                          : "transparent"};
+                        stroke-width: 0.5;
+                      }
                       &:hover {
+                        polygon {
+                          cursor: pointer;
+                          transform: scale(1.05);
+                          fill-opacity: 1;
+                          transition: fill-opacity 0.9s;
+                        }
+                      }
+                      /* &:hover {
                         polygon {
                           cursor: pointer;
                           stroke: var(--mantine-color-white);
                         }
-                      }
+                      } */
 
-                      // stroke-width: 0.2;
                       stroke-opacity: 0.4;
                     `}
+                    // css={css`
+                    //   &:hover {
+                    //     polygon {
+                    //       cursor: pointer;
+                    //       stroke: var(--mantine-color-white);
+                    //     }
+                    //   }
+
+                    //   stroke-opacity: 0.4;
+                    // `}
                     onClick={handleClick}
-                    key={v.id}
-                    q={v.position.q}
-                    r={v.position.r}
-                    s={v.position.s}
+                    q={position.q}
+                    r={position.r}
+                    s={position.s}
                   >
-                    <UnitText>
-                      {v.icon!} <br />
-                      {/* {v.position.q} / {v.position.r} / {v.position.s} */}
+                    <UnitText color="white">
+                      {/* {icon} */}
+                      {/* {position.q} / {position.r} / {position.s} */}
                     </UnitText>
                   </Hexagon>
-                ))}
-            </>
+                ),
+              )}
 
-            {/* <Pattern
-              id="pat-1"
-              link="http://lorempixel.com/400/400/cats/1/"
-              size={hexagonSize}
-            />
-            <Pattern
-              id="pat-2"
-              link="http://lorempixel.com/400/400/cats/2/"
-              size={hexagonSize}
-            /> */}
+              {[...img].map((v, i) => (
+                <Pattern
+                  id={`./${v}.png`}
+                  link={images(`./${v}.png`)}
+                  size={{ x: 5, y: 5 }}
+                />
+              ))}
+              {[, ...characters].map((v, i) => (
+                <Pattern
+                  id={`./${v}.png`}
+                  link={images(`./${v}.png`)}
+                  dx={1.4}
+                  dy={0.9}
+                  size={{ x: 3.5, y: 3.5 }}
+                />
+              ))}
+            </>
           </Layout>
         </HexGrid>
         {/* <RenderObject {...currentState.game?.field?.positions} /> */}

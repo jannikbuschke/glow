@@ -1,9 +1,11 @@
-///////////////////////////////////////////////////////////
-//                          This file is auto generated //
-//////////////////////////////////////////////////////////
+//////////////////////////////////////
+//   This file is auto generated   //
+//////////////////////////////////////
 
+import * as TsType from "./TsType"
 import * as System from "./System"
 import * as System_Collections_Generic from "./System_Collections_Generic"
+
 export type GetProfile = {
   
 }
@@ -21,6 +23,7 @@ export type Profile = {
   scopes: System_Collections_Generic.IEnumerable<System.String>
   claims: System_Collections_Generic.IEnumerable<System_Collections_Generic.KeyValuePair<System.String,System.String>>
   authenticationType: System.String
+  upn: System.String
 }
 export const defaultProfile: Profile = {
   displayName: System.defaultString,
@@ -33,4 +36,5 @@ export const defaultProfile: Profile = {
   scopes: System_Collections_Generic.defaultIEnumerable(System.defaultString),
   claims: System_Collections_Generic.defaultIEnumerable(System_Collections_Generic.defaultKeyValuePair(System.defaultString,System.defaultString)),
   authenticationType: System.defaultString,
+  upn: System.defaultString,
 }

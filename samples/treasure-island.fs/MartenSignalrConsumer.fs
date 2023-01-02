@@ -42,15 +42,15 @@ type MartenSignalrConsumer(sp: IServiceProvider) =
                         |> Async.AwaitTask
                     else
                       logger.LogInformation("Skip Publish game event " + e.Data.GetType().Name)
-
-                    if e.Data :? IClientNotification then
-                      logger.LogInformation("Publish event " + e.Data.GetType().Name)
-
-                      do!
-                        svc.PublishNotification(e.Data :?> IClientNotification)
-                        |> Async.AwaitTask
-                    else
-                      logger.LogInformation("Publish event " + e.Data.GetType().Name)
+                    //
+                    // if e.Data :? IClientNotification then
+                    //   logger.LogInformation("Publish event " + e.Data.GetType().Name)
+                    //
+                    //   do!
+                    //     svc.PublishNotification(e.Data :?> IClientNotification)
+                    //     |> Async.AwaitTask
+                    // else
+                    //   logger.LogInformation("Publish event " + e.Data.GetType().Name)
 
                   })
             })
@@ -71,27 +71,28 @@ type MartenSignalrConsumer(sp: IServiceProvider) =
         //
         //   ))
 
-        let session =
-          scope.GetService<IDocumentSession>()
-
-        let! games = session.Query<Game>().ToListAsync()
-        let current = games.FirstOrDefault()
-
-        if box current <> null then
-
-          let players =
-            session.LoadMany<PlayerUnit>(
-              current.PlayerUnitIds
-              |> List.map (fun (PlayerUnitId id) -> id)
-            )
-
-          let dict =
-            players.ToDictionary(fun v -> v.Id)
-
-          let notification: CurrentGameState =
-            { GameId = current.Id
-              Units = dict
-              Game = current }
-
-          do! svc.PublishNotification(notification)
+        // let session =
+        //   scope.GetService<IDocumentSession>()
+        //
+        // let! games = session.Query<Game>().ToListAsync()
+        // let current = games.FirstOrDefault()
+        //
+        // if box current <> null then
+        //
+        //   let players =
+        //     session.LoadMany<PlayerUnit>(
+        //       current.PlayerUnitIds
+        //       |> List.map (fun (PlayerUnitId id) -> id)
+        //     )
+        //
+        //   let dict =
+        //     players.ToDictionary(fun v -> v.Id)
+        //
+        //   let notification: CurrentGameState =
+        //     { GameId = current.Id
+        //       Units = dict
+        //       Game = current }
+        //
+        //   do! svc.PublishNotification(notification)
+      ()
       }

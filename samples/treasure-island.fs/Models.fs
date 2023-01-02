@@ -33,7 +33,8 @@ type Item =
 //     }
 // }
 type ItemPicked =
-  { Item: Item }
+  { Item: Item
+    Position: Position }
   interface IClientNotification
 
 type ItemRemoved =
@@ -52,25 +53,33 @@ module GameId =
   let create (rawId: System.Guid) : GameId = GameId rawId
   let value (GameId rawId) : System.Guid = rawId
 
+type PlayerId = PlayerId of Guid
 type PlayerUnitId = PlayerUnitId of Guid
 
 module PlayerUnitId =
   let create (rawId: System.Guid) = PlayerUnitId rawId
   let value (PlayerUnitId rawId) : System.Guid = rawId
 
-type PlayerJoined =
-  { PlayerId: PlayerUnitId }
-  interface IClientNotification
+type Player = { Id: PlayerId; Name: string }
 
-type PlayerUnitCreated =
-  { PlayerUnitId: PlayerUnitId
+type Health = Health of int
+
+module Health =
+  let full = Health 100
+
+type PlayerUnit =
+  { Id: PlayerUnitId
+    PlayerId: PlayerId
     Name: string
     Icon: string
-    Position: Position }
-  interface IClientNotification
+    AssetId: string
+    Position: Position
+    Items: Item list
+    Health: Health
+    IsAlive: bool }
 
 type UnitMoved =
-  { UnitId: Guid
+  { UnitId: PlayerUnitId
     OldPosition: Position
     Position: Position }
   interface IClientNotification
@@ -116,7 +125,8 @@ type TileName =
 type Tile =
   { Color: string
     Name: TileName
-    Walkable: bool }
+    Walkable: bool
+    AssetIds: string list }
 
 type Field =
   { Position: Position
@@ -124,19 +134,23 @@ type Field =
     Items: Item list }
 
 type ActiveUnitChanged =
-  { UnitId: Guid }
+  { UnitId: PlayerUnitId }
   interface IClientNotification
 
 type UnitEnabledForWalk =
   { Data: unit }
   interface IClientNotification
 
+module Random =
+  let r = System.Random()
+  let randomInt (max: int) = int (r.NextInt64 max)
+
 type GameField =
   { Fields: Field list }
   member this.GetRandomPosition() = this.GetRandomField().Position
 
   member this.GetRandomField() =
-    this.Fields[Utils1.RandomInt(this.Fields.Length)]
+    this.Fields[Random.randomInt (this.Fields.Length)]
 
 type GameCreated =
   { GameField: GameField
@@ -158,8 +172,10 @@ type GameAborted =
   interface IClientNotification
 
 type GameEnded =
-  { Winner: Guid }
+  { Winner: PlayerId }
   interface IClientNotification
+
+type GameCreatedEvent = GameCreated of GameCreated
 
 type GameEvent =
   | GameCreated of GameCreated
@@ -168,8 +184,8 @@ type GameEvent =
   | GameDrawn of GameDrawn
   | GameAborted of GameAborted
   | GameEnded of GameEnded
-  | PlayerJoined of PlayerJoined
-  | PlayerUnitCreated of PlayerUnitCreated
+  | PlayerJoined of Player
+  | PlayerUnitCreated of PlayerUnit
   | DamageTaken of DamageTaken
   | UnitEnabledForWalk of UnitEnabledForWalk
   | ActiveUnitChanged of ActiveUnitChanged
@@ -184,3 +200,9 @@ type GameEvent =
 type GameEventNotification =
   { GameEvent: GameEvent }
   interface IClientNotification
+
+type Error =
+  | NotFound of string
+  | InvalidState of string
+  | InvalidRequest of string
+  | Other of string
