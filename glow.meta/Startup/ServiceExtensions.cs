@@ -100,8 +100,6 @@ namespace Glow.Core
         ///     Adds Mvc (with Netwonsoft), FileService, Clock, MockExternalSystems, SpaStaticFiles,
         ///     SignalR, HttpClient, HttpContextAccessor,
         /// </summary>
-        /// <param name="services"></param>
-        /// <returns></returns>
         public static IServiceCollection AddGlowApplicationServices(
             this IServiceCollection services,
             Action<MvcOptions> options = null,
@@ -128,12 +126,6 @@ namespace Glow.Core
                 .AddJsonProtocol(options =>
                 {
                     JsonSerializationSettings.ConfigureStjSerializerDefaultsForWeb(options.PayloadSerializerOptions);
-                    // options.PayloadSerializerOptions.Converters.Add(new JsonFSharpConverter(JsonUnionEncoding.AdjacentTag
-                    //                                                                         | JsonUnionEncoding.UnwrapRecordCases
-                    //                                                                         | JsonUnionEncoding.UnwrapOption
-                    //                                                                         | JsonUnionEncoding.UnwrapSingleCaseUnions
-                    //                                                                         | JsonUnionEncoding.AllowUnorderedTag));
-                    // options.PayloadSerializerOptions.Converters.Add(new JsonStringEnumConverter());
                 });
 
             services.AddHttpClient();
