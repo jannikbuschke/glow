@@ -127,23 +127,10 @@ export function TypedNotificationsProvider<
           console.error(e)
         })
 
-      //remove
-      connection.on("message", (messageType: string, payload: any) => {
-        // console.log(`emitting [[message]] ${messageType}`, payload)
-        // console.log(messageType)
-        // emitter.emit(messageType, payload)
-      })
-
-      console.log("add mitt emitter!!!!!!!!")
-      // this is the new one
+      console.log("add mitt emitter")
       connection.on(
         "notification",
         (notificationType: string, notification: any) => {
-          // console.log("emmit " + notificationType)
-          // console.log(
-          //   `emitting [[notification]] ${notificationType}`,
-          //   notification,
-          // )
           emitter.emit(notificationType, notification)
         },
       )
