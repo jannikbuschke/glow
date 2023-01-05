@@ -127,6 +127,11 @@ namespace Glow.Core.Typescript
                 return tsType;
             }
 
+            if (type.IsGenericType && !type.IsGenericTypeDefinition && type.GetGenericTypeDefinition() == typeof(FSharpResult<,>))
+            {
+                return TsType.Any();
+            }
+
             if (type == typeof(object))
             {
                 return TsType.Any();
