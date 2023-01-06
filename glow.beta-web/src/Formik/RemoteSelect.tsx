@@ -31,7 +31,7 @@ export const RemoteSelect = ({
       try {
         const response = await fetch(search)
         setData(response)
-      } catch (e) {
+      } catch (e: any) {
         setError(e.toString())
       }
     })()

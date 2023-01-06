@@ -26,7 +26,7 @@ export function ActionButton<Request = any, Response = {}>({
             "x-submit-intent": "execute",
           })
           onSuccess && onSuccess(response)
-        } catch (E) {
+        } catch (E: any) {
           onError ? onError(E.toString()) : message.error(E.toString())
         } finally {
           setLoading(false)

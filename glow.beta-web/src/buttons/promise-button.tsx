@@ -15,7 +15,7 @@ export function PromiseButton({ onClick, ...props }: PromiseButtonProps) {
         setLoading(true)
         try {
           await onClick()
-        } catch (E) {
+        } catch (E: any) {
           notification.error({ message: "An error occured:" + E.toString() })
         } finally {
           setLoading(false)
