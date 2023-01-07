@@ -83,10 +83,16 @@ type RenderedDuCaseDefinitionAndValue =
     DefaultValue: string }
 
 type Renderable =
-  | TypeAndValue of name: string * definition: string * defaultValue: string
+  | TypeAndValue of name: string * definition: string * defaultValue: string * inlineValue: string option
   | CyclicTypeAndStubValue of name: string * definition: string * stubValue: string
   | CyclicFixValue of name: string * fixReferences: string
-  | GenericTypeAndFunction of name: string * genericName: string * definition: string * defaultGeneratorSignature: string * defaultGeneratorImpl: string
+  | GenericTypeAndFunction of
+    name: string *
+    genericName: string *
+    definition: string *
+    defaultGeneratorSignature: string *
+    defaultGeneratorImpl: string *
+    inlineValue: string option
   | Enum of name: string * values: string list
   | DiscriminatedUnion of name: string * genericName: string option * cases: RenderedDuCaseDefinitionAndValue list
   | NotRenderable
@@ -99,82 +105,180 @@ module DefaultTypeDefinitionsAndValues =
 
   let tryGetExistingTypeDefinition =
     let anyType = TsType.Any(typedefof<_>)
-    allTypes.TryAdd(anyType.Id,anyType)|>ignore
-    let types =
-      Dict<System.Type, string * string option * string * string option * string>()
+    allTypes.TryAdd(anyType.Id, anyType) |> ignore
 
-    let add v =
-      types.TryAdd v |> ignore
-    add (typeof<System.String>, ("String", None, "string", None, "\"\""))
-    add (typeof<NodaTime.LocalDate>, ("LocalDate", None, "`${number}-${number}-${number}`", None, "\"\2022-12-18\""))
-    add (typeof<NodaTime.LocalTime>, ("LocalTime", None, "`${number}:${number}:${number}`", None, "\"00:00:00\""))
-    add (typeof<NodaTime.Instant>, ("Instant", None, "`${number}-${number}-${number}T${number}:${number}:${number}.${number}Z`", None, "\"9999-12-31T23:59:59.999999999Z\""))
-    add (typeof<System.Byte>, ("Byte", None, "number", None, "0"))
-    add (typedefof<System.Int16>, ("Int16", None, "number", None, "0")) 
-    add(typeof<System.Decimal>, ("Decimal", None, "number", None, "0"))
-    add (typedefof<_ list>, ("FSharpList", Some "FSharpList<T>", "Array<T>", Some "<T>(t:T)", "[]"))
-    add (typedefof<_ option>, ("FSharpOption", Some "FSharpOption<T>", "T | null", Some "<T>(t:T)", "null"))
-    add (typedefof<Nullable<_>>, ("Nullable", Some "Nullable<T>", "T | null", Some "<T>(t:T)", "null"))
-    
-    add(typedefof<System.Type>, ("Type", None, "{}", None, "{}"))
-    
-    add (typedefof<System.Collections.Generic.IEnumerable<_>>, ("IEnumerable", Some "IEnumerable<T>", "Array<T>", Some "<T>(t:T)", "[]"))
-    add (typedefof<System.Collections.Generic.IList<_>>, ("IList", Some "IList<T>", "Array<T>", Some "<T>(t:T)", "[]"))
-    add (typedefof<System.Collections.Generic.ICollection<_>>, ("ICollection", Some "ICollection<T>", "Array<T>", Some "<T>(t:T)", "[]"))
-    add (typedefof<System.Collections.Generic.IDictionary<_,_>>, ("IDictionary", Some "IDictionary<TKey, TValue>", "{ [key: string]: TValue }", Some "<TKey, TValue>(t:TKey,tValue:TValue)", "({})"))
-    add (typedefof<FSharp.Collections.Map<_,_>>, ("FSharpMap", Some "FSharpMap<TKey, TValue>", "[TKey,TValue][]", Some "<TKey, TValue>(tKey:TKey,tValue:TValue)", "[]"))
-    add (typedefof<System.Text.Json.Serialization.Skippable<_>>, ("Skippable", Some "Skippable<T>", "T | undefined", Some "<T>(t:T)", "undefined"))
+    let types =
+      Dict<System.Type, string * string option * string * string option * string * bool>()
+
+    let add v = types.TryAdd v |> ignore
+    add (typeof<System.String>, ("String", None, "string", None, "\"\"", true))
+
+    add (
+      typeof<NodaTime.LocalDate>,
+      ("LocalDate", None, "`${number}-${number}-${number}`", None, "\"\2022-12-18\"", true)
+    )
+
+    add (typeof<NodaTime.LocalTime>, ("LocalTime", None, "`${number}:${number}:${number}`", None, "\"00:00:00\"", true))
+
+    add (
+      typeof<NodaTime.Instant>,
+      ("Instant",
+       None,
+       "`${number}-${number}-${number}T${number}:${number}:${number}.${number}Z`",
+       None,
+       "\"9999-12-31T23:59:59.999999999Z\"",
+       true)
+    )
+
+    add (typeof<System.Byte>, ("Byte", None, "number", None, "0", true))
+    add (typedefof<System.Int16>, ("Int16", None, "number", None, "0", true))
+    add (typeof<System.Decimal>, ("Decimal", None, "number", None, "0", true))
+    add (typedefof<_ list>, ("FSharpList", Some "FSharpList<T>", "Array<T>", Some "<T>(t:T)", "[]", true))
+    add (typedefof<_ option>, ("FSharpOption", Some "FSharpOption<T>", "T | null", Some "<T>(t:T)", "null", true))
+    add (typedefof<Nullable<_>>, ("Nullable", Some "Nullable<T>", "T | null", Some "<T>(t:T)", "null", true))
+
+    add (typedefof<System.Type>, ("Type", None, "{}", None, "{}", true))
+
+    add (
+      typedefof<System.Collections.Generic.IEnumerable<_>>,
+      ("IEnumerable", Some "IEnumerable<T>", "Array<T>", Some "<T>(t:T)", "[]", true)
+    )
+
+    add (
+      typedefof<System.Collections.Generic.IList<_>>,
+      ("IList", Some "IList<T>", "Array<T>", Some "<T>(t:T)", "[]", true)
+    )
+
+    add (
+      typedefof<System.Collections.Generic.ICollection<_>>,
+      ("ICollection", Some "ICollection<T>", "Array<T>", Some "<T>(t:T)", "[]", true)
+    )
+
+    add (
+      typedefof<System.Collections.Generic.IDictionary<_, _>>,
+      ("IDictionary",
+       Some "IDictionary<TKey, TValue>",
+       "{ [key: string]: TValue }",
+       Some "<TKey, TValue>(t:TKey,tValue:TValue)",
+       "({})",
+       true)
+    )
+
+    add (
+      typedefof<FSharp.Collections.Map<_, _>>,
+      ("FSharpMap",
+       Some "FSharpMap<TKey, TValue>",
+       "[TKey,TValue][]",
+       Some "<TKey, TValue>(tKey:TKey,tValue:TValue)",
+       "[]",
+       true)
+    )
+
+    add (
+      typedefof<System.Text.Json.Serialization.Skippable<_>>,
+      ("Skippable", Some "Skippable<T>", "T | undefined", Some "<T>(t:T)", "undefined", true)
+    )
 
     add (
       typedefof<System.Collections.Generic.Dictionary<_, _>>,
-      ("Dictionary", Some "Dictionary<TKey, TValue>", "{ [key: string]: TValue }", Some "<TKey, TValue>(t:TKey,tValue:TValue)", "({})")
+      ("Dictionary",
+       Some "Dictionary<TKey, TValue>",
+       "{ [key: string]: TValue }",
+       Some "<TKey, TValue>(t:TKey,tValue:TValue)",
+       "({})",
+       true)
     )
 
-    add (typedefof<System.Collections.Generic.IReadOnlyList<_>>, ("IReadOnlyList", Some "IReadOnlyList<T>", "Array<T>", Some "<T>(t:T)", "([])"))
-    add (typedefof<System.Collections.Generic.List<_>>, ("List", Some "List<T>", "Array<T>", Some "<T>(t:T)", "([])"))
+    add (
+      typedefof<System.Collections.Generic.IReadOnlyList<_>>,
+      ("IReadOnlyList", Some "IReadOnlyList<T>", "Array<T>", Some "<T>(t:T)", "([])", true)
+    )
+
+    add (
+      typedefof<System.Collections.Generic.List<_>>,
+      ("List", Some "List<T>", "Array<T>", Some "<T>(t:T)", "([])", true)
+    )
 
     add (
       typedefof<System.Collections.Generic.KeyValuePair<_, _>>,
-      ("KeyValuePair", Some "KeyValuePair<TKey,TValue>", "{Key:TKey,Value:TValue}", Some "<TKey,TValue>(tKey:TKey,tValue:TValue)", "({Key:tKey,Value:tValue})")
+      ("KeyValuePair",
+       Some "KeyValuePair<TKey,TValue>",
+       "{Key:TKey,Value:TValue}",
+       Some "<TKey,TValue>(tKey:TKey,tValue:TValue)",
+       "({Key:tKey,Value:tValue})",
+       false)
     )
 
-    add (typeof<System.DateTimeOffset>, ("DateTimeOffset", None, "`${number}-${number}-${number}T${number}:${number}:${number}${\"+\"|\"-\"}${number}:${number}`", None, "\"0000-00-00T00:00:00+00:00\""))
-    add (typeof<System.String>, ("String", None, "string", None, "\"\""))
-    add (typeof<System.TimeSpan>, ("TimeSpan", None, "`${number}:${number}:${number}`", None, "\"00:00:00\""))
-    add (typeof<System.DateTime>, ("DateTime", None, "`${number}-${number}-${number}T${number}:${number}:${number}`", None, "\"0001-01-01T00:00:00\""))
-    add (typeof<System.DateTimeOffset>, ("DateTimeOffset", None, "string", None, ""))
-    add (typeof<System.Char>, ("Char", None, "string", None, @"''"))
-    add (typeof<System.Guid>, ("Guid", None, "`${number}-${number}-${number}-${number}`", None, @"""00000000-0000-0000-000000000000"""))
-    add (typeof<System.Int32>, ("Int32", None, "number", None, "0"))
-    add (typeof<System.Int64>, ("Int64", None, "number", None, "0"))
-    add (typeof<System.Double>, ("Double", None, "number", None, "0"))
-    add (typeof<System.Boolean>, ("Boolean", None, "boolean", None, "false"))
-    add (typeof<System.Object>, ("Object", None, "any", None, "{}"))
+    add (
+      typeof<System.DateTimeOffset>,
+      ("DateTimeOffset",
+       None,
+       "`${number}-${number}-${number}T${number}:${number}:${number}${\"+\"|\"-\"}${number}:${number}`",
+       None,
+       "\"0000-00-00T00:00:00+00:00\"",
+       true)
+    )
+
+    add (typeof<System.String>, ("String", None, "string", None, "\"\"", true))
+    add (typeof<System.TimeSpan>, ("TimeSpan", None, "`${number}:${number}:${number}`", None, "\"00:00:00\"", true))
+
+    add (
+      typeof<System.DateTime>,
+      ("DateTime",
+       None,
+       "`${number}-${number}-${number}T${number}:${number}:${number}`",
+       None,
+       "\"0001-01-01T00:00:00\"",
+       true)
+    )
+
+    add (typeof<System.DateTimeOffset>, ("DateTimeOffset", None, "string", None, "", true))
+    add (typeof<System.Char>, ("Char", None, "string", None, @"''", true))
+
+    add (
+      typeof<System.Guid>,
+      ("Guid", None, "`${number}-${number}-${number}-${number}`", None, @"""00000000-0000-0000-000000000000""", true)
+    )
+
+    add (typeof<System.Int32>, ("Int32", None, "number", None, "0", true))
+    add (typeof<System.Int64>, ("Int64", None, "number", None, "0", true))
+    add (typeof<System.Double>, ("Double", None, "number", None, "0", true))
+    add (typeof<System.Boolean>, ("Boolean", None, "boolean", None, "false", true))
+    add (typeof<System.Object>, ("Object", None, "any", None, "{}", true))
 
     fun (t: System.Type) ->
       let isFSharpStringMap (t: System.Type) =
-        t.Name.StartsWith("FSharpMap") && t.GenericTypeArguments.Length > 0 && t.GenericTypeArguments.[0].Name = "String"
+        t.Name.StartsWith("FSharpMap")
+        && t.GenericTypeArguments.Length > 0
+        && t.GenericTypeArguments.[0].Name = "String"
 
-      let isArray (t:System.Type)=
-        t.IsArray
-      
+      let isArray (t: System.Type) = t.IsArray
+
       if isArray t then
-        Some (Renderable.GenericTypeAndFunction(
-                                                  name = "Array",
-                                                  genericName = "Array<TValue>",
-                                                  definition = "TValue[]",
-                                                  defaultGeneratorSignature = "<TValue>(tValue:TValue)",
-                                                  defaultGeneratorImpl = "[]"))
+        Some(
+          Renderable.GenericTypeAndFunction(
+            name = "Array",
+            genericName = "Array<TValue>",
+            definition = "TValue[]",
+            defaultGeneratorSignature = "<TValue>(tValue:TValue)",
+            defaultGeneratorImpl = "[]",
+            inlineValue = Some "[]"
+          )
+        )
       else if isFSharpStringMap t then
-        Some (Renderable.GenericTypeAndFunction(
-                                                  name = "FSharpStringMap",
-                                                  genericName = "FSharpStringMap<TValue>",
-                                                  definition = "{ [key: string ]: TValue }",
-                                                  defaultGeneratorSignature = "<TValue>(t:string,tValue:TValue)",
-                                                  defaultGeneratorImpl = "({})"))
-        
+        Some(
+          Renderable.GenericTypeAndFunction(
+            name = "FSharpStringMap",
+            genericName = "FSharpStringMap<TValue>",
+            definition = "{ [key: string ]: TValue }",
+            defaultGeneratorSignature = "<TValue>(t:string,tValue:TValue)",
+            defaultGeneratorImpl = "({})",
+            inlineValue = Some "({})"
+          )
+        )
+
       elif types.ContainsKey t then
-        let name, genericName, definition, defaultValueSignature, defaultValue =
+        let name, genericName, definition, defaultValueSignature, defaultValue, isInlinable =
           types.[t]
 
         match genericName with
@@ -185,10 +289,19 @@ module DefaultTypeDefinitionsAndValues =
               genericName = genericName,
               definition = definition,
               defaultGeneratorSignature = defaultValueSignature.Value,
-              defaultGeneratorImpl = defaultValue
+              defaultGeneratorImpl = defaultValue,
+              inlineValue = if isInlinable then Some defaultValue else None
             )
           )
-        | None -> Some(Renderable.TypeAndValue(name = name, definition = definition, defaultValue = defaultValue))
+        | None ->
+          Some(
+            Renderable.TypeAndValue(
+              name = name,
+              definition = definition,
+              defaultValue = defaultValue,
+              inlineValue = if isInlinable then Some defaultValue else None
+            )
+          )
       else
         None
 

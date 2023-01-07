@@ -18,6 +18,16 @@ let getDependencies (n: Namespace) =
     |> List.filter (fun v -> v.TsSignature.TsNamespace <> n.Name)
   deps
 
+let getModuleDependencies (n: Namespace) =
+  n.Items
+  |> List.filter Glow.GetTsSignature.isNonGenericTypeOrGenericTypeDefinition
+  |> List.collect (fun v -> v.Dependencies)
+  |> List.map (fun v -> v.Id)
+  |> List.distinctBy (fun v -> v.OriginalNamespace)
+  |> List.filter (fun v -> v.TsSignature.TsNamespace <> n.Name)
+  |> List.map (fun v -> v.TsSignature.TsNamespace)
+  |> List.distinct
+
 let rec collectDependencies (depth: int) (v: TsType) =
   let name = v.Id.OriginalName
   if depth > 2 then
@@ -114,75 +124,105 @@ let renderPropertyDefinitions (typeToBeRendered: TsType) : string =
   result
 
 
-let renderValueStub (t: TsType): string=
+let renderValueStub (t: TsType) : string =
   let props = t.Type.GetProperties()
   let nameSpace = t.Id.TsSignature.TsNamespace
+
   let result =
     props
     |> Seq.toList
     |> List.map (fun v ->
       let result = $"{Utils.camelize v.Name}: undefined as any,"
-      result
-      )
+      result)
     |> String.concat "\n  "
+
   result
 
 let getDefaultValue (nameSpace: NamespaceName) (v: Reflection.PropertyInfo) =
-  let propertyTsType =
-    Glow.GetTsSignature.toTsType1 0 v.PropertyType
-
-  let propertySignature =
-    propertyTsType.Id.TsSignature
-
-  let defaultPrefix =
-    if propertyTsType.Id.TsSignature.IsGenericParameter then
-      ""
+  let wellKnownType =
+    if v.PropertyType.IsGenericType && not v.PropertyType.IsGenericTypeDefinition then
+      DefaultTypeDefinitionsAndValues.tryGetExistingTypeDefinition (v.PropertyType.GetGenericTypeDefinition())
     else
-      "default"
+      DefaultTypeDefinitionsAndValues.tryGetExistingTypeDefinition v.PropertyType
 
-  let propName =
-    if propertyTsType.Id.TsSignature.IsGenericParameter then
-      $"{defaultPrefix}{propertySignature.Name().ToLower()}"
-    elif propertyTsType.Id.TsSignature.TsNamespace = nameSpace then
-      $"{defaultPrefix}{propertySignature.Name()}"
-    else
-      $"{(NamespaceName.sanitize propertySignature.TsNamespace)}.{defaultPrefix}{propertySignature.Name()}"
+  let wellknownInlineValue =
+    match wellKnownType with
+    | Some wellKnownType ->
+      match wellKnownType with
+      | TypeAndValue (_, _, _, inlineValue) ->
+        match inlineValue with
+        | Some value -> Some value
+        | None -> None
+      | GenericTypeAndFunction (_, _, _, _, _, inlineValue) ->
+        match inlineValue with
+        | Some value -> Some value
+        | None -> None
+      | _ -> None
+    | None -> None
 
-  let rec getGenericArguments (t: TsSignature) =
-    if t.IsGenericType then
-      "("
-      + (t.GenericArgumentTypes
-         |> Seq.map (fun v ->
-           
-           let defaultPrefix =
-             if v.IsGenericParameter then
-               ""
+  match wellknownInlineValue with
+  | Some value -> value
+  | None ->
+    let propertyTsType = Glow.GetTsSignature.toTsType1 0 v.PropertyType
+
+    let propertySignature = propertyTsType.Id.TsSignature
+
+    let defaultPrefix =
+      if propertyTsType.Id.TsSignature.IsGenericParameter then
+        ""
+      else
+        "default"
+
+    let propName =
+      if propertyTsType.Id.TsSignature.IsGenericParameter then
+        $"{defaultPrefix}{propertySignature.Name().ToLower()}"
+      elif propertyTsType.Id.TsSignature.TsNamespace = nameSpace then
+        $"{defaultPrefix}{propertySignature.Name()}"
+      else
+        $"{(NamespaceName.sanitize propertySignature.TsNamespace)}.{defaultPrefix}{propertySignature.Name()}"
+
+    let rec getGenericArguments (t: TsSignature) =
+      if t.IsGenericType then
+        "("
+        + (t.GenericArgumentTypes
+           |> Seq.map (fun v ->
+
+             let defaultPrefix = if v.IsGenericParameter then "" else "default"
+
+             let name =
+               if v.IsGenericParameter then
+                 v.Name().ToLower()
+               else
+                 v.Name()
+
+             if nameSpace = v.TsNamespace then
+               $"{defaultPrefix}{name}{getGenericArguments v}"
              else
-               "default"
 
-           let name = if v.IsGenericParameter then v.Name().ToLower() else v.Name()
-           if nameSpace = v.TsNamespace then
-             $"{defaultPrefix}{name}{getGenericArguments v}"
-           else
-             $"{(NamespaceName.sanitize v.TsNamespace)}.{defaultPrefix}{name}{getGenericArguments v}")
-         |> String.concat ",")
-      + ")"
-    else
-      ""
-  $"{propName}{getGenericArguments propertyTsType.Id.TsSignature}"
+               $"{(NamespaceName.sanitize v.TsNamespace)}.{defaultPrefix}{name}{getGenericArguments v}")
+           |> String.concat ",")
+        + ")"
+      else
+        ""
 
-let renderValueFix (t: TsType): string=
+    $"{propName}{getGenericArguments propertyTsType.Id.TsSignature}"
+
+let renderValueFix (t: TsType) : string =
   let props = t.Type.GetProperties()
   let nameSpace = t.Id.TsSignature.TsNamespace
+
   let result =
     props
     |> Seq.toList
     |> List.map (fun v ->
       let value = getDefaultValue nameSpace v
-      let result = $"default{t.Id.TsSignature.GetName()}.{Utils.camelize v.Name} = {value}"
-      result
-      )
+
+      let result =
+        $"default{t.Id.TsSignature.GetName()}.{Utils.camelize v.Name} = {value}"
+
+      result)
     |> String.concat "\n"
+
   result
 
 let renderPropertyValues (t: TsType) : string =
@@ -194,10 +234,40 @@ let renderPropertyValues (t: TsType) : string =
     props
     |> Seq.toList
     |> List.map (fun v ->
-      let value = getDefaultValue nameSpace v
-      let result = $"{Utils.camelize v.Name}: {value},"
-      result
-      )
+      let wellKnownType =
+        DefaultTypeDefinitionsAndValues.tryGetExistingTypeDefinition v.PropertyType
+
+      let r = if wellKnownType.IsNone then "None" else "Some"
+
+      let renderDefaut () =
+        let value = getDefaultValue nameSpace v
+        let result = $"{Utils.camelize v.Name}: {value}, // wellknown type {(r)}"
+        result
+
+      match wellKnownType with
+      | Some x ->
+        match x with
+        | GenericTypeAndFunction (name,
+                                  genericName,
+                                  definition,
+                                  defaultGeneratorSignature,
+                                  defaultGeneratorImpl,
+                                  inlineValue) ->
+          match inlineValue with
+          | Some inlineValue ->
+            let value = getDefaultValue nameSpace v
+            let result = $"{Utils.camelize v.Name}: {inlineValue}, //#//"
+            result
+          | None -> renderDefaut ()
+        | TypeAndValue (name, definition, defaultValue, inlineValue) ->
+          match inlineValue with
+          | Some inlineValue ->
+            let value = getDefaultValue nameSpace v
+            let result = $"{Utils.camelize v.Name}: {inlineValue}, //#//"
+            result
+          | None -> renderDefaut ()
+        | _ -> renderDefaut ()
+      | None -> renderDefaut ())
     |> String.concat "\n  "
 
   result
@@ -421,21 +491,19 @@ let renderKnownTypeAndDefaultValue (t: TsType) (cyclic: RenderCyclicDefault) (se
       match cyclic with
       | NoCycle -> r
       | _ -> Renderable.NotRenderable
-      
+
     | None ->
       match kind with
       | System.Text.Json.Serialization.TypeCache.TypeKind.Enum ->
-        Renderable.Enum(
-          name = t.Id.TsSignature.GetName(),
-          values = (Enum.GetNames(t.Type) |> Seq.toList)
-        )
+        Renderable.Enum(name = t.Id.TsSignature.GetName(), values = (Enum.GetNames(t.Type) |> Seq.toList))
       | System.Text.Json.Serialization.TypeCache.TypeKind.List ->
         Renderable.GenericTypeAndFunction(
           name = t.Id.TsSignature.GetName(),
           genericName = t.Id.TsSignature.NameWithGenericArguments(),
           definition = "Array<T>",
           defaultGeneratorSignature = "<T>(t:T)",
-          defaultGeneratorImpl = "[] "
+          defaultGeneratorImpl = "[]",
+          inlineValue = Some "[]"
         )
       | System.Text.Json.Serialization.TypeCache.TypeKind.Map -> raise (NotSupportedException())
       | System.Text.Json.Serialization.TypeCache.TypeKind.Set -> raise (NotSupportedException())
@@ -457,7 +525,8 @@ let renderKnownTypeAndDefaultValue (t: TsType) (cyclic: RenderCyclicDefault) (se
             genericName = t.Id.TsSignature.NameWithGenericArguments(),
             definition = definition,
             defaultGeneratorSignature = t.Id.TsSignature.GeneratorFunctionSignature(), // "<a>(defaulta:a)",
-            defaultGeneratorImpl = $"({value})"
+            defaultGeneratorImpl = $"({value})",
+            inlineValue = None
           )
         else
           match cyclic with
@@ -465,54 +534,66 @@ let renderKnownTypeAndDefaultValue (t: TsType) (cyclic: RenderCyclicDefault) (se
             let definition = renderRecordOrClassDefinition t
             let value = "stub"
             let fix = renderValueFix t
-            Renderable.CyclicFixValue(name = t.Id.TsSignature.GetName(), fixReferences = fix )
+            Renderable.CyclicFixValue(name = t.Id.TsSignature.GetName(), fixReferences = fix)
           | Stub ->
             let stub = renderValueStub t
             let definition = renderRecordOrClassDefinition t
             let value = renderDefaultRecordOrClassValue t
-            Renderable.CyclicTypeAndStubValue(name = t.Id.TsSignature.GetName(), definition = definition, stubValue = stub)
+
+            Renderable.CyclicTypeAndStubValue(
+              name = t.Id.TsSignature.GetName(),
+              definition = definition,
+              stubValue = stub
+            )
           | NoCycle ->
             let definition = renderRecordOrClassDefinition t
             let value = renderDefaultRecordOrClassValue t
-            Renderable.TypeAndValue(name = t.Id.TsSignature.GetName(), definition = definition, defaultValue = value)
+
+            Renderable.TypeAndValue(
+              name = t.Id.TsSignature.GetName(),
+              definition = definition,
+              defaultValue = value,
+              inlineValue = None
+            )
 
   match renderable with
   | NotRenderable -> None
-  | CyclicFixValue(name, fixValue) ->
+  | CyclicFixValue (name, fixValue) ->
     Some(
       $"// the type {name} has cyclic dependencies\n"
       + "// in general this should be avoided\n"
       + "// fill all props\n"
       + $"{fixValue}"
     )
-  | CyclicTypeAndStubValue(name, definition, stubValue) ->
+  | CyclicTypeAndStubValue (name, definition, stubValue) ->
     Some(
       $"// the type {name} has cyclic dependencies\n"
       + "// in general this should be avoided\n"
       + "// Render an empty object to be filled later at end of file\n"
       + "// to prevent typescript errors (reference used before declaration)\n"
       + $"export type {name} = {definition} \n\n"
-      + $"export const default{name}: {name} = {{
+      + $"export var default{name}: {name} = {{
   {stubValue} }}
 "
     )
-  | Enum(name, values) ->
-    let definition = values |> List.map(fun v-> $"\"{v}\"") |> String.concat " | "
-    let allValues = values |> List.map(fun v-> $"\"{v}\"") |> String.concat ", "
+  | Enum (name, values) ->
+    let definition = values |> List.map (fun v -> $"\"{v}\"") |> String.concat " | "
+    let allValues = values |> List.map (fun v -> $"\"{v}\"") |> String.concat ", "
+
     Some(
-        $"export type {name} = {definition}"
-        + "\n"
-        + $"export const {name}_AllValues = [{allValues}] as const"
-        + "\n"
-        + $"export const default{name}: {name} = \"{values.Head}\""
-      )
+      $"export type {name} = {definition}"
+      + "\n"
+      + $"export var {name}_AllValues = [{allValues}] as const"
+      + "\n"
+      + $"export var default{name}: {name} = \"{values.Head}\""
+    )
   | DiscriminatedUnion (name, genericName, cases) ->
     match cases with
     | [ singleCase ] ->
       Some(
         $"export type {name} = {singleCase.Definition}"
         + "\n"
-        + $"export const default{name}: {name} = {singleCase.DefaultValue}"
+        + $"export var default{name}: {name} = {singleCase.DefaultValue}"
       )
     | cases ->
       let renderedCases =
@@ -560,42 +641,41 @@ let renderKnownTypeAndDefaultValue (t: TsType) (cyclic: RenderCyclicDefault) (se
         + "\n"
         + $"export type {name}_Case = {casesLiteral}"
         + "\n"
-        + $"export const {name}_AllCases = {casesArray} as const"
+        + $"export var {name}_AllCases = {casesArray} as const"
         + "\n"
         + defaults
         + "\n"
         + match genericName with
           | Some genericName ->
-            $"export const default{name} = {t.Id.TsSignature.GenericParameters()}{t.Id.TsSignature.GenericArguments()} => null as any as {genericName}"
-          | None -> $"export const default{name} = null as any as {name}"
+            $"export var default{name} = {t.Id.TsSignature.GenericParameters()}{t.Id.TsSignature.GenericArguments()} => null as any as {genericName}"
+          | None -> $"export var default{name} = null as any as {name}"
       )
 
-  | TypeAndValue (name, definition, defaultValue) ->
+  | TypeAndValue (name, definition, defaultValue, inlineValue) ->
     Some(
       $"export type {name} = {definition}\n"
-      + $"export const default{name}: {name} = {defaultValue}"
+      + $"export var default{name}: {name} = {defaultValue}"
     )
-  | GenericTypeAndFunction (name, genericName, definition, defaultGeneratorSignature, defaultGeneratorimpl) ->
+  | GenericTypeAndFunction (name, genericName, definition, defaultGeneratorSignature, defaultGeneratorimpl, _) ->
     Some(
       $"export type {genericName} = {definition}\n"
-      + $"export const default{name}: {defaultGeneratorSignature} => {genericName} = {defaultGeneratorSignature} => {defaultGeneratorimpl}"
+      + $"export var default{name}: {defaultGeneratorSignature} => {genericName} = {defaultGeneratorSignature} => {defaultGeneratorimpl}"
     )
 
-let renderTypeAndDefaultValue (t:TsType)=
+let renderTypeAndDefaultValue (t: TsType) =
   renderKnownTypeAndDefaultValue t RenderCyclicDefault.NoCycle DefaultSerialize.serialize
 
 let sortItemsTopologically (items: TsType list) =
-    items
-    |> List.distinctBy (fun v -> v.Id.TsSignature)
-    |> List.filter Glow.GetTsSignature.isNonGenericTypeOrGenericTypeDefinition
-    |> Glow.TopologicalSort.topologicalSort (fun v ->
-      let name = v.Id.OriginalName
-      v.Dependencies
-      |> List.filter (fun dependency ->
-       
-        dependency.Id.TsSignature.TsNamespace = v.Id.TsSignature.TsNamespace
-        )
-      )
+  items
+  |> List.distinctBy (fun v -> v.Id.TsSignature)
+  |> List.filter Glow.GetTsSignature.isNonGenericTypeOrGenericTypeDefinition
+  |> Glow.TopologicalSort.topologicalSort (fun v ->
+    let name = v.Id.OriginalName
+
+    v.Dependencies
+    |> List.filter (fun dependency ->
+
+      dependency.Id.TsSignature.TsNamespace = v.Id.TsSignature.TsNamespace))
 
 let renderModule (m: Namespace) : string =
 
@@ -611,11 +691,12 @@ let renderModule (m: Namespace) : string =
     .AppendLine("")
   |> ignore
 
-  builder.AppendLine("import * as TsType from \"./TsType\"") |> ignore
+  // builder.AppendLine("import * as TsType from \"./TsType\"") |> ignore
+  builder.AppendLine("import {TsType} from \"./\"") |> ignore
+
   deps
   |> List.iter (fun v ->
-    let name =
-      v.TsSignature.TsNamespace |> NamespaceName.sanitize
+    let name = v.TsSignature.TsNamespace |> NamespaceName.sanitize
 
     if v.Id = TsTypeId "Any" || name = null then
       ()
@@ -623,12 +704,13 @@ let renderModule (m: Namespace) : string =
       builder.AppendLine($"// skipped importing empty namespace (type={v.OriginalName})")
       |> ignore
     else
-      let x = $@"import * as {name} from ""./{name}"""
-      if x = $"import * as  from \"./\"" then
+      // let x = $@"import * as {name} from ""./{name}"""
+      let x = $@"import {{{name}}} from ""./"""
+
+      if x = "import * as  from \"./\"" then
         ()
       else
-        builder.AppendLine(x)
-      |> ignore
+        builder.AppendLine(x) |> ignore
 
     ())
 
@@ -643,18 +725,21 @@ let renderModule (m: Namespace) : string =
     |> ignore
 
     cyclics
-    |> List.iter (fun v ->
-      builder.AppendLine("//" + v.Id.OriginalName)
-      |> ignore)
+    |> List.iter (fun v -> builder.AppendLine("//" + v.Id.OriginalName) |> ignore)
 
-    builder.AppendLine("//*** ******************* ***").AppendLine("")
-    |> ignore
+    builder.AppendLine("//*** ******************* ***").AppendLine("") |> ignore
 
   sorted
   |> List.distinctBy (fun v -> v.Id.TsSignature)
   |> List.map (fun v ->
-    let isCyclic = cyclics |> List.contains(v)
-    let cycle = if isCyclic then RenderCyclicDefault.Stub else RenderCyclicDefault.NoCycle
+    let isCyclic = cyclics |> List.contains (v)
+
+    let cycle =
+      if isCyclic then
+        RenderCyclicDefault.Stub
+      else
+        RenderCyclicDefault.NoCycle
+
     let x = renderKnownTypeAndDefaultValue v cycle DefaultSerialize.serialize
 
     match x with
