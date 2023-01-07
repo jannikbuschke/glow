@@ -17,14 +17,11 @@ let rec getTsSignature (t: Type) : TsSignature =
       ContainsGenericParameters = true
       IsGenericType = true
       IsGenericTypeDefinition = false
-      GenericArgumentTypes = [getTsSignature elementType]}
+      GenericArgumentTypes = [ getTsSignature elementType ] }
   else
     let args0 = t.GetGenericArguments()
 
-    let args =
-      args0
-      |> Seq.toList
-      |> List.mapi (fun i v -> v.Name)
+    let args = args0 |> Seq.toList |> List.mapi (fun i v -> v.Name)
 
     let getNameUntilFirstGenericArgument (t: Type) =
       if args.Length > 0 then
@@ -35,16 +32,14 @@ let rec getTsSignature (t: Type) : TsSignature =
       else
         t.Name
 
-    let name =
-      getNameUntilFirstGenericArgument t
+    let name = getNameUntilFirstGenericArgument t
 
     let genericArgumentTypes =
       if args.Length > 0 then
-        args0
-        |> Seq.toList
-        |> List.map (fun v -> getTsSignature v)
+        args0 |> Seq.toList |> List.map (fun v -> getTsSignature v)
       else
         []
+
     match t.Namespace, t.Name with
     | _ ->
       { TsNamespace = NamespaceName t.Namespace
@@ -67,8 +62,7 @@ let getModuleNameAndId (arg: Type) : FullTsTypeId =
     { Id = TsTypeId "System.Array"
       TsSignature = getTsSignature arg
       OriginalName = arg.Name
-      OriginalNamespace = arg.Namespace
-       }
+      OriginalNamespace = arg.Namespace }
   else
     { Id = TsTypeId arg.FullName
       TsSignature = getTsSignature arg
@@ -310,7 +304,9 @@ let isCollection (t: Type) =
   && not t.IsGenericTypeDefinition
   && t.GetGenericTypeDefinition() = typedefof<_ list>
 
-let mutable visiting = System.Collections.Concurrent.ConcurrentDictionary<FullTsTypeId,bool>()
+let mutable visiting =
+  System.Collections.Concurrent.ConcurrentDictionary<FullTsTypeId, bool>()
+
 type Dependency =
   | CicylcDependency of TsType
   | AlreadyVisited of TsType
@@ -319,43 +315,47 @@ let rec getArgumentsRecursively (t: Type) =
   if t.IsGenericType && not t.IsGenericTypeDefinition then
     let genericDefinition = t.GetGenericTypeDefinition()
     let genericArgs = t.GetGenericArguments()
-    genericDefinition::(genericArgs |> Seq.toList) @ (genericArgs
-                    |> Seq.collect getArgumentsRecursively
-                    |> Seq.toList)
+
+    genericDefinition :: (genericArgs |> Seq.toList)
+    @ (genericArgs |> Seq.collect getArgumentsRecursively |> Seq.toList)
   else
     []
 
 
 let rec toTsType (depth: int) (t: Type) : Result<TsType, Dependency> =
+  // printf "to ts type %s depth = %d\n" t.Name depth
   let tName = t.Name
   let ns = t.Namespace
   let id = getModuleNameAndId t
 
-  let alreadyVisited, inProcess =
-    visiting.TryGetValue(id)
-  
+  let alreadyVisited, inProcess = visiting.TryGetValue(id)
+
   if id.Id = TsTypeId "System.Array" then
     let elType = t.GetElementType()
-    let replacementType = typedefof<System.Collections.Generic.IEnumerable<_>>.MakeGenericType(elType)
+
+    let replacementType =
+      typedefof<System.Collections.Generic.IEnumerable<_>>.MakeGenericType (elType)
+
     toTsType (depth + 1) replacementType
   elif alreadyVisited then
-      if inProcess then
-        // early abort
-        Result.Error(Dependency.CicylcDependency { Id = id
-                                                   IsGenericType = t.IsGenericType
-                                                   IsGenericTypeDefinition = t.IsGenericTypeDefinition
-                                                   GenericTypeArguments = []
-                                                   DuCases = []
-                                                   Type = t
-                                                   Dependencies = []
-                                                   HasCyclicDependency = true
-                                                  })
-      else
-        if allTypes.ContainsKey(id) then
-          Result.Ok allTypes.[id]
-        else
-          failwith("fail")
-          Result.Error(Dependency.AlreadyVisited allTypes.[id])
+    if inProcess then
+      // early abort
+      Result.Error(
+        Dependency.CicylcDependency
+          { Id = id
+            IsGenericType = t.IsGenericType
+            IsGenericTypeDefinition = t.IsGenericTypeDefinition
+            GenericTypeArguments = []
+            DuCases = []
+            Type = t
+            Dependencies = []
+            HasCyclicDependency = true }
+      )
+    else if allTypes.ContainsKey(id) then
+      Result.Ok allTypes.[id]
+    else
+      failwith ("fail")
+      Result.Error(Dependency.AlreadyVisited allTypes.[id])
   else
     visiting[id] <- true
 
@@ -366,47 +366,44 @@ let rec toTsType (depth: int) (t: Type) : Result<TsType, Dependency> =
           v.GetFields()
           |> Seq.map (fun v ->
             let result = (toTsType (depth + 1) v.PropertyType)
+
             match result with
-            | Ok r -> 
-              { Name = v.Name
-                TsType = r }
+            | Ok r -> { Name = v.Name; TsType = r }
             | Error dependency ->
               match dependency with
-              | AlreadyVisited tsType ->
-                { Name = v.Name
-                  TsType = tsType
-                }
-              | CicylcDependency tsType->
-                // 
-              { Name = v.Name
-                TsType = tsType }
-                
-            )
+              | AlreadyVisited tsType -> { Name = v.Name; TsType = tsType }
+              | CicylcDependency tsType ->
+                //
+                { Name = v.Name; TsType = tsType }
+
+          )
           |> Seq.toList }
 
     if allTypes.ContainsKey(id) then
       Result.Ok allTypes.[id]
     elif depth > 10 then
-      Result.Ok (TsType.Any(t))
+      Result.Ok(TsType.Any(t))
     else
 
       let chooseOks v =
         match v with
-          | Result.Ok v -> Some v
-          | Result.Error _ -> None
+        | Result.Ok v -> Some v
+        | Result.Error _ -> None
+
       let unwrapType v =
         match v with
-          | Result.Ok v -> v
-          | Result.Error e ->
-            match e with
-            | Dependency.AlreadyVisited v -> v
-            | Dependency.CicylcDependency v -> v
-        
+        | Result.Ok v -> v
+        | Result.Error e ->
+          match e with
+          | Dependency.AlreadyVisited v -> v
+          | Dependency.CicylcDependency v -> v
+
       let getPropertyTypes =
         if t |> isCollection then
           []
         else
           let properties = t.GetProperties()
+
           let p1 =
             properties
             |> Seq.toList
@@ -414,21 +411,18 @@ let rec toTsType (depth: int) (t: Type) : Result<TsType, Dependency> =
               if v.PropertyType.Equals(t) then
                 None
               else
-                let result =
-                  toTsType (depth + 1) v.PropertyType
+                let result = toTsType (depth + 1) v.PropertyType
 
                 Some result)
             |> List.distinct
-            // |> List.choose chooseOks
+          // |> List.choose chooseOks
           p1
 
       let getDuCaseTypes =
         if t |> isCollection then
           []
         elif FSharpType.IsUnion(t) then
-          FSharpType.GetUnionCases(t)
-          |> Seq.map toDuCase
-          |> Seq.toList
+          FSharpType.GetUnionCases(t) |> Seq.map toDuCase |> Seq.toList
         else
           []
 
@@ -445,23 +439,24 @@ let rec toTsType (depth: int) (t: Type) : Result<TsType, Dependency> =
         // else, only this type as dependency
         let x =
           if t.IsGenericType && not t.IsGenericTypeDefinition then
-            let genericDefinition =
-              t.Type.GetGenericTypeDefinition()
-              |> toTsType (depth + 1)
-            
-            let genericArgs = (getArgumentsRecursively t.Type) |> List.map(toTsType(depth + 1)) 
+            let genericDefinition = t.Type.GetGenericTypeDefinition() |> toTsType (depth + 1)
+
+            let genericArgs =
+              (getArgumentsRecursively t.Type) |> List.map (toTsType (depth + 1))
 
             genericDefinition :: genericArgs
           else
-            [  ]
-        t :: (x
-              |> List.choose (fun v ->
+            []
+
+        t
+        :: (x
+            |> List.choose (fun v ->
               match v with
               | Result.Ok v -> Some v
-              | Result.Error x -> match x with
-                                  | Dependency.AlreadyVisited v -> Some v
-                                  | Dependency.CicylcDependency v -> Some v
-        ))
+              | Result.Error x ->
+                match x with
+                | Dependency.AlreadyVisited v -> Some v
+                | Dependency.CicylcDependency v -> Some v))
 
       let duDeps =
         getDuCaseTypes
@@ -470,14 +465,16 @@ let rec toTsType (depth: int) (t: Type) : Result<TsType, Dependency> =
         |> Seq.toList
 
       let genericRuntimeArgumentDeps =
-        tsArgs |> List.filter(fun v-> not v.Id.TsSignature.IsGenericParameter)
+        tsArgs |> List.filter (fun v -> not v.Id.TsSignature.IsGenericParameter)
 
       let deps =
-        (duDeps @ (getPropertyTypes |> List.map unwrapType) @ genericRuntimeArgumentDeps)|>Seq.toList
+        (duDeps @ (getPropertyTypes |> List.map unwrapType) @ genericRuntimeArgumentDeps)
+        |> Seq.toList
 
       let deps = deps |> List.collect toDependencies
 
       let isPredefined = DefaultTypeDefinitionsAndValues.tryGetExistingTypeDefinition t
+
       let result =
         match isPredefined with
         | Some _ ->
@@ -488,9 +485,8 @@ let rec toTsType (depth: int) (t: Type) : Result<TsType, Dependency> =
             DuCases = []
             Type = t
             Dependencies = []
-            HasCyclicDependency = false
-          }
-        | None -> 
+            HasCyclicDependency = false }
+        | None ->
           { Id = id
             IsGenericType = t.IsGenericType
             IsGenericTypeDefinition = t.IsGenericTypeDefinition
@@ -498,23 +494,27 @@ let rec toTsType (depth: int) (t: Type) : Result<TsType, Dependency> =
             DuCases = getDuCaseTypes
             Type = t
             Dependencies = deps
-            HasCyclicDependency = getPropertyTypes |> List.exists(fun v -> match v with | Result.Error _ -> true | _ -> false)
-          }
+            HasCyclicDependency =
+              getPropertyTypes
+              |> List.exists (fun v ->
+                match v with
+                | Result.Error _ -> true
+                | _ -> false) }
 
       allTypes.TryAdd(id, result) |> ignore
       visiting[id] <- false
       Result.Ok result
 
 let toTsType1 (depth: int) (t: Type) =
-  
+
   let result = toTsType depth t
-  
+
   match result with
   | Ok v -> v
   | Error _ ->
     let id = getModuleNameAndId t
-    if allTypes.ContainsKey(id)
-    then
+
+    if allTypes.ContainsKey(id) then
       allTypes.[id]
     else
       TsType.Any(t)
@@ -523,7 +523,6 @@ let isNonGenericTypeOrGenericTypeDefinition (t: TsType) =
   let t = t.Type
 
   let isNotGenericOrGenericTypeDefinition =
-    (not t.IsGenericType)
-    || (t.IsGenericType && t.IsGenericTypeDefinition)
+    (not t.IsGenericType) || (t.IsGenericType && t.IsGenericTypeDefinition)
 
   isNotGenericOrGenericTypeDefinition

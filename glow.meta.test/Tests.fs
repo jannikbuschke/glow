@@ -13,14 +13,11 @@ module Expect =
   let eq actual expected =
     "Should be equal" |> Expect.equal actual expected
 
-  let private normalizeLineFeeds =
-    Regex.replace @"(\r\n|\r|\n)" "\n"
+  let private normalizeLineFeeds = Regex.replace @"(\r\n|\r|\n)" "\n"
 
-  let private removeSuccessiveLineFeeds =
-    Regex.replace @"[\n]{2,}" "\n"
+  let private removeSuccessiveLineFeeds = Regex.replace @"[\n]{2,}" "\n"
 
-  let private removeSuccessiveWhiteSpace =
-    Regex.replace @"[ ]{2,}" " "
+  let private removeSuccessiveWhiteSpace = Regex.replace @"[ ]{2,}" " "
 
   let private trim (v: string) = v.Trim()
 
@@ -31,8 +28,7 @@ module Expect =
     >> trim
 
   let similar actual expected =
-    "Should be equal"
-    |> Expect.equal (actual |> clean) (expected |> clean)
+    "Should be equal" |> Expect.equal (actual |> clean) (expected |> clean)
 
 [<AutoOpen>]
 module Helpers =

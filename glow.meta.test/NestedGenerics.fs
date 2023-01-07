@@ -12,8 +12,7 @@ let ``Create correct generic TsSignature with runtime argument`` () =
 
   let def = typeof<GenericRecord<string>>
 
-  let signature =
-    Glow.GetTsSignature.getTsSignature def
+  let signature = Glow.GetTsSignature.getTsSignature def
 
   Expect.eq
     signature
@@ -38,8 +37,7 @@ let ``Create correct generic type definition TsSignature with generic argument``
 
   let def = typedefof<GenericRecord<string>>
 
-  let signature =
-    Glow.GetTsSignature.getTsSignature def
+  let signature = Glow.GetTsSignature.getTsSignature def
 
   Expect.eq
     signature
@@ -60,46 +58,45 @@ let ``Create correct generic type definition TsSignature with generic argument``
 
 [<Fact>]
 let ``Nested generic dependency correctly resolved`` () =
-  let def =
-    typeof<MyNamespace2.MyType2>
+  let def = typeof<MyNamespace2.MyType2>
   let t = Glow.GetTsSignature.toTsType1 0 def
   let deps = t.Dependencies
-  let foudn = deps |> List.find(fun v -> v.Id.OriginalName = "Generic`1" && v.IsGenericTypeDefinition)
-  let signature =
-    Glow.GetTsSignature.getTsSignature def
+
+  let foudn =
+    deps
+    |> List.find (fun v -> v.Id.OriginalName = "Generic`1" && v.IsGenericTypeDefinition)
+
+  let signature = Glow.GetTsSignature.getTsSignature def
   ()
 
-type G<'a> ={
-  A: 'a
-}
-type X = {
-  Option: Option<G<int>>
-}
+type G<'a> = { A: 'a }
+type X = { Option: Option<G<int>> }
 
 [<Fact>]
 let ``Nested generic dependency correctly resolved 2`` () =
-  let def =
-    typeof<X>
-    
-  let allRuntimeArguments = Glow.GetTsSignature.getArgumentsRecursively typeof<Option<G<int>>>
-  
+  let def = typeof<X>
+
+  let allRuntimeArguments =
+    Glow.GetTsSignature.getArgumentsRecursively typeof<Option<G<int>>>
+
   let t = Glow.GetTsSignature.toTsType1 0 def
   let deps = t.Dependencies
-  let foudn = deps |> List.find(fun v -> v.Id.OriginalName = "G`1" && v.IsGenericTypeDefinition)
-  let signature =
-    Glow.GetTsSignature.getTsSignature def
+
+  let foudn =
+    deps
+    |> List.find (fun v -> v.Id.OriginalName = "G`1" && v.IsGenericTypeDefinition)
+
+  let signature = Glow.GetTsSignature.getTsSignature def
   ()
 
 [<Fact>]
 let ``typeof Result<string,string> list`` () =
 
-  let def =
-    typeof<Result<string, string> list>
+  let def = typeof<Result<string, string> list>
 
   let t = Glow.GetTsSignature.toTsType1 0 def
   let deps = t.Dependencies
-  let signature =
-    Glow.GetTsSignature.getTsSignature def
+  let signature = Glow.GetTsSignature.getTsSignature def
 
 
   Expect.eq
@@ -136,11 +133,9 @@ let ``typeof Result<string,string> list`` () =
 [<Fact>]
 let ``typedefof Result<string,string> list`` () =
 
-  let def =
-    typedefof<Result<string, string> list>
+  let def = typedefof<Result<string, string> list>
 
-  let signature =
-    Glow.GetTsSignature.getTsSignature def
+  let signature = Glow.GetTsSignature.getTsSignature def
 
   Expect.eq
     signature
@@ -166,15 +161,13 @@ type Localizable<'a> =
 [<Fact>]
 let ```not render typedef Localizable<string>`` () =
   // runtime type, should not be rendered (only generic typedefinition)
-  let rendered =
-    renderTypeAndValue typeof<Localizable<string>>
+  let rendered = renderTypeAndValue typeof<Localizable<string>>
 
   Expect.similar rendered ""
 
 [<Fact>]
 let ```render typedefof Localizable<string>`` () =
-  let rendered =
-    renderTypeAndValue typedefof<Localizable<string>>
+  let rendered = renderTypeAndValue typedefof<Localizable<string>>
 
   Expect.similar
     rendered
@@ -194,8 +187,7 @@ let ``typedefof Localizable<'a>`` () =
 
   let def = typedefof<Localizable<_>>
 
-  let signature =
-    Glow.GetTsSignature.getTsSignature def
+  let signature = Glow.GetTsSignature.getTsSignature def
 
   Expect.eq
     signature
@@ -219,8 +211,7 @@ let ``typeof Localizable<'a>`` () =
 
   let def = typeof<Localizable<string>>
 
-  let signature =
-    Glow.GetTsSignature.getTsSignature def
+  let signature = Glow.GetTsSignature.getTsSignature def
 
   Expect.eq
     signature
@@ -339,7 +330,8 @@ let ``Properties of typedefof Localizable2<'a>`` () =
 let ``Properties of typeof <System.Collections.Generic.IEnumerable<System.Collections.Generic.KeyValuePair<_,_>>>`` () =
 
   let modules =
-    Glow.TsGen.Gen.generateModules [ typeof<System.Collections.Generic.IEnumerable<System.Collections.Generic.KeyValuePair<_, _>>> ]
+    Glow.TsGen.Gen.generateModules
+      [ typeof<System.Collections.Generic.IEnumerable<System.Collections.Generic.KeyValuePair<_, _>>> ]
 
   let enumerableSignature =
     Glow.GetTsSignature.getTsSignature typedefof<System.Collections.Generic.IEnumerable<_>>
@@ -348,13 +340,10 @@ let ``Properties of typeof <System.Collections.Generic.IEnumerable<System.Collec
     Glow.GetTsSignature.getTsSignature typedefof<System.Collections.Generic.KeyValuePair<_, _>>
 
   let hasItemWithSignature signature m =
-    m.Items
-    |> List.exists (fun i -> i.Id.TsSignature = signature)
+    m.Items |> List.exists (fun i -> i.Id.TsSignature = signature)
 
   "Should containt IEnumerable definition"
   |> Expect.exists modules (hasItemWithSignature enumerableSignature)
 
   "Should containt KeyValuePair definition"
   |> Expect.exists modules (hasItemWithSignature keyValueSignature)
-
-

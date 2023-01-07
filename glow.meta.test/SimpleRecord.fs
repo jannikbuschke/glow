@@ -4,16 +4,19 @@ open System
 open Expecto
 open Xunit
 
-type SimpleRecord = { Id: Guid; Name: string; Number: int; Obj: obj }
+type SimpleRecord =
+  { Id: Guid
+    Name: string
+    Number: int
+    Obj: obj }
 
 [<Fact>]
 let ``Render simple record`` () =
-    let rendered =
-        renderTypeAndValue typedefof<SimpleRecord>
+  let rendered = renderTypeAndValue typedefof<SimpleRecord>
 
-    Expect.similar
-        rendered
-        """
+  Expect.similar
+    rendered
+    """
 export type SimpleRecord = {
   id: System.Guid
   name: System.String
@@ -27,4 +30,3 @@ export const defaultSimpleRecord: SimpleRecord = {
  obj: System.defaultObject,
 }
 """
-

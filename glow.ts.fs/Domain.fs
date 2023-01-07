@@ -19,6 +19,7 @@ module DuCaseSignature =
 module NamespaceName =
 
   let value (NamespaceName namespaceName) : string = namespaceName
+
   let sanitize (namespaceName: NamespaceName) : string =
     (namespaceName |> value).Replace(".", "_")
 
@@ -38,8 +39,7 @@ type TsSignature =
     ContainsGenericParameters: bool
     GenericArgumentTypes: TsSignature list }
 
-  member this.Name() =
-    TsName.value this.TsName
+  member this.Name() = TsName.value this.TsName
 
   member this.FullSanitizedName() =
     $"{(NamespaceName.sanitize this.TsNamespace)}.{this.Name()}"
@@ -49,25 +49,23 @@ type TsSignature =
   member this.GetName() =
     let (TsName name) = this.TsName
     name
+
   member this.FullName() =
-    sprintf "%s.%s" (this.TsNamespace |> NamespaceName.value ) (this.GetName())
+    sprintf "%s.%s" (this.TsNamespace |> NamespaceName.value) (this.GetName())
 
   member this.GenericArgumentNames() =
-    this.GenericArgumentTypes
-    |> Seq.map (fun v -> v.Name())
+    this.GenericArgumentTypes |> Seq.map (fun v -> v.Name())
 
-    member this.GenericParametersWithNamespaces() =
+  member this.GenericParametersWithNamespaces() =
     "<"
     + (this.GenericArgumentTypes
-       |> Seq.map (fun v ->
-         v.FullSanitizedName())
+       |> Seq.map (fun v -> v.FullSanitizedName())
        |> String.concat ",")
     + ">"
+
   member this.GenericParameters() =
     "<"
-    + (this.GenericArgumentTypes
-       |> Seq.map (fun v -> v.Name())
-       |> String.concat ",")
+    + (this.GenericArgumentTypes |> Seq.map (fun v -> v.Name()) |> String.concat ",")
     + ">"
 
   member this.GenericArguments() =
@@ -85,6 +83,7 @@ type TsSignature =
 
     let empty = ""
     $"{this.GetName()}{(if this.IsGeneric() then args else empty)}"
+
   member this.NameWithGenericArguments() =
     let args = this.GenericParameters()
 
@@ -114,16 +113,18 @@ and TsType =
     Type: Type
     DuCases: DuCase list
     Dependencies: TsType list
-    HasCyclicDependency: bool
-    }
+    HasCyclicDependency: bool }
+
   member this.GetAllDependencies() =
-    let directDeps = this.Dependencies |> List.filter(fun v -> not v.Id.TsSignature.IsGenericParameter)
+    let directDeps =
+      this.Dependencies
+      |> List.filter (fun v -> not v.Id.TsSignature.IsGenericParameter)
 
     let rec getAllGenericTypeArguments (t: TsType) =
       let args = t.GenericTypeArguments
       let childArgs = args |> List.collect getAllGenericTypeArguments
       args @ childArgs
-    
+
     let genericArgs = getAllGenericTypeArguments this
     directDeps @ genericArgs
 
@@ -146,8 +147,7 @@ and TsType =
       Type = t
       DuCases = []
       Dependencies = []
-      HasCyclicDependency = false
-    }
+      HasCyclicDependency = false }
 
 type Namespace =
   { Name: NamespaceName

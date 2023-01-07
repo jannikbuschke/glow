@@ -84,5 +84,5 @@ let renderTsTypesInternal (path: string) (assemblies: Assembly list) =
 let renderTsTypes (assemblies: Assembly list) =
   renderTsTypesInternal ".\\web\\src\\client\\" assemblies
 
-let renderTsTypesFromAssemblies (assemblies: Assembly seq) (path:string) =
+let renderTsTypesFromAssemblies (assemblies: Assembly seq) (path: string) =
   assemblies |> Seq.toList |> renderTsTypesInternal path

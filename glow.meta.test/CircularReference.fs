@@ -14,13 +14,11 @@ and B = { A: A }
 
 [<Fact>]
 let ``Topological sort`` () =
-  let modules =
-    Glow.TsGen.Gen.generateModules [ typeof<A> ]
+  let modules = Glow.TsGen.Gen.generateModules [ typeof<A> ]
 
   let m = modules.Head
 
-  let sorted, cyclics =
-    sortItemsTopologically m.Items
+  let sorted, cyclics = sortItemsTopologically m.Items
 
   let rendered = renderModule m
 

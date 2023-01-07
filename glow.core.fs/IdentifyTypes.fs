@@ -24,8 +24,7 @@ let getRequests (assemblies: Assembly seq) =
         x.GetCustomAttributes(typedefof<ActionAttribute>, true).Any())
     |> Seq.toList)
   |> Seq.map (fun candidate ->
-    let attribute =
-      candidate.GetCustomAttribute<ActionAttribute>()
+    let attribute = candidate.GetCustomAttribute<ActionAttribute>()
 
     let interfaces = candidate.GetInterfaces()
 

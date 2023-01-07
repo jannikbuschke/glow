@@ -8,12 +8,11 @@ type RecordWithPrimitiveOption = { Id: Guid; numberOption: int option }
 
 [<Fact>]
 let ``Render record with primitive option`` () =
-    let rendered =
-        renderTypeAndValue typedefof<RecordWithPrimitiveOption>
+  let rendered = renderTypeAndValue typedefof<RecordWithPrimitiveOption>
 
-    Expect.similar
-        rendered
-        """
+  Expect.similar
+    rendered
+    """
 export type RecordWithPrimitiveOption = {
   id: System.Guid
   numberOption: Microsoft_FSharp_Core.FSharpOption<System.Int32>

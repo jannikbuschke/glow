@@ -28,40 +28,33 @@ let render (assemblies: Assembly list) (path: string) =
   |> ignore
   // imports.AppendLine(@"import * as emitt from "mitt");
 
-  let modules =
-    Glow.TsGen.Gen.generateModules (es |> Seq.toList)
+  let modules = Glow.TsGen.Gen.generateModules (es |> Seq.toList)
 
   modules
   |> List.iter (fun m ->
     let name = m.Name
 
-    let sanitized =
-      name |> NamespaceName.sanitize
+    let sanitized = name |> NamespaceName.sanitize
 
-    let filename =
-      name |> NamespaceName.filenameWithoutExtensions
+    let filename = name |> NamespaceName.filenameWithoutExtensions
 
-    imports.AppendLine($"import * as {sanitized} from \"{filename}\"")
-    |> ignore)
+    imports.AppendLine($"import * as {sanitized} from \"{filename}\"") |> ignore)
 
   let tryFind (t: System.Type) =
     modules
     |> List.collect (fun v -> v.Items)
     |> List.tryFind (fun v -> v.Type.FullName = t.FullName)
 
-  imports.AppendLine("").AppendLine("export type Events = {")
-  |> ignore
+  imports.AppendLine("").AppendLine("export type Events = {") |> ignore
 
   es
   |> Seq.choose tryFind
   |> Seq.iter (fun v ->
     let name = v.Id.TsSignature.FullName()
 
-    let fullSanitizedName =
-      v.Id.TsSignature.FullSanitizedName()
+    let fullSanitizedName = v.Id.TsSignature.FullSanitizedName()
 
-    imports.AppendLine($"  '{name}': {fullSanitizedName},")
-    |> ignore)
+    imports.AppendLine($"  '{name}': {fullSanitizedName},") |> ignore)
 
   imports.AppendLine("}") |> ignore
 

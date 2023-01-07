@@ -17,10 +17,15 @@ let topologicalSort (getDependencies: TsType -> TsType list) (source: TsType lis
   let visited = Dictionary<TsSignature, bool>()
   let cyclics = ResizeArray<TsType>()
 
-  let rec visit (item: TsType) (getDependencies: TsType -> TsType list) (sorted: ResizeArray<TsType>) (visited: Dictionary<TsSignature, bool>) (cyclics: ResizeArray<TsType>) =
+  let rec visit
+    (item: TsType)
+    (getDependencies: TsType -> TsType list)
+    (sorted: ResizeArray<TsType>)
+    (visited: Dictionary<TsSignature, bool>)
+    (cyclics: ResizeArray<TsType>)
+    =
     let name = item.Id.OriginalName
-    let alreadyVisited, inProcess =
-      visited.TryGetValue(item.Id.TsSignature)
+    let alreadyVisited, inProcess = visited.TryGetValue(item.Id.TsSignature)
 
     if alreadyVisited then
       if inProcess then
@@ -35,24 +40,25 @@ let topologicalSort (getDependencies: TsType -> TsType list) (source: TsType lis
 
       dependencies
       |> List.iter (fun dependency ->
-        let result =
-          visit dependency getDependencies sorted visited cyclics
+        let result = visit dependency getDependencies sorted visited cyclics
 
         match result with
         | CyclicDependencyDetected -> cyclics.Add(item)
         | _ -> ()
 
         ())
+
       visited[item.Id.TsSignature] <- false
       sorted.Add(item)
+
       if item.HasCyclicDependency then
         cyclics.Add(item)
+
       VisitResult.New
 
   source
   |> List.iter (fun item ->
-    let result =
-      visit item getDependencies sorted visited cyclics
+    let result = visit item getDependencies sorted visited cyclics
 
     match result with
     | CyclicDependencyDetected -> cyclics.Add(item)

@@ -11,8 +11,7 @@ module Module =
   let findTypes (assembly: Assembly) =
     let t = typeof<SampleData>
 
-    assembly.GetTypes()
-    |> Seq.filter t.IsAssignableFrom
+    assembly.GetTypes() |> Seq.filter t.IsAssignableFrom
 
   let instantiateSampleObjects (t: Type) =
     let sampleData = Activator.CreateInstance(t)
@@ -29,4 +28,4 @@ let generateSampleData (path: string) (assemblies: Assembly seq) (serialize: Ser
     |> Seq.map (Module.render serialize)
     |> String.concat "\n"
 
-  System.IO.File.WriteAllText(path, $"""export const sample_data = { text } as const""")
+  System.IO.File.WriteAllText(path, $"""export const sample_data = {text} as const""")

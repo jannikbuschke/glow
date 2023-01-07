@@ -5,16 +5,16 @@ open Expecto
 open Xunit
 
 type RecordWithResult =
-    { Id: Guid
-      Result: Result<int, string> }
+  { Id: Guid
+    Result: Result<int, string> }
 
 [<Fact>]
 let ``Render record with result`` () =
-    let rendered = renderTypeAndValue typedefof<RecordWithResult>
+  let rendered = renderTypeAndValue typedefof<RecordWithResult>
 
-    Expect.similar
-        rendered
-        """
+  Expect.similar
+    rendered
+    """
 export type RecordWithResult = {
   id: System.Guid
   result: Microsoft_FSharp_Core.FSharpResult<System.Int32,System.String>

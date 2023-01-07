@@ -9,13 +9,14 @@ open Glow.Ts
 open Microsoft.FSharp.Core
 
 let getDependencies (n: Namespace) =
-  let deps = 
+  let deps =
     n.Items
     |> List.filter Glow.GetTsSignature.isNonGenericTypeOrGenericTypeDefinition
     |> List.collect (fun v -> v.Dependencies)
     |> List.map (fun v -> v.Id)
     |> List.distinctBy (fun v -> v.OriginalNamespace)
     |> List.filter (fun v -> v.TsSignature.TsNamespace <> n.Name)
+
   deps
 
 let getModuleDependencies (n: Namespace) =
@@ -30,23 +31,21 @@ let getModuleDependencies (n: Namespace) =
 
 let rec collectDependencies (depth: int) (v: TsType) =
   let name = v.Id.OriginalName
+
   if depth > 2 then
     v.Dependencies
   else
     (v.Dependencies
-     @ (v.Dependencies
-        |> List.collect (collectDependencies (depth + 1))))
+     @ (v.Dependencies |> List.collect (collectDependencies (depth + 1))))
 
 let getDependenciesFor items =
-  items
-  |> List.collect(collectDependencies 0)
-  |> List.rev
+  items |> List.collect (collectDependencies 0) |> List.rev
 
 let getGenericDefinitions items =
   items
   |> List.filter (fun v -> v.IsGenericType && not v.IsGenericTypeDefinition)
   |> List.map (fun v -> Glow.GetTsSignature.toTsType1 0 (v.Type.GetGenericTypeDefinition()))
-  
+
 let getDirectTypes (items: Type list) =
   items |> List.map (Glow.GetTsSignature.toTsType1 0)
 
@@ -55,45 +54,43 @@ let getAllTypes items =
   let dependencies = getDependenciesFor directTypes
   let genericDefinitions = getGenericDefinitions (directTypes @ dependencies)
   directTypes @ dependencies @ genericDefinitions
-  
-let groupToModules items=
-  let reg = items |> List.filter(fun v->v.Id.OriginalName="Registration")
+
+let groupToModules items =
+  let reg = items |> List.filter (fun v -> v.Id.OriginalName = "Registration")
+
   items
-    |> List.distinct
-    |> List.groupBy (fun v -> v.Id.TsSignature.TsNamespace)
-    |> List.map (fun (namespaceName, types) ->
-      let name = namespaceName|>NamespaceName.value
-      let result =
-        { Name = namespaceName
-          Items =
-            types
-            // |> Seq.filter(fun v -> not v.HasCyclicDependency)
-            |> Seq.distinctBy (fun v -> v.Id.TsSignature,v.HasCyclicDependency,v.Dependencies.Length)
-            |> Seq.toList }
-      result
-      )
+  |> List.distinct
+  |> List.groupBy (fun v -> v.Id.TsSignature.TsNamespace)
+  |> List.map (fun (namespaceName, types) ->
+    let name = namespaceName |> NamespaceName.value
+
+    let result =
+      { Name = namespaceName
+        Items =
+          types
+          // |> Seq.filter(fun v -> not v.HasCyclicDependency)
+          |> Seq.distinctBy (fun v -> v.Id.TsSignature, v.HasCyclicDependency, v.Dependencies.Length)
+          |> Seq.toList }
+
+    result)
 
 let generateModules (types: Type list) : Namespace list =
   let allTsTypes = getAllTypes (typedefof<System.Object> :: types)
-  
-  groupToModules(TsType.Any(typeof<System.Object>)::allTsTypes)
+
+  groupToModules (TsType.Any(typeof<System.Object>) :: allTsTypes)
 
 let renderPropertyDefinitions (typeToBeRendered: TsType) : string =
-  let props =
-    typeToBeRendered.Type.GetProperties()
+  let props = typeToBeRendered.Type.GetProperties()
 
-  let nameSpace =
-    typeToBeRendered.Id.TsSignature.TsNamespace
+  let nameSpace = typeToBeRendered.Id.TsSignature.TsNamespace
 
   let result =
     props
     |> Seq.toList
     |> List.map (fun v ->
-      let propertyTsType =
-        Glow.GetTsSignature.toTsType1 0 v.PropertyType
+      let propertyTsType = Glow.GetTsSignature.toTsType1 0 v.PropertyType
 
-      let propertySignature =
-        propertyTsType.Id.TsSignature
+      let propertySignature = propertyTsType.Id.TsSignature
 
       let propName =
         if propertyTsType.Id.TsSignature.TsNamespace = nameSpace then
@@ -112,7 +109,7 @@ let renderPropertyDefinitions (typeToBeRendered: TsType) : string =
                  else
                    v.FullSanitizedName()
 
-               $"{name}{getGenericParameters (v)}")
+               $"{name}{getGenericParameters v}")
              |> String.concat ",")
           + ">"
         else
@@ -287,14 +284,11 @@ let getCases (t: TsType) : RenderedDuCaseDefinitionAndValue list =
       if fieldSignature.TsType.Id.OriginalNamespace = t.Id.OriginalNamespace then
         ""
       else
-        fieldSignature.TsType.Id.TsSignature.TsNamespace
-        |> NamespaceName.sanitize
+        fieldSignature.TsType.Id.TsSignature.TsNamespace |> NamespaceName.sanitize
 
-    let propName =
-      $"{ns}.{fieldSignature.TsType.Id.TsSignature.Name()}"
+    let propName = $"{ns}.{fieldSignature.TsType.Id.TsSignature.Name()}"
 
-    let defaultValue =
-      $"{ns}.default{fieldSignature.TsType.Id.TsSignature.Name()}"
+    let defaultValue = $"{ns}.default{fieldSignature.TsType.Id.TsSignature.Name()}"
 
     let typeName = $"{case.Name}"
 
@@ -314,28 +308,20 @@ let getCases (t: TsType) : RenderedDuCaseDefinitionAndValue list =
           if field.TsType.Id.OriginalNamespace = t.Id.OriginalNamespace then
             ""
           else
-            (field.TsType.Id.TsSignature.TsNamespace
-             |> NamespaceName.sanitize)
-            + "."
+            (field.TsType.Id.TsSignature.TsNamespace |> NamespaceName.sanitize) + "."
 
-        let fieldTypeName =
-          $"{ns}{field.TsType.Id.TsSignature.Name()}"
+        let fieldTypeName = $"{ns}{field.TsType.Id.TsSignature.Name()}"
 
-        let defaultFieldValue =
-          $"{ns}default{field.TsType.Id.TsSignature.Name()}"
+        let defaultFieldValue = $"{ns}default{field.TsType.Id.TsSignature.Name()}"
 
         if field.TsType.Id.TsSignature.IsGenericParameter then
-          let genericParameterName =
-            field.TsType.Id.TsSignature.GetName()
+          let genericParameterName = field.TsType.Id.TsSignature.GetName()
 
-          let genericParameters =
-            $"<{genericParameterName}>"
+          let genericParameters = $"<{genericParameterName}>"
 
-          let nameWithGenericParameter =
-            $"{typeName}{genericParameters}"
+          let nameWithGenericParameter = $"{typeName}{genericParameters}"
 
-          let genericArguments =
-            $"(default{genericParameterName}:{genericParameterName})"
+          let genericArguments = $"(default{genericParameterName}:{genericParameterName})"
 
           {| FieldName = field.Name
              FieldTypeName = fieldTypeName
@@ -361,8 +347,7 @@ let getCases (t: TsType) : RenderedDuCaseDefinitionAndValue list =
           Definition = @$"{{ Case: ""{v.Name}"" }}"
           DefaultValue = @$"{{ Case: ""{v.Name}"" }}" }
       | [ field ] ->
-        let fieldDefinition =
-          getFieldDefinition field
+        let fieldDefinition = getFieldDefinition field
 
         match fieldDefinition.Generics with
         | Some x ->
@@ -370,7 +355,8 @@ let getCases (t: TsType) : RenderedDuCaseDefinitionAndValue list =
             GenericName = Some x.NameWithGenericParameter
             CaseName = v.Name
             Definition = @$"{{ Case: ""{v.Name}"", Fields: {fieldDefinition.FieldTypeName} }}"
-            DefaultValue = @$"{x.GenericParameters}{x.GenericArguments} => ({{ Case: ""{v.Name}"", Fields: {fieldDefinition.DefaultFieldValue} }})" }
+            DefaultValue =
+              @$"{x.GenericParameters}{x.GenericArguments} => ({{ Case: ""{v.Name}"", Fields: {fieldDefinition.DefaultFieldValue} }})" }
         | None ->
           { Name = typeName
             GenericName = None
@@ -379,16 +365,14 @@ let getCases (t: TsType) : RenderedDuCaseDefinitionAndValue list =
             DefaultValue = @$"{{ Case: ""{v.Name}"", Fields: {fieldDefinition.DefaultFieldValue} }}" }
 
       | fields ->
-        let fieldDefinitionsAndValues =
-          fields |> List.map getFieldDefinition
+        let fieldDefinitionsAndValues = fields |> List.map getFieldDefinition
 
         let definitions =
           (fieldDefinitionsAndValues
            |> List.map (fun v -> $"{v.FieldName}: {v.FieldTypeName}")
            |> String.concat ", ")
 
-        let combinedFieldDefinition =
-          $"{{ {definitions} }}"
+        let combinedFieldDefinition = $"{{ {definitions} }}"
 
         let values =
           (fieldDefinitionsAndValues
@@ -432,15 +416,13 @@ let renderDuFirstValueAsDefault (t: TsType) =
     match head.Fields with
     | [] -> $"null as any // (zero fields on DU case '{t.Id.OriginalName} / {head.Name}' not yet supported)"
     | [ oneField ] ->
-      let signature =
-        oneField.TsType.Id.TsSignature
+      let signature = oneField.TsType.Id.TsSignature
 
       let ns =
         if t.Id.TsSignature.TsNamespace = signature.TsNamespace then
           ""
         else
-          (signature.TsNamespace |> NamespaceName.sanitize)
-          + "."
+          (signature.TsNamespace |> NamespaceName.sanitize) + "."
 
       $"{ns}default{oneField.TsType.Id.TsSignature.GetName()}"
     | manyFields -> $"null as any // (many fields on DU case '{t.Id.OriginalName} / {head.Name}' not yet supported)"
@@ -476,7 +458,10 @@ let getDuDefinitionsAndValues (t: TsType) =
     cases = cases
   )
 
-type RenderCyclicDefault = | NoCycle | Stub | Fix
+type RenderCyclicDefault =
+  | NoCycle
+  | Stub
+  | Fix
 
 let renderKnownTypeAndDefaultValue (t: TsType) (cyclic: RenderCyclicDefault) (serialize: Serialize) : string option =
 
@@ -605,15 +590,11 @@ let renderKnownTypeAndDefaultValue (t: TsType) (cyclic: RenderCyclicDefault) (se
         |> String.concat "\n"
 
       let casesLiteral =
-        cases
-        |> List.map (fun v -> $"\"{v.CaseName}\"")
-        |> String.concat " | "
+        cases |> List.map (fun v -> $"\"{v.CaseName}\"") |> String.concat " | "
 
       let casesArray =
         "[ "
-        + (cases
-           |> List.map (fun v -> $"\"{v.CaseName}\"")
-           |> String.concat ", ")
+        + (cases |> List.map (fun v -> $"\"{v.CaseName}\"") |> String.concat ", ")
         + " ]"
 
       let discriminatedUnionDefinition =
@@ -626,7 +607,7 @@ let renderKnownTypeAndDefaultValue (t: TsType) (cyclic: RenderCyclicDefault) (se
 
       let defaults =
         cases
-        |> List.map (fun v -> $"export const default{v.Name} = {v.DefaultValue}")
+        |> List.map (fun v -> $"export var default{v.Name} = {v.DefaultValue}")
         |> String.concat "\n"
 
       Some(
@@ -750,25 +731,23 @@ let renderModule (m: Namespace) : string =
 
   if cyclics.Length > 0 then
     builder.AppendLine("// Render cyclic fixes") |> ignore
-  
+
   cyclics
   |> List.distinctBy (fun v -> v.Id.TsSignature)
   |> List.map (fun v ->
-    
-    let x = renderKnownTypeAndDefaultValue v RenderCyclicDefault.Fix DefaultSerialize.serialize
+
+    let x =
+      renderKnownTypeAndDefaultValue v RenderCyclicDefault.Fix DefaultSerialize.serialize
 
     match x with
     | Some x -> x
     | None -> $"// skipped {v.Id.TsSignature.TsName |> TsName.value}")
   |> List.map Utils.cleanTs
   |> List.iter (fun v -> builder.AppendLine(v) |> ignore)
-  
+
   builder.ToString().Replace("\r\n", "\n")
 
 let findeTsTypeInModules modules t =
-  let id =
-    (Glow.GetTsSignature.getModuleNameAndId t).Id
+  let id = (Glow.GetTsSignature.getModuleNameAndId t).Id
 
-  modules
-  |> List.collect (fun v -> v.Items)
-  |> List.find (fun v -> v.Id.Id = id)
+  modules |> List.collect (fun v -> v.Items) |> List.find (fun v -> v.Id.Id = id)

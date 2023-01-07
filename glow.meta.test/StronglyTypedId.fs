@@ -8,18 +8,20 @@ type MyRecord = { Id: MyRecordId }
 
 [<Fact>]
 let ``Render StronglyTypedId`` () =
-    let rendered = renderTypeAndValue typedefof<MyRecordId>
+  let rendered = renderTypeAndValue typedefof<MyRecordId>
 
-    Expect.similar rendered """
+  Expect.similar
+    rendered
+    """
 export type MyRecordId = System.Guid
 export const defaultMyRecordId: MyRecordId = System.defaultGuid
 """
 
-    let renderedValue = renderTypeAndValue typedefof<MyRecord>
+  let renderedValue = renderTypeAndValue typedefof<MyRecord>
 
-    Expect.similar
-        renderedValue
-        """
+  Expect.similar
+    renderedValue
+    """
 export type MyRecord = {
   id: MyRecordId
 }

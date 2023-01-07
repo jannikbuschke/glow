@@ -13,20 +13,16 @@ let ``Serialize FSharpMap`` () =
   // string key is serialized as dictionary with string indexer
   let mapStringKey =
     DefaultSerialize.serialize ([ ("k1", "v1"); ("k2", "v2") ] |> Map.ofSeq)
+
   Expect.similar mapStringKey """{"k1":"v1","k2":"v2"}"""
 
   // other key types are serialized as array of arrays
-  let mapIntKey =
-    DefaultSerialize.serialize ([ (0, "v1"); (1, "v2") ] |> Map.ofSeq)
+  let mapIntKey = DefaultSerialize.serialize ([ (0, "v1"); (1, "v2") ] |> Map.ofSeq)
 
   Expect.similar mapIntKey """[[0,"v1"],[1,"v2"]]"""
 
   let mapComplexKey =
-    DefaultSerialize.serialize (
-      [ ((0, 0), {| Id = "FOo" |})
-        ((0, 1), {| Id = "FOo111" |}) ]
-      |> Map.ofSeq
-    )
+    DefaultSerialize.serialize ([ ((0, 0), {| Id = "FOo" |}); ((0, 1), {| Id = "FOo111" |}) ] |> Map.ofSeq)
 
   Expect.similar mapComplexKey """[[[0,0],{"Id":"FOo"}],[[0,1],{"Id":"FOo111"}]]"""
 
@@ -52,12 +48,14 @@ export type FSharpMap<TKey, TValue> = [TKey,TValue][]
 export const defaultFSharpMap: <TKey, TValue>(tKey:TKey,tValue:TValue) => FSharpMap<TKey, TValue> = <TKey, TValue>(tKey:TKey,tValue:TValue) => []
 """
 
-type Language = | De | En
+type Language =
+  | De
+  | En
 
 type LocalizableValue<'T> =
   { Default: 'T
     Localized: Map<Language, 'T> }
-  
+
 [<Fact>]
 let ``Render LocalizableValue`` () =
   let rendered = renderTypeAndValue typedefof<LocalizableValue<string>>
@@ -75,10 +73,8 @@ export const defaultLocalizableValue: <T>(t:T) => LocalizableValue<T> = <T>(t:T)
 """
 
 type LocalizableString = LocalizableValue<string>
-type Container = {
-  Title: LocalizableString
-}
-  
+type Container = { Title: LocalizableString }
+
 [<Fact>]
 let ``Render LocalizableString`` () =
   let rendered = renderTypeAndValue typedefof<Container>

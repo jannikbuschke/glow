@@ -21,8 +21,8 @@ module PgsqlHelper =
     interface IRequest<ResizeArray<Activity>>
 
   //    [<Action(Route = "api/pgsql/exec", Policy = Policies.Planner)>]
-//    type ExecuteSql() =
-//        interface IRequest<ResizeArray<Activity>>
+  //    type ExecuteSql() =
+  //        interface IRequest<ResizeArray<Activity>>
 
   type ExecuteSqlHandler
     (
@@ -32,14 +32,12 @@ module PgsqlHelper =
     interface IRequestHandler<GetPgsqlActivities, ResizeArray<Activity>> with
       member this.Handle(request, cancellationToken) =
         task {
-          let cs =
-            config.GetValue<string>("PostgresConnectionString")
+          let cs = config.GetValue<string>("PostgresConnectionString")
 
           use conn = new Npgsql.NpgsqlConnection(cs)
           let! x = conn.OpenAsync()
 
-          use cmd =
-            new NpgsqlCommand("SELECT * FROM pg_stat_activity", conn)
+          use cmd = new NpgsqlCommand("SELECT * FROM pg_stat_activity", conn)
 
           logger.LogInformation("read with npgsql")
           use! reader = cmd.ExecuteReaderAsync()
@@ -52,23 +50,17 @@ module PgsqlHelper =
             if not result then
               finished <- true
             else
-              let username =
-                reader.GetValue(reader.GetOrdinal("usename"))
+              let username = reader.GetValue(reader.GetOrdinal("usename"))
 
-              let query =
-                reader.GetValue(reader.GetOrdinal("query"))
+              let query = reader.GetValue(reader.GetOrdinal("query"))
 
-              let db =
-                reader.GetValue(reader.GetOrdinal("datname"))
+              let db = reader.GetValue(reader.GetOrdinal("datname"))
 
-              let pid =
-                reader.GetValue(reader.GetOrdinal("pid"))
+              let pid = reader.GetValue(reader.GetOrdinal("pid"))
 
-              let address =
-                reader.GetValue(reader.GetOrdinal("client_addr"))
+              let address = reader.GetValue(reader.GetOrdinal("client_addr"))
 
-              let state =
-                reader.GetValue(reader.GetOrdinal("state"))
+              let state = reader.GetValue(reader.GetOrdinal("state"))
 
               r.Add(
                 { Username = username

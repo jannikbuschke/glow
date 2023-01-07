@@ -9,8 +9,7 @@ type A = { Data: System.Object; X: obj }
 
 [<Fact>]
 let ``Render record with obj`` () =
-  let rendered =
-    renderTypeAndValue typedefof<A>
+  let rendered = renderTypeAndValue typedefof<A>
 
   Expect.similar
     rendered
@@ -28,12 +27,9 @@ export const defaultA: A = {
 let ``Render System.Object definition`` () =
   let x = typedefof<A>
 
-  let modules =
-    Glow.TsGen.Gen.generateModules [ typeof<A> ]
+  let modules = Glow.TsGen.Gen.generateModules [ typeof<A> ]
 
-  let sysModule =
-    modules
-    |> List.find (fun v -> v.Name = ("System" |> NamespaceName))
+  let sysModule = modules |> List.find (fun v -> v.Name = ("System" |> NamespaceName))
 
   let rendered = renderModule sysModule
 

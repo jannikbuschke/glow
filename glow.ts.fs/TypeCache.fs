@@ -32,20 +32,11 @@ module TypeCache =
       cache.GetOrAdd(
         ty,
         fun ty ->
-          if
-            ty.IsGenericType
-            && ty.GetGenericTypeDefinition() = listTy
-          then
+          if ty.IsGenericType && ty.GetGenericTypeDefinition() = listTy then
             TypeKind.List
-          elif
-            ty.IsGenericType
-            && ty.GetGenericTypeDefinition() = setTy
-          then
+          elif ty.IsGenericType && ty.GetGenericTypeDefinition() = setTy then
             TypeKind.Set
-          elif
-            ty.IsGenericType
-            && ty.GetGenericTypeDefinition() = mapTy
-          then
+          elif ty.IsGenericType && ty.GetGenericTypeDefinition() = mapTy then
             TypeKind.Map
           elif FSharpType.IsTuple(ty) then
             TypeKind.Tuple

@@ -4,23 +4,17 @@ open System.Reflection
 open System.Text
 open Glow.TsGen.Domain
 
-let render (assemblies: Assembly list) (path:string) =
+let render (assemblies: Assembly list) (path: string) =
   let es = GetTypes.getEvents assemblies
 
-  let actions =
-    GetTypes.getRequests assemblies
+  let actions = GetTypes.getRequests assemblies
 
   let allTypes =
     (es |> Seq.toList)
-    @ (actions
-       |> Seq.map (fun v -> v.Input)
-       |> Seq.toList)
-      @ (actions
-         |> Seq.map (fun v -> v.Output)
-         |> Seq.toList)
+    @ (actions |> Seq.map (fun v -> v.Input) |> Seq.toList)
+      @ (actions |> Seq.map (fun v -> v.Output) |> Seq.toList)
 
-  let modules =
-    Glow.TsGen.Gen.generateModules allTypes
+  let modules = Glow.TsGen.Gen.generateModules allTypes
 
   let tryFind (t: System.Type) =
     modules
@@ -53,39 +47,41 @@ let render (assemblies: Assembly list) (path:string) =
       @"import { Formik, FormikConfig, FormikFormProps, FormikProps } from ""formik"""
     )
     .AppendLine(@"import { Form } from ""formik-antd""")
-    |> ignore
+  |> ignore
 
-  modules |> List.iter(fun m ->
+  modules
+  |> List.iter (fun m ->
     if m.Name |> NamespaceName.value = "" then
       ()
     else
       let name = m.Name
       let sanitized = name |> NamespaceName.sanitize
       let filename = name |> NamespaceName.filenameWithoutExtensions
-      imports.AppendLine($"import * as {sanitized} from \"{filename}\"") |> ignore
-  )
+
+      imports.AppendLine($"import * as {sanitized} from \"{filename}\"")
+      |> ignore)
 
   let queryInputs = StringBuilder()
   let queryOutputs = StringBuilder()
   let actionInputs = StringBuilder()
   let actionOutputs = StringBuilder()
 
-  queryInputs.AppendLine("\nexport type QueryInputs = {")
-  |> ignore
+  queryInputs.AppendLine("\nexport type QueryInputs = {") |> ignore
 
-  queryOutputs.AppendLine("export type QueryOutputs = {")
-  |> ignore
+  queryOutputs.AppendLine("export type QueryOutputs = {") |> ignore
 
-  actionInputs.AppendLine("export type Actions = {")
-  |> ignore
+  actionInputs.AppendLine("export type Actions = {") |> ignore
 
-  actionOutputs.AppendLine("export type Outputs = {")
-  |> ignore
+  actionOutputs.AppendLine("export type Outputs = {") |> ignore
 
   let getTypeName (t: System.Type) =
 
     match tryFind t with
-    | Some t -> sprintf "%s.%s" (t.Id.TsSignature.TsNamespace |> NamespaceName.sanitize)(t.Id.TsSignature.NameWithFullLengthGenericArguments())
+    | Some t ->
+      sprintf
+        "%s.%s"
+        (t.Id.TsSignature.TsNamespace |> NamespaceName.sanitize)
+        (t.Id.TsSignature.NameWithFullLengthGenericArguments())
     | None -> "any"
 
   actions
@@ -122,11 +118,7 @@ let render (assemblies: Assembly list) (path:string) =
 
   let options = {| WithPathProxy = true |}
 
-  let omitChildren =
-    (if options.WithPathProxy then
-       @"|""children"""
-     else
-       "")
+  let omitChildren = (if options.WithPathProxy then @"|""children""" else "")
 
   let proxyPathAsChildrenArgument =
     (if options.WithPathProxy then
