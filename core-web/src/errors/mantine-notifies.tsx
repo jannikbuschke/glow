@@ -1,6 +1,7 @@
 import * as React from "react"
 import { ProblemDetails } from "../actions/use-submit"
 import { showNotification } from "@mantine/notifications"
+import { useTranslation, getI18n } from "react-i18next"
 
 export function notifyError(r: ProblemDetails | string) {
   if (typeof r === "string") {
@@ -27,7 +28,7 @@ export function notifyError(r: ProblemDetails | string) {
 export function notifySuccess(message?: string) {
   showNotification({
     color: "green",
-    message: message || "success",
+    message: message || getI18n().t("Success") || "Success",
   })
 }
 
