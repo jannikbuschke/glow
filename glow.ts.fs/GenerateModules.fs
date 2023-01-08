@@ -253,14 +253,14 @@ let renderPropertyValues (t: TsType) : string =
           match inlineValue with
           | Some inlineValue ->
             let value = getDefaultValue nameSpace v
-            let result = $"{Utils.camelize v.Name}: {inlineValue}, //#//"
+            let result = $"{Utils.camelize v.Name}: {inlineValue},"
             result
           | None -> renderDefaut ()
         | TypeAndValue (name, definition, defaultValue, inlineValue) ->
           match inlineValue with
           | Some inlineValue ->
             let value = getDefaultValue nameSpace v
-            let result = $"{Utils.camelize v.Name}: {inlineValue}, //#//"
+            let result = $"{Utils.camelize v.Name}: {inlineValue},"
             result
           | None -> renderDefaut ()
         | _ -> renderDefaut ()
