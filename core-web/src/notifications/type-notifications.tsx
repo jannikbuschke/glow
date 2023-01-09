@@ -74,9 +74,11 @@ export function TypedNotificationsProvider<
   children,
   requireLoggedIn = true,
   disableLegacy = false,
+  accessTokenFactory,
 }: React.PropsWithChildren<{
   requireLoggedIn?: boolean
   disableLegacy?: boolean
+  accessTokenFactory?: () => string | Promise<string>
 }>) {
   const { status } = useAuthentication()
   const [connectionClosed, setConnectionClosed] = React.useState(Math.random())
@@ -86,11 +88,12 @@ export function TypedNotificationsProvider<
     }),
     [],
   )
+
   const { emitter } = value
   const connection = React.useMemo(() => {
     if (status === "loggedIn" || !requireLoggedIn) {
       const connection = new signalR.HubConnectionBuilder()
-        .withUrl("/notifications")
+        .withUrl("/notifications", { accessTokenFactory: accessTokenFactory })
         .configureLogging(signalR.LogLevel.Information)
         .build()
       return connection
