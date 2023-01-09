@@ -238,7 +238,7 @@ let renderPropertyValues (t: TsType) : string =
 
       let renderDefaut () =
         let value = getDefaultValue nameSpace v
-        let result = $"{Utils.camelize v.Name}: {value}, // wellknown type {(r)}"
+        let result = $"{Utils.camelize v.Name}: {value},"
         result
 
       match wellKnownType with
