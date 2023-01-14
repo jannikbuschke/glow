@@ -216,11 +216,13 @@ export function TypedForm<ActionName extends keyof ActionTable>({{
   children,
   onSuccess,
   beforeSubmit,
+  onSubmit,
   onError,
 }}: Omit<FormikConfig<Actions[ActionName]>, ""onSubmit""{omitChildren}> & {{
 {proxyPathAsChildrenArgument}
   actionName: ActionName
   beforeSubmit?: (values: Actions[ActionName]) => Actions[ActionName]
+  onSubmit?: (values: Actions[ActionName]) => void
   formProps?: FormikFormProps
   onSuccess?: (payload: Outputs[ActionName]) => void
   onError?: (error: ProblemDetails) => void
@@ -236,6 +238,7 @@ export function TypedForm<ActionName extends keyof ActionTable>({{
       validateOnChange={{false}}
       initialValues={{initialValues}}
       onSubmit={{async (values) => {{
+        onSubmit && onSubmit(values)
         const response = await submit(beforeSubmit ? beforeSubmit(values) : values)
         if (response.ok) {{
           onSuccess && onSuccess(response.payload)
