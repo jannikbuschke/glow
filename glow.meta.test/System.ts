@@ -1,15 +1,16 @@
-//******************************************
-//****This file is auto generated***********
-//******************************************
-export type Int32 = number
-export const defaultInt32: Int32 = 0
-export type Char = string
-export const defaultChar: Char = ''
+//////////////////////////////////////
+//   This file is auto generated   //
+//////////////////////////////////////
+
+import {TsType} from "./"
+
+export type Object = any
+export var defaultObject: Object = {}
 export type Boolean = boolean
-export const defaultBoolean: Boolean = false
-export type Guid = string
-export const defaultGuid: Guid = "00000000-0000-0000-000000000000"
+export var defaultBoolean: Boolean = false
+export type Int32 = number
+export var defaultInt32: Int32 = 0
 export type String = string
-export const defaultString: String = ""
-export type Object = {}
-export const defaultObject: Object = {}
+export var defaultString: String = ""
+export type Guid = `${number}-${number}-${number}-${number}`
+export var defaultGuid: Guid = "00000000-0000-0000-000000000000"

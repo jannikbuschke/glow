@@ -88,38 +88,11 @@ let renderPropertyDefinitions (typeToBeRendered: TsType) : string =
     props
     |> Seq.toList
     |> List.map (fun v ->
-      let propertyTsType = Glow.GetTsSignature.toTsType1 0 v.PropertyType
-
-      let propertySignature = propertyTsType.Id.TsSignature
-
-      let propName =
-        if propertyTsType.Id.TsSignature.TsNamespace = nameSpace then
-          propertySignature.Name()
-        else
-          propertySignature.FullSanitizedName()
-
-      let rec getGenericParameters (t: TsSignature) =
-        if t.IsGenericType then
-          "<"
-          + (t.GenericArgumentTypes
-             |> Seq.map (fun v ->
-               let name =
-                 if nameSpace = v.TsNamespace then
-                   v.Name()
-                 else
-                   v.FullSanitizedName()
-
-               $"{name}{getGenericParameters v}")
-             |> String.concat ",")
-          + ">"
-        else
-          ""
-
-      $"{Utils.camelize v.Name}: {propName}{getGenericParameters propertyTsType.Id.TsSignature}")
+      let fullTypeName = getFullTypeName nameSpace v.PropertyType
+      $"{Utils.camelize v.Name}: {fullTypeName}")
     |> String.concat "\n  "
 
   result
-
 
 let renderValueStub (t: TsType) : string =
   let props = t.Type.GetProperties()
@@ -516,14 +489,11 @@ let renderKnownTypeAndDefaultValue (t: TsType) (cyclic: RenderCyclicDefault) (se
         else
           match cyclic with
           | Fix ->
-            let definition = renderRecordOrClassDefinition t
-            let value = "stub"
             let fix = renderValueFix t
             Renderable.CyclicFixValue(name = t.Id.TsSignature.GetName(), fixReferences = fix)
           | Stub ->
             let stub = renderValueStub t
             let definition = renderRecordOrClassDefinition t
-            let value = renderDefaultRecordOrClassValue t
 
             Renderable.CyclicTypeAndStubValue(
               name = t.Id.TsSignature.GetName(),

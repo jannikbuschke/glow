@@ -519,6 +519,32 @@ let toTsType1 (depth: int) (t: Type) =
     else
       TsType.Any(t)
 
+let rec getGenericParameters (originatinNamespace: NamespaceName) (t: TsSignature) =
+  if t.IsGenericType then
+    "<"
+    + (t.GenericArgumentTypes
+       |> Seq.map (fun v ->
+         let name =
+           if originatinNamespace = v.TsNamespace then
+             v.Name()
+           else
+             v.FullSanitizedName()
+
+         $"{name}{getGenericParameters originatinNamespace v}")
+       |> String.concat ",")
+    + ">"
+  else
+    ""
+let getFullTypeName (originatinNamespace: NamespaceName) (t: System.Type) =
+    let propertyTsType = toTsType1 0 t
+    let getFullGenericName () =
+      if propertyTsType.Id.TsSignature.TsNamespace = originatinNamespace then
+        propertyTsType.Id.TsSignature.Name()
+      else
+        propertyTsType.Id.TsSignature.FullSanitizedName()
+
+    getFullGenericName()+(getGenericParameters originatinNamespace propertyTsType.Id.TsSignature)
+
 let isNonGenericTypeOrGenericTypeDefinition (t: TsType) =
   let t = t.Type
 

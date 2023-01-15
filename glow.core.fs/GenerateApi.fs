@@ -79,9 +79,8 @@ let render (assemblies: Assembly list) (path: string) =
     match tryFind t with
     | Some t ->
       sprintf
-        "%s.%s"
-        (t.Id.TsSignature.TsNamespace |> NamespaceName.sanitize)
-        (t.Id.TsSignature.NameWithFullLengthGenericArguments())
+        "%s"
+        (Glow.GetTsSignature.getFullTypeName (NamespaceName "-") t.Type)
     | None -> "any"
 
   actions
