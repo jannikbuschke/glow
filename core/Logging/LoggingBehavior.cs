@@ -9,16 +9,11 @@ using Microsoft.Extensions.Logging;
 
 namespace Glow.Glue.AspNetCore
 {
-    public static class GlowLoggingConstants
-    {
-        public const string HttpContextRequestItemName = "MediatR.Request";
-
-    }
     public class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
     {
         private readonly ILogger<LoggingBehavior<TRequest, TResponse>> logger;
         private readonly IHttpContextAccessor httpContextAccessor;
-        private readonly Stopwatch stopWatch = new Stopwatch();
+        private readonly Stopwatch stopWatch = new();
 
         public LoggingBehavior(ILogger<LoggingBehavior<TRequest, TResponse>> logger, IHttpContextAccessor httpContextAccessor)
         {
@@ -29,10 +24,8 @@ namespace Glow.Glue.AspNetCore
         public async Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken,
             RequestHandlerDelegate<TResponse> next)
         {
-            if (httpContextAccessor.HttpContext != null)
-            {
-                httpContextAccessor.HttpContext.Items.TryAdd(GlowLoggingConstants.HttpContextRequestItemName, request);
-            }
+            httpContextAccessor.HttpContext?.AddRequestToItems(request);
+
             stopWatch.Start();
             logger.LogInformation($"[Handling Request]: {typeof(TRequest).Name}");
             logger.LogInformation("Parameters {@values}", request);
@@ -40,8 +33,8 @@ namespace Glow.Glue.AspNetCore
             stopWatch.Stop();
             TimeSpan ts = stopWatch.Elapsed;
             var requestName = typeof(TRequest).Name;
-            var logLevel = requestName.StartsWith("Get")?LogLevel.Debug : LogLevel.Information;
-            logger.Log(logLevel, "[Handled Request]: {requestName} ({timeMs} ms)", requestName,  (long)ts.TotalMilliseconds);
+            var logLevel = requestName.StartsWith("Get") ? LogLevel.Debug : LogLevel.Information;
+            logger.Log(logLevel, "[Handled Request]: {requestName} ({timeMs} ms)", requestName, (long)ts.TotalMilliseconds);
             logger.LogTrace("Response payload {@values}", response);
             return response;
         }

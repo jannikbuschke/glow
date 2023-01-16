@@ -200,8 +200,8 @@ namespace Glow.Core
                     ProblemDetails problemDetails = toProblemDetails(exception);
                     if (problemDetails.Type != "bad_request")
                     {
-                        var request = context.Items.ContainsKey(GlowLoggingConstants.HttpContextRequestItemName)
-                            ? context.Items[GlowLoggingConstants.HttpContextRequestItemName]
+                        var request = context.Items.ContainsKey(AspNetcoreHttpRequestPipelineExtensions.HttpContextRequestItemName)
+                            ? context.Items[AspNetcoreHttpRequestPipelineExtensions.HttpContextRequestItemName]
                             : null;
 
                         ClaimsPrincipal user = context.User;
