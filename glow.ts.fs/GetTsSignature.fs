@@ -1,6 +1,7 @@
 ﻿module Glow.GetTsSignature
 
 open System
+open System.Reflection
 open Glow.TsGen.Domain
 open Microsoft.FSharp.Reflection
 
@@ -51,7 +52,7 @@ let rec getTsSignature (t: Type) : TsSignature =
         GenericArgumentTypes = genericArgumentTypes }
 
 let getProperties (t: Type) : TsProperty seq =
-  t.GetProperties()
+  t.GetProperties(BindingFlags.Public ||| BindingFlags.Instance)
   |> Seq.map (fun v ->
     { Name = v.Name
       TsType = getTsSignature v.PropertyType })
@@ -402,7 +403,7 @@ let rec toTsType (depth: int) (t: Type) : Result<TsType, Dependency> =
         if t |> isCollection then
           []
         else
-          let properties = t.GetProperties()
+          let properties = t.GetProperties(BindingFlags.Public ||| BindingFlags.Instance)
 
           let p1 =
             properties

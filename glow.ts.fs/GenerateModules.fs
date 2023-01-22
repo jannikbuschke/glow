@@ -1,6 +1,7 @@
 ﻿module Glow.TsGen.Gen
 
 open System
+open System.Reflection
 open System.Text
 open System.Text.Json.Serialization
 open Domain
@@ -80,7 +81,7 @@ let generateModules (types: Type list) : Namespace list =
   groupToModules (TsType.Any(typeof<System.Object>) :: allTsTypes)
 
 let renderPropertyDefinitions (typeToBeRendered: TsType) : string =
-  let props = typeToBeRendered.Type.GetProperties()
+  let props = typeToBeRendered.Type.GetProperties(BindingFlags.Public ||| BindingFlags.Instance)
 
   let nameSpace = typeToBeRendered.Id.TsSignature.TsNamespace
 
@@ -95,7 +96,7 @@ let renderPropertyDefinitions (typeToBeRendered: TsType) : string =
   result
 
 let renderValueStub (t: TsType) : string =
-  let props = t.Type.GetProperties()
+  let props = t.Type.GetProperties(BindingFlags.Public ||| BindingFlags.Instance)
   let nameSpace = t.Id.TsSignature.TsNamespace
 
   let result =
@@ -178,7 +179,7 @@ let getDefaultValue (nameSpace: NamespaceName) (v: Reflection.PropertyInfo) =
     $"{propName}{getGenericArguments propertyTsType.Id.TsSignature}"
 
 let renderValueFix (t: TsType) : string =
-  let props = t.Type.GetProperties()
+  let props = t.Type.GetProperties(BindingFlags.Public ||| BindingFlags.Instance)
   let nameSpace = t.Id.TsSignature.TsNamespace
 
   let result =
@@ -196,7 +197,7 @@ let renderValueFix (t: TsType) : string =
   result
 
 let renderPropertyValues (t: TsType) : string =
-  let props = t.Type.GetProperties()
+  let props = t.Type.GetProperties(BindingFlags.Public ||| BindingFlags.Instance)
 
   let nameSpace = t.Id.TsSignature.TsNamespace
 
