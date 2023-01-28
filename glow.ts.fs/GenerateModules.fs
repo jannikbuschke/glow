@@ -536,13 +536,22 @@ let renderKnownTypeAndDefaultValue (t: TsType) (cyclic: RenderCyclicDefault) (se
     let definition = values |> List.map (fun v -> $"\"{v}\"") |> String.concat " | "
     let allValues = values |> List.map (fun v -> $"\"{v}\"") |> String.concat ", "
 
-    Some(
-      $"export type {name} = {definition}"
-      + "\n"
-      + $"export var {name}_AllValues = [{allValues}] as const"
-      + "\n"
-      + $"export var default{name}: {name} = \"{values.Head}\""
-    )
+    match values with
+    | [] -> None
+    | [ singleValue ] ->
+      Some(
+        $"export type {name} = \"{singleValue}\""
+        + "\n"
+        + $"export var default{name}: {name} = \"{singleValue}\""
+      )
+    | values ->
+      Some(
+        $"export type {name} = {definition}"
+        + "\n"
+        + $"export var {name}_AllValues = [{allValues}] as const"
+        + "\n"
+        + $"export var default{name}: {name} = \"{values.Head}\""
+      )
   | DiscriminatedUnion (name, genericName, cases) ->
     match cases with
     | [ singleCase ] ->

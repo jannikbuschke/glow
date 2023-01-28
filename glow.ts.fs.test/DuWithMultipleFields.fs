@@ -19,10 +19,10 @@ let ``Du with single record fields`` () =
 export type DuWithRecordFields_Case_Case2 = { Case: "Case2", Fields: SimpleRecord0 }
 export type DuWithRecordFields = DuWithRecordFields_Case_Case1 | DuWithRecordFields_Case_Case2
 export type DuWithRecordFields_Case = "Case1" | "Case2"
-export const DuWithRecordFields_AllCases = [ "Case1", "Case2" ] as const
-export const defaultDuWithRecordFields_Case_Case1 = { Case: "Case1", Fields: defaultSimpleRecord0 }
-export const defaultDuWithRecordFields_Case_Case2 = { Case: "Case2", Fields: defaultSimpleRecord0 }
-export const defaultDuWithRecordFields = null as any as DuWithRecordFields
+export var DuWithRecordFields_AllCases = [ "Case1", "Case2" ] as const
+export var defaultDuWithRecordFields_Case_Case1 = { Case: "Case1", Fields: defaultSimpleRecord0 }
+export var defaultDuWithRecordFields_Case_Case2 = { Case: "Case2", Fields: defaultSimpleRecord0 }
+export var defaultDuWithRecordFields = null as any as DuWithRecordFields
 """
 
 type SimpleRecord = { Name: string }
@@ -45,8 +45,8 @@ let ``Du with multiple fields`` () =
 export type DuWithMultipleFields_Case_Case2 = { Case: "Case2", Fields: { Foo: System.String, Item2: SimpleRecord, X: System.Int32 } }
 export type DuWithMultipleFields = DuWithMultipleFields_Case_Case1 | DuWithMultipleFields_Case_Case2
 export type DuWithMultipleFields_Case = "Case1" | "Case2"
-export const DuWithMultipleFields_AllCases = [ "Case1", "Case2" ] as const
-export const defaultDuWithMultipleFields_Case_Case1 = { Case: "Case1", Fields: { Item1: System.defaultGuid, Item2: System.defaultString } }
-export const defaultDuWithMultipleFields_Case_Case2 = { Case: "Case2", Fields: { Foo: System.defaultString, Item2: defaultSimpleRecord, X: System.defaultInt32 } }
-export const defaultDuWithMultipleFields = null as any as DuWithMultipleFields
+export var DuWithMultipleFields_AllCases = [ "Case1", "Case2" ] as const
+export var defaultDuWithMultipleFields_Case_Case1 = { Case: "Case1", Fields: { Item1: System.defaultGuid, Item2: System.defaultString } }
+export var defaultDuWithMultipleFields_Case_Case2 = { Case: "Case2", Fields: { Foo: System.defaultString, Item2: defaultSimpleRecord, X: System.defaultInt32 } }
+export var defaultDuWithMultipleFields = null as any as DuWithMultipleFields
 """

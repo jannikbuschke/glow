@@ -17,8 +17,8 @@ export type RecordWithPrimitiveOption = {
   id: System.Guid
   numberOption: Microsoft_FSharp_Core.FSharpOption<System.Int32>
 }
-export const defaultRecordWithPrimitiveOption: RecordWithPrimitiveOption = {
- id: System.defaultGuid,
- numberOption: Microsoft_FSharp_Core.defaultFSharpOption(System.defaultInt32),
+export var defaultRecordWithPrimitiveOption: RecordWithPrimitiveOption = {
+ id: "00000000-0000-0000-0000-000000000000",
+ numberOption: null,
 }
 """

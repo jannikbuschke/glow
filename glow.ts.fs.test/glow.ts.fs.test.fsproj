@@ -10,6 +10,9 @@
     <ItemGroup>
         <Compile Include="SomeTypes.fs" />
         <Compile Include="Tests.fs" />
+        <Compile Include="MeetingDomain.fs" />
+        <Compile Include="ManyTypes.fs" />
+        <Compile Include="SystemTypeTests.fs" />
         <Compile Include="FSharpResult.fs" />
         <Compile Include="FSharpMap.fs" />
         <Compile Include="Skippable.fs" />

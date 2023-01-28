@@ -1,5 +1,6 @@
 ﻿module Test.CircularReference
 
+open Glow.TsGen.Domain
 open Xunit
 open System
 open Expecto
@@ -16,7 +17,7 @@ and B = { A: A }
 let ``Topological sort`` () =
   let modules = Glow.TsGen.Gen.generateModules [ typeof<A> ]
 
-  let m = modules.Head
+  let m = modules |> List.find(fun v->v.Name=NamespaceName "Test")
 
   let sorted, cyclics = sortItemsTopologically m.Items
 
@@ -24,9 +25,11 @@ let ``Topological sort`` () =
 
   Expect.similar
     rendered
-    """///////////////////////////////////////////////////////////
+    """
+//////////////////////////////////////
 // This file is auto generated //
-//////////////////////////////////////////////////////////
+//////////////////////////////////////
+import {TsType} from "./"
 //*** Cyclic dependencies dected ***
 //*** this can cause problems when generating types and defualt values ***
 //*** Please ensure that your types don't have cyclic dependencies ***
@@ -40,14 +43,17 @@ let ``Topological sort`` () =
 export type B = {
  a: A
 } 
-export const defaultB: B = {
+export var defaultB: B = {
  a: undefined as any, }
 export type A = {
  b: B
 }
-export const defaultA: A = {
+export var defaultA: A = {
  b: defaultB,
 }
+// Render cyclic fixes
 // the type B has cyclic dependencies
 // in general this should be avoided
-// fill all propsdefaultB.a = defaultA"""
+// fill all props
+defaultB.a = defaultA
+"""

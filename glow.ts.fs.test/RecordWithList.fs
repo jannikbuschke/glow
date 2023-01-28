@@ -22,8 +22,8 @@ export type MyRecord = {
   items: Microsoft_FSharp_Collections.FSharpList<MyOtherRecord>
   numbers: Microsoft_FSharp_Collections.FSharpList<System.Int32>
 }
-export const defaultMyRecord: MyRecord = {
- items: Microsoft_FSharp_Collections.defaultFSharpList(defaultMyOtherRecord),
- numbers: Microsoft_FSharp_Collections.defaultFSharpList(System.defaultInt32),
+export var defaultMyRecord: MyRecord = {
+ items: [],
+ numbers: [],
 }
 """

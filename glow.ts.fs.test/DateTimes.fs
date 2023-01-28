@@ -15,5 +15,5 @@ let ``DateTimes`` () =
 
   Expect.similar
     (renderTypeAndValue typedefof<DateTime>)
-    """export type DateTime = string
-export const defaultDateTime: DateTime = "0001-01-01T00:00:00" """
+    """export type DateTime = `${number}-${number}-${number}T${number}:${number}:${number}`
+export var defaultDateTime: DateTime = "0001-01-01T00:00:00" """

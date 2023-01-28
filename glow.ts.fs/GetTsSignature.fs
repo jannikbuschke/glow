@@ -324,9 +324,12 @@ let rec getArgumentsRecursively (t: Type) =
 
 
 let rec toTsType (depth: int) (t: Type) : Result<TsType, Dependency> =
-  // printf "to ts type %s depth = %d\n" t.Name depth
-  let tName = t.Name
-  let ns = t.Namespace
+
+  if depth > 5 then
+    Console.WriteLine("")
+  else
+    Console.WriteLine("")
+  
   let id = getModuleNameAndId t
 
   let alreadyVisited, inProcess = visiting.TryGetValue(id)
@@ -507,6 +510,7 @@ let rec toTsType (depth: int) (t: Type) : Result<TsType, Dependency> =
       Result.Ok result
 
 let toTsType1 (depth: int) (t: Type) =
+
 
   let result = toTsType depth t
 

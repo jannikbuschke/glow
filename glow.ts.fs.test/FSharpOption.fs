@@ -11,5 +11,5 @@ let ``Render FSharp Option`` () =
     rendered
     """
 export type FSharpOption<T> = T | null
-export const defaultFSharpOption: <T>(t:T) => FSharpOption<T> = <T>(t:T) => null
+export var defaultFSharpOption: <T>(t:T) => FSharpOption<T> = <T>(t:T) => null
 """

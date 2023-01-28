@@ -176,9 +176,9 @@ export type Localizable<a> = {
   value: a
   localizations: Microsoft_FSharp_Collections.FSharpMap<System.String,a>
 }
-export const defaultLocalizable: <a>(a:a) => Localizable<a> = <a>(a:a) => ({
+export var defaultLocalizable: <a>(a:a) => Localizable<a> = <a>(a:a) => ({
  value: a,
- localizations: Microsoft_FSharp_Collections.defaultFSharpMap(System.defaultString,a),
+ localizations: ({}),
 })
 """
 

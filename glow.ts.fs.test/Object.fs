@@ -17,9 +17,9 @@ let ``Render record with obj`` () =
  data: System.Object
  x: System.Object
 }
-export const defaultA: A = {
- data: System.defaultObject,
- x: System.defaultObject,
+export var defaultA: A = {
+ data: {},
+ x: {},
 }
 """
 
@@ -38,7 +38,7 @@ let ``Render System.Object definition`` () =
     """//////////////////////////////////////
 // This file is auto generated //
 //////////////////////////////////////
-import * as TsType from "./TsType"
+import {TsType} from "./"
 export type Object = any
-export const defaultObject: Object = {}
+export var defaultObject: Object = {}
 """

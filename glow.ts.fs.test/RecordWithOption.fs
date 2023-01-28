@@ -23,8 +23,8 @@ export type RecordWithOption = {
   id: System.Guid
   numberOption: Microsoft_FSharp_Core.FSharpOption<Record>
 }
-export const defaultRecordWithOption: RecordWithOption = {
- id: System.defaultGuid,
- numberOption: Microsoft_FSharp_Core.defaultFSharpOption(defaultRecord),
+export var defaultRecordWithOption: RecordWithOption = {
+ id: "00000000-0000-0000-0000-000000000000",
+ numberOption: null,
 }
 """

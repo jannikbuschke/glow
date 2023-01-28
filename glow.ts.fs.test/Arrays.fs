@@ -19,14 +19,16 @@ let ``Render MyRecord with arrays`` () =
 
   Expect.similar
     rendered
-    """export type MyRecord = {
- field1: System.Array<System.String>
- field2: System.Array<A>
+    """
+export type MyRecord = {
+ field1: System_Collections_Generic.IEnumerable<System.String>
+ field2: System_Collections_Generic.IEnumerable<A>
 }
-export const defaultMyRecord: MyRecord = {
- field1: System.defaultArray(System.defaultString),
- field2: System.defaultArray(defaultA),
-}"""
+export var defaultMyRecord: MyRecord = {
+ field1: [],
+ field2: [],
+}
+"""
 
 [<Fact>]
 let ``Render Array definitions`` () =
@@ -39,7 +41,8 @@ let ``Render Array definitions`` () =
 
   Expect.similar
     rendered
-    """//////////////////////////////////////
+    """
+//////////////////////////////////////
 // This file is auto generated //
 //////////////////////////////////////
 import {TsType} from "./"
@@ -47,6 +50,4 @@ export type Object = any
 export var defaultObject: Object = {}
 export type String = string
 export var defaultString: String = ""
-export type Array<TValue> = TValue[]
-export const defaultArray: <TValue>(tValue:TValue) => Array<TValue> = <TValue>(tValue:TValue) => []
 """

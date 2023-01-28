@@ -23,9 +23,9 @@ export type MyRecord = {
   complexList: Microsoft_FSharp_Collections.FSharpList<OtherRecord>
 }
 
-export const defaultMyRecord: MyRecord = {
-  simpleList: Microsoft_FSharp_Collections.defaultFSharpList(System.defaultInt32),
-  complexList: Microsoft_FSharp_Collections.defaultFSharpList(defaultOtherRecord),
+export var defaultMyRecord: MyRecord = {
+  simpleList: [],
+  complexList: [],
 }
 """
 
@@ -36,7 +36,7 @@ let ``Render FSharp List`` () =
   Expect.similar
     fsharpCoreRendered
     """export type FSharpList<T> = Array<T>
-export const defaultFSharpList: <T>(t:T) => FSharpList<T> = <T>(t:T) => []
+export var defaultFSharpList: <T>(t:T) => FSharpList<T> = <T>(t:T) => []
 """
 
 [<Fact>]
@@ -55,16 +55,15 @@ let ``Render IEnumerable of KeyValue pairs`` () =
 
   Expect.similar
     rendered
-    """//******************************************
-//****This file is auto generated***********
-//******************************************
-import * as System from "./System"
-// skipped TValue
-// skipped TKey
+    """
+//////////////////////////////////////
+// This file is auto generated //
+//////////////////////////////////////
+import {TsType} from "./"
 export type KeyValuePair<TKey,TValue> = {Key:TKey,Value:TValue}
-export const defaultKeyValuePair: <TKey,TValue>(tKey:TKey,tValue:TValue) => KeyValuePair<TKey,TValue> = <TKey,TValue>(tKey:TKey,tValue:TValue) => ({Key:tKey,Value:tValue})
+export var defaultKeyValuePair: <TKey,TValue>(tKey:TKey,tValue:TValue) => KeyValuePair<TKey,TValue> = <TKey,TValue>(tKey:TKey,tValue:TValue) => ({Key:tKey,Value:tValue})
 export type IEnumerable<T> = Array<T>
-export const defaultIEnumerable: <T>(t:T) => IEnumerable<T> = <T>(t:T) => []
+export var defaultIEnumerable: <T>(t:T) => IEnumerable<T> = <T>(t:T) => []
 """
 
 type RecordWithKeyValueList =
@@ -79,8 +78,8 @@ let ``Render IEnumerable of KeyValue pairs property`` () =
     """export type RecordWithKeyValueList = {
   keysAndValues: System_Collections_Generic.IEnumerable<System_Collections_Generic.KeyValuePair<System.String,System.Int32>>
 }
-export const defaultRecordWithKeyValueList: RecordWithKeyValueList = {
-  keysAndValues: System_Collections_Generic.defaultIEnumerable(System_Collections_Generic.defaultKeyValuePair(System.defaultString,System.defaultInt32)),
+export var defaultRecordWithKeyValueList: RecordWithKeyValueList = {
+  keysAndValues: [],
 }
 """
 // keysAndValues: System_Collections_Generic.defaultIEnumerable<System_Collections_Generic.KeyValuePair<System.defaultString,System.defaultInt32>>(System_Collections_Generic.defaultKeyValuePair),

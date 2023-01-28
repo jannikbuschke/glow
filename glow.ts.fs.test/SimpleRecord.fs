@@ -23,10 +23,10 @@ export type SimpleRecord = {
   number: System.Int32
   obj: System.Object
 }
-export const defaultSimpleRecord: SimpleRecord = {
- id: System.defaultGuid,
- name: System.defaultString,
- number: System.defaultInt32,
- obj: System.defaultObject,
+export var defaultSimpleRecord: SimpleRecord = {
+ id: "00000000-0000-0000-0000-000000000000",
+ name: "",
+ number: 0,
+ obj: {},
 }
 """

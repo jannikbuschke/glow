@@ -33,7 +33,7 @@ let ``Render FSharp String Map`` () =
   Expect.similar
     rendered
     """export type FSharpStringMap<TValue> = { [key: string ]: TValue }
-export const defaultFSharpStringMap: <TValue>(t:string,tValue:TValue) => FSharpStringMap<TValue> = <TValue>(t:string,tValue:TValue) => ({})
+export var defaultFSharpStringMap: <TValue>(t:string,tValue:TValue) => FSharpStringMap<TValue> = <TValue>(t:string,tValue:TValue) => ({})
 """
 
 
@@ -45,7 +45,7 @@ let ``Render FSharp Map`` () =
     rendered
     """
 export type FSharpMap<TKey, TValue> = [TKey,TValue][]
-export const defaultFSharpMap: <TKey, TValue>(tKey:TKey,tValue:TValue) => FSharpMap<TKey, TValue> = <TKey, TValue>(tKey:TKey,tValue:TValue) => []
+export var defaultFSharpMap: <TKey, TValue>(tKey:TKey,tValue:TValue) => FSharpMap<TKey, TValue> = <TKey, TValue>(tKey:TKey,tValue:TValue) => []
 """
 
 type Language =
@@ -66,9 +66,9 @@ let ``Render LocalizableValue`` () =
   default: T
   localized: Microsoft_FSharp_Collections.FSharpMap<Language,T>
 }
-export const defaultLocalizableValue: <T>(t:T) => LocalizableValue<T> = <T>(t:T) => ({
+export var defaultLocalizableValue: <T>(t:T) => LocalizableValue<T> = <T>(t:T) => ({
   default: t,
-  localized: Microsoft_FSharp_Collections.defaultFSharpMap(defaultLanguage,t),
+  localized: [],
 })
 """
 
@@ -84,6 +84,6 @@ let ``Render LocalizableString`` () =
     """export type Container = {
  title: LocalizableValue<System.String>
 }
-export const defaultContainer: Container = {
+export var defaultContainer: Container = {
  title: defaultLocalizableValue(System.defaultString),
 }"""

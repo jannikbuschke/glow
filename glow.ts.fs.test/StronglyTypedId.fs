@@ -14,7 +14,7 @@ let ``Render StronglyTypedId`` () =
     rendered
     """
 export type MyRecordId = System.Guid
-export const defaultMyRecordId: MyRecordId = System.defaultGuid
+export var defaultMyRecordId: MyRecordId = System.defaultGuid
 """
 
   let renderedValue = renderTypeAndValue typedefof<MyRecord>
@@ -25,7 +25,7 @@ export const defaultMyRecordId: MyRecordId = System.defaultGuid
 export type MyRecord = {
   id: MyRecordId
 }
-export const defaultMyRecord: MyRecord = {
+export var defaultMyRecord: MyRecord = {
   id: defaultMyRecordId,
 }
 """
