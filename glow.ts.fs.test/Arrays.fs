@@ -42,6 +42,11 @@ let ``Render Array definitions`` () =
     """//////////////////////////////////////
 // This file is auto generated //
 //////////////////////////////////////
+import {TsType} from "./"
+export type Object = any
+export var defaultObject: Object = {}
+export type String = string
+export var defaultString: String = ""
 export type Array<TValue> = TValue[]
 export const defaultArray: <TValue>(tValue:TValue) => Array<TValue> = <TValue>(tValue:TValue) => []
 """

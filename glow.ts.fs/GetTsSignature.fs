@@ -232,7 +232,7 @@ module DefaultTypeDefinitionsAndValues =
 
     add (
       typeof<System.Guid>,
-      ("Guid", None, "`${number}-${number}-${number}-${number}`", None, @"""00000000-0000-0000-000000000000""", true)
+      ("Guid", None, "`${number}-${number}-${number}-${number}-${number}`", None, @"""00000000-0000-0000-0000-000000000000""", true)
     )
 
     add (typeof<System.Int32>, ("Int32", None, "number", None, "0", true))
