@@ -135,7 +135,7 @@ export function LoginView() {
         }}
         onSuccess={(v) => {
           console.log({ result: v })
-          localStorage.setItem("user", v.playerUnitId)
+          localStorage.setItem("user", v.playerId)
           navigate("/game/" + v.gameId)
         }}
       >

@@ -1,7 +1,8 @@
 import { Hex } from "react-hexgrid"
 import { Paper, Text } from "@mantine/core"
 import { css } from "@emotion/react"
-import { CurrentGameState, PlayerUnit } from "../../client/TreasureIsland"
+import { Game, Player, PlayerUnit } from "../../client/TreasureIsland"
+import { FsMap } from "../fsharp-map"
 
 function CoordinatesView({ hex: { q, r, s } }: { hex: Hex }) {
   return (
@@ -15,24 +16,31 @@ export function RenderPlayer({
   player,
   currentState,
 }: {
-  player: PlayerUnit
-  currentState: CurrentGameState | null
+  player: Player
+  currentState: Game
 }) {
-  const isActivePlayer = Boolean(
-    currentState !== null &&
-      currentState !== undefined &&
-      currentState.game.activeUnit !== null &&
-      currentState.game.activeUnit === player.id,
+  const activeUnit =
+    currentState.activeUnit !== null
+      ? FsMap.get(currentState.playerUnits, currentState.activeUnit)
+      : undefined
+
+  const playerUnit = FsMap.values(currentState.playerUnits).find(
+    (v) => v.playerId === player.id,
+  )
+  const activeUnitIsCurrentPlayerUnit = Boolean(
+    activeUnit !== undefined && activeUnit.playerId === player.id,
   )
   return (
     <Paper
       shadow="xs"
-      withBorder={isActivePlayer}
+      withBorder={activeUnitIsCurrentPlayerUnit}
       sx={(theme) => ({
-        border: isActivePlayer
+        border: activeUnitIsCurrentPlayerUnit
           ? `2px solid ${theme.colors.blue![3]}`
           : `2px solid ${theme.colors.gray![0]}`,
-        background: isActivePlayer ? theme.colors.blue![0] : undefined,
+        background: activeUnitIsCurrentPlayerUnit
+          ? theme.colors.blue![0]
+          : undefined,
       })}
       p="xs"
       css={css`
@@ -44,26 +52,30 @@ export function RenderPlayer({
         }
       }
     >
-      <div>
+      {!playerUnit ? (
+        <div>no unit ({player.name})</div>
+      ) : (
         <div>
-          <b>
-            {player.icon} {player.name}
-          </b>
-          <br />
-          <Text color="gray">{player.id.substring(0, 8)}</Text>
           <div>
-            ❤ {player.health} ({player.isAlive ? "alive" : "dead"})
+            <b>
+              {playerUnit?.icon} {player.name}
+            </b>
+            <br />
+            <Text color="gray">{player.id.substring(0, 8)}</Text>
+            <div>
+              ❤ {playerUnit.health} ({playerUnit.isAlive ? "alive" : "dead"})
+            </div>
+            {/* <div>⚔ {playerUnit.baseAttack}</div>
+            <div>🛡 {playerUnit.baseProtection}</div> */}
+            <div>
+              {/* <span style={{ color: "green" }}>➕</span> {playerUnit.regenRate} */}
+            </div>
+            {/* 💎💍👑🧿🔮♟🗿⚱ */}
           </div>
-          <div>⚔ {player.baseAttack}</div>
-          <div>🛡 {player.baseProtection}</div>
-          <div>
-            <span style={{ color: "green" }}>➕</span> {player.regenRate}
-          </div>
-          {/* 💎💍👑🧿🔮♟🗿⚱ */}
+          <div>{playerUnit.items.map((v) => v.icon).join(" ")}</div>
+          <CoordinatesView hex={playerUnit.position} />
         </div>
-        <div>{player?.items?.map((v) => v.icon).join(" ")}</div>
-        <CoordinatesView hex={player.position} />
-      </div>
+      )}
     </Paper>
   )
 }

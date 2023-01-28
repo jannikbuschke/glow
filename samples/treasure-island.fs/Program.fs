@@ -113,7 +113,7 @@ module Program =
     let serialize (obj: obj) =
        System.Text.Json.JsonSerializer.Serialize(obj, options)
 
-    Glow.SampleData.generateSampleData assemblies serialize
+    // Glow.SampleData.generateSampleData assemblies serialize
     
     services.AddFixForGlowConfigurationMissingDependencies(assemblies)
     services.AddAzureKeyvaultClientProvider()

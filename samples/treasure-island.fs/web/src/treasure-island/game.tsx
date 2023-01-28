@@ -35,8 +35,10 @@ import { match } from "ts-pattern"
 import { defaultFSharpResult } from "../client/Microsoft_FSharp_Core"
 import img1 from "../assets/mountain-and-river.png"
 import img2 from "../assets/mountain-and-river-2.png"
-import grass4 from "../assets/mountain-and-river-2.png"
-const images = require.context("../assets/", true)
+import { containsKey, FsMap } from "./fsharp-map"
+import { ErrorBoundary } from "glow-core/lib/errors/error-boundary"
+// import grass4 from "../assets/mountain-and-river-2.png"
+// const images = require.context("../assets/", true)
 
 function positionsAreEqual(p1: Position, p2: Position | null) {
   if (p2 === null) {
@@ -67,6 +69,12 @@ export function GameView() {
     .exhaustive()
 }
 
+function getActiveUnit(game: Game) {
+  return game.activeUnit !== null
+    ? FsMap.get(game.playerUnits, game.activeUnit)
+    : null
+}
+
 export function RenderGame({
   game: currentState,
   refetch,
@@ -80,57 +88,34 @@ export function RenderGame({
       color: "gray",
     })
   }, [])
-  useSubscriptions((e, ev) => {
-    console.log({ e, ev })
-  }, [])
-  useSubscription("TreasureIsland.ItemPicked", (e) => {}, [])
-  useSubscription(
-    "TreasureIsland.UnitAttacked",
-    (e) => {
-      const src = currentState?.playerUnits[e.attackingUnit]!
-      const target = currentState?.playerUnits[e.targetUnit]!
-
-      showNotification({
-        title: "Player attacked",
-        color: "red",
-        message: `${src.name} ${src.icon} attacked ${target.name} ${target.icon} and placed ${e.damage} damage`,
-      })
-    },
-    [currentState],
-  )
-
-  useSubscription(
-    "TreasureIsland.GameEventNotification",
-    (e) => {
-      refetch()
-      match(e.gameEvent)
-        .with({ Case: "ActiveUnitChanged" }, (e1) => {
-          showNotification({
-            title: "Active unit changed",
-            color: "gray",
-            message: e.gameEvent,
-          })
-        })
-        .otherwise(() => {
-          showNotification({
-            title: "Game event",
-            color: "gray",
-            message: e.gameEvent,
-          })
-        })
-    },
-    [],
-  )
 
   const [userId, setUserId] = React.useState<Guid | null>(null)
-  const user = React.useMemo(() => {
-    if (userId && currentState) {
-      const player = currentState.players[userId]
-      return player
-      const unit = currentState.playerUnits.find((v) => v[1].playerId == userId)
-      return unit
+
+  const [user, activeUnit] = React.useMemo(() => {
+    console.log({
+      userId,
+      players: currentState.players,
+      units: currentState.playerUnits,
+    })
+
+    if (userId !== null) {
+      if (FsMap.containsKey(currentState.players, userId)) {
+        console.log("user exists")
+        const player = FsMap.get(currentState.players, userId)
+        console.log("player", player)
+        return [player, null]
+      } else {
+        console.log("current user does not exist in players")
+
+        return [null, null]
+      }
+      // const player = currentState.players[userId]
+      // console.log({ players: currentState.players })
+      // return player
+      // const unit = currentState.playerUnits.find((v) => v[1].playerId == userId)
+      // return unit
     } else {
-      return null
+      return [null, null]
     }
   }, [userId, currentState])
   React.useEffect(() => {
@@ -147,6 +132,7 @@ export function RenderGame({
         e.preventDefault()
         e.stopPropagation()
         const cell: Hex = h.state.hex
+        console.log("unit clicked", e, h, cell)
         const userPosition = user?.position
         if (userPosition) {
           const distance = HexUtils.distance(cell, userPosition)
@@ -200,9 +186,6 @@ export function RenderGame({
     return theme.colors[color]?.[7] || tile.color || "dark"
   }
 
-  const { activeUnit } = currentState
-  // return <RenderObject {...{ activeUnit }} game={currentState} />
-
   const img = [
     "grass-4",
     "grass-and-river",
@@ -255,7 +238,9 @@ export function RenderGame({
         }}
       >
         <div>
-          {user && <RenderPlayer player={user} currentState={currentState} />}
+          <ErrorBoundary>
+            {user && <RenderPlayer player={user} currentState={currentState} />}
+          </ErrorBoundary>
         </div>
         <Space my="xs" />
         <ViewPanel
@@ -308,8 +293,8 @@ export function RenderGame({
               }}
             />
           </div>
-          {currentState.players.map((v) => (
-            <div>{v[0]}</div>
+          {currentState.players.map((v, i) => (
+            <div key={i}>{v[0]}</div>
           ))}
           {/* {currentState &&
             Object.keys(currentState.units)
@@ -548,15 +533,17 @@ export function RenderGame({
 
               {[...img].map((v, i) => (
                 <Pattern
+                  key={i}
                   id={`./${v}.png`}
-                  link={images(`./${v}.png`)}
+                  link={`./${v}.png`}
                   size={{ x: 5, y: 5 }}
                 />
               ))}
               {[, ...characters].map((v, i) => (
                 <Pattern
+                  key={i}
                   id={`./${v}.png`}
-                  link={images(`./${v}.png`)}
+                  link={`./${v}.png`}
                   dx={1.4}
                   dy={0.9}
                   size={{ x: 3.5, y: 3.5 }}
