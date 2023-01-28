@@ -2,14 +2,14 @@
 //   This file is auto generated   //
 //////////////////////////////////////
 
-import * as TsType from "./TsType"
-import * as System from "./System"
-import * as System_Collections_Generic from "./System_Collections_Generic"
+import {TsType} from "./"
+import {System} from "./"
+import {System_Collections_Generic} from "./"
 
 export type GetProfile = {
   
 }
-export const defaultGetProfile: GetProfile = {
+export var defaultGetProfile: GetProfile = {
   
 }
 export type Profile = {
@@ -25,16 +25,16 @@ export type Profile = {
   authenticationType: System.String
   upn: System.String
 }
-export const defaultProfile: Profile = {
-  displayName: System.defaultString,
-  id: System.defaultString,
-  email: System.defaultString,
-  identityName: System.defaultString,
-  isAuthenticated: System.defaultBoolean,
-  objectId: System.defaultString,
-  userId: System.defaultString,
-  scopes: System_Collections_Generic.defaultIEnumerable(System.defaultString),
-  claims: System_Collections_Generic.defaultIEnumerable(System_Collections_Generic.defaultKeyValuePair(System.defaultString,System.defaultString)),
-  authenticationType: System.defaultString,
-  upn: System.defaultString,
+export var defaultProfile: Profile = {
+  displayName: "", //#//
+  id: "", //#//
+  email: "", //#//
+  identityName: "", //#//
+  isAuthenticated: false, //#//
+  objectId: "", //#//
+  userId: "", //#//
+  scopes: [], // wellknown type None
+  claims: [], // wellknown type None
+  authenticationType: "", //#//
+  upn: "", //#//
 }

@@ -2,14 +2,14 @@
 //   This file is auto generated   //
 //////////////////////////////////////
 
-import * as TsType from "./TsType"
-import * as System from "./System"
-import * as System_Collections_Generic from "./System_Collections_Generic"
+import {TsType} from "./"
+import {System} from "./"
+import {System_Collections_Generic} from "./"
 
 export type GetEsEvents = {
   
 }
-export const defaultGetEsEvents: GetEsEvents = {
+export var defaultGetEsEvents: GetEsEvents = {
   
 }
 export type EventViewmodel = {
@@ -29,20 +29,20 @@ export type EventViewmodel = {
   isArchived: System.Boolean
   aggregateTypeName: System.String
 }
-export const defaultEventViewmodel: EventViewmodel = {
-  id: System.defaultGuid,
-  version: System.defaultInt64,
-  sequence: System.defaultInt64,
-  data: System.defaultObject,
-  streamId: System.defaultGuid,
-  streamKey: System.defaultString,
-  timestamp: System.defaultDateTimeOffset,
-  tenantId: System.defaultString,
-  eventTypeName: System.defaultString,
-  dotNetTypeName: System.defaultString,
-  causationId: System.defaultString,
-  correlationId: System.defaultString,
-  headers: System_Collections_Generic.defaultDictionary(System.defaultString,System.defaultObject),
-  isArchived: System.defaultBoolean,
-  aggregateTypeName: System.defaultString,
+export var defaultEventViewmodel: EventViewmodel = {
+  id: "00000000-0000-0000-000000000000", //#//
+  version: 0, //#//
+  sequence: 0, //#//
+  data: {}, //#//
+  streamId: "00000000-0000-0000-000000000000", //#//
+  streamKey: "", //#//
+  timestamp: "0000-00-00T00:00:00+00:00", //#//
+  tenantId: "", //#//
+  eventTypeName: "", //#//
+  dotNetTypeName: "", //#//
+  causationId: "", //#//
+  correlationId: "", //#//
+  headers: ({}), // wellknown type None
+  isArchived: false, //#//
+  aggregateTypeName: "", //#//
 }

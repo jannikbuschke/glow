@@ -2,7 +2,7 @@
 //   This file is auto generated   //
 //////////////////////////////////////
 
-import * as TsType from "./TsType"
+import {TsType} from "./"
 
 export type Object = any
-export const defaultObject: Object = {}
+export var defaultObject: Object = {}

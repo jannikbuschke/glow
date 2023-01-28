@@ -2,8 +2,8 @@
 //   This file is auto generated   //
 //////////////////////////////////////
 
-import * as TsType from "./TsType"
-import * as System from "./System"
+import {TsType} from "./"
+import {System} from "./"
 
 export type SetOpenIdConnectOptions = {
   tenantId: System.String
@@ -11,9 +11,9 @@ export type SetOpenIdConnectOptions = {
   clientSecret: System.String
   instance: System.String
 }
-export const defaultSetOpenIdConnectOptions: SetOpenIdConnectOptions = {
-  tenantId: System.defaultString,
-  clientId: System.defaultString,
-  clientSecret: System.defaultString,
-  instance: System.defaultString,
+export var defaultSetOpenIdConnectOptions: SetOpenIdConnectOptions = {
+  tenantId: "", //#//
+  clientId: "", //#//
+  clientSecret: "", //#//
+  instance: "", //#//
 }

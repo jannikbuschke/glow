@@ -2,11 +2,11 @@
 //   This file is auto generated   //
 //////////////////////////////////////
 
-import * as TsType from "./TsType"
+import {TsType} from "./"
 
 export type Unit = {
   
 }
-export const defaultUnit: Unit = {
+export var defaultUnit: Unit = {
   
 }
