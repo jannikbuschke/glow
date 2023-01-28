@@ -27,8 +27,6 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "glow.meta.test", "glow.meta
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "fsharp.experiments", "fsharp.experiments\fsharp.experiments.fsproj", "{68E80A7A-3C8F-49FD-94E8-6EF00328D004}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "treause-island", "sample.treasure-island.cs\treause-island.csproj", "{C498090A-9C1B-4289-AA12-7F5D2174870D}"
-EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "glow.core.fs", "glow.core.fs\glow.core.fs.fsproj", "{1EFEA4D5-A76C-4F82-8CF8-4F2E35DDEA3C}"
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "marten.stj", "samples\marten.stj\marten.stj.fsproj", "{59FDEEB4-91FE-49E9-89BC-68800F8FA2A0}"
@@ -92,10 +90,6 @@ Global
 		{68E80A7A-3C8F-49FD-94E8-6EF00328D004}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{68E80A7A-3C8F-49FD-94E8-6EF00328D004}.Release|Any CPU.Build.0 = Release|Any CPU
 
-		{C498090A-9C1B-4289-AA12-7F5D2174870D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C498090A-9C1B-4289-AA12-7F5D2174870D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C498090A-9C1B-4289-AA12-7F5D2174870D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C498090A-9C1B-4289-AA12-7F5D2174870D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1EFEA4D5-A76C-4F82-8CF8-4F2E35DDEA3C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1EFEA4D5-A76C-4F82-8CF8-4F2E35DDEA3C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1EFEA4D5-A76C-4F82-8CF8-4F2E35DDEA3C}.Release|Any CPU.ActiveCfg = Release|Any CPU
