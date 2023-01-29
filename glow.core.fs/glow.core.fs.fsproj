@@ -12,6 +12,7 @@
         <Compile Include="GenerateSubscriptions.fs" />
         <Compile Include="GenerateApi.fs" />
         <Compile Include="GenerateTsClient.fs" />
+        <Compile Include="GenerateTsClient2.fs" />
     </ItemGroup>
 
     <ItemGroup>

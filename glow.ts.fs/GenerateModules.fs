@@ -79,6 +79,9 @@ let generateModules (types: Type list) : Namespace list =
   let allTsTypes = getAllTypes (typedefof<System.Object> :: types)
 
   groupToModules (TsType.Any(typeof<System.Object>) :: allTsTypes)
+  
+let generateModules2 (types: System.Type list) =
+  Glow.SecondApproach.collectModules types
 
 let renderPropertyDefinitions (typeToBeRendered: TsType) : string =
   let props = typeToBeRendered.Type.GetProperties(BindingFlags.Public ||| BindingFlags.Instance)

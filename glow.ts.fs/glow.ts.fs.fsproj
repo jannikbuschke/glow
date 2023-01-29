@@ -16,9 +16,9 @@
     <Compile Include="GetTsSignature.fs" />
     <Compile Include="TopologicalSort.fs" />
     <Compile Include="GenericTopologicalSort.fs" />
+    <Compile Include="SecondApproach.fs" />
     <Compile Include="GenerateModules.fs" />
     <Compile Include="SampleData.fs" />
-    <Compile Include="SecondApproach.fs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\core\glow.core.csproj" />

@@ -12,6 +12,7 @@
         <Compile Include="Tests.fs" />
         <Compile Include="MeetingDomain.fs" />
         <Compile Include="ManyTypes.fs" />
+        <Compile Include="GetDependenciesTest.fs" />
         <Compile Include="SystemTypeTests.fs" />
         <Compile Include="FSharpResult.fs" />
         <Compile Include="FSharpMap.fs" />
@@ -30,6 +31,7 @@
         <Compile Include="DateTimes.fs" />
         <Compile Include="DuWithMultipleFields.fs" />
         <Compile Include="RenderModule.fs" />
+        <Compile Include="RenderModule2.fs" />
         <Compile Include="SerializeSomeTypes.fs" />
         <Compile Include="NodaTime.fs" />
         <Compile Include="EntityFrameworkTypes.fs" />
@@ -39,6 +41,7 @@
 
     <ItemGroup>
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
+        <PackageReference Include="FsUnit.xUnit" Version="5.2.0" />
         <PackageReference Include="Expecto" Version="9.0.4" />
         <PackageReference Include="xunit" Version="2.4.1" />
         <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">

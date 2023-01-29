@@ -47,3 +47,7 @@ module Helpers =
   let renderTypeAndValue2 t =
     let rendered = Glow.SecondApproach.renderType t
     rendered
+
+  let renderModule2 m =
+    let rendered = Glow.SecondApproach.renderModule m
+    rendered

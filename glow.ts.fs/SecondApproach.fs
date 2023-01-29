@@ -1,5 +1,6 @@
 ﻿module Glow.SecondApproach
 
+open System.Text
 open System.Text.Json.Serialization
 open Glow.Ts
 open Microsoft.FSharp.Reflection
@@ -10,65 +11,39 @@ type PredefinedValues =
   { InlineDefaultValue: string option
     Name: string option
     Definition: string option
-    Signature: string option } // Name<Generic,Args>
+    Signature: string option
+    Dependencies: System.Type list } // Name<Generic,Args>
+
+let emptyPredefinedValues =
+  { InlineDefaultValue = Some "''"
+    Name = None
+    Definition = None
+    Signature = None
+    Dependencies = [] }
 
 let d =
   dict
-    [ (typeof<string>,
-       { InlineDefaultValue = Some "''"
-         Name = None
-         Definition = None
-         Signature = None })
+    [ (typeof<string>, { emptyPredefinedValues with InlineDefaultValue = Some "''"; Definition=Some "string" })
       (typedefof<Option<_>>,
-       { InlineDefaultValue = Some "null"
-         Definition = Some "T | null"
-         Name = None
-         Signature = None })
-      (typeof<System.Guid>,
-       { InlineDefaultValue = Some $"'{(System.Guid.Empty.ToString())}'"
-         Name = None
-         Definition = None
-         Signature = None })
-      (typeof<int>,
-       { InlineDefaultValue = Some "0"
-         Name = None
-         Definition = None
-         Signature = None })
-      (typeof<int64>,
-       { InlineDefaultValue = Some "0"
-         Name = None
-         Definition = None
-         Signature = None })
-      (typeof<float>,
-       { InlineDefaultValue = Some "0.0"
-         Name = None
-         Definition = None
-         Signature = None })
-      (typeof<bool>,
-       { InlineDefaultValue = Some "false"
-         Name = None
-         Definition = None
-         Signature = None })
-      (typeof<obj>,
-       { InlineDefaultValue = Some "{}"
-         Name = None
-         Definition = None
-         Signature = None })
-      (typeof<unit>,
-       { InlineDefaultValue = Some "()"
-         Name = None
-         Definition = None
-         Signature = None })
-      (typeof<bigint>,
-       { InlineDefaultValue = Some "0"
-         Name = None
-         Definition = None
-         Signature = None })
-      (typedefof<System.Collections.Generic.IEnumerable<_>>,
-       { InlineDefaultValue = Some "[]"
-         Name = None
-         Definition = None
-         Signature = None }) ]
+       { emptyPredefinedValues with
+           InlineDefaultValue = Some "null"
+           Definition = Some "T | null" })
+      (typeof<System.Guid>, { emptyPredefinedValues with InlineDefaultValue = Some $"'{(System.Guid.Empty.ToString())}'"; Definition = Some "`${number}-${number}-${number}-${number}-${number}`"})
+      (typeof<int>, { emptyPredefinedValues with InlineDefaultValue = Some "0"; Definition = Some "number" })
+      (typeof<int64>, { emptyPredefinedValues with InlineDefaultValue = Some "0"; Definition = Some "number" })
+      (typeof<float>, { emptyPredefinedValues with InlineDefaultValue = Some "0.0"; Definition = Some "number" })
+      (typeof<bool>, { emptyPredefinedValues with InlineDefaultValue = Some "false"; Definition = Some "boolean" })
+      (typeof<obj>, { emptyPredefinedValues with InlineDefaultValue = Some "{}" })
+      (typeof<unit>, { emptyPredefinedValues with InlineDefaultValue = Some "()" })
+      (typeof<bigint>, { emptyPredefinedValues with InlineDefaultValue = Some "0"; Definition = Some "number" })
+      (typedefof<System.Collections.Generic.IEnumerable<_>>, { emptyPredefinedValues with InlineDefaultValue = Some "[]" })
+      (typedefof<System.Collections.Generic.IList<_>>, { emptyPredefinedValues with InlineDefaultValue = Some "[]" })
+      (typedefof<System.Collections.Generic.IReadOnlyCollection<_>>, { emptyPredefinedValues with InlineDefaultValue = Some "[]" }) 
+      (typedefof<System.Collections.Generic.IReadOnlyList<_>>, { emptyPredefinedValues with InlineDefaultValue = Some "[]" }) 
+      (typedefof<System.Collections.Generic.IReadOnlySet<_>>, { emptyPredefinedValues with InlineDefaultValue = Some "[]" })
+      (typedefof<System.Collections.Generic.List<_>>, { emptyPredefinedValues with InlineDefaultValue = Some "[]" })
+      (typedefof<System.Collections.Generic.ICollection<_>>, { emptyPredefinedValues with InlineDefaultValue = Some "[]" })
+    ]
 
 let defaultTypes =
   System.Collections.Generic.Dictionary<System.Type, PredefinedValues>(d)
@@ -184,13 +159,14 @@ let renderSingleFieldUnionCaseDefaultValue (callingModule: string) (case: UnionC
   else
     $"""{{ Case: "{case.Name}", Fields: default{propertyTypeName} }}"""
 
-let getDefaultValue (callingModule:string) (propertyType:System.Type)=
+let getDefaultValue (callingModule: string) (propertyType: System.Type) =
   let moduleName = getModuleName propertyType
   let name = getName propertyType
   let isGeneric = propertyType.IsGenericType
   let kind = getKind propertyType
   let prefix = if moduleName = callingModule then "" else moduleName + "."
   let kind = getKind propertyType
+
   let prefedinedValue =
     match
       defaultTypes.TryGetValue(
@@ -202,11 +178,13 @@ let getDefaultValue (callingModule:string) (propertyType:System.Type)=
     with
     | true, value -> value.InlineDefaultValue
     | _ -> None
+
   let postfix =
     if isGeneric then
       (getGenericParameterValues callingModule propertyType)
     else
       ""
+
   let value =
     prefedinedValue
     |> Option.defaultValue (
@@ -268,6 +246,7 @@ let renderPropertyNameAndValue (camelize: bool) (callingModule: string) (fieldIn
   //   )
 
   let value = getDefaultValue callingModule propertyType
+
   if camelize then
     $"""  {Utils.camelize fieldInfo.Name}: {value}"""
   else
@@ -369,21 +348,27 @@ let renderDu (t: System.Type) =
     | [] -> failwith "todo"
     | [ singleCase ] ->
       let caseFields = singleCase.GetFields() |> Seq.toList
+
       match caseFields with
-      | [] -> failwith "todo"
-      | [singleField] ->
-        let singleFieldCaseSignature = getSingleFieldCaseSignature name singleField singleCase
+      | [] ->
+        $"""export type {singleCase.Name} = {singleCase.Name} // single case no fields"""
+      | [ singleField ] ->
+        let singleFieldCaseSignature =
+          getSingleFieldCaseSignature name singleField singleCase
+
         let prop = getPropertySignature callingModule singleField.PropertyType
         $"""export type {singleFieldCaseSignature} = {prop}"""
       | fields -> failwith "todo"
-// export var defaultMyRecordId: MyRecordId = System.defaultGuid
+    // export var defaultMyRecordId: MyRecordId = System.defaultGuid
     | cases ->
       let renderCase (case: UnionCaseInfo) =
 
         let caseFields = case.GetFields() |> Seq.toList
 
         match caseFields with
-        | [] -> failwith "todo"
+        | [] ->
+          let fieldNames = caseFields |> List.map (fun v -> v.Name) |> String.concat ", "
+          $"""export type {fieldNames} = {fieldNames} // many cases, no fields"""
         | [ singleField ] ->
           let singleFieldCaseSignature = getSingleFieldCaseSignature name singleField case
 
@@ -410,31 +395,37 @@ let renderDu (t: System.Type) =
     | [] -> failwith "todo"
     | [ singleCase ] ->
       let caseFields = singleCase.GetFields() |> Seq.toList
+
       match caseFields with
       | [] -> failwith "todo"
-      | [singleField] ->
-          let singleFieldCaseSignature = getFieldCaseName name singleCase
-          let unwrappedValue = getDefaultValue callingModule singleField.PropertyType
-          let singleFieldUnionCaseDefaultValue =
-            renderSingleFieldUnionCaseDefaultValue callingModule singleCase singleField
-          // unrwap
-          $"""export var default{singleFieldCaseSignature} = {unwrappedValue}"""
+      | [ singleField ] ->
+        let singleFieldCaseSignature = getFieldCaseName name singleCase
+        let unwrappedValue = getDefaultValue callingModule singleField.PropertyType
+
+        let singleFieldUnionCaseDefaultValue =
+          renderSingleFieldUnionCaseDefaultValue callingModule singleCase singleField
+        // unrwap
+        $"""export var default{singleFieldCaseSignature} = {unwrappedValue}"""
       | fields -> failwith "todo"
     | cases ->
       let renderCase (case: UnionCaseInfo) =
         let caseFields = case.GetFields() |> Seq.toList
 
         match caseFields with
-        | [] -> failwith "todo"
+        | [] ->
+          $"""//many cases, no fields"""
+          // failwith "todo"
         | [ singleField ] ->
           let singleFieldCaseSignature = getFieldCaseName name case
+
           let singleFieldUnionCaseDefaultValue =
             renderSingleFieldUnionCaseDefaultValue callingModule case singleField
+
           if t.IsGenericType then
             $"""export var default{singleFieldCaseSignature} = {anonymousFunctionSignature} => {singleFieldUnionCaseDefaultValue}"""
           else
             $"""export var default{singleFieldCaseSignature} = {singleFieldUnionCaseDefaultValue}"""
-          // $"""export var default{singleFieldCaseSignature} = {anonymousFunctionSignature} => {singleFieldUnionCaseDefaultValue}"""
+        // $"""export var default{singleFieldCaseSignature} = {anonymousFunctionSignature} => {singleFieldUnionCaseDefaultValue}"""
         | fields ->
           let signature = getFieldCaseName name case
 
@@ -451,35 +442,37 @@ let renderDu (t: System.Type) =
   let firstCaseName =
     match cases with
     | [] -> failwith "todo"
-    | [case] -> 
+    | [ case ] ->
       let singleFieldCaseSignature = getFieldCaseName name case
       $"""default{singleFieldCaseSignature}"""
     | cases ->
       let case = cases.Head
       let singleFieldCaseSignature = getFieldCaseName name case
       $"""default{singleFieldCaseSignature}"""
-    // match cases with
-    // | [] -> failwith "todo"
-    // | [ case ] ->
-    //     let singleFieldCaseSignature = getFieldCaseName name case
-    //     $"""default{singleFieldCaseSignature}"""
-    // | cases ->
-    //   let case = cases |> List.head
-    //   let caseFields = case.GetFields() |> Seq.toList
-    //   match caseFields with
-    //   | [] -> failwith "todo"
-    //   | [ singleField ] ->
-    //     let singleFieldCaseSignature = getFieldCaseName name case
-    //     $"""default{singleFieldCaseSignature}"""
-    //   | fields ->
-    //     let singleFieldCaseSignature = getFieldCaseName name case
-    //     $"""default{singleFieldCaseSignature}"""
+  // match cases with
+  // | [] -> failwith "todo"
+  // | [ case ] ->
+  //     let singleFieldCaseSignature = getFieldCaseName name case
+  //     $"""default{singleFieldCaseSignature}"""
+  // | cases ->
+  //   let case = cases |> List.head
+  //   let caseFields = case.GetFields() |> Seq.toList
+  //   match caseFields with
+  //   | [] -> failwith "todo"
+  //   | [ singleField ] ->
+  //     let singleFieldCaseSignature = getFieldCaseName name case
+  //     $"""default{singleFieldCaseSignature}"""
+  //   | fields ->
+  //     let singleFieldCaseSignature = getFieldCaseName name case
+  //     $"""default{singleFieldCaseSignature}"""
 
   let renderCaseSignature (case: UnionCaseInfo) =
     let caseFields = case.GetFields() |> Seq.toList
 
     match caseFields with
-    | [] -> failwith "todo"
+    | [] ->
+      $"""// no fields"""
+      // failwith "todo"
     | [ singleField ] ->
       let singleFieldCaseSignature = getSingleFieldCaseSignature name singleField case
       singleFieldCaseSignature
@@ -558,20 +551,23 @@ let renderPredefinedTypeFromDefaultValue (t: System.Type) (predefined: Predefine
 
   if t.IsGenericType then
     let anonymousFunctionSignature = getAnonymousFunctionSignatureForDefaultValue t
-          //
-          // let singleFieldCaseSignature = getSingleFieldCaseName name singleField case
-          //
+    //
+    // let singleFieldCaseSignature = getSingleFieldCaseName name singleField case
+    //
     // let singleFieldUnionCaseDefaultValue =
     //   renderSingleFieldUnionCaseDefaultValue callingModule case singleField
-          //
-          // $"""export var default{singleFieldCaseSignature} = {anonymousFunctionSignature} => {singleFieldUnionCaseDefaultValue}"""
-    
+    //
+    // $"""export var default{singleFieldCaseSignature} = {anonymousFunctionSignature} => {singleFieldUnionCaseDefaultValue}"""
+
     $"""
-export type {name}{genericArguments} = {(predefined.Definition|>Option.defaultValue("unknown"))}
-export var default{name}: {anonymousFunctionSignature} => {name}{genericArguments} = {anonymousFunctionSignature} => {predefined.InlineDefaultValue|>Option.defaultValue "unknown"}
+export type {name}{genericArguments} = {(predefined.Definition |> Option.defaultValue "unknown")}
+export var default{name}: {anonymousFunctionSignature} => {name}{genericArguments} = {anonymousFunctionSignature} => {predefined.InlineDefaultValue |> Option.defaultValue "unknown"}
 """
   else
-    failwith "todo"
+    $"""
+export type {name} = {(predefined.Definition |> Option.defaultValue "any")}
+export var default{name}: {name} = {predefined.InlineDefaultValue |> Option.defaultValue "unknown"}
+"""
 
 let rec renderType (t: System.Type) =
   let kind = getKind t
@@ -585,54 +581,225 @@ let rec renderType (t: System.Type) =
           t
       )
     with
-    | true, value ->
-      Some(renderPredefinedTypeFromDefaultValue t value)
+    | true, value -> Some(renderPredefinedTypeFromDefaultValue t value)
     | _ -> None
 
-  if predefinedDefinitionAndValue.IsSome then predefinedDefinitionAndValue.Value
+  if predefinedDefinitionAndValue.IsSome then
+    predefinedDefinitionAndValue.Value
   else
-      match kind with
-      | TypeKind.List ->
-        """export type FSharpList<T> = Array<T>
-  export var defaultFSharpList: <T>(t:T) => FSharpList<T> = <T>(t:T) => []
-  """
+    match kind with
+    | TypeKind.List ->
+      """export type FSharpList<T> = Array<T>
+export var defaultFSharpList: <T>(t:T) => FSharpList<T> = <T>(t:T) => []
+"""
 
-      | TypeKind.Record ->
-        if t.IsGenericType && not t.IsGenericTypeDefinition
-        then ""
-        else renderRecord t
-      | TypeKind.Union -> renderDu t
-      | TypeKind.Array -> renderType (typeof<System.Collections.Generic.List<_>>.MakeGenericType (t.GetElementType()))
-      | TypeKind.Map ->
-        //if key type is string, use normal object
-        if t.GenericTypeArguments.[0] = typeof<string> then
-          """export type FSharpStringMap<TValue> = { [key: string ]: TValue }
+    | TypeKind.Record ->
+      if t.IsGenericType && not t.IsGenericTypeDefinition then
+        ""
+      else
+        renderRecord t
+    | TypeKind.Union -> renderDu t
+    | TypeKind.Array -> renderType (typeof<System.Collections.Generic.List<_>>.MakeGenericType (t.GetElementType()))
+    | TypeKind.Map ->
+      //if key type is string, use normal object
+      if t.GenericTypeArguments.[0] = typeof<string> then
+        """export type FSharpStringMap<TValue> = { [key: string ]: TValue }
   export var defaultFSharpStringMap: <TValue>(t:string,tValue:TValue) => FSharpStringMap<TValue> = <TValue>(t:string,tValue:TValue) => ({})"""
-        else
-          """export type FSharpMap<TKey, TValue> = [TKey,TValue][]
+      else
+        """export type FSharpMap<TKey, TValue> = [TKey,TValue][]
   export var defaultFSharpMap: <TKey, TValue>(tKey:TKey,tValue:TValue) => FSharpMap<TKey, TValue> = <TKey, TValue>(tKey:TKey,tValue:TValue) => []"""
-      | _ ->
-        let name = getName t
-        let values = t.GetEnumNames() |> Array.map (fun v -> $"\"{v}\"") |> Array.toList
+    | TypeKind.Enum ->
+      let name = getName t
+      let values = t.GetEnumNames() |> Array.map (fun v -> $"\"{v}\"") |> Array.toList
 
-        $"""export type {name} = {values |> String.concat " | "}
+      $"""export type {name} = {values |> String.concat " | "}
   export var {name}_AllValues = [{values |> String.concat ", "}] as const
   export var default{name}: {name} = {values |> List.head}
       """
+    | x ->
+      if t.IsGenericParameter
+        then ""
+      else
+        // probably a class, try to use same strategy as record
+        renderRecord t
 
 // export type EntityState = "Detached" | "Unchanged" | "Deleted" | "Modified" | "Added"
 // export var EntityState_AllValues = ["Detached", "Unchanged", "Deleted", "Modified", "Added"] as const
 // export var defaultEntityState: EntityState = "Detached"
-let getDependencies (t: System.Type) =
-  let kind = getKind t
 
-  match kind with
-  | TypeKind.Record -> t.GetFields() |> Array.map (fun f -> f.FieldType) |> Array.toList
-  | _ -> []
+let rec getGenericDefinitionAndArgumentsAsDependencies (t: System.Type) =
+  if t.IsGenericTypeDefinition then
+    failwith "t is a generic type definition but should not be"
+  if not t.IsGenericType then
+    failwith "t is not a generic type but should be"
+
+  let genericDefinition = t.GetGenericTypeDefinition()
+
+  let args =
+    t.GenericTypeArguments
+    |> Seq.collect (fun v ->
+      if v.IsGenericType && not v.IsGenericTypeDefinition then
+        getGenericDefinitionAndArgumentsAsDependencies v
+      else
+        [ v ])
+    |> Seq.toList
+
+  [ genericDefinition ] @ args
+
+let getDependencies (t: System.Type) =
+  match defaultTypes.TryGetValue t with
+  | true, value -> value.Dependencies
+  | _ ->
+    let kind = getKind t
+
+    match kind with
+    | TypeKind.Record ->
+      t.GetProperties()
+      |> Seq.collect (fun f ->
+        if not f.PropertyType.IsGenericType || (f.PropertyType.IsGenericType && f.PropertyType.IsGenericTypeDefinition) then
+          [ f.PropertyType ]
+        else
+          getGenericDefinitionAndArgumentsAsDependencies f.PropertyType)
+      |> Seq.toList
+    | TypeKind.Union ->
+      let x =
+        (FSharpType.GetUnionCases t)
+        |> Seq.collect (fun c -> c.GetFields() |> Array.map (fun f -> f.PropertyType) |> Array.toList)
+        |> Seq.toList
+
+      x
+    | _ -> []
 
 type TsModule =
   { Name: string
     Types: System.Type list }
+
+let getFilteredDeps (moduleName:string)(t:System.Type)=
+  getDependencies t |> List.filter(fun v->
+    let name = getModuleName v
+    name = moduleName
+    )
+
+let collectModules (types: System.Type list) =
+  let deps =
+      types
+      |> List.collect getDependencies
+
+  types @ deps
+      |> List.groupBy getModuleName
+      |> List.map (fun (v, items) ->
+        
+        let sorted, cyclics = Glow.GenericTopologicalSort.topologicalSort (getFilteredDeps v) (items |> List.distinct)
+        {
+        Name = v
+        Types = sorted
+      })
+  
+
+// let getDependencies (n: TsModule) =
+//   []
+// let deps =
+//   n.Types
+//   |> List.filter Glow.GetTsSignature.isNonGenericTypeOrGenericTypeDefinition
+//   |> List.collect (fun v -> v.Dependencies)
+//   |> List.map (fun v -> v.Id)
+//   |> List.distinctBy (fun v -> v.OriginalNamespace)
+//   |> List.filter (fun v -> v.TsSignature.TsNamespace <> n.Name)
+//
+// deps
+
+let renderModule (m: TsModule) =
+
+  let name = m.Name
+  // let deps = getDependencies m
+
+  let builder = StringBuilder()
+
+  builder
+    .AppendLine("//////////////////////////////////////")
+    .AppendLine("//   This file is auto generated   //")
+    .AppendLine("//////////////////////////////////////")
+    .AppendLine("")
+  |> ignore
+
+  // builder.AppendLine("import * as TsType from \"./TsType\"") |> ignore
+  builder.AppendLine("import {TsType} from \"./\"") |> ignore
+
+  // deps
+  // |> List.iter (fun v ->
+  //   let name = v.TsSignature.TsNamespace |> NamespaceName.sanitize
+  //
+  //   if v.Id = TsTypeId "Any" || name = null then
+  //     ()
+  //   elif name = "" || name = null then
+  //     builder.AppendLine($"// skipped importing empty namespace (type={v.OriginalName})")
+  //     |> ignore
+  //   else
+  //     let x = $@"import {{{name}}} from ""./"""
+  //
+  //     if x = "import * as  from \"./\"" then
+  //       ()
+  //     else
+  //       builder.AppendLine(x) |> ignore
+  //
+  //   ())
+
+  builder.AppendLine() |> ignore
+  let sorted = m.Types
+  // let sorted, cyclics = sortItemsTopologically m.Items
+
+  // if cyclics.Length > 0 then
+  //   builder
+  //     .AppendLine("//*** Cyclic dependencies dected ***")
+  //     .AppendLine("//*** this can cause problems when generating types and defualt values ***")
+  //     .AppendLine("//*** Please ensure that your types don't have cyclic dependencies ***")
+  //   |> ignore
+  //
+  //   cyclics
+  //   |> List.iter (fun v -> builder.AppendLine("//" + v.Id.OriginalName) |> ignore)
+  //
+  //   builder.AppendLine("//*** ******************* ***").AppendLine("") |> ignore
+
+  sorted
+  // |> List.distinctBy (fun v -> v.Id.TsSignature)
+  |> List.map (fun v ->
+
+    // let isCyclic = cyclics |> List.contains (v)
+    //
+    // let cycle =
+    //   if isCyclic then
+    //     RenderCyclicDefault.Stub
+    //   else
+    //     RenderCyclicDefault.NoCycle
+    //
+    // let x = renderKnownTypeAndDefaultValue v cycle DefaultSerialize.serialize
+    //
+    // match x with
+    // | Some x -> x
+    // | None -> $"// skipped {v.Id.TsSignature.TsName |> TsName.value}"
+    renderType v)
+
+  |> List.map Utils.cleanTs
+  |> List.iter (fun v -> builder.AppendLine(v) |> ignore)
+
+  // if cyclics.Length > 0 then
+  //   builder.AppendLine("// Render cyclic fixes") |> ignore
+  //
+  // cyclics
+  // |> List.distinctBy (fun v -> v.Id.TsSignature)
+  // |> List.map (fun v ->
+  //
+  //   let x =
+  //     renderKnownTypeAndDefaultValue v RenderCyclicDefault.Fix DefaultSerialize.serialize
+  //
+  //   match x with
+  //   | Some x -> x
+  //   | None -> $"// skipped {v.Id.TsSignature.TsName |> TsName.value}")
+  // |> List.map Utils.cleanTs
+  // |> List.iter (fun v -> builder.AppendLine(v) |> ignore)
+
+  builder.ToString().Replace("\r\n", "\n")
+
 
 let renderTypes (types: System.Type list) =
   let allTypes = types |> List.collect getDependencies

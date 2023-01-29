@@ -1,7 +1,6 @@
-﻿module Test.RenderModule
+﻿module Test.RenderModule2
 
 open System.Collections.Generic
-open Glow.TsGen.Domain
 open Glow.TsGen.Gen
 open Expecto
 open Xunit
@@ -22,7 +21,7 @@ type ComplexRecord =
     Option: RecordId option
     Result: Result<int, string> }
 
-let types = [ typedefof<ComplexRecord> ]
+let types = [ typedefof<ComplexRecord>; typeof<bool> ]
 
 let modules = generateModules2 types
 
@@ -32,7 +31,7 @@ let getModule name =
 [<Fact>]
 let ``Render system module`` () =
 
-  let fs = getModule ("System")
+  let fs = getModule "System"
 
   let sysRendered = renderModule2 fs
   System.IO.File.WriteAllText($"..\\..\\..\\{fs.Name}", sysRendered)
@@ -44,23 +43,23 @@ let ``Render system module`` () =
 // This file is auto generated //
 //////////////////////////////////////
 import {TsType} from "./"
-export type Object = any
-export var defaultObject: Object = {}
 export type Boolean = boolean
 export var defaultBoolean: Boolean = false
+export type Guid = `${number}-${number}-${number}-${number}-${number}`
+export var defaultGuid: Guid = '00000000-0000-0000-0000-000000000000'
+export type String = string
+export var defaultString: String = ''
 export type Int32 = number
 export var defaultInt32: Int32 = 0
-export type String = string
-export var defaultString: String = ""
-export type Guid = `${number}-${number}-${number}-${number}-${number}`
-export var defaultGuid: Guid = "00000000-0000-0000-0000-000000000000"
+export type Object = any
+export var defaultObject: Object = {}
 
 """
 
 [<Fact>]
 let ``Render FS module`` () =
 
-  let fs = getModule ("Microsoft.FSharp.Core")
+  let fs = getModule "Microsoft_FSharp_Core"
 
   let fsRendered = renderModule2 fs
   System.IO.File.WriteAllText($"..\\..\\..\\{fs.Name}", fsRendered)
@@ -71,19 +70,17 @@ let ``Render FS module`` () =
 // This file is auto generated //
 //////////////////////////////////////
 import {TsType} from "./"
-import {System} from "./"
-// skipped TError
-// skipped T
+export type FSharpOption<T> = T | null
+export var defaultFSharpOption: <T>(defaultT:T) => FSharpOption<T> = <T>(defaultT:T) => null
+
 export type FSharpResult_Case_Ok<T> = { Case: "Ok", Fields: T }
 export type FSharpResult_Case_Error<TError> = { Case: "Error", Fields: TError }
 export type FSharpResult<T,TError> = FSharpResult_Case_Ok<T> | FSharpResult_Case_Error<TError>
 export type FSharpResult_Case = "Ok" | "Error"
 export var FSharpResult_AllCases = [ "Ok", "Error" ] as const
-export var defaultFSharpResult_Case_Ok = <T>(defaultT:T) => ({ Case: "Ok", Fields: defaultT })
-export var defaultFSharpResult_Case_Error = <TError>(defaultTError:TError) => ({ Case: "Error", Fields: defaultTError })
-export var defaultFSharpResult = <T,TError>(t:T,tError:TError) => null as any as FSharpResult<T,TError>
-export type FSharpOption<T> = T | null
-export var defaultFSharpOption: <T>(t:T) => FSharpOption<T> = <T>(t:T) => null
+export var defaultFSharpResult_Case_Ok = <T,TError>(defaultT:T,defaultTError:TError) => ({ Case: "Ok", Fields: defaultT })
+export var defaultFSharpResult_Case_Error = <T,TError>(defaultT:T,defaultTError:TError) => ({ Case: "Error", Fields: defaultTError })
+export var defaultFSharpResult = <T,TError>(defaultT:T,defaultTError:TError) => defaultFSharpResult_Case_Ok(defaultT,defaultTError) as FSharpResult<T,TError>
 
 """
 
@@ -92,7 +89,7 @@ export var defaultFSharpOption: <T>(t:T) => FSharpOption<T> = <T>(t:T) => null
 [<Fact>]
 let ``Render FS collections module`` () =
 
-  let fs = getModule ("Microsoft.FSharp.Collections")
+  let fs = getModule "Microsoft_FSharp_Collections"
 
   let fsRendered = renderModule2 fs
   System.IO.File.WriteAllText($"..\\..\\..\\{fs.Name}", fsRendered)
@@ -122,7 +119,7 @@ let ``normalize new line feed`` () =
 [<Fact>]
 let ``Render Test module`` () =
 
-  let fs = getModule ("Test")
+  let fs = getModule "Test"
 
   let testRendered = renderModule2 fs
 
@@ -135,11 +132,12 @@ let ``Render Test module`` () =
 // This file is auto generated //
 //////////////////////////////////////
 import {TsType} from "./"
-import {System} from "./"
-import {Microsoft_FSharp_Collections} from "./"
-import {Microsoft_FSharp_Core} from "./"
-export type RecordId = System.Guid
-export var defaultRecordId: RecordId = System.defaultGuid
+export type RecordId_Case_RecordId = System.Guid
+export type RecordId = RecordId_Case_RecordId
+export type RecordId_Case = "RecordId"
+export var RecordId_AllCases = [ "RecordId" ] as const
+export var defaultRecordId_Case_RecordId = '00000000-0000-0000-0000-000000000000'
+export var defaultRecordId = defaultRecordId_Case_RecordId as RecordId
 export type ComplexRecord = {
  id: System.Guid
  name: System.String
@@ -150,8 +148,8 @@ export type ComplexRecord = {
  result: Microsoft_FSharp_Core.FSharpResult<System.Int32,System.String>
 }
 export var defaultComplexRecord: ComplexRecord = {
- id: "00000000-0000-0000-0000-000000000000",
- name: "",
+ id: '00000000-0000-0000-0000-000000000000',
+ name: '',
  number: 0,
  items: [],
  obj: {},
