@@ -28,4 +28,12 @@
     <PackageReference Include="FSharp.Control.AsyncSeq" Version="3.2.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <EmbeddedResource Remove="Internal\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="Internal\**" />
+  </ItemGroup>
+
 </Project>

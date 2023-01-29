@@ -2,15 +2,13 @@
 //   This file is auto generated   //
 //////////////////////////////////////
 
-import {TsType} from "./"
-import {System} from "./"
+import * as System from "./System"
 
 export type GetPgsqlActivities = {
-  
 }
 export var defaultGetPgsqlActivities: GetPgsqlActivities = {
-  
 }
+
 export type Activity = {
   username: System.Object
   db: System.Object
@@ -19,9 +17,10 @@ export type Activity = {
   pid: System.Object
 }
 export var defaultActivity: Activity = {
-  username: {}, //#//
-  db: {}, //#//
-  state: {}, //#//
-  query: {}, //#//
-  pid: {}, //#//
+  username: {},
+  db: {},
+  state: {},
+  query: {},
+  pid: {}
 }
+

@@ -133,7 +133,8 @@ export function RenderGame({
         e.stopPropagation()
         const cell: Hex = h.state.hex
         console.log("unit clicked", e, h, cell)
-        const userPosition = user?.position
+
+        const userPosition = null as any // user?.position
         if (userPosition) {
           const distance = HexUtils.distance(cell, userPosition)
           const direction = HexUtils.subtract(cell, userPosition)

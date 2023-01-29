@@ -59,18 +59,19 @@ module Program =
       upcast getPreStartLogger ()
 
     Log.Logger <- logger
+    let assemblies =
+      [| Assembly.GetEntryAssembly()
+         typedefof<Glow.Clocks.Clock>.Assembly
+         typedefof<GetEsEvents>.Assembly
+         typedefof<Glow.Core.Profiles.GetProfile>.Assembly |]
+
+    Glow.Core.TsGen.Generate2.renderTsTypes (assemblies |> Seq.toList)
 
     let builder =
       WebApplication.CreateBuilder(args)
 
     let services = builder.Services
     let configuration = builder.Configuration
-
-    let assemblies =
-      [| Assembly.GetEntryAssembly()
-         typedefof<Glow.Clocks.Clock>.Assembly
-         typedefof<GetEsEvents>.Assembly
-         typedefof<Glow.Core.Profiles.GetProfile>.Assembly |]
 
     services.AddGlowApplicationServices(null, null, JsonSerializationStrategy.SystemTextJson, assemblies)
     |> ignore
@@ -105,8 +106,6 @@ module Program =
       .UseLightweightSessions()
       .AddAsyncDaemon(DaemonMode.Solo)
 
-    Glow.Core.TsGen.Generate.renderTsTypes (assemblies |> Seq.toList)
-
     let options = System.Text.Json.JsonSerializerOptions()
     options.PropertyNamingPolicy <- System.Text.Json.JsonNamingPolicy.CamelCase
     JsonSerializationSettings.ConfigureStjSerializerDefaultsForWeb(options)   
@@ -121,7 +120,7 @@ module Program =
     builder
 
   [<EntryPoint>]
-  let main args =
+  let main2 args =
 
     let builder = getBuilder args
 
@@ -156,3 +155,15 @@ module Program =
     app.Run()
 
     exitCode
+
+  // [<EntryPoint>]
+  // let main args =
+  //
+  //   let assemblies =
+  //     [| Assembly.GetEntryAssembly()
+  //        typedefof<Glow.Clocks.Clock>.Assembly
+  //        typedefof<GetEsEvents>.Assembly
+  //        typedefof<Glow.Core.Profiles.GetProfile>.Assembly |]
+  //
+  //   Glow.Core.TsGen.Generate.renderTsTypes (assemblies |> Seq.toList)
+  //   0

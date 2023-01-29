@@ -2,16 +2,14 @@
 //   This file is auto generated   //
 //////////////////////////////////////
 
-import {TsType} from "./"
-import {System} from "./"
-import {System_Collections_Generic} from "./"
+import * as System from "./System"
+import * as System_Collections_Generic from "./System_Collections_Generic"
 
 export type GetEsEvents = {
-  
 }
 export var defaultGetEsEvents: GetEsEvents = {
-  
 }
+
 export type EventViewmodel = {
   id: System.Guid
   version: System.Int64
@@ -30,19 +28,20 @@ export type EventViewmodel = {
   aggregateTypeName: System.String
 }
 export var defaultEventViewmodel: EventViewmodel = {
-  id: "00000000-0000-0000-000000000000", //#//
-  version: 0, //#//
-  sequence: 0, //#//
-  data: {}, //#//
-  streamId: "00000000-0000-0000-000000000000", //#//
-  streamKey: "", //#//
-  timestamp: "0000-00-00T00:00:00+00:00", //#//
-  tenantId: "", //#//
-  eventTypeName: "", //#//
-  dotNetTypeName: "", //#//
-  causationId: "", //#//
-  correlationId: "", //#//
-  headers: ({}), // wellknown type None
-  isArchived: false, //#//
-  aggregateTypeName: "", //#//
+  id: '00000000-0000-0000-0000-000000000000',
+  version: 0,
+  sequence: 0,
+  data: {},
+  streamId: '00000000-0000-0000-0000-000000000000',
+  streamKey: '',
+  timestamp: "0000-00-00T00:00:00+00:00",
+  tenantId: '',
+  eventTypeName: '',
+  dotNetTypeName: '',
+  causationId: '',
+  correlationId: '',
+  headers: ({}),
+  isArchived: false,
+  aggregateTypeName: ''
 }
+
