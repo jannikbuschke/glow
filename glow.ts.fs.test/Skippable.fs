@@ -20,11 +20,11 @@ let ``Serialize skippable`` () =
 
   let skippableSkip = DefaultSerialize.serialize Skippable.Skip
 
-  let result = DefaultSerialize.deserialize<MyRecord> ("{}")
+  let result = DefaultSerialize.deserialize<MyRecord> "{}"
   Expect.equal result.SkippableProp Skippable.Skip "Skip"
 
   let result1 =
-    DefaultSerialize.deserialize<MyRecord> ("""{"SkippableOfOption":null}""")
+    DefaultSerialize.deserialize<MyRecord> """{"SkippableOfOption":null}"""
 
   Expect.equal result1.SkippableOfOption (Skippable.Include(None)) "Skip"
   ()

@@ -161,13 +161,13 @@ type Localizable<'a> =
 [<Fact>]
 let ```not render typedef Localizable<string>`` () =
   // runtime type, should not be rendered (only generic typedefinition)
-  let rendered = renderTypeAndValue typeof<Localizable<string>>
+  let rendered = renderTypeAndValue2 typeof<Localizable<string>>
 
   Expect.similar rendered ""
 
 [<Fact>]
 let ```render typedefof Localizable<string>`` () =
-  let rendered = renderTypeAndValue typedefof<Localizable<string>>
+  let rendered = renderTypeAndValue2 typedefof<Localizable<string>>
 
   Expect.similar
     rendered
@@ -176,8 +176,8 @@ export type Localizable<a> = {
   value: a
   localizations: Microsoft_FSharp_Collections.FSharpMap<System.String,a>
 }
-export var defaultLocalizable: <a>(a:a) => Localizable<a> = <a>(a:a) => ({
- value: a,
+export var defaultLocalizable: <a>(defaulta:a) => Localizable<a> = <a>(defaulta:a) => ({
+ value: defaulta,
  localizations: ({}),
 })
 """

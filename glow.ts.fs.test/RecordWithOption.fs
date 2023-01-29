@@ -14,7 +14,7 @@ type RecordWithOption =
 [<Fact>]
 let ``Render record with option`` () =
 
-  let rendered = renderTypeAndValue typedefof<RecordWithOption>
+  let rendered = renderTypeAndValue2 typedefof<RecordWithOption>
 
   Expect.similar
     rendered
@@ -24,7 +24,7 @@ export type RecordWithOption = {
   numberOption: Microsoft_FSharp_Core.FSharpOption<Record>
 }
 export var defaultRecordWithOption: RecordWithOption = {
- id: "00000000-0000-0000-0000-000000000000",
+ id: '00000000-0000-0000-0000-000000000000',
  numberOption: null,
 }
 """

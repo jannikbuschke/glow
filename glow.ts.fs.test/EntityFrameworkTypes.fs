@@ -7,7 +7,7 @@ open Xunit
 [<Fact>]
 let ``EntityState enum`` () =
   let rendered =
-    renderTypeAndValue typedefof<Microsoft.EntityFrameworkCore.EntityState>
+    renderTypeAndValue2 typedefof<Microsoft.EntityFrameworkCore.EntityState>
 
   Expect.similar
     rendered

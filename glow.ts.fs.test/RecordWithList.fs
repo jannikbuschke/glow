@@ -13,7 +13,7 @@ type MyRecord =
 [<Fact>]
 let ``Render Record with list`` () =
 
-  let rendered = renderTypeAndValue typedefof<MyRecord>
+  let rendered = renderTypeAndValue2 typedefof<MyRecord>
 
   Expect.similar
     rendered

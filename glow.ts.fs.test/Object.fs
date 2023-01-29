@@ -9,7 +9,7 @@ type A = { Data: System.Object; X: obj }
 
 [<Fact>]
 let ``Render record with obj`` () =
-  let rendered = renderTypeAndValue typedefof<A>
+  let rendered = renderTypeAndValue2 typedefof<A>
 
   Expect.similar
     rendered

@@ -12,7 +12,7 @@ type SimpleRecord =
 
 [<Fact>]
 let ``Render simple record`` () =
-  let rendered = renderTypeAndValue typedefof<SimpleRecord>
+  let rendered = renderTypeAndValue2 typedefof<SimpleRecord>
 
   Expect.similar
     rendered
@@ -24,8 +24,8 @@ export type SimpleRecord = {
   obj: System.Object
 }
 export var defaultSimpleRecord: SimpleRecord = {
- id: "00000000-0000-0000-0000-000000000000",
- name: "",
+ id: '00000000-0000-0000-0000-000000000000',
+ name: '',
  number: 0,
  obj: {},
 }
