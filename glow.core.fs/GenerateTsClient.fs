@@ -1,4 +1,4 @@
-﻿module Glow.Core.TsGen.Generate2
+﻿module Glow.Core.TsGen.Generate
 
 open System
 open System.Diagnostics
@@ -12,7 +12,6 @@ let renderTsTypesInternal (path: string) (assemblies: Assembly list) =
     System.IO.Directory.CreateDirectory path |> ignore
     ()
 
-  // TODO remember old files
   System.IO.Directory.EnumerateFiles path
   |> Seq.iter (fun file -> System.IO.File.Delete(file))
 
@@ -25,33 +24,36 @@ let renderTsTypesInternal (path: string) (assemblies: Assembly list) =
     @ (actions |> Seq.map (fun v -> v.Input) |> Seq.toList)
       @ (actions |> Seq.map (fun v -> v.Output) |> Seq.toList)
 
-  let modules = Glow.TsGen.Gen.generateModules2 allTypes
+  // let filtered = allTypes |> List.filter (fun t -> t.Namespace = "Gertrud.Configuration")
+  // let modules0 =
+  //   Glow.TsGen.Gen.generateModules filtered
+  let modules = Glow.TsGen.Gen.generateModules allTypes
 
   let distinctModules = modules |> List.distinctBy (fun v -> v.Name)
 
   if distinctModules.Length <> modules.Length then
     failwith "modules not distinct"
 
-  // let getDeps (m: Namespace) =
-  //   let deps = Glow.TsGen.Gen.getModuleDependencies2 m
-  //   deps |> List.map (fun v -> modules |> List.find (fun x -> x.Name = v))
+  let getDeps (m: Namespace) =
+    let deps = Glow.TsGen.Gen.getModuleDependencies m
+    deps |> List.map (fun v -> modules |> List.find (fun x -> x.Name = v))
 
-  // let sorted, cyclics =
-  //   Glow.GenericTopologicalSort.topologicalSort getDeps modules
-  //
-  // let sortedModules =
-  //   sorted |> List.filter (fun v -> v.Name |> NamespaceName.value <> "")
+  let sorted, cyclics =
+    Glow.GenericTopologicalSort.topologicalSort getDeps modules
 
-  distinctModules
+  let sortedModules =
+    sorted |> List.filter (fun v -> v.Name |> NamespaceName.value <> "")
+
+  sortedModules
   |> List.iter (fun v ->
-    let fs = Glow.SecondApproach.renderModule v
-    let sanitizedName = v.Name
+    let fs = Glow.TsGen.Gen.renderModule v
+    let sanitizedName = NamespaceName.sanitize v.Name
 
-    let fileName = v.Name
-    let filePath = $"{path}{fileName}.ts"
+    let fileName = NamespaceName.filename v.Name
+    let filePath = $"{path}{fileName}"
 
-    // if System.IO.File.Exists filePath then
-    //   failwith (sprintf "error module already rendered %s" filePath)
+    if System.IO.File.Exists filePath then
+      failwith (sprintf "error module already rendered %s" filePath)
 
     System.IO.File.WriteAllText(filePath, fs)
 
@@ -62,9 +64,9 @@ let renderTsTypesInternal (path: string) (assemblies: Assembly list) =
     // System.IO.File.AppendAllText($"{path}index.ts", sprintf "export { %s }\n" sanitizedName)
     ())
 
-  distinctModules
+  sortedModules
   |> List.iter (fun v ->
-    let sanitizedName = v.Name
+    let sanitizedName = NamespaceName.sanitize v.Name
 
     System.IO.File.AppendAllText(
       $"{path}index.ts",
@@ -73,8 +75,8 @@ let renderTsTypesInternal (path: string) (assemblies: Assembly list) =
 
     ())
 
-  GenerateApi2.render assemblies path
-  GenerateSubscriptions2.render assemblies path
+  GenerateApi.render assemblies path
+  GenerateSubscriptions.render assemblies path
   stopWatch.Stop()
   printfn "Generated time in %f ms" stopWatch.Elapsed.TotalMilliseconds
   ()
@@ -94,4 +96,3 @@ let renderTsTypesFromAssemblies (assemblies: Assembly seq) (path: string) =
   assemblies |> Seq.toList |> renderTsTypesInternal path
   stopwatch.Stop()
   Console.WriteLine(sprintf "#### Generated ts client in %d ms ####" stopwatch.ElapsedMilliseconds)
-  

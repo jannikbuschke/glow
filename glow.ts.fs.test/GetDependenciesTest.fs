@@ -1,6 +1,7 @@
 ﻿module GetDependenciesTest
 
 open System.Text.Json.Serialization
+open MediatR
 open Xunit
 open FsUnit.Xunit
 
@@ -81,3 +82,36 @@ let ``Record ListResultOptionChoice`` () =
    deps |> should contain typeof<bool>
    deps |> should contain typedefof<Skippable<_>>
    deps |> should contain typedefof<Choice<_,_>>
+
+// type Request =
+//   {
+//     Id: string
+//   } interface IRequest<Result<int,bool>>
+//
+// [<Fact>]
+// let ``Record with interface`` () =
+//    let deps = Glow.SecondApproach.getDependencies typeof<Request>
+//    deps |> should haveLength 8
+//    deps |> should contain typedefof<Result<_,_>>
+//    deps |> should contain typedefof<list<_>>
+//    deps |> should contain typedefof<Option<_>>
+//    deps |> should contain typeof<int64>
+//    deps |> should contain typeof<string>
+//    deps |> should contain typeof<bool>
+//    deps |> should contain typedefof<Skippable<_>>
+//    deps |> should contain typedefof<Choice<_,_>>
+
+
+type EventViewmodel={
+  Version: int64
+}
+
+type MyType2()=
+  member this.ListOfStuff: EventViewmodel list = []
+  
+[<Fact>]
+ let ``class with list`` () =
+   let deps = Glow.SecondApproach.getDependencies typeof<MyType2>
+   deps |> should haveLength 2
+   deps |> should contain typedefof<list<_>>
+   deps |> should contain typedefof<EventViewmodel>

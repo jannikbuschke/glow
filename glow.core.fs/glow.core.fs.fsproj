@@ -10,7 +10,9 @@
         <Compile Include="QueryEvents.fs" />
         <Compile Include="IdentifyTypes.fs" />
         <Compile Include="GenerateSubscriptions.fs" />
+        <Compile Include="GenerateSubscriptions2.fs" />
         <Compile Include="GenerateApi.fs" />
+        <Compile Include="GenerateApi2.fs" />
         <Compile Include="GenerateTsClient.fs" />
         <Compile Include="GenerateTsClient2.fs" />
     </ItemGroup>

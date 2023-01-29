@@ -32,19 +32,43 @@ let d =
       (typeof<int>, { emptyPredefinedValues with InlineDefaultValue = Some "0"; Definition = Some "number" })
       (typeof<int64>, { emptyPredefinedValues with InlineDefaultValue = Some "0"; Definition = Some "number" })
       (typeof<float>, { emptyPredefinedValues with InlineDefaultValue = Some "0.0"; Definition = Some "number" })
+      (typeof<double>, { emptyPredefinedValues with InlineDefaultValue = Some "0.0"; Definition = Some "number" })
+      (typeof<bigint>, { emptyPredefinedValues with InlineDefaultValue = Some "0"; Definition = Some "number" })
       (typeof<bool>, { emptyPredefinedValues with InlineDefaultValue = Some "false"; Definition = Some "boolean" })
       (typeof<obj>, { emptyPredefinedValues with InlineDefaultValue = Some "{}" })
-      (typeof<unit>, { emptyPredefinedValues with InlineDefaultValue = Some "()" })
-      (typeof<bigint>, { emptyPredefinedValues with InlineDefaultValue = Some "0"; Definition = Some "number" })
-      (typedefof<System.Collections.Generic.IEnumerable<_>>, { emptyPredefinedValues with InlineDefaultValue = Some "[]" })
-      (typedefof<System.Collections.Generic.IList<_>>, { emptyPredefinedValues with InlineDefaultValue = Some "[]" })
-      (typedefof<System.Collections.Generic.IReadOnlyCollection<_>>, { emptyPredefinedValues with InlineDefaultValue = Some "[]" }) 
-      (typedefof<System.Collections.Generic.IReadOnlyList<_>>, { emptyPredefinedValues with InlineDefaultValue = Some "[]" }) 
-      (typedefof<System.Collections.Generic.IReadOnlySet<_>>, { emptyPredefinedValues with InlineDefaultValue = Some "[]" })
-      (typedefof<System.Collections.Generic.List<_>>, { emptyPredefinedValues with InlineDefaultValue = Some "[]" })
-      (typedefof<System.Collections.Generic.ICollection<_>>, { emptyPredefinedValues with InlineDefaultValue = Some "[]" })
+      (typeof<unit>, { emptyPredefinedValues with InlineDefaultValue = Some "({})" })
+      (typedefof<System.Collections.Generic.IEnumerable<_>>, { emptyPredefinedValues with InlineDefaultValue = Some "[]"; Definition = Some "Array<T>" })
+      (typedefof<System.Collections.Generic.IList<_>>, { emptyPredefinedValues with InlineDefaultValue = Some "[]"; Definition = Some "Array<T>" })
+      (typedefof<System.Collections.Generic.IReadOnlyCollection<_>>, { emptyPredefinedValues with InlineDefaultValue = Some "[]"; Definition = Some "Array<T>" }) 
+      (typedefof<System.Collections.Generic.IReadOnlyList<_>>, { emptyPredefinedValues with InlineDefaultValue = Some "[]"; Definition = Some "Array<T>" }) 
+      (typedefof<System.Collections.Generic.IReadOnlySet<_>>, { emptyPredefinedValues with InlineDefaultValue = Some "[]"; Definition = Some "Array<T>" })
+      (typedefof<System.Collections.Generic.List<_>>, { emptyPredefinedValues with InlineDefaultValue = Some "[]"; Definition = Some "Array<T>" })
+      (typedefof<Skippable<_>>, { emptyPredefinedValues with InlineDefaultValue = Some "undefined" })
+      (typedefof<obj>, { emptyPredefinedValues with InlineDefaultValue = Some "{}" })
+      (typedefof<System.DateTime>, { emptyPredefinedValues with InlineDefaultValue = Some "\"0001-01-01T00:00:00\"";Definition=Some "`${number}-${number}-${number}T${number}:${number}:${number}`" })
+      (typedefof<System.DateTimeOffset>, { emptyPredefinedValues with InlineDefaultValue = Some "\"0000-00-00T00:00:00+00:00\"";Definition=Some "`${number}-${number}-${number}T${number}:${number}:${number}${\"+\"|\"-\"}${number}:${number}`" })
+      (typedefof<System.TimeSpan>, { emptyPredefinedValues with InlineDefaultValue = Some "\"00:00:00\"";Definition=Some "`${number}:${number}:${number}`" })
+      (typedefof<System.Collections.Generic.KeyValuePair<_, _>>, { emptyPredefinedValues with InlineDefaultValue = Some "({Key:defaultTKey,Value:defaultTValue})";Definition=Some "({Key:TKey,Value:TValue})" })
+      (typedefof<System.Collections.Generic.Dictionary<_, _>>, { emptyPredefinedValues with InlineDefaultValue = Some "({})";Definition=Some "{ [key: string]: TValue }" })
+      (typedefof<System.Type>, { emptyPredefinedValues with InlineDefaultValue = Some "({})";Definition=Some "{  }" })
+      (typedefof<System.Nullable<_>>, { emptyPredefinedValues with InlineDefaultValue = Some "null";Definition=Some "T | null" })
     ]
-
+    // add (
+    //   typeof<NodaTime.LocalDate>,
+    //   ("LocalDate", None, "`${number}-${number}-${number}`", None, "\"\2022-12-18\"", true)
+    // )
+    //
+    // add (typeof<NodaTime.LocalTime>, ("LocalTime", None, "`${number}:${number}:${number}`", None, "\"00:00:00\"", true))
+    //
+    // add (
+    //   typeof<NodaTime.Instant>,
+    //   ("Instant",
+    //    None,
+    //    "`${number}-${number}-${number}T${number}:${number}:${number}.${number}Z`",
+    //    None,
+    //    "\"9999-12-31T23:59:59.999999999Z\"",
+    //    true)
+    // )
 let defaultTypes =
   System.Collections.Generic.Dictionary<System.Type, PredefinedValues>(d)
 
@@ -151,13 +175,7 @@ let renderMultiFieldUnionCaseDefinition (callingModule: string) (case: UnionCase
 
   $"""{{ Case: "{case.Name}", Fields: {{ {fields} }} }}"""
 
-let renderSingleFieldUnionCaseDefaultValue (callingModule: string) (case: UnionCaseInfo) (fieldInfo: System.Reflection.PropertyInfo) =
-  let propertyTypeName = fieldInfo.PropertyType.Name
 
-  if fieldInfo.PropertyType.IsGenericParameter then
-    $"""({{ Case: "{case.Name}", Fields: default{propertyTypeName} }})"""
-  else
-    $"""{{ Case: "{case.Name}", Fields: default{propertyTypeName} }}"""
 
 let getDefaultValue (callingModule: string) (propertyType: System.Type) =
   let moduleName = getModuleName propertyType
@@ -202,6 +220,15 @@ let getDefaultValue (callingModule: string) (propertyType: System.Type) =
     )
 
   value
+
+let renderSingleFieldUnionCaseDefaultValue (callingModule: string) (case: UnionCaseInfo) (fieldInfo: System.Reflection.PropertyInfo) =
+  let defaultValue = getDefaultValue callingModule fieldInfo.PropertyType
+  let propertyTypeName = fieldInfo.PropertyType.Name
+
+  if fieldInfo.PropertyType.IsGenericParameter then
+    $"""({{ Case: "{case.Name}", Fields: {defaultValue} }})"""
+  else
+    $"""{{ Case: "{case.Name}", Fields: {defaultValue} }}"""
 
 let renderPropertyNameAndValue (camelize: bool) (callingModule: string) (fieldInfo: System.Reflection.PropertyInfo) =
   let propertyType = fieldInfo.PropertyType
@@ -351,7 +378,7 @@ let renderDu (t: System.Type) =
 
       match caseFields with
       | [] ->
-        $"""export type {singleCase.Name} = {singleCase.Name} // single case no fields"""
+        $"""export type {singleCase.Name} = {singleCase.Name} // DU single case no fields"""
       | [ singleField ] ->
         let singleFieldCaseSignature =
           getSingleFieldCaseSignature name singleField singleCase
@@ -368,7 +395,7 @@ let renderDu (t: System.Type) =
         match caseFields with
         | [] ->
           let fieldNames = caseFields |> List.map (fun v -> v.Name) |> String.concat ", "
-          $"""export type {fieldNames} = {fieldNames} // many cases, no fields"""
+          $"""export type {name}_Case_{case.Name} = "{case.Name}" // many cases, no fields"""
         | [ singleField ] ->
           let singleFieldCaseSignature = getSingleFieldCaseSignature name singleField case
 
@@ -413,7 +440,7 @@ let renderDu (t: System.Type) =
 
         match caseFields with
         | [] ->
-          $"""//many cases, no fields"""
+          $"export var default{name}_Case_{case.Name} = \"{case.Name}\""
           // failwith "todo"
         | [ singleField ] ->
           let singleFieldCaseSignature = getFieldCaseName name case
@@ -471,7 +498,7 @@ let renderDu (t: System.Type) =
 
     match caseFields with
     | [] ->
-      $"""// no fields"""
+      $"""{name}_Case_{case.Name}"""
       // failwith "todo"
     | [ singleField ] ->
       let singleFieldCaseSignature = getSingleFieldCaseSignature name singleField case
@@ -533,7 +560,7 @@ let renderRecord (t: System.Type) =
 }})"""
     else
       $"""export var default{name}: {name} = {{
-{fieldValues},
+{fieldValues}
 }}"""
 
   $"""export type {name}{genericArguments} = {{
@@ -560,13 +587,13 @@ let renderPredefinedTypeFromDefaultValue (t: System.Type) (predefined: Predefine
     // $"""export var default{singleFieldCaseSignature} = {anonymousFunctionSignature} => {singleFieldUnionCaseDefaultValue}"""
 
     $"""
-export type {name}{genericArguments} = {(predefined.Definition |> Option.defaultValue "unknown")}
+export type {name}{genericArguments} = {(predefined.Definition |> Option.defaultValue "unknown // renderPredefinedTypeFromDefaultValue (generic)")}
 export var default{name}: {anonymousFunctionSignature} => {name}{genericArguments} = {anonymousFunctionSignature} => {predefined.InlineDefaultValue |> Option.defaultValue "unknown"}
 """
   else
     $"""
 export type {name} = {(predefined.Definition |> Option.defaultValue "any")}
-export var default{name}: {name} = {predefined.InlineDefaultValue |> Option.defaultValue "unknown"}
+export var default{name}: {name} = {predefined.InlineDefaultValue |> Option.defaultValue "unknown // renderPredefinedTypeFromDefaultValue (not generic)"}
 """
 
 let rec renderType (t: System.Type) =
@@ -581,7 +608,11 @@ let rec renderType (t: System.Type) =
           t
       )
     with
-    | true, value -> Some(renderPredefinedTypeFromDefaultValue t value)
+    | true, value ->
+      if t.IsGenericType && not t.IsGenericTypeDefinition then
+        Some(renderPredefinedTypeFromDefaultValue (t.GetGenericTypeDefinition()) value)
+      else
+        Some(renderPredefinedTypeFromDefaultValue t value)
     | _ -> None
 
   if predefinedDefinitionAndValue.IsSome then
@@ -602,7 +633,8 @@ export var defaultFSharpList: <T>(t:T) => FSharpList<T> = <T>(t:T) => []
     | TypeKind.Array -> renderType (typeof<System.Collections.Generic.List<_>>.MakeGenericType (t.GetElementType()))
     | TypeKind.Map ->
       //if key type is string, use normal object
-      if t.GenericTypeArguments.[0] = typeof<string> then
+         
+      if not t.IsGenericTypeDefinition && t.GenericTypeArguments.[0] = typeof<string> then
         """export type FSharpStringMap<TValue> = { [key: string ]: TValue }
   export var defaultFSharpStringMap: <TValue>(t:string,tValue:TValue) => FSharpStringMap<TValue> = <TValue>(t:string,tValue:TValue) => ({})"""
       else
@@ -652,23 +684,27 @@ let getDependencies (t: System.Type) =
   | _ ->
     let kind = getKind t
 
-    match kind with
-    | TypeKind.Record ->
-      t.GetProperties()
-      |> Seq.collect (fun f ->
-        if not f.PropertyType.IsGenericType || (f.PropertyType.IsGenericType && f.PropertyType.IsGenericTypeDefinition) then
-          [ f.PropertyType ]
-        else
-          getGenericDefinitionAndArgumentsAsDependencies f.PropertyType)
-      |> Seq.toList
-    | TypeKind.Union ->
-      let x =
-        (FSharpType.GetUnionCases t)
-        |> Seq.collect (fun c -> c.GetFields() |> Array.map (fun f -> f.PropertyType) |> Array.toList)
+    let result = 
+      match kind with
+      | TypeKind.Other
+      | TypeKind.Record ->
+        let props = t.GetProperties()
+        t.GetProperties()
+        |> Seq.collect (fun f ->
+          if not f.PropertyType.IsGenericType || (f.PropertyType.IsGenericType && f.PropertyType.IsGenericTypeDefinition) then
+            [ f.PropertyType ]
+          else
+            getGenericDefinitionAndArgumentsAsDependencies f.PropertyType)
         |> Seq.toList
+      | TypeKind.Union ->
+        let x =
+          (FSharpType.GetUnionCases t)
+          |> Seq.collect (fun c -> c.GetFields() |> Array.map (fun f -> f.PropertyType) |> Array.toList)
+          |> Seq.toList
 
-      x
-    | _ -> []
+        x
+      | _ -> []
+    result
 
 type TsModule =
   { Name: string
@@ -680,38 +716,57 @@ let getFilteredDeps (moduleName:string)(t:System.Type)=
     name = moduleName
     )
 
-let collectModules (types: System.Type list) =
-  let deps =
-      types
-      |> List.collect getDependencies
+let allTypes = System.Collections.Generic.HashSet<System.Type>()
 
-  types @ deps
+let rec collectDependenciesTransitively (depth:int) (t: System.Type) =
+  if depth > 20 then
+    failwith "too deep"
+  if allTypes.Contains t then ()
+  else
+    allTypes.Add t |> ignore
+    
+    t |> getDependencies |> List.iter (collectDependenciesTransitively (depth + 1))
+    ()
+
+
+let collectModules (types: System.Type list) =
+  (typedefof<obj> :: types) |> List.iter (collectDependenciesTransitively (0))
+  // let deps =
+  //     types
+  //     |> List.collect getDependencies
+
+  allTypes
+      |> Seq.toList
       |> List.groupBy getModuleName
       |> List.map (fun (v, items) ->
-        
+        let items = items |> List.map(fun v-> if v.IsGenericType && not v.IsGenericTypeDefinition then v.GetGenericTypeDefinition() else v)
         let sorted, cyclics = Glow.GenericTopologicalSort.topologicalSort (getFilteredDeps v) (items |> List.distinct)
+        let sorted2 = sorted |> List.distinct
         {
         Name = v
-        Types = sorted
+        Types = sorted2
       })
-  
 
-// let getDependencies (n: TsModule) =
-//   []
-// let deps =
-//   n.Types
-//   |> List.filter Glow.GetTsSignature.isNonGenericTypeOrGenericTypeDefinition
-//   |> List.collect (fun v -> v.Dependencies)
-//   |> List.map (fun v -> v.Id)
-//   |> List.distinctBy (fun v -> v.OriginalNamespace)
-//   |> List.filter (fun v -> v.TsSignature.TsNamespace <> n.Name)
-//
-// deps
+let getModuleDependencies (n: TsModule) =
+  let deps =
+    n.Types
+    |> List.filter (fun t -> (not t.IsGenericType) || (t.IsGenericType && t.IsGenericTypeDefinition))
+    |> List.collect getDependencies
+    |> List.map getModuleName
+    |> List.distinct
+    |> List.filter(fun v -> v<> n.Name)
+    // |> List.map (fun v -> v.Id)
+    // |> List.distinctBy (fun v ->
+    //   let moduleName = getModuleName v
+    //   moduleName
+    //   )
+    // |> List.filter (fun v -> v.TsSignature.TsNamespace <> n.Name)
+
+  deps
 
 let renderModule (m: TsModule) =
 
-  let name = m.Name
-  // let deps = getDependencies m
+  let deps = getModuleDependencies m
 
   let builder = StringBuilder()
 
@@ -723,7 +778,11 @@ let renderModule (m: TsModule) =
   |> ignore
 
   // builder.AppendLine("import * as TsType from \"./TsType\"") |> ignore
-  builder.AppendLine("import {TsType} from \"./\"") |> ignore
+  // builder.AppendLine("import {TsType} from \"./\"") |> ignore
+
+  deps |> List.iter(fun v ->
+    builder.AppendLine($"import * as {v} from \"./{v}\"") |> ignore
+  )
 
   // deps
   // |> List.iter (fun v ->
@@ -801,12 +860,12 @@ let renderModule (m: TsModule) =
   builder.ToString().Replace("\r\n", "\n")
 
 
-let renderTypes (types: System.Type list) =
-  let allTypes = types |> List.collect getDependencies
-
-  let x =
-    allTypes
-    |> List.groupBy getModuleName
-    |> List.map (fun (v, items) -> { Name = v; Types = items })
-
-  ""
+// let renderTypes (types: System.Type list) =
+//   let allTypes = types |> List.collect getDependencies
+//
+//   let x =
+//     allTypes
+//     |> List.groupBy getModuleName
+//     |> List.map (fun (v, items) -> { Name = v; Types = items })
+//
+//   ""

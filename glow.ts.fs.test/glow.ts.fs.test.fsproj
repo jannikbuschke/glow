@@ -27,6 +27,7 @@
         <Compile Include="RecordWithOption.fs" />
         <Compile Include="RecordWithResult.fs" />
         <Compile Include="NestedGenerics.fs" />
+        <Compile Include="EmptyRecordAndUnit.fs" />
         <Compile Include="SimpleRecord.fs" />
         <Compile Include="DateTimes.fs" />
         <Compile Include="DuWithMultipleFields.fs" />
