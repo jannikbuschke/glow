@@ -13,7 +13,7 @@ type MyRecord =
 
 [<Fact>]
 let ``Render record with collection properties`` () =
-  let rendered = renderTypeAndValue typedefof<MyRecord>
+  let rendered = renderTypeAndValue2 typedefof<MyRecord>
 
   Expect.similar
     rendered
@@ -31,7 +31,7 @@ export var defaultMyRecord: MyRecord = {
 
 [<Fact>]
 let ``Render FSharp List`` () =
-  let fsharpCoreRendered = renderTypeAndValue typedefof<List<string>>
+  let fsharpCoreRendered = renderTypeAndValue2 typedefof<List<string>>
 
   Expect.similar
     fsharpCoreRendered
@@ -71,7 +71,7 @@ type RecordWithKeyValueList =
 
 [<Fact>]
 let ``Render IEnumerable of KeyValue pairs property`` () =
-  let rendered = renderTypeAndValue typeof<RecordWithKeyValueList>
+  let rendered = renderTypeAndValue2 typeof<RecordWithKeyValueList>
 
   Expect.similar
     rendered

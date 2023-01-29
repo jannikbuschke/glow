@@ -15,7 +15,7 @@ type MyRecord = { Field1: string[]; Field2: A[] }
 
 [<Fact>]
 let ``Render MyRecord with arrays`` () =
-  let rendered = renderTypeAndValue typedefof<MyRecord>
+  let rendered = renderTypeAndValue2 typedefof<MyRecord>
 
   Expect.similar
     rendered

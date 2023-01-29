@@ -43,3 +43,7 @@ module Helpers =
     match rendered with
     | Some rendered -> rendered
     | None -> ""
+
+  let renderTypeAndValue2 t =
+    let rendered = Glow.SecondApproach.renderType t
+    rendered

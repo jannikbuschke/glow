@@ -28,7 +28,7 @@ let ``Serialize FSharpMap`` () =
 
 [<Fact>]
 let ``Render FSharp String Map`` () =
-  let rendered = renderTypeAndValue typeof
+  let rendered = renderTypeAndValue2 typeof
 
   Expect.similar
     rendered
@@ -39,7 +39,7 @@ export var defaultFSharpStringMap: <TValue>(t:string,tValue:TValue) => FSharpStr
 
 [<Fact>]
 let ``Render FSharp Map`` () =
-  let rendered = renderTypeAndValue typedef
+  let rendered = renderTypeAndValue2 typedef
 
   Expect.similar
     rendered
@@ -58,7 +58,7 @@ type LocalizableValue<'T> =
 
 [<Fact>]
 let ``Render LocalizableValue`` () =
-  let rendered = renderTypeAndValue typedefof<LocalizableValue<string>>
+  let rendered = renderTypeAndValue2 typedefof<LocalizableValue<string>>
 
   Expect.similar
     rendered
@@ -66,8 +66,8 @@ let ``Render LocalizableValue`` () =
   default: T
   localized: Microsoft_FSharp_Collections.FSharpMap<Language,T>
 }
-export var defaultLocalizableValue: <T>(t:T) => LocalizableValue<T> = <T>(t:T) => ({
-  default: t,
+export var defaultLocalizableValue: <T>(defaultT:T) => LocalizableValue<T> = <T>(defaultT:T) => ({
+  default: defaultT,
   localized: [],
 })
 """
@@ -77,7 +77,7 @@ type Container = { Title: LocalizableString }
 
 [<Fact>]
 let ``Render LocalizableString`` () =
-  let rendered = renderTypeAndValue typedefof<Container>
+  let rendered = renderTypeAndValue2 typedefof<Container>
 
   Expect.similar
     rendered

@@ -60,17 +60,24 @@ module Tests =
 
   let types = [ typedefof<MyType2>; typedefof<MyNamespace3.Record1>; ]
   
-  let types2 = (typedefof<Microsoft.Graph.Account>.Assembly.GetExportedTypes() |> Seq.toList ) @ (typedefof<MeetingDomain.MeetingItemEvent>.Assembly.GetExportedTypes() |> Seq.toList )@ types
+  let types2 = (typedefof<Microsoft.Graph.Account>.Assembly.GetExportedTypes() |> Seq.toList )
+               @ (typedefof<MeetingDomain.MeetingItemEvent>.Assembly.GetExportedTypes() |> Seq.toList )
+                 @ types
 
-  
   let modules = generateModules types2
 
   let getModule name =
     modules |> List.find (fun v -> v.Name = name)
 
   [<Fact>]
-  let ``Render many types/modules`` () =
+  let ``Render Microsoft.Graph types + own types`` () =
 
+    let x = modules |> List.map renderModule
+    ()
+
+  [<Fact>]
+  let ``Render some types`` () =
+    let modules = generateModules types
     let x = modules |> List.map renderModule
     ()
     

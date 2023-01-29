@@ -92,6 +92,7 @@ type TsSignature =
 
 type TsProperty = { Name: string; TsType: TsSignature }
 
+[<Struct>]
 type FullTsTypeId =
   { Id: TsTypeId
     OriginalName: string
@@ -105,7 +106,7 @@ and DuCase =
     Tag: int
     Fields: DuCaseField list }
 
-and TsType =
+and [<Struct>] TsType =
   { Id: FullTsTypeId
     IsGenericType: bool
     IsGenericTypeDefinition: bool

@@ -16,6 +16,7 @@ module TypeCache =
     | Union
     | List
     | Set
+    | Array
     | Map
     | Tuple
     | Enum
@@ -46,6 +47,8 @@ module TypeCache =
             TypeKind.Record
           elif ty.IsEnum then
             TypeKind.Enum
+          elif ty.IsArray then
+            TypeKind.Array
           else
             TypeKind.Other
       )
