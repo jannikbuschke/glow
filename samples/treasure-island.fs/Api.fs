@@ -388,6 +388,7 @@ type Handler(session: IDocumentSession, mediator: IMediator, notificationService
   interface IRequestHandler<GetGames, IReadOnlyList<Game>> with
     member this.Handle(request, cancellationToken) =
       task {
+        do! System.Threading.Tasks.Task.Delay(3000)
         let! games =
           session
             .Query<Game>()

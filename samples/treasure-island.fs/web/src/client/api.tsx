@@ -78,7 +78,7 @@ export const useTypedAction: TypedActionHook = <
   return s
 }
 
-type QueryTable = TagWithKey<"url", QueryInputs>;
+export type QueryTable = TagWithKey<"url", QueryInputs>;
 
 export function useTypedQuery<ActionName extends keyof QueryTable>(key: ActionName, {
     placeholder,

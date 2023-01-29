@@ -81,7 +81,8 @@ module Program =
 
     let serializer = SystemTextJsonSerializer()
     serializer.Customize(fun v ->
-        v.Converters.Add(JsonFSharpConverter(Glow.JsonSerializationSettings.JsonDefaultWebUnionEncoding, allowNullFields = false))
+        Glow.JsonSerializationSettings.ConfigureStjSerializerDefaultsForWeb v
+        // v.Converters.Add(JsonFSharpConverter(Glow.JsonSerializationSettings.JsonDefaultWebUnionEncoding, allowNullFields = false))
     )
     services
       .AddMarten(fun (sp: IServiceProvider) ->

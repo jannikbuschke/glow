@@ -175,8 +175,6 @@ let renderMultiFieldUnionCaseDefinition (callingModule: string) (case: UnionCase
 
   $"""{{ Case: "{case.Name}", Fields: {{ {fields} }} }}"""
 
-
-
 let getDefaultValue (callingModule: string) (propertyType: System.Type) =
   let moduleName = getModuleName propertyType
   let name = getName propertyType
@@ -395,7 +393,7 @@ let renderDu (t: System.Type) =
         match caseFields with
         | [] ->
           let fieldNames = caseFields |> List.map (fun v -> v.Name) |> String.concat ", "
-          $"""export type {name}_Case_{case.Name} = "{case.Name}" // many cases, no fields"""
+          $"""export type {name}_Case_{case.Name} = {{ Case: "{case.Name}" }}"""
         | [ singleField ] ->
           let singleFieldCaseSignature = getSingleFieldCaseSignature name singleField case
 
@@ -440,7 +438,8 @@ let renderDu (t: System.Type) =
 
         match caseFields with
         | [] ->
-          $"export var default{name}_Case_{case.Name} = \"{case.Name}\""
+          //$"""export type {name}_Case_{case.Name} = {{ Case: "{case.Name}" }}"""
+          $"export var default{name}_Case_{case.Name} = {{ Case: \"{case.Name}\" }}"
           // failwith "todo"
         | [ singleField ] ->
           let singleFieldCaseSignature = getFieldCaseName name case

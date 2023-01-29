@@ -142,19 +142,19 @@ export var defaultUnitEnabledForWalk: UnitEnabledForWalk = {
   data: ({})
 }
 
-export type TileName_Case_Grass = "Grass" // many cases, no fields
-export type TileName_Case_Water = "Water" // many cases, no fields
-export type TileName_Case_Mountain = "Mountain" // many cases, no fields
-export type TileName_Case_Wood = "Wood" // many cases, no fields
-export type TileName_Case_Corn = "Corn" // many cases, no fields
+export type TileName_Case_Grass = { Case: "Grass" }
+export type TileName_Case_Water = { Case: "Water" }
+export type TileName_Case_Mountain = { Case: "Mountain" }
+export type TileName_Case_Wood = { Case: "Wood" }
+export type TileName_Case_Corn = { Case: "Corn" }
 export type TileName = TileName_Case_Grass | TileName_Case_Water | TileName_Case_Mountain | TileName_Case_Wood | TileName_Case_Corn
 export type TileName_Case = "Grass" | "Water" | "Mountain" | "Wood" | "Corn"
 export var TileName_AllCases = [ "Grass", "Water", "Mountain", "Wood", "Corn" ] as const
-export var defaultTileName_Case_Grass = "Grass"
-export var defaultTileName_Case_Water = "Water"
-export var defaultTileName_Case_Mountain = "Mountain"
-export var defaultTileName_Case_Wood = "Wood"
-export var defaultTileName_Case_Corn = "Corn"
+export var defaultTileName_Case_Grass = { Case: "Grass" }
+export var defaultTileName_Case_Water = { Case: "Water" }
+export var defaultTileName_Case_Mountain = { Case: "Mountain" }
+export var defaultTileName_Case_Wood = { Case: "Wood" }
+export var defaultTileName_Case_Corn = { Case: "Corn" }
 export var defaultTileName = defaultTileName_Case_Grass as TileName
 
 export type Tile = {
@@ -188,13 +188,13 @@ export var defaultGameField: GameField = {
   fields: []
 }
 
-export type GameMode_Case_RoundBased = "RoundBased" // many cases, no fields
-export type GameMode_Case_Other = "Other" // many cases, no fields
+export type GameMode_Case_RoundBased = { Case: "RoundBased" }
+export type GameMode_Case_Other = { Case: "Other" }
 export type GameMode = GameMode_Case_RoundBased | GameMode_Case_Other
 export type GameMode_Case = "RoundBased" | "Other"
 export var GameMode_AllCases = [ "RoundBased", "Other" ] as const
-export var defaultGameMode_Case_RoundBased = "RoundBased"
-export var defaultGameMode_Case_Other = "Other"
+export var defaultGameMode_Case_RoundBased = { Case: "RoundBased" }
+export var defaultGameMode_Case_Other = { Case: "Other" }
 export var defaultGameMode = defaultGameMode_Case_RoundBased as GameMode
 
 export type GameCreated = {
@@ -281,7 +281,7 @@ export var defaultPlayerUnit: PlayerUnit = {
 }
 
 export type GameEvent_Case_GameCreated = { Case: "GameCreated", Fields: GameCreated }
-export type GameEvent_Case_GameStarted = "GameStarted" // many cases, no fields
+export type GameEvent_Case_GameStarted = { Case: "GameStarted" }
 export type GameEvent_Case_GameRestarted = { Case: "GameRestarted", Fields: GameRestarted }
 export type GameEvent_Case_GameDrawn = { Case: "GameDrawn", Fields: GameDrawn }
 export type GameEvent_Case_GameAborted = { Case: "GameAborted", Fields: GameAborted }
@@ -302,7 +302,7 @@ export type GameEvent = GameEvent_Case_GameCreated | GameEvent_Case_GameStarted 
 export type GameEvent_Case = "GameCreated" | "GameStarted" | "GameRestarted" | "GameDrawn" | "GameAborted" | "GameEnded" | "PlayerJoined" | "PlayerUnitCreated" | "DamageTaken" | "UnitEnabledForWalk" | "ActiveUnitChanged" | "UnitDied" | "UnitAttacked" | "UnitMoved" | "ItemDropped" | "ItemPicked" | "ItemRemoved" | "GameTick"
 export var GameEvent_AllCases = [ "GameCreated", "GameStarted", "GameRestarted", "GameDrawn", "GameAborted", "GameEnded", "PlayerJoined", "PlayerUnitCreated", "DamageTaken", "UnitEnabledForWalk", "ActiveUnitChanged", "UnitDied", "UnitAttacked", "UnitMoved", "ItemDropped", "ItemPicked", "ItemRemoved", "GameTick" ] as const
 export var defaultGameEvent_Case_GameCreated = { Case: "GameCreated", Fields: defaultGameCreated }
-export var defaultGameEvent_Case_GameStarted = "GameStarted"
+export var defaultGameEvent_Case_GameStarted = { Case: "GameStarted" }
 export var defaultGameEvent_Case_GameRestarted = { Case: "GameRestarted", Fields: defaultGameRestarted }
 export var defaultGameEvent_Case_GameDrawn = { Case: "GameDrawn", Fields: defaultGameDrawn }
 export var defaultGameEvent_Case_GameAborted = { Case: "GameAborted", Fields: defaultGameAborted }
@@ -401,19 +401,19 @@ export var defaultGetPlayers: GetPlayers = {
   data: ({})
 }
 
-export type GameStatus_Case_Initializing = "Initializing" // many cases, no fields
-export type GameStatus_Case_Running = "Running" // many cases, no fields
-export type GameStatus_Case_Paused = "Paused" // many cases, no fields
-export type GameStatus_Case_Ended = "Ended" // many cases, no fields
-export type GameStatus_Case_Aborted = "Aborted" // many cases, no fields
+export type GameStatus_Case_Initializing = { Case: "Initializing" }
+export type GameStatus_Case_Running = { Case: "Running" }
+export type GameStatus_Case_Paused = { Case: "Paused" }
+export type GameStatus_Case_Ended = { Case: "Ended" }
+export type GameStatus_Case_Aborted = { Case: "Aborted" }
 export type GameStatus = GameStatus_Case_Initializing | GameStatus_Case_Running | GameStatus_Case_Paused | GameStatus_Case_Ended | GameStatus_Case_Aborted
 export type GameStatus_Case = "Initializing" | "Running" | "Paused" | "Ended" | "Aborted"
 export var GameStatus_AllCases = [ "Initializing", "Running", "Paused", "Ended", "Aborted" ] as const
-export var defaultGameStatus_Case_Initializing = "Initializing"
-export var defaultGameStatus_Case_Running = "Running"
-export var defaultGameStatus_Case_Paused = "Paused"
-export var defaultGameStatus_Case_Ended = "Ended"
-export var defaultGameStatus_Case_Aborted = "Aborted"
+export var defaultGameStatus_Case_Initializing = { Case: "Initializing" }
+export var defaultGameStatus_Case_Running = { Case: "Running" }
+export var defaultGameStatus_Case_Paused = { Case: "Paused" }
+export var defaultGameStatus_Case_Ended = { Case: "Ended" }
+export var defaultGameStatus_Case_Aborted = { Case: "Aborted" }
 export var defaultGameStatus = defaultGameStatus_Case_Initializing as GameStatus
 
 export type GetGames = {

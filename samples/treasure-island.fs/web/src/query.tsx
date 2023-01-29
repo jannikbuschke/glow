@@ -1,3 +1,4 @@
+import { ErrorBanner } from "glow-core"
 import React from "react"
 import { UseQueryOptions } from "react-query"
 import {
@@ -20,11 +21,24 @@ export function Query<ActionName extends keyof QueryTable>(
     | { children?: undefined }
   ),
 ) {
+  const queryOptions: UseQueryOptions<QueryOutputs[ActionName]> = {
+    useErrorBoundary: true,
+    suspense: true,
+    ...props.queryOptions,
+  }
   const x = useTypedQuery(props.name, props)
   if (typeof props["children"] === "undefined") {
     return <div>{JSON.stringify(x)}</div>
   } else {
-    return <>{props.children(x.data)}</>
+    if (x.isLoading || x.isFetching) {
+      return <div>Loading...</div>
+    }
+    return (
+      <>
+        <ErrorBanner error={x.error} />
+        {props.children(x.data)}
+      </>
+    )
   }
 }
 
