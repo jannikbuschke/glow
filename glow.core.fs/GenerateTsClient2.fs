@@ -3,7 +3,6 @@
 open System
 open System.Diagnostics
 open System.Reflection
-open Glow.TsGen.Domain
 
 let renderTsTypesInternal (path: string) (assemblies: Assembly list) =
   printfn "Generate ts types"
@@ -22,8 +21,21 @@ let renderTsTypesInternal (path: string) (assemblies: Assembly list) =
 
   let allTypes =
     (es |> Seq.toList)
-    @ (actions |> Seq.map (fun v -> v.Input) |> Seq.toList)
-      @ (actions |> Seq.map (fun v -> v.Output) |> Seq.toList)
+    @ (actions
+       |> Seq.map (fun v -> v.Input)
+       |> Seq.toList)
+      @ (actions
+         |> Seq.map (fun v -> v.Output)
+         |> Seq.toList)
+
+  let found =
+    allTypes
+    |> List.find (fun v -> v.FullName.Contains("DistributionUserViewModel"))
+
+  let allAsText =
+    allTypes
+    |> List.map (fun v -> v.FullName)
+    |> String.concat "\n"
 
   let modules = Glow.TsGen.Gen.generateModules2 allTypes
 
@@ -86,12 +98,26 @@ let renderTsTypes (assemblies: Assembly list) =
   stopwatch.Start()
   renderTsTypesInternal ".\\web\\src\\client\\" assemblies
   stopwatch.Stop()
-  Console.WriteLine(sprintf "#### Generated ts client in %d ms ####" stopwatch.ElapsedMilliseconds)
+
+  Console.WriteLine(
+    sprintf
+      "#### Generated ts client in %d ms ####"
+      stopwatch.ElapsedMilliseconds
+  )
 
 let renderTsTypesFromAssemblies (assemblies: Assembly seq) (path: string) =
+  Console.WriteLine("#### start generating ts client ####")
   let stopwatch = Stopwatch()
   stopwatch.Start()
-  assemblies |> Seq.toList |> renderTsTypesInternal path
+
+  assemblies
+  |> Seq.toList
+  |> renderTsTypesInternal path
+
   stopwatch.Stop()
-  Console.WriteLine(sprintf "#### Generated ts client in %d ms ####" stopwatch.ElapsedMilliseconds)
-  
+
+  Console.WriteLine(
+    sprintf
+      "#### Generated ts client in %d ms ####"
+      stopwatch.ElapsedMilliseconds
+  )

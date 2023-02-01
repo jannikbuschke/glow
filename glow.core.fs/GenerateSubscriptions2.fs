@@ -50,12 +50,13 @@ let render (assemblies: Assembly list) (path: string) =
   es
   // |> Seq.choose tryFind
   |> Seq.iter (fun v ->
+    let fullTypeName = v.FullName
     let name = Glow.SecondApproach.getPropertySignature "" v
     // let name = v.Id.TsSignature.FullName()
 
     // let fullSanitizedName = v.Id.TsSignature.FullSanitizedName()
 
-    imports.AppendLine($"  '{name}': {name},") |> ignore)
+    imports.AppendLine($"  '{fullTypeName}': {name},") |> ignore)
 
   imports.AppendLine("}") |> ignore
 

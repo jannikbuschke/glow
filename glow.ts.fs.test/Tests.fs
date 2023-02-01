@@ -45,7 +45,7 @@ module Helpers =
     | None -> ""
 
   let renderTypeAndValue2 t =
-    let rendered = Glow.SecondApproach.renderType t
+    let rendered = Glow.SecondApproach.renderType t true
     rendered
 
   let renderModule2 m =

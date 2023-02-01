@@ -1,5 +1,6 @@
 ﻿module Glow.SecondApproach
 
+open System.Reflection
 open System.Text
 open System.Text.Json.Serialization
 open Glow.Ts
@@ -26,6 +27,11 @@ let d =
           { emptyPredefinedValues with
               InlineDefaultValue = Some "''"
               Definition = Some "string" })
+         (typeof<System.Byte>,
+          { emptyPredefinedValues with
+              InlineDefaultValue = Some "0"
+              Definition = Some "number" })
+
          (typedefof<Option<_>>,
           { emptyPredefinedValues with
               InlineDefaultValue = Some "null"
@@ -114,23 +120,24 @@ let d =
          (typedefof<System.Nullable<_>>,
           { emptyPredefinedValues with
               InlineDefaultValue = Some "null"
-              Definition = Some "T | null" }) ]
-// add (
-//   typeof<NodaTime.LocalDate>,
-//   ("LocalDate", None, "`${number}-${number}-${number}`", None, "\"\2022-12-18\"", true)
-// )
-//
-// add (typeof<NodaTime.LocalTime>, ("LocalTime", None, "`${number}:${number}:${number}`", None, "\"00:00:00\"", true))
-//
-// add (
-//   typeof<NodaTime.Instant>,
-//   ("Instant",
-//    None,
-//    "`${number}-${number}-${number}T${number}:${number}:${number}.${number}Z`",
-//    None,
-//    "\"9999-12-31T23:59:59.999999999Z\"",
-//    true)
-// )
+              Definition = Some "T | null" })
+         (typedefof<NodaTime.LocalDate>,
+          { emptyPredefinedValues with
+              InlineDefaultValue = Some "\"\2022-12-18\""
+              Definition = Some "`${number}-${number}-${number}`" })
+         (typedefof<NodaTime.LocalTime>,
+          { emptyPredefinedValues with
+              InlineDefaultValue = Some "\"00:00:00\""
+              Definition = Some "`${number}:${number}:${number}`" })
+         (typedefof<NodaTime.Instant>,
+          { emptyPredefinedValues with
+              InlineDefaultValue = Some "\"9999-12-31T23:59:59.999999999Z\""
+              Definition = Some "`${number}-${number}-${number}T${number}:${number}:${number}.${number}Z`" })
+         (typedefof<NodaTime.Duration>,
+          { emptyPredefinedValues with
+              InlineDefaultValue = Some "\"0:00:00\""
+              Definition = Some "`${number}:${number}:${number}`" }) ]
+
 let defaultTypes =
   System.Collections.Generic.Dictionary<System.Type, PredefinedValues>(d)
 
@@ -206,6 +213,8 @@ let rec getGenericParameterValues (callingModule: string) (t: System.Type) =
     + ")"
   else
     ""
+
+let getFullTypeName (t: System.Type) = t.FullName
 
 // Module.TypeName
 let rec getPropertySignature (callingModule: string) (t: System.Type) =
@@ -654,14 +663,19 @@ export var {name}_AllCases = [ {allCaseNames} ] as const
 {renderedCaseDefaultNamesAndValues}
 {renderedDefaultCase}
 """
+//
+type RenderStrategy =
+  | RenderDefinitionAndValue
+  | RenderDefinition
+  | RenderValue
 
-let renderRecord (t: System.Type) =
+let renderRecord (t: System.Type) (strategy: RenderStrategy) =
   if t.IsGenericType && not t.IsGenericTypeDefinition then
     failwith "A definition and value for a generic type that is not a generic type definition cannot be rendered"
 
   let callingModule = getModuleName t
   let name = getName t
-  let properties = t.GetProperties()
+  let properties = t.GetProperties(BindingFlags.Public ||| BindingFlags.Instance)
 
   let fields =
     properties
@@ -679,16 +693,23 @@ let renderRecord (t: System.Type) =
   let namedFunctionSignature = getNamedFunctionSignatureForDefaultValue t
 
   let value =
-    if t.IsGenericTypeDefinition then
-      $"""export var default{name}: {anonymousFunctionSignature} => {namedFunctionSignature} = {anonymousFunctionSignature} => ({{
+    match strategy with
+    | RenderDefinition -> ""
+    | RenderValue -> $"{{{fieldValues}}}"
+    | _ ->
+      if t.IsGenericTypeDefinition then
+        $"""export var default{name}: {anonymousFunctionSignature} => {namedFunctionSignature} = {anonymousFunctionSignature} => ({{
 {fieldValues}
 }})"""
-    else
-      $"""export var default{name}: {name} = {{
+      else
+        $"""export var default{name}: {name} = {{
 {fieldValues}
 }}"""
 
-  $"""export type {name}{genericArguments} = {{
+  match strategy with
+  | RenderValue -> value
+  | _ ->
+    $"""export type {name}{genericArguments} = {{
 {fields}
 }}
 
@@ -724,7 +745,11 @@ export var default{name}: {name} = {predefined.InlineDefaultValue
                                     |> Option.defaultValue "unknown // renderPredefinedTypeFromDefaultValue (not generic)"}
 """
 
-let rec renderType (t: System.Type) =
+let renderStubValue (t: System.Type) =
+  let name = getName t
+  $"""export var default{name}: {name} = {{ }} as any as {name}"""
+
+let rec renderType (t: System.Type) (strategy: RenderStrategy) =
   let kind = getKind t
 
   let predefinedDefinitionAndValue =
@@ -757,7 +782,7 @@ export var defaultFSharpList: <T>(t:T) => FSharpList<T> = <T>(t:T) => []
       if t.IsGenericType && not t.IsGenericTypeDefinition then
         ""
       else
-        renderRecord t
+        renderRecord t strategy
     | TypeKind.Union -> renderDu t
     | TypeKind.Array ->
       let name = getName t
@@ -794,7 +819,7 @@ export var default{name}: <T>(t:T) => {name}<T> = <T>(t:T) => []
         ""
       else
         // probably a class, try to use same strategy as record
-        renderRecord t
+        renderRecord t strategy
 
 // export type EntityState = "Detached" | "Unchanged" | "Deleted" | "Modified" | "Added"
 // export var EntityState_AllValues = ["Detached", "Unchanged", "Deleted", "Modified", "Added"] as const
@@ -820,7 +845,7 @@ let rec getGenericDefinitionAndArgumentsAsDependencies (t: System.Type) =
 
   [ genericDefinition ] @ args
 
-let getDependencies (t: System.Type) =
+let _getDependencies (t: System.Type) =
   match defaultTypes.TryGetValue t with
   | true, value -> value.Dependencies
   | _ ->
@@ -830,17 +855,17 @@ let getDependencies (t: System.Type) =
       match kind with
       | TypeKind.Other
       | TypeKind.Record ->
-        let props = t.GetProperties()
+        (t.GetProperties(BindingFlags.Public ||| BindingFlags.Instance)
+         |> Seq.collect (fun f ->
+           if not f.PropertyType.IsGenericType
+              || (f.PropertyType.IsGenericType
+                  && f.PropertyType.IsGenericTypeDefinition) then
+             [ f.PropertyType ]
+           else
+             getGenericDefinitionAndArgumentsAsDependencies f.PropertyType)
+         |> Seq.toList)
 
-        t.GetProperties()
-        |> Seq.collect (fun f ->
-          if not f.PropertyType.IsGenericType
-             || (f.PropertyType.IsGenericType
-                 && f.PropertyType.IsGenericTypeDefinition) then
-            [ f.PropertyType ]
-          else
-            getGenericDefinitionAndArgumentsAsDependencies f.PropertyType)
-        |> Seq.toList
+
       | TypeKind.Union ->
         let x =
           (FSharpType.GetUnionCases t)
@@ -851,9 +876,19 @@ let getDependencies (t: System.Type) =
           |> Seq.toList
 
         x
+      | TypeKind.Array -> [ t.GetElementType() ]
       | _ -> []
 
-    result
+    let genericArgs =
+      if not t.IsGenericType
+         || (t.IsGenericType && t.IsGenericTypeDefinition) then
+        []
+      else
+        getGenericDefinitionAndArgumentsAsDependencies t
+
+    result @ genericArgs
+
+let getDependencies (t: System.Type) = _getDependencies t |> List.distinct
 
 type TsModule =
   { Name: string
@@ -883,7 +918,7 @@ let rec collectDependenciesTransitively (depth: int) (t: System.Type) =
 
 
 let collectModules (types: System.Type list) =
-  (typedefof<obj> :: types)
+  (typedefof<obj> :: typedefof<System.Byte> :: types)
   |> List.iter (collectDependenciesTransitively (0))
   // let deps =
   //     types
@@ -901,6 +936,11 @@ let collectModules (types: System.Type list) =
         else
           v)
 
+    let x =
+      items
+      |> List.map (fun v -> v.FullName)
+      |> String.concat "\n"
+
     let sorted, cyclics =
       Glow.GenericTopologicalSort.topologicalSort (getFilteredDeps v) (items |> List.distinct)
 
@@ -915,16 +955,10 @@ let getModuleDependencies (n: TsModule) =
       || (t.IsGenericType && t.IsGenericTypeDefinition))
     |> List.collect getDependencies
     |> List.map getModuleName
-    |> List.distinct
-    |> List.filter (fun v -> v <> n.Name)
-  // |> List.map (fun v -> v.Id)
-  // |> List.distinctBy (fun v ->
-  //   let moduleName = getModuleName v
-  //   moduleName
-  //   )
-  // |> List.filter (fun v -> v.TsSignature.TsNamespace <> n.Name)
 
-  deps
+  (deps @ [ "System_Collections_Generic" ]
+   |> List.distinct
+   |> List.filter (fun v -> v <> n.Name))
 
 let renderModule (m: TsModule) =
 
@@ -966,60 +1000,90 @@ let renderModule (m: TsModule) =
   //
   //   ())
 
+
   builder.AppendLine() |> ignore
   let sorted = m.Types
-  // let sorted, cyclics = sortItemsTopologically m.Items
 
-  // if cyclics.Length > 0 then
-  //   builder
-  //     .AppendLine("//*** Cyclic dependencies dected ***")
-  //     .AppendLine("//*** this can cause problems when generating types and defualt values ***")
-  //     .AppendLine("//*** Please ensure that your types don't have cyclic dependencies ***")
-  //   |> ignore
-  //
-  //   cyclics
-  //   |> List.iter (fun v -> builder.AppendLine("//" + v.Id.OriginalName) |> ignore)
-  //
-  //   builder.AppendLine("//*** ******************* ***").AppendLine("") |> ignore
+  let sorted, cyclics =
+    Glow.GenericTopologicalSort.topologicalSort
+      (fun v ->
+        let deps = getDependencies v
+
+        // Nullable remove
+        deps
+        |> List.filter (fun x -> x.Namespace = v.Namespace))
+
+
+      m.Types
+
+  if cyclics.Length > 0 then
+    builder
+      .AppendLine("//*** Cyclic dependencies dected ***")
+      .AppendLine("//*** this can cause problems when generating types and defualt values ***")
+      .AppendLine("//*** Please ensure that your types don't have cyclic dependencies ***")
+    |> ignore
+
+    cyclics
+    |> List.iter (fun v -> builder.AppendLine("// " + v.Name) |> ignore)
+
+    builder
+      .AppendLine("//*** ******************* ***")
+      .AppendLine("")
+    |> ignore
+
 
   sorted
   |> List.distinct
   |> List.map (fun v ->
 
-    // let isCyclic = cyclics |> List.contains (v)
-    //
-    // let cycle =
-    //   if isCyclic then
-    //     RenderCyclicDefault.Stub
-    //   else
-    //     RenderCyclicDefault.NoCycle
-    //
-    // let x = renderKnownTypeAndDefaultValue v cycle DefaultSerialize.serialize
-    //
-    // match x with
-    // | Some x -> x
-    // | None -> $"// skipped {v.Id.TsSignature.TsName |> TsName.value}"
-    let result = renderType v
+    let isCyclic = cyclics |> List.contains v
+
+    let result =
+      // workaround for Bullable<Guid>
+      if
+        v.IsGenericType && not v.IsGenericTypeDefinition
+        && v.Name.Contains("Nullable")
+      then
+        ""
+      else if isCyclic then
+        $"""
+// This type has cyclic dependencies: {v.FullName}
+// in general this should be avoided. We render a 'stub' value here that will be changed at the bottom of this file
+{renderType v RenderStrategy.RenderDefinition}
+{renderStubValue v}
+"""
+      else
+        renderType v RenderStrategy.RenderDefinitionAndValue
+
     result)
 
   |> List.map Utils.cleanTs
   |> List.iter (fun v -> builder.AppendLine(v) |> ignore)
 
-  // if cyclics.Length > 0 then
-  //   builder.AppendLine("// Render cyclic fixes") |> ignore
+  if cyclics.Length > 0 then
+    builder.AppendLine("// Render cyclic fixes")
+    |> ignore
+
+  cyclics
+  |> List.distinct
+  |> List.map (fun v ->
+    let name = getName v
+
+    $"""//
+// the type {v.FullName} has cyclic dependencies
+// in general this should be avoided
+//
+Object.assign(default{name}, ({renderType v RenderStrategy.RenderValue}))
+"""
+  // let x =
+  //   renderKnownTypeAndDefaultValue v RenderCyclicDefault.Fix DefaultSerialize.serialize
   //
-  // cyclics
-  // |> List.distinctBy (fun v -> v.Id.TsSignature)
-  // |> List.map (fun v ->
-  //
-  //   let x =
-  //     renderKnownTypeAndDefaultValue v RenderCyclicDefault.Fix DefaultSerialize.serialize
-  //
-  //   match x with
-  //   | Some x -> x
-  //   | None -> $"// skipped {v.Id.TsSignature.TsName |> TsName.value}")
-  // |> List.map Utils.cleanTs
-  // |> List.iter (fun v -> builder.AppendLine(v) |> ignore)
+  // match x with
+  // | Some x -> x
+  // | None -> $"// skipped {v.Id.TsSignature.TsName |> TsName.value}"
+  )
+  |> List.map Utils.cleanTs
+  |> List.iter (fun v -> builder.AppendLine(v) |> ignore)
 
   builder.ToString().Replace("\r\n", "\n")
 
