@@ -77,7 +77,7 @@ export function MainLink({
           theme.colorScheme === "dark" ? theme.colors.dark[0] : theme.black,
         backgroundColor: matched
           ? theme.colorScheme === "dark"
-            ? theme.colors.dark[3]
+            ? theme.colors.dark[5]
             : theme.colors.blue[1]
           : undefined,
         borderRight: matched
