@@ -66,6 +66,10 @@ let d =
               Definition = Some "boolean" })
          (typeof<obj>, { emptyPredefinedValues with InlineDefaultValue = Some "{}" })
          (typeof<unit>, { emptyPredefinedValues with InlineDefaultValue = Some "({})" })
+         (typedefof<System.Tuple<_, _>>,
+          { emptyPredefinedValues with
+              InlineDefaultValue = Some "[defaultT1,defaultT2]"
+              Definition = Some "[T1,T2]" })
          (typedefof<System.Collections.Generic.IEnumerable<_>>,
           { emptyPredefinedValues with
               InlineDefaultValue = Some "[]"
