@@ -2,6 +2,7 @@ namespace Test
 
 open System.Text.RegularExpressions
 open Expecto
+open Glow.SecondApproach
 open Glow.TsGen.Domain
 open Glow.TsGen.Gen
 
@@ -28,7 +29,8 @@ module Expect =
     >> trim
 
   let similar actual expected =
-    "Should be equal" |> Expect.equal (actual |> clean) (expected |> clean)
+    "Should be equal"
+    |> Expect.equal (actual |> clean) (expected |> clean)
 
 [<AutoOpen>]
 module Helpers =
@@ -45,7 +47,9 @@ module Helpers =
     | None -> ""
 
   let renderTypeAndValue2 t =
-    let rendered = Glow.SecondApproach.renderType t true
+    let rendered =
+      Glow.SecondApproach.renderType t RenderStrategy.RenderDefinitionAndValue
+
     rendered
 
   let renderModule2 m =

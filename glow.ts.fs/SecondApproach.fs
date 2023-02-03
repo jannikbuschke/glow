@@ -123,7 +123,7 @@ let d =
               Definition = Some "T | null" })
          (typedefof<NodaTime.LocalDate>,
           { emptyPredefinedValues with
-              InlineDefaultValue = Some "\"\2022-12-18\""
+              InlineDefaultValue = Some "\"2022-12-18\""
               Definition = Some "`${number}-${number}-${number}`" })
          (typedefof<NodaTime.LocalTime>,
           { emptyPredefinedValues with
