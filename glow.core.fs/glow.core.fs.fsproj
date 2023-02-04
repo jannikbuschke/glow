@@ -15,11 +15,19 @@
         <Compile Include="GenerateApi2.fs" />
         <Compile Include="GenerateTsClient.fs" />
         <Compile Include="GenerateTsClient2.fs" />
+        <Compile Include="MartenAndPgsql\ResetData.fs" />
+        <Compile Include="MartenAndPgsql\debug-queries.fs" />
+        <Compile Include="MartenAndPgsql\EsEventsQueries.fs" />
+        <Compile Include="MartenAndPgsql\Pgsql.fs" />
+        <Compile Include="MartenAndPgsql\GetLastModified.fs" />
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\glow.meta\glow.meta.csproj" />
       <PackageReference Update="FSharp.Core" Version="6.0.3" />
+      <PackageReference Include="Dapper" Version="1.50.5" />
+      <PackageReference Include="FsToolkit.ErrorHandling" Version="2.13.0" />
+      <PackageReference Include="FsToolkit.ErrorHandling.TaskResult" Version="2.13.0" />
     </ItemGroup>
 
 </Project>
