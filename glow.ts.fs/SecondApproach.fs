@@ -269,7 +269,7 @@ let renderMultiFieldUnionCaseDefinition
   let fields =
     fieldInfo
     |> List.map (fun v ->
-      v.Name
+      (Utils.camelize v.Name)
       + ": "
       + getPropertySignature callingModule v.PropertyType)
     |> String.concat ", "
