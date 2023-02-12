@@ -7,7 +7,7 @@
     "format": "prettier --write ."
   },
   "dependencies": {
-    "mdx-bundler": "5.1.2",
+    "mdx-bundler": "9.2.1",
     "esbuild": "0.12.15",
     "prettier": "2.3.2"
   }
