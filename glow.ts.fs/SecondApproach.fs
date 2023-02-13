@@ -39,7 +39,7 @@ let d =
          (typeof<System.Guid>,
           { emptyPredefinedValues with
               InlineDefaultValue = Some $"'{(System.Guid.Empty.ToString())}'"
-              Definition = Some "`${number}-${number}-${number}-${number}-${number}`" })
+              Definition = Some "`${string}-${string}-${string}-${string}-${string}`" })
          (typeof<int>,
           { emptyPredefinedValues with
               InlineDefaultValue = Some "0"
