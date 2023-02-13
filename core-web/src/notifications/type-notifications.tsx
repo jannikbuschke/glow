@@ -1,5 +1,5 @@
 import * as React from "react"
-import * as signalR from "@aspnet/signalr"
+import * as signalR from "@microsoft/signalr"
 import mitt from "mitt"
 import * as emitt from "mitt"
 import { useAuthentication } from "../authentication"
@@ -37,6 +37,7 @@ export function useNotification<
     console.log("register handler for " + name.toString())
     emitter.on(name, callback)
     return () => {
+      console.log("unregister handler for " + name.toString())
       emitter.off(name, callback)
     }
   }, deps)
@@ -81,7 +82,6 @@ export function TypedNotificationsProvider<
   accessTokenFactory?: () => string | Promise<string>
 }>) {
   const { status } = useAuthentication()
-  const [connectionClosed, setConnectionClosed] = React.useState(Math.random())
   const value = React.useMemo(
     () => ({
       emitter: mitt<Events>(),
@@ -90,55 +90,40 @@ export function TypedNotificationsProvider<
   )
 
   const { emitter } = value
-  const connection = React.useMemo(() => {
+  React.useEffect(() => {
     if (status === "loggedIn" || !requireLoggedIn) {
+      console.log("connecting signalR")
+
       const connection = new signalR.HubConnectionBuilder()
         .withUrl("/notifications", { accessTokenFactory: accessTokenFactory })
+        .withAutomaticReconnect({
+          nextRetryDelayInMilliseconds: retryContext => {
+            return Math.min(1000 * 2 ** retryContext.previousRetryCount, 30000);
+          }
+        })
         .configureLogging(signalR.LogLevel.Information)
         .build()
-      return connection
-    } else {
-      console.log("skip configuring connection (not logged in)")
-      return null
-    }
-  }, [connectionClosed, status])
 
-  const ref = React.useRef(0)
-  React.useEffect(() => {
-    console.log("running effect")
-    ;(async function setup() {
-      if (connection === null) {
-        return
-      }
-      if (ref.current === 5) {
-        return
-      }
-      ref.current = 5
-
-      connection.onclose((error) => {
-        console.log("[[notifications]] closed", error)
-        setTimeout(() => setConnectionClosed(Math.random()), 3000)
-      })
       console.log("[[notifications]] Start event emitter")
-      connection
-        .start()
-        .then(function () {
-          console.log("[[notifications]] event emitter connected")
-        })
-        .catch((e) => {
-          console.error("[[notifications]] could not start signalr connection")
-          console.error(e)
-        })
+      async function start() {
+        try {
+            await connection.start();
+        } catch (err) {
+            setTimeout(() => start(), 5000);
+        }
+      }
+      start()
 
-      console.log("add mitt emitter")
       connection.on(
         "notification",
         (notificationType: string, notification: any) => {
           emitter.emit(notificationType, notification)
         },
       )
-    })()
-  }, [connection, emitter])
+    } else {
+      console.log("skip configuring connection (not logged in)")
+    }
+  }, [status])
 
   return (
     <NotificationsContext.Provider value={value}>
