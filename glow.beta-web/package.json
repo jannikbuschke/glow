@@ -37,7 +37,7 @@
     "styled-components": "5.3.0",
     "react-router-dom": "6.2.1",
     "react-router": "6.2.1",
-    "@aspnet/signalr": "1.1.4",
+    "@microsoft/signalr": "7.0.2",
     "@types/lodash": "4.14.170",
     "use-lodash-debounce": "1.2.0",
     "lodash.debounce": "4.0.8",
