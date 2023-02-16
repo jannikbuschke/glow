@@ -44,6 +44,10 @@ let d =
           { emptyPredefinedValues with
               InlineDefaultValue = Some "0"
               Definition = Some "number" })
+         (typeof<uint32>,
+          { emptyPredefinedValues with
+              InlineDefaultValue = Some "0"
+              Definition = Some "number" })
          (typeof<int64>,
           { emptyPredefinedValues with
               InlineDefaultValue = Some "0"
