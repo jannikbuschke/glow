@@ -178,8 +178,6 @@ let getSignature (t: System.Type) =
 //
 // Microsoft_FSharp_Core.FSharpResult<Microsoft_FSharp_Core.FSharpResult<Microsoft_FSharp_Collections.FSharpList>,Microsoft_FSharp_Core.FSharpResult>
 
-
-
 // <T>
 let rec getGenericParameters (callingModule: string) (t: System.Type) =
   if t.IsGenericType then
@@ -551,7 +549,9 @@ let renderDu (t: System.Type) =
           $"""export type {singleFieldCaseSignature} = {multiFieldUnionCaseDefinition}"""
 
       //$"""export type {name}_Case_{case.Name}<T> = {{ Case: "{case.Name}", Fields: T }} // (multiple fields)"""
-      cases |> List.map renderCase |> String.concat "\r"
+      cases
+      |> List.map renderCase
+      |> String.concat System.Environment.NewLine
 
   // let parameters = genericArgumentListAsParameters t
   let anonymousFunctionSignature = getAnonymousFunctionSignatureForDefaultValue t
@@ -604,7 +604,9 @@ let renderDu (t: System.Type) =
           else
             $"""export var default{signature} = {multiFieldUnionCaseDefaultValue}"""
 
-      cases |> List.map renderCase |> String.concat "\r"
+      cases
+      |> List.map renderCase
+      |> String.concat System.Environment.NewLine
 
   let firstCaseName =
     match cases with
@@ -688,14 +690,14 @@ let renderRecord (t: System.Type) (strategy: RenderStrategy) =
   let fields =
     properties
     |> Array.map (renderPropertyNameAndDefinition callingModule)
-    |> String.concat "\r"
+    |> String.concat System.Environment.NewLine
 
   let genericArguments = genericArgumentList t
 
   let fieldValues =
     properties
     |> Array.map (renderPropertyNameAndValue true callingModule)
-    |> String.concat ",\r"
+    |> String.concat $",{System.Environment.NewLine}"
 
   let anonymousFunctionSignature = getAnonymousFunctionSignatureForDefaultValue t
   let namedFunctionSignature = getNamedFunctionSignatureForDefaultValue t
@@ -947,7 +949,7 @@ let collectModules (types: System.Type list) =
     let x =
       items
       |> List.map (fun v -> v.FullName)
-      |> String.concat "\n"
+      |> String.concat System.Environment.NewLine
 
     let sorted, cyclics =
       Glow.GenericTopologicalSort.topologicalSort (getFilteredDeps v) (items |> List.distinct)
