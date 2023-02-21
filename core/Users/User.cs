@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using Glow.Users;
 
@@ -17,6 +18,8 @@ namespace Gertrud.Users
         public string Email { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
+        [NotMapped]
+        public List<string> AssistantIds { get; set; }
 
         [NotMapped]
         public string OrganizationalUnitName { get; set; }
