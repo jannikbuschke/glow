@@ -21,6 +21,8 @@
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook",
     "semantic-release": "semantic-release",
+    "clean-output": "rimraf lib && rimraf tsconfig.tsbuildinfo",
+    "clean-node-modules": "rimraf node_modules",
     "clean": "rimraf node_modules"
   },
   "peerDependencies": {

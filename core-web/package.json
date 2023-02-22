@@ -16,6 +16,8 @@
     "tsc": "tsc",
     "watch": "tsc --watch",
     "build": "tsc && tsc -p tsconfig.es.json",
+    "clean-output": "rimraf lib && rimraf tsconfig.tsbuildinfo",
+    "clean-node-modules": "rimraf node_modules",
     "cleanbuild": "rm -r node_modules && npm install && tsc",
     "prettier": "prettier --write src/**/*.* package.json",
     "storybook": "start-storybook -p 6006",
