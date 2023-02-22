@@ -35,7 +35,7 @@ let renderTsTypesInternal (path: string) (assemblies: Assembly list) =
   let allAsText =
     allTypes
     |> List.map (fun v -> v.FullName)
-    |> String.concat "\n"
+    |> String.concat Environment.NewLine
 
   let modules = Glow.TsGen.Gen.generateModules2 allTypes
 
@@ -69,7 +69,11 @@ let renderTsTypesInternal (path: string) (assemblies: Assembly list) =
 
     System.IO.File.AppendAllText(
       $"{path}index.ts",
-      sprintf "import * as %s from './%s'\n" sanitizedName sanitizedName
+      sprintf
+        "import * as %s from './%s'%s"
+        sanitizedName
+        sanitizedName
+        Environment.NewLine
     )
     // System.IO.File.AppendAllText($"{path}index.ts", sprintf "export { %s }\n" sanitizedName)
     ())
@@ -80,7 +84,7 @@ let renderTsTypesInternal (path: string) (assemblies: Assembly list) =
 
     System.IO.File.AppendAllText(
       $"{path}index.ts",
-      sprintf "export { %s }\n" sanitizedName
+      sprintf "export { %s }%s" sanitizedName Environment.NewLine
     )
 
     ())

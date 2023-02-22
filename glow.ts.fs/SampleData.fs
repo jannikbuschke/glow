@@ -26,8 +26,12 @@ module SampleData =
         let typeName = Glow.SecondApproach.getName (obj.GetType())
         let moduleName = Glow.SecondApproach.getModuleName (obj.GetType())
         let propSignature = Glow.SecondApproach.getPropertySignature "" (obj.GetType())
-        let importName = $"import * as {moduleName} from \"./{moduleName}\""
-        importName, $""""{name}": {serialize obj} as {propSignature}""")
+
+        let deps = Glow.SecondApproach.getDependencies (obj.GetType())
+
+        let moduleNames = deps |> List.map Glow.SecondApproach.getModuleName
+        // let importName = $"import * as {moduleName} from \"./{moduleName}\""
+        (moduleName :: moduleNames), $""""{name}": {serialize obj} as {propSignature}""")
 
     result
 
@@ -41,16 +45,19 @@ let generateSampleData (path: string) (assemblies: Assembly seq) (serialize: Ser
       let imports =
         x
         |> Seq.collect (fun v -> v |> Seq.map fst)
+        |> Seq.collect id
         |> Seq.distinct
-        |> String.concat "\n"
+        |> Seq.map (fun v -> $"import * as {v} from \"./{v}\"")
+        |> String.concat Environment.NewLine
 
       let definitions =
         x
         |> Seq.collect (fun v -> v |> Seq.map snd)
-        |> String.concat ",\n"
+        |> String.concat ("," + Environment.NewLine)
 
       imports, definitions)
 
+  // let renderedImports = imports |> List.map(fun v -> $"import * as {v} from \"./{v}\"")
   System.IO.File.WriteAllText(
     path,
     $"""{(imports)}
