@@ -24,6 +24,15 @@ namespace Glow.NotificationsCore
         {
             await hub.Clients.All.SendAsync("notification", notification.GetType().FullName, notification);
         }
+        
+        public static async Task PublishUserNotification<THub>(
+            this IHubContext<THub> hub,
+            string userId,
+            IClientNotification notification
+        ) where THub : Hub
+        {
+            await hub.Clients.User(userId).SendAsync("notification", notification.GetType().FullName, notification);
+        }
 
         public static async Task PublishNotification<THub>(
             this IHubContext<THub> hub,

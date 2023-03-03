@@ -26,10 +26,16 @@ namespace Glow.Core.Notifications
         {
             await hubContext.PublishNotification(notification);
         }
+
+        public async Task PublishUserNotification(string userId, IClientNotification notification)
+        {
+            await hubContext.PublishUserNotification(userId, notification);
+        }
     }
 
     public interface IClientNotificationService
     {
         Task PublishNotification(IClientNotification notification);
+        Task PublishUserNotification(string userId, IClientNotification notification);
     }
 }
