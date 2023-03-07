@@ -69,7 +69,10 @@ let d =
               InlineDefaultValue = Some "false"
               Definition = Some "boolean" })
          (typeof<obj>, { emptyPredefinedValues with InlineDefaultValue = Some "{}" })
-         (typeof<unit>, { emptyPredefinedValues with InlineDefaultValue = Some "({})" })
+         (typeof<unit>,
+          { emptyPredefinedValues with
+              Definition = Some("{}")
+              InlineDefaultValue = Some "({})" })
          (typedefof<System.Tuple<_, _>>,
           { emptyPredefinedValues with
               InlineDefaultValue = Some "[defaultT1,defaultT2]"
@@ -98,7 +101,10 @@ let d =
           { emptyPredefinedValues with
               InlineDefaultValue = Some "[]"
               Definition = Some "Array<T>" })
-         (typedefof<Skippable<_>>, { emptyPredefinedValues with InlineDefaultValue = Some "undefined" })
+         (typedefof<Skippable<_>>,
+          { emptyPredefinedValues with
+              Definition = Some "T | undefined"
+              InlineDefaultValue = Some "undefined" })
          (typedefof<obj>, { emptyPredefinedValues with InlineDefaultValue = Some "{}" })
          (typedefof<System.DateTime>,
           { emptyPredefinedValues with
