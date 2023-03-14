@@ -99,17 +99,12 @@ namespace Glow.MsGraph.Mails
     public class MailService
     {
         private readonly IGraphTokenService tokenService;
-        private readonly ILogger<MailService> logger;
-        private readonly TokenService service;
 
         public MailService(
-            IGraphTokenService tokenService,
-            IHttpContextAccessor httpContextAccessor,
-            ILogger<MailService> logger
+            IGraphTokenService tokenService
         )
         {
             this.tokenService = tokenService;
-            this.logger = logger;
         }
 
         public async Task<Beta.Message> SendBeta(Beta.Message mail, string mailboxOrUserId = null, string scope = "profile")
@@ -140,7 +135,7 @@ namespace Glow.MsGraph.Mails
         public async Task<Message> Send(Message mail, string mailboxOrUserId = null, string scope = "profile")
         {
             // use scopes: mail.send, mail.readwrite.shared
-            GraphServiceClient client = await tokenService.GetClientForUser(new string[] { scope });
+            GraphServiceClient client = await tokenService.GetClientForUser(new[] { scope });
 
             IUserRequestBuilder userRequestBuilder = string.IsNullOrWhiteSpace(mailboxOrUserId)
                 ? client.Me
