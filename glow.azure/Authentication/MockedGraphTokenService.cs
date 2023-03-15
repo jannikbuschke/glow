@@ -47,9 +47,19 @@ namespace Glow.Core.Authentication
             this.logger = logger;
         }
 
-        public override Task<string> AccessTokenForApp()
+        public override async Task<string> AccessTokenForApp()
         {
-            return Task.FromResult("");
+            AzureAdOptions o = aadOptions.Value;
+
+            IConfidentialClientApplication app = ConfidentialClientApplicationBuilder.Create(clientId: o.ClientId)
+                .WithClientSecret(o.ClientSecret)
+                .WithTenantId(o.TenantId)
+                .Build();
+
+            var scopes = new string[] { "https://graph.microsoft.com/.default" };
+
+            AuthenticationResult token = await app.AcquireTokenForClient(scopes).ExecuteAsync();
+            return token.AccessToken;
         }
 
         public override async Task<string> AccessTokenForCurrentUser(string[] scope)
