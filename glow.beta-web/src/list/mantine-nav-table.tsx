@@ -10,7 +10,6 @@ import {
 } from "@mantine/core"
 import {
   ColumnDef,
-  createTable,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
@@ -42,13 +41,12 @@ export function CustomTable<RecordType extends { id: string } = any>(
     onRowClick?: (record: RecordType) => void
   },
 ) {
-  const [
-    { pageIndex, pageSize },
-    setPagination,
-  ] = React.useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: 10,
-  })
+  const [{ pageIndex, pageSize }, setPagination] = props.usePagination?.state
+    ? props.usePagination?.state
+    : React.useState<PaginationState>({
+        pageIndex: 0,
+        pageSize: 10,
+      })
   const itemCount = props.dataSource?.length || 0
   const pageCount = Math.floor((itemCount + 10) / pageSize)
   const canPreviousPage = pageIndex > 0
