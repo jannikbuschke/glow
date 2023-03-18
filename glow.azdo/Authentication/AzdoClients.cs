@@ -30,7 +30,7 @@ namespace Glow.Azdo.Authentication
             this.logger = logger;
         }
 
-        [Obsolete("use GetUserClient")]
+        [Obsolete("use GetUserClient asd")]
         public Task<T> GetClient<T>() where T : VssHttpClientBase
         {
             return GetUserClient<T>();

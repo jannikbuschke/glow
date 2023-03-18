@@ -9,6 +9,7 @@ using Serilog.Events;
 
 namespace Glow.Core.Logging
 {
+    // Should be removed
     public class TsProfile : TypeScriptProfile
     {
         public TsProfile()

@@ -1,17 +1,20 @@
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Glow.Invoices.Api.Test
-{
-    public static class ScopeExtensions
-    {
-        public static T GetService<T>(this IServiceScope scope)
-        {
-            return scope.ServiceProvider.GetService<T>();
-        }
+namespace Glow.Core.Utils;
 
-        public static T GetRequiredService<T>(this IServiceScope scope)
-        {
-            return scope.ServiceProvider.GetRequiredService<T>();
-        }
+public static class ScopeExtensions
+{
+    public static T Get<T>(this IServiceScope scope)
+    {
+        return scope.ServiceProvider.GetRequiredService<T>();
+    }
+    public static T GetService<T>(this IServiceScope scope)
+    {
+        return scope.ServiceProvider.GetService<T>();
+    }
+
+    public static T GetRequiredService<T>(this IServiceScope scope)
+    {
+        return scope.ServiceProvider.GetRequiredService<T>();
     }
 }

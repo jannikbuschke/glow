@@ -1,15 +1,12 @@
 ﻿namespace TreasureIsland
 
 open System
-open System.Linq
 open FSharp.Control
 open Glow.Core.MartenSubscriptions
 open Glow.Core.Notifications
-open Glow.Invoices.Api.Test
-open Glow.NotificationsCore
-open Marten
 open Microsoft.Extensions.DependencyInjection
 open Microsoft.Extensions.Logging
+open Glow.Core.Utils
 
 type MartenSignalrConsumer(sp: IServiceProvider) =
   interface IMartenEventsConsumer with
@@ -18,10 +15,10 @@ type MartenSignalrConsumer(sp: IServiceProvider) =
         use scope = sp.CreateScope()
 
         let logger =
-          scope.GetService<ILogger<MartenSignalrConsumer>>()
+          scope.Get<ILogger<MartenSignalrConsumer>>()
 
         let svc =
-          scope.GetService<IClientNotificationService>()
+          scope.Get<IClientNotificationService>()
 
         let! result =
           streamActions

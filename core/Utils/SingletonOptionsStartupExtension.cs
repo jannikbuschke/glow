@@ -1,3 +1,4 @@
+using System;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -6,6 +7,7 @@ namespace Glow.AzdoAuthentication
 {
     public static class SingletonOptionsStartupExtension
     {
+        [Obsolete]
         public static void ConfigureSingleton<T>(this IServiceCollection services, string configurationSectionKey)
             where T : class, new()
         {

@@ -1,17 +1,13 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using Glow.Core;
-using Glow.Core.Marten;
 using Glow.Core.MartenSubscriptions;
 using Glow.Core.Notifications;
-using Glow.Sample.TreasureIsland.Api;
 using Glow.TypeScript;
 using Jering.Javascript.NodeJS;
 using Marten;
 using Marten.Events.Daemon.Resiliency;
-using Marten.Events.Projections;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.SignalR;
@@ -73,7 +69,6 @@ public class Startup
             new TsGenerationOptions { Assemblies = new[] { this.GetType().Assembly }, Path = "./web/src/ts-models/", GenerateApi = true, GenerateSubscriptions = true, ApiOptions=apiOptions}
         });
 
-        services.AddHostedService<DungeonWorker>();
         services.AddNodeJS();
         // services.Configure<NodeJSProcessOptions>(options => options.ProjectPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "NodeRuntime","js")); // AppDomain.CurrentDomain.BaseDirectory is your bin/<configuration>/<targetframework> directory
         services.Configure<NodeJSProcessOptions>(options =>
@@ -86,14 +81,12 @@ public class Startup
                 var v = new StoreOptions();
                 v.AutoCreateSchemaObjects = AutoCreate.All;
                 v.Connection(configuration.GetValue<string>("ConnectionString"));
-                v.Projections.SelfAggregate<Unit>(ProjectionLifecycle.Inline);
-                v.Projections.SelfAggregate<Game>(ProjectionLifecycle.Inline);
                 var logger = sp.GetService<ILogger<MartenSubscription>>();
-                v.Projections.Add(
-                    new MartenSubscription(new[] { new MartenSignalrConsumer(sp) }, logger),
-                    ProjectionLifecycle.Async,
-                    "customConsumer"
-                );
+                // v.Projections.Add(
+                //     new MartenSubscription(new[] { new MartenSignalrConsumer(sp) }, logger),
+                //     ProjectionLifecycle.Async,
+                //     "customConsumer"
+                // );
                 return v;
             })
             .UseLightweightSessions()

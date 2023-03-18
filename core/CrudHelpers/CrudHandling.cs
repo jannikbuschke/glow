@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Glow.CrudHelpers
 {
+    // SHOULD BE REMOVED
     public abstract class BaseGetSingle<Entity> : IRequest<Entity>
     {
         [Required]

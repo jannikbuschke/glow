@@ -101,7 +101,8 @@ type GameSampleData() =
                      Health = Health.full
                      IsAlive = true }
                      ]
-      {| InitializedGame =
+      [("sample",
+       {| InitializedGame =
           { Id = System.Guid.Parse("5a51d49e-95d7-4fa4-95f1-4499c1002e80")
             Version = 0
             Tick = 0
@@ -111,7 +112,7 @@ type GameSampleData() =
             Mode = GameMode.RoundBased
             PlayerUnits = units |> List.map(fun v -> v.Id, v) |> Map.ofSeq
             Players = Map.empty
-            ActiveUnit = Some(units |> List.head |> fun v -> v.Id) } |}
+            ActiveUnit = Some(units |> List.head |> fun v -> v.Id) } |})]
 
 module Helper =
   let GenerateGameTickEvents (session: IDocumentSession) (current: Game) =

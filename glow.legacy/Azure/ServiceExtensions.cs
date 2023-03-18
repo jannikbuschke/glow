@@ -28,13 +28,16 @@ namespace Glow.Core
 {
     public static class ServiceExtensions
     {
-        public static IServiceCollection AddMailService(this IServiceCollection services)
-        {
-            services.AddScoped<MailService>();
-            services.AddAzureKeyvaultClientProvider();
-            return services;
-        }
 
+        /// <summary>
+        /// Adds IGraphTokenService, MemoryCache and EF MsalTokenCache and EfTicketStore
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="env"></param>
+        /// <param name="configuration"></param>
+        /// <param name="enableEfCoreTokenCache"></param>
+        /// <returns></returns>
+        [Obsolete]
         public static IServiceCollection AddGlowAadIntegration(
             this IServiceCollection services,
             IWebHostEnvironment env,

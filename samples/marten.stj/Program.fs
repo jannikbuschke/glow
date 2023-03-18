@@ -3,9 +3,7 @@ namespace GlowSample
 open System
 open System.Collections.Generic
 open System.Reflection
-open Glow.Api
 open Glow.Core
-open Glow.Core.Marten
 open Glow.Core.Notifications
 open Glow.TypeScript
 open Marten

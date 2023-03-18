@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\core\glow.core.csproj" />
+    <ProjectReference Include="..\glow.azure\glow.azure.csproj" />
+    <ProjectReference Include="..\glow.beta\glow.beta.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Core" />
+  </ItemGroup>
+
+</Project>

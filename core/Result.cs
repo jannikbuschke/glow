@@ -1,5 +1,6 @@
 ﻿namespace Glow.Core
 {
+    // Should be removed
     public class Result<T>
     {
         public bool IsSuccessful { get; set; }

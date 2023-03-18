@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Glow.Core.Utils;
 using Glow.Glue.AspNetCore;
-using Glow.Invoices.Api.Test;
 using Glow.TokenCache;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,7 +23,7 @@ namespace Glow.Azdo.Authentication
         public async Task Set(string userId, ActiveUser user)
         {
             using IServiceScope scope = services.CreateScope();
-            ITokenDataContext ctx = scope.GetRequiredService<ITokenDataContext>();
+            ITokenDataContext ctx = scope.Get<ITokenDataContext>();
             UserToken existingToken = await ctx.GlowTokenCache.SingleOrDefaultAsync(v => v.UserId == userId);
             if (existingToken == null)
             {
