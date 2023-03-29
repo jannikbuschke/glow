@@ -1,4 +1,6 @@
 import { Button, ButtonProps, Menu, MenuItemProps } from "antd"
+import { Button as MantineButton } from "@mantine/core"
+import { useGlowContext } from "glow-core"
 import * as React from "react"
 
 type Props = {
@@ -33,6 +35,7 @@ export function ModalContainer({
   const menuItemProps = props as PropsMenuItemV2
   const [visible, setVisible] = React.useState(false)
   const [mountModal, setMountModal] = React.useState(false)
+  const { componentLibrary } = useGlowContext()
   return (
     <>
       {triggerType === "MenuItem" ? (
@@ -44,7 +47,7 @@ export function ModalContainer({
             onClick && onClick(e as any)
           }}
         />
-      ) : (
+      ) : componentLibrary === "antd" ? (
         <Button
           {...btnProps}
           onClick={(e) => {
@@ -53,6 +56,18 @@ export function ModalContainer({
             onClick && onClick(e as any)
           }}
         />
+      ) : (
+        <MantineButton
+          variant="default"
+          size="xs"
+          onClick={(e) => {
+            setVisible(true)
+            setMountModal(true)
+            onClick && onClick(e as any)
+          }}
+        >
+          {btnProps.children}
+        </MantineButton>
       )}
       {unmountModalOnAfterClose && !mountModal
         ? null
