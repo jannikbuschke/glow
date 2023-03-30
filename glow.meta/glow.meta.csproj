@@ -14,9 +14,8 @@
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <ProjectReference Include="..\core\glow.core.csproj" IncludeAssets="All" />
     <ProjectReference Include="..\glow.ts.fs\glow.ts.fs.fsproj" />
-    <ProjectReference Include="..\glow.ts\glow.ts.csproj" IncludeAssets="All" />
-    <ProjectReference Include="..\glow.beta\glow.beta.csproj" IncludeAssets="All" />
     <ProjectReference Include="..\glow.azure\glow.azure.csproj" IncludeAssets="All" />
-    <ProjectReference Include="..\glow.azdo\glow.azdo.csproj" IncludeAssets="All" />
+<!--    <ProjectReference Include="..\glow.ts\glow.ts.csproj" IncludeAssets="All" />-->
+<!--    <ProjectReference Include="..\glow.azdo\glow.azdo.csproj" IncludeAssets="All" />-->
   </ItemGroup>
 </Project>

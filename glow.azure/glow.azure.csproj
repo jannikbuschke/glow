@@ -30,7 +30,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\core\glow.core.csproj" />
-    <ProjectReference Include="..\glow.beta\glow.beta.csproj" />
   </ItemGroup>
 
   <Target Name="ChangeAliasesOfStrongNameAssemblies" BeforeTargets="FindReferenceAssembliesForReferences;ResolveReferences">

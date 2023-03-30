@@ -21,6 +21,9 @@
     <Compile Include="SampleData.fs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\core\glow.core.csproj" />
+    <PackageReference Include="NodaTime" Version="3.0.9" />
+    <PackageReference Include="NodaTime.Serialization.JsonNet" Version="3.0.0" />
+    <PackageReference Include="Marten.NodaTime" Version="5.11.0" />
+<!--    <ProjectReference Include="..\core\glow.core.csproj" />-->
   </ItemGroup>
 </Project>
