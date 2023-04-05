@@ -106,12 +106,22 @@ namespace Glow.MsGraph.Mails
             this.tokenService = tokenService;
         }
 
+        public bool ContainsForbiddenText(string content)
+        {
+            return !content.Contains(FailIfBodyContains);
+        }
+
+        private void FailIfContainsForbiddenText(string content)
+        {
+            if (!ContainsForbiddenText(content))
+            {
+               throw new BadRequestException($"Body contains forbidden text '{FailIfBodyContains}'");
+            }
+        }
+
         public async Task<Beta.Message> SendBeta(Beta.Message mail, string mailboxOrUserId = null, string scope = "profile")
         {
-            if(mail.Body?.Content?.Contains(FailIfBodyContains)??false)
-            {
-                throw new BadRequestException($"Body contains forbidden text '{FailIfBodyContains}'");
-            }
+            FailIfContainsForbiddenText(mail.Body?.Content);
 
             Beta.GraphServiceClient client = await tokenService.GetBetaClientForUser(new string[] { scope });
 
@@ -138,10 +148,7 @@ namespace Glow.MsGraph.Mails
 
         public async Task<Message> Send(Message mail, string mailboxOrUserId = null, string scope = "profile")
         {
-            if(mail.Body?.Content?.Contains(FailIfBodyContains)??false)
-            {
-                throw new BadRequestException($"Body contains forbidden text '{FailIfBodyContains}'");
-            }
+            FailIfContainsForbiddenText(mail.Body?.Content);
 
             // use scopes: mail.send, mail.readwrite.shared
             GraphServiceClient client = await tokenService.GetClientForUser(new[] { scope });
