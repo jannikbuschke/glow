@@ -108,12 +108,12 @@ namespace Glow.MsGraph.Mails
 
         public bool ContainsForbiddenText(string content)
         {
-            return !content.Contains(FailIfBodyContains);
+            return content.Contains(FailIfBodyContains);
         }
 
         private void FailIfContainsForbiddenText(string content)
         {
-            if (!ContainsForbiddenText(content))
+            if (ContainsForbiddenText(content))
             {
                throw new BadRequestException($"Body contains forbidden text '{FailIfBodyContains}'");
             }
