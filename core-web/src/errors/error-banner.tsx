@@ -27,8 +27,17 @@ export function ErrorBanner({
 export function InfoBanner({ message }: { message: any }) {
   return <Render type="info" message={message} />
 }
-export function SuccessBanner({ message }: { message: any }) {
-  return <Render type="success" message={message} />
+
+type Variant = "light" | "outline" | "filled"
+
+export function SuccessBanner({
+  message,
+  variant,
+}: {
+  message: any
+  variant?: Variant
+}) {
+  return <Render type="success" message={message} variant={variant} />
 }
 
 function isProblemDetails(data: any): data is ProblemDetails {
@@ -41,8 +50,10 @@ function isProblemDetails(data: any): data is ProblemDetails {
 function Render({
   type,
   message: msg,
+  variant,
 }: {
   type: "error" | "info" | "warning" | "success"
+  variant?: Variant
   message: string | null | undefined | any
 }) {
   const { componentLibrary } = useGlowContext()
@@ -94,7 +105,7 @@ function Render({
     />
   ) : (
     <MantineAlert
-      variant="outline"
+      variant={variant ? variant : "outline"}
       color={
         type === "error"
           ? "red"
