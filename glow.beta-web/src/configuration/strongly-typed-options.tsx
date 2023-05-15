@@ -106,6 +106,7 @@ type BaseProps = {
   labelCol?: ColProps
   formikDebug?: boolean
   subHeader?: React.ReactElement
+  editable?: boolean
 }
 type ChildrenFunction = (f: FormikProps<any>) => React.ReactNode
 
@@ -120,6 +121,7 @@ type WithEditors = BaseProps & {
 type Props = WithChildren | WithEditors
 
 export function StronglyTypedOptions({
+  editable,
   containerStyles,
   labelCol,
   title,
@@ -172,12 +174,13 @@ export function StronglyTypedOptions({
               title={title}
               extra={[
                 allowEdit && (
-                  <SubmitButton disabled={!f.dirty} key="submit">
+                  <SubmitButton disabled={true} key="submit">
                     Save
                   </SubmitButton>
                 ),
                 <Button
                   key="refresh"
+                  disabled={true}
                   onClick={() => {
                     f.resetForm()
                     refetch()
@@ -214,7 +217,7 @@ export function StronglyTypedOptions({
                               typeof data[v],
                               v,
                               Array.isArray(data[v]),
-                              disabled,
+                              disabled || editable === false,
                             )}
                           </>
                         )}
