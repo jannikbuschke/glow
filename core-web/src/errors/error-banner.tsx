@@ -25,7 +25,7 @@ export function ErrorBanner({
 }
 
 export function InfoBanner({ message }: { message: any }) {
-  return <Render type="info" message={message} />
+  return <Render type="info" message={message} variant="light" />
 }
 
 type Variant = "light" | "outline" | "filled"
