@@ -87,7 +87,7 @@ export function CustomTable<RecordType extends { id: string } = any>(
           },
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    onPaginationChange: setPagination,
+    // onPaginationChange: setPagination,
   })
   const navigate = useNavigate()
   const { navigateOnClickTo } = props
