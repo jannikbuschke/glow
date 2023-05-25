@@ -150,7 +150,11 @@ let d =
          (typedefof<NodaTime.Duration>,
           { emptyPredefinedValues with
               InlineDefaultValue = Some "\"0:00:00\""
-              Definition = Some "`${number}:${number}:${number}`" }) ]
+              Definition = Some "`${number}:${number}:${number}`" })
+         (typedefof<System.Text.Json.Nodes.JsonNode>,
+          { emptyPredefinedValues with
+              InlineDefaultValue = Some "({})"
+              Definition = Some "any" }) ]
 
 let defaultTypes =
   System.Collections.Generic.Dictionary<System.Type, PredefinedValues>(d)
