@@ -4,7 +4,7 @@ import { useNavigate, useParams } from "react-router"
 import { TabsProps } from "antd/es/tabs"
 import { MenuProps } from "antd/es/menu"
 
-export function RoutedTabs({
+export function RoutedTabs3({
   baseUrl,
   parameter,
   children,

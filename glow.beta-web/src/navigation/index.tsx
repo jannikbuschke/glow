@@ -3,7 +3,7 @@ import * as React from "react"
 import { useNavigate, useParams } from "react-router"
 import { TabsProps } from "antd/es/tabs"
 
-export function RoutedTabs({
+export function RoutedTabs2({
   baseUrl,
   parameter,
   children,
@@ -33,5 +33,3 @@ export function RoutedTabs({
 }
 
 export * from "./menu"
-export * from "./left-navigation"
-export * from "./paths-context"

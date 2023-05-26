@@ -6,7 +6,7 @@ import {
   notifyError,
   notifyInfo,
   notifySuccess,
-} from "./antd-notifies"
+} from "./mantine-notifies"
 
 type INotifyContext = {
   notifyError: (r: ProblemDetails | string) => void

@@ -11,16 +11,6 @@
   "module": "./lib/index.js",
   "types": "./lib/index.d.ts",
   "scripts": {
-    "build:types": "tsc --build",
-    "build:vite": "vite build",
-    "tsc": "tsc",
-    "watch": "tsc --watch",
-    "build": "tsc && tsc -p tsconfig.es.json",
-    "cleanbuild": "rm -r node_modules && npm install && tsc",
-    "prettier": "prettier --write src/**/*.* package.json",
-    "storybook": "start-storybook -p 6006",
-    "build-storybook": "build-storybook",
-    "semantic-release": "semantic-release",
     "clean-output": "rimraf lib && rimraf tsconfig.tsbuildinfo",
     "clean-node-modules": "rimraf node_modules",
     "clean": "rimraf node_modules"

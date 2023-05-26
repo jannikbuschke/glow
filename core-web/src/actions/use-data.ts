@@ -19,7 +19,7 @@ interface GlowPostOptions<T> {
   payload: T
 }
 
-export function useData<T, U = any>(
+export function useData2<T, U = any>(
   url: string,
   placeholder: T,
   config?: UseQueryOptions<T>,

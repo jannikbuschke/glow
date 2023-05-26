@@ -2,13 +2,6 @@ import * as React from "react"
 import { Alert } from "antd"
 import { RenderObject } from "../debugging"
 import { Alert as MantineAlert } from "@mantine/core"
-import { useGlowContext } from "../glow-provider"
-import {
-  messageSuccess,
-  notifyError,
-  notifyInfo,
-  notifySuccess,
-} from "./antd-notifies"
 import { ProblemDetails } from "../types"
 
 export function WarningBanner({ message }: { message: any }) {
@@ -56,7 +49,6 @@ function Render({
   variant?: Variant
   message: string | null | undefined | any
 }) {
-  const { componentLibrary } = useGlowContext()
   if (!msg) {
     return null
   }
@@ -77,33 +69,7 @@ function Render({
     msg.toString()
   )
 
-  return componentLibrary === "antd" ? (
-    <Alert
-      type={type}
-      message={
-        React.isValidElement(msg) ? (
-          msg
-        ) : typeof msg === "object" ? (
-          msg instanceof Error ? (
-            msg.message
-          ) : (
-            <RenderObject msg={msg} />
-          )
-        ) : (
-          msg.toString()
-        )
-      }
-      showIcon={false}
-      style={{
-        borderRight: "none",
-        borderBottom: "none",
-        borderTop: "none",
-        borderLeftWidth: 5,
-        marginTop: 5,
-        marginBottom: 5,
-      }}
-    />
-  ) : (
+  return (
     <MantineAlert
       variant={variant ? variant : "outline"}
       color={

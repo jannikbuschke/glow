@@ -1,7 +1,7 @@
 import { fetchJson, useFetchJson } from "glow-core"
 import { User } from "./user-select"
 
-export function useUsers() {
+export function useUsers2() {
   const fetchJson = useFetchJson<User[]>()
   return async (search: string, customUrl?: string) => {
     const response = await fetchJson(
