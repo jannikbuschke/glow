@@ -561,7 +561,7 @@ let renderDu (t: System.Type) =
       //$"""export type {name}_Case_{case.Name}<T> = {{ Case: "{case.Name}", Fields: T }} // (multiple fields)"""
       cases
       |> List.map renderCase
-      |> String.concat System.Environment.NewLine
+      |> String.concat LineEnding.Value
 
   // let parameters = genericArgumentListAsParameters t
   let anonymousFunctionSignature = getAnonymousFunctionSignatureForDefaultValue t
@@ -616,7 +616,7 @@ let renderDu (t: System.Type) =
 
       cases
       |> List.map renderCase
-      |> String.concat System.Environment.NewLine
+      |> String.concat LineEnding.Value
 
   let firstCaseName =
     match cases with
@@ -700,14 +700,14 @@ let renderRecord (t: System.Type) (strategy: RenderStrategy) =
   let fields =
     properties
     |> Array.map (renderPropertyNameAndDefinition callingModule)
-    |> String.concat System.Environment.NewLine
+    |> String.concat LineEnding.Value
 
   let genericArguments = genericArgumentList t
 
   let fieldValues =
     properties
     |> Array.map (renderPropertyNameAndValue true callingModule)
-    |> String.concat $",{System.Environment.NewLine}"
+    |> String.concat $",{LineEnding.Value}"
 
   let anonymousFunctionSignature = getAnonymousFunctionSignatureForDefaultValue t
   let namedFunctionSignature = getNamedFunctionSignatureForDefaultValue t
@@ -959,7 +959,7 @@ let collectModules (types: System.Type list) =
     let x =
       items
       |> List.map (fun v -> v.FullName)
-      |> String.concat System.Environment.NewLine
+      |> String.concat LineEnding.Value
 
     let sorted, cyclics =
       Glow.GenericTopologicalSort.topologicalSort (getFilteredDeps v) (items |> List.distinct)

@@ -108,7 +108,7 @@ let renderValueStub (t: TsType) : string =
     |> List.map (fun v ->
       let result = $"{Utils.camelize v.Name}: undefined as any,"
       result)
-    |> String.concat "\n  "
+    |> String.concat(LineEnding.Value + " ")
 
   result
 
@@ -195,7 +195,7 @@ let renderValueFix (t: TsType) : string =
         $"default{t.Id.TsSignature.GetName()}.{Utils.camelize v.Name} = {value}"
 
       result)
-    |> String.concat "\n"
+    |> String.concat LineEnding.Value
 
   result
 
@@ -242,7 +242,7 @@ let renderPropertyValues (t: TsType) : string =
           | None -> renderDefaut ()
         | _ -> renderDefaut ()
       | None -> renderDefaut ())
-    |> String.concat "\n  "
+    |> String.concat (LineEnding.Value+" ")
 
   result
 
@@ -363,27 +363,6 @@ let getCases (t: TsType) : RenderedDuCaseDefinitionAndValue list =
           CaseName = v.Name
           Definition = @$"{{ Case: ""{v.Name}"", Fields: {combinedFieldDefinition} }}"
           DefaultValue = @$"{{ Case: ""{v.Name}"", Fields: {combinedFieldValue} }}" })
-
-// let rec renderGenericDefaultValueFunction (t: TsType) =
-//   let firstCase = t.DuCases.Head
-//
-//   let name =
-//     t.Id.TsSignature.NameWithGenericArguments()
-//
-//   let genericArguments =
-//     t.Id.TsSignature.GenericArgumentNames()
-//     |> String.concat ","
-//
-//   let parameters =
-//     if t.Id.TsSignature.GenericArgumentTypes.Length = 0 then
-//       ""
-//     else
-//       t.Id.TsSignature.GenericArgumentTypes
-//       |> List.map (fun b -> $"{b.PropertyTypeName() |> toLower}:{b.PropertyTypeName()}")
-//       |> List.reduce (fun a b -> $"{a},{b}")
-//
-//   let typeName = $"{name}"
-//   $"<{genericArguments}>({parameters}) => null as any"
 
 let renderDuFirstValueAsDefault (t: TsType) =
   let firstHead = t.DuCases |> List.tryHead
