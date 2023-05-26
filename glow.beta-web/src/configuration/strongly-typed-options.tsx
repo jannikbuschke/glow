@@ -174,13 +174,12 @@ export function StronglyTypedOptions({
               title={title}
               extra={[
                 allowEdit && (
-                  <SubmitButton disabled={true} key="submit">
+                  <SubmitButton disabled={disabled} key="submit">
                     Save
                   </SubmitButton>
                 ),
                 <Button
                   key="refresh"
-                  disabled={true}
                   onClick={() => {
                     f.resetForm()
                     refetch()
