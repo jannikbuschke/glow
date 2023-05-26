@@ -5,7 +5,7 @@ open System.Text.Json.Serialization
 open System.Text.RegularExpressions
 
 module LineEnding =
-  let Value = System.Environment.NewLine
+  let Value = "\n"
 
 type Serialize = obj -> string
 
