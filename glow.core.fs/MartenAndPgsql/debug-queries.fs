@@ -1,6 +1,5 @@
 ﻿namespace Glow.Core.MartenAndPgsql
 
-open System.Collections.Generic
 open FSharp.Control
 open Glow.Core.Actions
 open Marten
@@ -8,7 +7,6 @@ open Marten.Events.Projections
 open MediatR
 open Microsoft.Extensions.Logging
 open System.Linq
-
 
 [<Action(Route = "api/debug/rebuild-projection", Policy = "admin")>]
 type RebuildProjections =
@@ -74,12 +72,6 @@ type GetKnownDocumentNames =
 
   interface IRequest<string list>
 
-
-[<Action(Route = "api/debug/get-documents", Policy = "admin")>]
-type GetDocuments() =
-  interface IRequest<IEnumerable<obj>>
-  member val DocumentName = Unchecked.defaultof<string> with get, set
-
 type Handler
   (
     session: IDocumentSession,
@@ -99,25 +91,4 @@ type Handler
           store.Options.AllKnownDocumentTypes()
           |> Seq.map (fun v -> v.Alias)
           |> Seq.toList
-      }
-
-  interface IRequestHandler<GetDocuments, IEnumerable<obj>> with
-    member this.Handle(request, _) =
-
-      task {
-
-        let! query =
-          match request.DocumentName.ToLower() with
-          | "meetingitem" -> loadDocuments session
-          | "meeting" -> loadDocuments session
-          | "user" -> loadDocuments session
-          | "committee" -> loadDocuments session
-          | "member" -> loadDocuments session
-          | "domainconfiguration" -> loadDocuments session
-          | "workspacesingletonconfiguration" -> loadDocuments session
-          | "mynotificationsettings" -> loadDocuments session
-          | "file" -> loadDocuments session
-          | _ -> failwith "not supported"
-
-        return query
       }

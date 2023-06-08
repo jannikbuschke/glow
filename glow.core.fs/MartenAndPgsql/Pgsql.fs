@@ -6,7 +6,6 @@ open Microsoft.Extensions.Configuration
 open Microsoft.Extensions.Logging
 open Npgsql
 
-
 type Activity =
   { Username: obj
     Db: obj

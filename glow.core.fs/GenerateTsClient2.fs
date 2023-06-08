@@ -27,15 +27,11 @@ let renderTsTypesInternal (path: string) (assemblies: Assembly list) =
       @ (actions
          |> Seq.map (fun v -> v.Output)
          |> Seq.toList)
-
-  let found =
-    allTypes
-    |> List.find (fun v -> v.FullName.Contains("DistributionUserViewModel"))
-
-  let allAsText =
-    allTypes
-    |> List.map (fun v -> v.FullName)
-    |> String.concat Environment.NewLine
+  //
+  // let allAsText =
+  //   allTypes
+  //   |> List.map (fun v -> v.FullName)
+  //   |> String.concat Environment.NewLine
 
   let modules = Glow.TsGen.Gen.generateModules2 allTypes
 

@@ -36,6 +36,7 @@ let d =
           { emptyPredefinedValues with
               InlineDefaultValue = Some "null"
               Definition = Some "T | null" })
+
          (typeof<System.Guid>,
           { emptyPredefinedValues with
               InlineDefaultValue = Some $"'{(System.Guid.Empty.ToString())}'"
