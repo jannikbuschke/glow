@@ -7,6 +7,7 @@ import {
   Group,
   Box,
   LoadingOverlay,
+  Tooltip,
 } from "@mantine/core"
 import {
   ColumnDef,
@@ -48,7 +49,8 @@ export function CustomTable<RecordType extends { id: string } = any>(
         pageSize: 10,
       })
   const itemCount = props.dataSource?.length || 0
-  const pageCount = Math.floor((itemCount + 10) / pageSize)
+
+  const pageCount = Math.floor(itemCount / pageSize) + 1
   const canPreviousPage = pageIndex > 0
   const canNextPage = pageIndex < pageCount - 1
   function previousPage() {
@@ -235,12 +237,14 @@ export function CustomTable<RecordType extends { id: string } = any>(
             <DoubleArrowRightIcon />
           </ActionIcon>
           <div>
-            <Text>
-              {t("Page")}{" "}
-              <b>
-                {pageIndex + 1} {t("of")} {pageCount}
-              </b>
-            </Text>
+            <Tooltip label={`${itemCount} items (pagesize=${pageSize})`}>
+              <Text>
+                {t("Page")}{" "}
+                <b>
+                  {pageIndex + 1} {t("of")} {pageCount}
+                </b>
+              </Text>
+            </Tooltip>
           </div>
         </Group>
       )}
