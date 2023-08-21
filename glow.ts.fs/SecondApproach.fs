@@ -498,11 +498,18 @@ let getNamedFunctionSignatureForDefaultValue (t: System.Type) =
   signature
 
 let renderDu (t: System.Type) =
-
   let callingModule = getModuleName t
 
   let name = getName t
   let cases = (FSharpType.GetUnionCases t) |> Seq.toList
+  if name.Contains("GameInitialized") then
+    let declaringType = cases.Head.DeclaringType
+    let declaringTypeKind = getKind declaringType
+    let declaringTypeCases = declaringType |> FSharpType.GetUnionCases |> Seq.toList
+    let caseType = declaringTypeCases.Head.GetType()
+    let caseTypes = cases |>Seq.map(fun v -> v.DeclaringType)
+    if cases |> Seq.map(fun v -> v.GetType()) |> Seq.contains t then
+      printfn "t is union case %s" t.Name
 
   let caseNameLiteral =
     cases
@@ -628,22 +635,6 @@ let renderDu (t: System.Type) =
       let case = cases.Head
       let singleFieldCaseSignature = getFieldCaseName name case
       $"""default{singleFieldCaseSignature}"""
-  // match cases with
-  // | [] -> failwith "todo"
-  // | [ case ] ->
-  //     let singleFieldCaseSignature = getFieldCaseName name case
-  //     $"""default{singleFieldCaseSignature}"""
-  // | cases ->
-  //   let case = cases |> List.head
-  //   let caseFields = case.GetFields() |> Seq.toList
-  //   match caseFields with
-  //   | [] -> failwith "todo"
-  //   | [ singleField ] ->
-  //     let singleFieldCaseSignature = getFieldCaseName name case
-  //     $"""default{singleFieldCaseSignature}"""
-  //   | fields ->
-  //     let singleFieldCaseSignature = getFieldCaseName name case
-  //     $"""default{singleFieldCaseSignature}"""
 
   let renderCaseSignature (case: UnionCaseInfo) =
     let caseFields = case.GetFields() |> Seq.toList
@@ -676,6 +667,7 @@ let renderDu (t: System.Type) =
     else
       $"""export var default{name} = {defaultCase} as {signature}"""
 
+
   $"""{renderedCaseDefinitions}
 export type {signature} = {caseSignatures}
 export type {name}_Case = {caseNameLiteral}
@@ -683,7 +675,7 @@ export var {name}_AllCases = [ {allCaseNames} ] as const
 {renderedCaseDefaultNamesAndValues}
 {renderedDefaultCase}
 """
-//
+
 type RenderStrategy =
   | RenderDefinitionAndValue
   | RenderDefinition
@@ -841,10 +833,6 @@ export var default{name}: <T>(t:T) => {name}<T> = <T>(t:T) => []
         // probably a class, try to use same strategy as record
         renderRecord t strategy
 
-// export type EntityState = "Detached" | "Unchanged" | "Deleted" | "Modified" | "Added"
-// export var EntityState_AllValues = ["Detached", "Unchanged", "Deleted", "Modified", "Added"] as const
-// export var defaultEntityState: EntityState = "Detached"
-
 let rec getGenericDefinitionAndArgumentsAsDependencies (t: System.Type) =
   if t.IsGenericTypeDefinition then
     failwith "t is a generic type definition but should not be"
@@ -933,16 +921,11 @@ let rec collectDependenciesTransitively (depth: int) (t: System.Type) =
     t
     |> getDependencies
     |> List.iter (collectDependenciesTransitively (depth + 1))
-
     ()
-
 
 let collectModules (types: System.Type list) =
   (typedefof<obj> :: typedefof<System.Byte> :: types)
   |> List.iter (collectDependenciesTransitively (0))
-  // let deps =
-  //     types
-  //     |> List.collect getDependencies
 
   allTypes
   |> Seq.toList
@@ -993,42 +976,17 @@ let renderModule (m: TsModule) =
     .AppendLine("")
   |> ignore
 
-  // builder.AppendLine("import * as TsType from \"./TsType\"") |> ignore
-  // builder.AppendLine("import {TsType} from \"./\"") |> ignore
-
   deps
   |> List.iter (fun v ->
     builder.AppendLine($"import * as {v} from \"./{v}\"")
     |> ignore)
 
-  // deps
-  // |> List.iter (fun v ->
-  //   let name = v.TsSignature.TsNamespace |> NamespaceName.sanitize
-  //
-  //   if v.Id = TsTypeId "Any" || name = null then
-  //     ()
-  //   elif name = "" || name = null then
-  //     builder.AppendLine($"// skipped importing empty namespace (type={v.OriginalName})")
-  //     |> ignore
-  //   else
-  //     let x = $@"import {{{name}}} from ""./"""
-  //
-  //     if x = "import * as  from \"./\"" then
-  //       ()
-  //     else
-  //       builder.AppendLine(x) |> ignore
-  //
-  //   ())
-
-
   builder.AppendLine() |> ignore
-  let sorted = m.Types
 
   let sorted, cyclics =
     Glow.GenericTopologicalSort.topologicalSort
       (fun v ->
         let deps = getDependencies v
-
         // Nullable remove
         deps
         |> List.filter (fun x -> x.Namespace = v.Namespace))
@@ -1095,25 +1053,9 @@ let renderModule (m: TsModule) =
 //
 Object.assign(default{name}, ({renderType v RenderStrategy.RenderValue}))
 """
-  // let x =
-  //   renderKnownTypeAndDefaultValue v RenderCyclicDefault.Fix DefaultSerialize.serialize
-  //
-  // match x with
-  // | Some x -> x
-  // | None -> $"// skipped {v.Id.TsSignature.TsName |> TsName.value}"
   )
   |> List.map Utils.cleanTs
   |> List.iter (fun v -> builder.AppendLine(v) |> ignore)
 
   builder.ToString().Replace("\r\n", "\n")
 
-
-// let renderTypes (types: System.Type list) =
-//   let allTypes = types |> List.collect getDependencies
-//
-//   let x =
-//     allTypes
-//     |> List.groupBy getModuleName
-//     |> List.map (fun (v, items) -> { Name = v; Types = items })
-//
-//   ""
