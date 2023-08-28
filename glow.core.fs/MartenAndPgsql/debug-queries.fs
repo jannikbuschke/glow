@@ -7,6 +7,7 @@ open Marten.Events.Projections
 open MediatR
 open Microsoft.Extensions.Logging
 open System.Linq
+open Marten.Events
 
 [<Action(Route = "api/debug/rebuild-projection", Policy = "admin")>]
 type RebuildProjections =
@@ -45,7 +46,7 @@ type RebuildProjectionsHandler
           |> Seq.map (fun v -> v.ProjectionName)
           |> Seq.toList
 
-        logger.LogInformation("Projections {@projections}", projections)
+        logger.LogInformation("Rebuilding Projections {@projections}", projections)
 
         let tasks =
           projections

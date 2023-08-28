@@ -28,14 +28,15 @@ type EventViewmodel =
     IsArchived: bool
     AggregateTypeName: string }
 
-type EventViewmodel2 =
+[<CLIMutable>]
+type RawEventModel =
   { seq_id: System.Int64
     id: System.Guid
     stream_id: System.Guid
     version: System.Int64
     data: System.String
     ``type``: System.String
-    timestamp: NodaTime.Instant
+    timestamp: System.DateTime
     tenant_id: System.String
     mt_dotnet_type: System.String
     headers: System.String
@@ -75,6 +76,7 @@ type GetEventsHandler(session: IDocumentSession) =
             .Events
             .QueryAllRawEvents()
             .OrderByDescending(fun x -> x.Sequence)
+            .Take(100)
             .ToListAsync()
 
         return
@@ -85,18 +87,19 @@ type GetEventsHandler(session: IDocumentSession) =
 
 [<Action(Route = "api/es/get-events-without-validation", Policy = "admin")>]
 type GetEsEventsWithoutValidation() =
-  interface IRequest<ResizeArray<EventViewmodel2>>
+  interface IRequest<ResizeArray<RawEventModel>>
 
 type GetEventsHandler2(session: IDocumentSession, config: IConfiguration) =
-  interface IRequestHandler<GetEsEventsWithoutValidation, ResizeArray<EventViewmodel2>> with
+  interface IRequestHandler<GetEsEventsWithoutValidation, ResizeArray<RawEventModel>> with
     member this.Handle(_, _) =
       task {
-        let cs = config.GetValue<string>("PostgresConnectionString")
-        use conn = new Npgsql.NpgsqlConnection(cs)
-        do! conn.OpenAsync()
+        use conn = session.Connection
+        // let cs = config.GetValue<string>("PostgresConnectionString")
+        // use conn = new Npgsql.NpgsqlConnection(cs)
+        // do! conn.OpenAsync()
 
         let result =
-          conn.Query<EventViewmodel2>(
+          conn.Query<RawEventModel>(
             "select * from mt_events order by seq_id desc"
           )
 

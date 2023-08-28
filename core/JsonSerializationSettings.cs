@@ -22,7 +22,6 @@ public class JsonSerializationSettings
 
         options.Converters.Add(new JsonFSharpConverter(unionEncoding: JsonDefaultWebUnionEncoding));
     }
-
     public const JsonUnionEncoding JsonDefaultSerializationUnionEncoding = JsonUnionEncoding.AdjacentTag | JsonUnionEncoding.NamedFields
                                                                                                          | JsonUnionEncoding.UnwrapOption
                                                                                                          | JsonUnionEncoding.UnwrapSingleCaseUnions

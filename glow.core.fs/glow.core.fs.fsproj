@@ -7,7 +7,6 @@
 
     <ItemGroup>
         <Compile Include="PgsqlHelper.fs" />
-        <Compile Include="QueryEvents.fs" />
         <Compile Include="IdentifyTypes.fs" />
         <Compile Include="GenerateSubscriptions.fs" />
         <Compile Include="GenerateSubscriptions2.fs" />

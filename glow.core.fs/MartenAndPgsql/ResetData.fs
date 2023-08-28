@@ -19,13 +19,20 @@ type ApiErrorType =
 
 type ApiError = { Message: string; Type: ApiErrorType }
 
+[<Action(Route = "api/debug/archive-events", Policy = "admin")>]
+type ArchiveEvents =
+  { TypeName: string }
+  interface IRequest<Result<int, ApiError>>
+
+[<Action(Route = "api/debug/restore-events", Policy = "admin")>]
+type RestoreEvents =
+  { TypeName: string }
+  interface IRequest<Result<int, ApiError>>
+
 [<Action(Route = "api/debug/archive-event", Policy = "admin")>]
 type ArchiveEvent =
-  { EventId: Guid
-
-   }
-
-  interface IRequest<Result<unit, ApiError>>
+  { EventId: Guid }
+  interface IRequest<Result<int, ApiError>>
 
 [<Action(Route = "api/debug/restore-event", Policy = "admin")>]
 type RestoreEvent =
@@ -81,16 +88,18 @@ type RenameEventDotnetTypeNameHandler
         return ()
       }
 
-  interface IRequestHandler<ArchiveEvent, Result<unit, ApiError>> with
+  interface IRequestHandler<ArchiveEvent, Result<int, ApiError>> with
     member this.Handle(request, token) =
       taskResult {
         // mt_dotnet_type
         // Gertrud.Core.MeetingEvent+MeetingCreated, shared.fs
-        let connectionString =
-          config.GetValue<string>("PostgresConnectionString")
+        // let connectionString =
+        //   config.GetValue<string>("PostgresConnectionString")
+        //
+        // use connection = new Npgsql.NpgsqlConnection(connectionString)
+        // do! connection.OpenAsync()
 
-        use connection = new Npgsql.NpgsqlConnection(connectionString)
-        do! connection.OpenAsync()
+        let connection = session.Connection
 
         let! result =
           connection.ExecuteAsync(
@@ -98,7 +107,31 @@ type RenameEventDotnetTypeNameHandler
             {| id = request.EventId |}
           )
 
-        return ()
+        return result
+      }
+
+  interface IRequestHandler<ArchiveEvents, Result<int, ApiError>> with
+    member this.Handle(request, token) =
+      taskResult {
+        let! result =
+          session.Connection.ExecuteAsync(
+            "UPDATE public.mt_events SET is_archived = true WHERE type = @typeName",
+            {| typeName = request.TypeName |}
+          )
+
+        return result
+      }
+
+  interface IRequestHandler<RestoreEvents, Result<int, ApiError>> with
+    member this.Handle(request, token) =
+      taskResult {
+        let! result =
+          session.Connection.ExecuteAsync(
+            "UPDATE public.mt_events SET is_archived = false WHERE type = @typeName",
+            {| typeName = request.TypeName |}
+          )
+
+        return result
       }
 
   interface IRequestHandler<RenameEventDotnetTypeName, Result<int, ApiError>> with
