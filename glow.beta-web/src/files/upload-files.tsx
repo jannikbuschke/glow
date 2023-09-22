@@ -3,8 +3,6 @@ import { Upload, Button, notification } from "antd"
 import { UploadProps } from "antd/es/upload"
 import { saveAs } from "file-saver"
 import { useField } from "formik"
-import { DeleteOutlined } from "@ant-design/icons"
-
 interface IFile {
   id: string
   name: string
@@ -93,7 +91,6 @@ export function Files({
 
           {!disableDelete && (
             <Button
-              icon={<DeleteOutlined />}
               style={{ border: "none", background: "none", opacity: "0.6" }}
               onClick={() => {
                 const copy = [...value]
